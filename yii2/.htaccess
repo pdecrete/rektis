@@ -1,0 +1,6 @@
+
+# Order Deny,Allow
+# Deny from all
+
+RewriteEngine on
+RewriteRule . - [F]
