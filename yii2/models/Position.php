@@ -5,23 +5,22 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "{{%specialisation}}".
+ * This is the model class for table "{{%position}}".
  *
  * @property integer $id
- * @property string $code
  * @property string $name
+ * @property string $comments
  *
  * @property Employee[] $employees
  */
-class Specialisation extends \yii\db\ActiveRecord
+class Position extends \yii\db\ActiveRecord
 {
-
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%specialisation}}';
+        return '{{%position}}';
     }
 
     /**
@@ -30,10 +29,10 @@ class Specialisation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['code', 'name'], 'required'],
-            [['code'], 'string', 'max' => 10],
+            [['name', 'comments'], 'required'],
+            [['comments'], 'string'],
             [['name'], 'string', 'max' => 100],
-            [['code'], 'unique']
+            [['name'], 'unique']
         ];
     }
 
@@ -44,8 +43,8 @@ class Specialisation extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'code' => 'Κωδικός',
-            'name' => 'Λεκτικό',
+            'name' => 'Name',
+            'comments' => 'Comments',
         ];
     }
 
@@ -54,16 +53,15 @@ class Specialisation extends \yii\db\ActiveRecord
      */
     public function getEmployees()
     {
-        return $this->hasMany(Employee::className(), ['specialisation' => 'id']);
+        return $this->hasMany(Employee::className(), ['position' => 'id']);
     }
 
     /**
      * @inheritdoc
-     * @return AdmappSpecialisationQuery the active query used by this AR class.
+     * @return AdmappPositionQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new SpecialisationQuery(get_called_class());
+        return new AdmappPositionQuery(get_called_class());
     }
-
 }

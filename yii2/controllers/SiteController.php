@@ -93,4 +93,15 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
+    public function actionParameter()
+    {
+        return $this->render('parameter');
+    }
+
+    public function actionOffline()
+    {
+        $this->layout = 'info';
+        return $this->render('offline');
+    }
+
 }

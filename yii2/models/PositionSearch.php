@@ -5,14 +5,13 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Specialisation;
+use app\models\Position;
 
 /**
- * SpecialisationSearch represents the model behind the search form about `app\models\Specialisation`.
+ * PositionSearch represents the model behind the search form about `app\models\Position`.
  */
-class SpecialisationSearch extends Specialisation
+class PositionSearch extends Position
 {
-
     /**
      * @inheritdoc
      */
@@ -20,7 +19,7 @@ class SpecialisationSearch extends Specialisation
     {
         return [
             [['id'], 'integer'],
-            [['code', 'name'], 'safe'],
+            [['name', 'comments'], 'safe'],
         ];
     }
 
@@ -42,7 +41,7 @@ class SpecialisationSearch extends Specialisation
      */
     public function search($params)
     {
-        $query = Specialisation::find();
+        $query = Position::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -60,10 +59,9 @@ class SpecialisationSearch extends Specialisation
             'id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'code', $this->code])
-                ->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'comments', $this->comments]);
 
         return $dataProvider;
     }
-
 }

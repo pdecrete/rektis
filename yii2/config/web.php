@@ -42,6 +42,7 @@ $config = [
     ],
     'params' => $params,
     'aliases' => $aliases,
+     // 'catchAll' => ['site/offline'],
 ];
 
 if (YII_ENV_DEV) {
