@@ -48,25 +48,6 @@ create table admapp_employee_status (
     unique index status_name (`name`)
 ) engine=InnoDB charset=utf8;
 
-/*
-drop table if exists `admapp_employee`;
-create table if not exists `admapp_employee` (
-    `id` integer not null auto_increment,
-    `status` integer comment 'εργασιακη κατασταση',
-    index `status_fk_index` (`status`),
-    constraint `fk_status` 
-        foreign key `status_fk_index` (`status`)
-        references `admapp_employee_status` (`id`)
-        on update cascade 
-        on delete set null,
-    `name` varchar(100) not null,
-    `surname` varchar(100) not null,
-    `fathersname` varchar(100) not null,
-    `mothersname` varchar(100) not null,
-    primary key (`id`)
-) engine=InnoDB charset=utf8;
-
-*/
 
 create table if not exists `admapp_employee` (
     `id` integer not null auto_increment,

@@ -46,13 +46,26 @@ username και password, στο dsn κλπ.
 ```yii2\web.php``` και αλλες τιμες στα αρχεια του φακελου ```yii2\config\```).
 
 ##Βάση δεδομένων 
-Δημιουργήστε τη βάση δεδομένων
 
+Η εφαρμογή αξιοποιεί τα migrations του Yii framework οπότε η δημιουργία των 
+πινάκων και των αρχικών δεδομένων μπορεί να γίνει απλώς εκτελώντας την εντολή:
+```
+yii2/yii migrate
+```
+
+Περισσότερες λεπτομέρειες στο [Database Migration κεφάλαιο του Yii2 Guide](http://www.yiiframework.com/doc-2.0/guide-db-migrations.html)
+
+Εαν παρόλα αυτά θέλετε να κάνετε τις απαραίτητες ρυθμίσεις με τον παραδοσιακό
+τρόπο τότε: 
+- Δημιουργήστε τη βάση δεδομένων
 ```sql
 create database `admappdb` default character set utf8;
 ```
-
-Δημιουργείστε το σχήμα της βάσης 
+- Δημιουργήστε το σχήμα της βάσης 
 ```sql
 mysql -u root -p admappdb < yii2/data/schema.sql 
+```
+- Εισάγετε τα απαραίτητα αρχικά δεδομένα
+```sql
+mysql -u root -p admappdb < yii2/data/init_data.sql 
 ```

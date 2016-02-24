@@ -1,7 +1,9 @@
 <?php
 
 $params = require(__DIR__ . '/params.php');
+$db = require(__DIR__ . '/db.php');
 $aliases = require(__DIR__ . '/aliases.php');
+$authmanager = require(__DIR__ . '/authmanager.php');
 
 $config = [
     'id' => 'adm',
@@ -38,11 +40,12 @@ $config = [
                 ],
             ],
         ],
-        'db' => require(__DIR__ . '/db.php'),
+        'db' => $db,
+        'authManager' => $authmanager,
     ],
     'params' => $params,
     'aliases' => $aliases,
-     // 'catchAll' => ['site/offline'],
+        // 'catchAll' => ['site/offline'],
 ];
 
 if (YII_ENV_DEV) {
