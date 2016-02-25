@@ -13,6 +13,10 @@ $this->title = 'My Yii Application';
         <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
         <p>
         <pre>
+            <?= "User ID is: " . Yii::$app->user->getId() . " and username is: " . Yii::$app->user->identity->username; ?> <br/>
+            Last login: <?= Yii::$app->user->identity->last_login; ?>, 
+            Create at: <?= Yii::$app->user->identity->create_ts; ?>,
+            Update at: <?= Yii::$app->user->identity->update_ts; ?> <br/>
             <?= admapp\Util\Core::generateToken(20); ?> <br/>
         </pre>
         </p>
