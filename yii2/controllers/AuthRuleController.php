@@ -8,12 +8,14 @@ use app\models\AuthRuleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * AuthRuleController implements the CRUD actions for AuthRule model.
  */
 class AuthRuleController extends Controller
 {
+
     public function behaviors()
     {
         return [
@@ -21,6 +23,15 @@ class AuthRuleController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['superadmin'],
+                    ],
                 ],
             ],
         ];
@@ -36,8 +47,8 @@ class AuthRuleController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -49,7 +60,7 @@ class AuthRuleController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -66,7 +77,7 @@ class AuthRuleController extends Controller
             return $this->redirect(['view', 'id' => $model->name]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -85,7 +96,7 @@ class AuthRuleController extends Controller
             return $this->redirect(['view', 'id' => $model->name]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -118,4 +129,5 @@ class AuthRuleController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

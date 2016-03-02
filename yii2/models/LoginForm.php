@@ -31,6 +31,16 @@ class LoginForm extends Model
             ['password', 'validatePassword'],
         ];
     }
+    /**
+     * @return array customized attribute labels
+     */
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'Όνομα χρήστη',
+            'password' => 'Κωδικός πρόσβασης',
+        ];
+    }
 
     /**
      * Validates the password.
@@ -58,7 +68,7 @@ class LoginForm extends Model
     {
         if ($this->validate()) {
             $user = $this->getUser();
-            $logged_in = Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $logged_in = Yii::$app->user->login($user, $this->rememberMe ? Yii::$app->params['user.rememberMeDuration'] : 0);
             if ($logged_in === true) {
                 $user->last_login = new Expression('NOW()');
                 $user->save();

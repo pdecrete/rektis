@@ -8,12 +8,14 @@ use app\models\AuthAssignmentSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * AuthAssignmentController implements the CRUD actions for AuthAssignment model.
  */
 class AuthAssignmentController extends Controller
 {
+
     public function behaviors()
     {
         return [
@@ -21,6 +23,15 @@ class AuthAssignmentController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['superadmin'],
+                    ],
                 ],
             ],
         ];
@@ -36,8 +47,8 @@ class AuthAssignmentController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -50,7 +61,7 @@ class AuthAssignmentController extends Controller
     public function actionView($item_name, $user_id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($item_name, $user_id),
+                    'model' => $this->findModel($item_name, $user_id),
         ]);
     }
 
@@ -67,7 +78,7 @@ class AuthAssignmentController extends Controller
             return $this->redirect(['view', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -87,7 +98,7 @@ class AuthAssignmentController extends Controller
             return $this->redirect(['view', 'item_name' => $model->item_name, 'user_id' => $model->user_id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -122,4 +133,5 @@ class AuthAssignmentController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

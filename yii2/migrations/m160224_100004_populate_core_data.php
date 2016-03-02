@@ -26,12 +26,15 @@ class m160224_100004_populate_core_data extends Migration
 
     public function safeUp()
     {
-        Console::stdout("Creating core admin user.\n", Console::FG_YELLOW);
+        $pass = admapp\Util\Core::generateToken(10);
+        $encpass = Yii::$app->security->generatePasswordHash($pass);
+
+        Console::stdout("Creating core admin user (admin:{$pass}).\n", Console::FG_YELLOW);
         Yii::$app->db->createCommand()->insert("{$this->db->tablePrefix}user", [
             'id' => 1,
             'username' => 'admin',
             'auth_key' => '',
-            'password_hash' => '$2y$13$TrWrgr18LihofvDhzlI3I.XqKe2KfyWiRBRarzi1fJuURqh9oQGHq',
+            'password_hash' => $encpass,
             'password_reset_token' => Core::generateToken(10),
             'email' => 'spapad@gmail.com',
             'name' => 'Stavros',

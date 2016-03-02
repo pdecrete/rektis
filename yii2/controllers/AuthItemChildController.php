@@ -8,12 +8,14 @@ use app\models\AuthItemChildSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * AuthItemChildController implements the CRUD actions for AuthItemChild model.
  */
 class AuthItemChildController extends Controller
 {
+
     public function behaviors()
     {
         return [
@@ -21,6 +23,15 @@ class AuthItemChildController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['superadmin'],
+                    ],
                 ],
             ],
         ];
@@ -36,8 +47,8 @@ class AuthItemChildController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -50,7 +61,7 @@ class AuthItemChildController extends Controller
     public function actionView($parent, $child)
     {
         return $this->render('view', [
-            'model' => $this->findModel($parent, $child),
+                    'model' => $this->findModel($parent, $child),
         ]);
     }
 
@@ -67,7 +78,7 @@ class AuthItemChildController extends Controller
             return $this->redirect(['view', 'parent' => $model->parent, 'child' => $model->child]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -87,7 +98,7 @@ class AuthItemChildController extends Controller
             return $this->redirect(['view', 'parent' => $model->parent, 'child' => $model->child]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -122,4 +133,5 @@ class AuthItemChildController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

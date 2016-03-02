@@ -21,9 +21,9 @@ class m160225_121155_rbac_init_admin extends Migration
         $a3 = $auth->add($user);
         $a4 = $auth->add($visitor);
 
-        $c1 = $auth->addChild($visitor, $user);
-        $c2 = $auth->addChild($user, $admin);
-        $c3 = $auth->addChild($admin, $superadmin);
+        $c1 = $auth->addChild($user, $visitor);
+        $c2 = $auth->addChild($admin, $user);
+        $c3 = $auth->addChild($superadmin, $admin);
 
         $b1 = $auth->assign($superadmin, 1);
 

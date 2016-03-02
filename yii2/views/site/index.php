@@ -6,20 +6,24 @@ $this->title = 'My Yii Application';
 <div class="site-index">
 
     <div class="jumbotron">
-        <h1>Congratulations!</h1>
+        <h1>!</h1>
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
 
         <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-        <p>
-        <pre>
-            <?= "User ID is: " . Yii::$app->user->getId() . " and username is: " . Yii::$app->user->identity->username; ?> <br/>
-            Last login: <?= Yii::$app->user->identity->last_login; ?>, 
-            Create at: <?= Yii::$app->user->identity->create_ts; ?>,
-            Update at: <?= Yii::$app->user->identity->update_ts; ?> <br/>
-            <?= admapp\Util\Core::generateToken(20); ?> <br/>
-        </pre>
-        </p>
+        <?php if (!Yii::$app->user->isGuest) : ?>
+            <div class="well" style="white-space: pre-line;">
+                <p>DEMO and SAMPLE calls; to be removed on production</p>
+                <?= "User ID: " . Yii::$app->user->getId() . " username: " . Yii::$app->user->identity->username . " roles: " . implode(', ', array_keys(Yii::$app->authManager->getRolesByUser(Yii::$app->user->getId()))); ?> <br/>
+                Last login: <?= Yii::$app->user->identity->last_login; ?>, Create at: <?= Yii::$app->user->identity->create_ts; ?>, Update at: <?= Yii::$app->user->identity->update_ts; ?> <br/>
+                <?= "Params: " . yii\helpers\VarDumper::dumpAsString(Yii::$app->params); ?> <br/>
+                <?php
+                $pass = admapp\Util\Core::generateToken(10);
+                echo $pass, ' = ', Yii::$app->security->generatePasswordHash($pass);
+                ?> <br/>
+                <?= admapp\Util\Core::generateToken(20); ?> <br/>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="body-content">

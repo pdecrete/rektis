@@ -71,18 +71,17 @@ AppAsset::register($this);
             <div class="container">
                 <?=
                 Breadcrumbs::widget([
+                    'homeLink' => [ 'label' => 'Αρχική', 'url' => ['/site/index']],
                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                 ])
                 ?>
                 <?= $content ?>
-                <?= yii\helpers\VarDumper::dump($this->params); ?>
-                <?= yii\helpers\VarDumper::dump(Yii::$app->params); ?>
             </div>
         </div>
 
         <footer class="footer">
             <div class="container">
-                <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+                <p class="pull-left">&copy; <?= Yii::$app->params['companyName'] ?> <?= date('Y') ?></p>
 
                 <p class="pull-right"><?= Yii::powered() ?></p>
             </div>

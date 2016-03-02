@@ -17,7 +17,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['login', 'logout'],
+                'only' => ['login', 'logout', 'index'],
                 'rules' => [
                     [
                         'actions' => ['login'],
@@ -26,6 +26,11 @@ class SiteController extends Controller
                     ],
                     [
                         'actions' => ['logout'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -56,6 +61,9 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+        if (!\Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
     }
 
     public function actionLogin()
