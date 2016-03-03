@@ -69,3 +69,13 @@ mysql -u root -p admappdb < yii2/data/schema.sql
 ```sql
 mysql -u root -p admappdb < yii2/data/init_data.sql 
 ```
+
+# Διαθέσιμα commands 
+
+```yii2/yii generatepassword```
+Δέχεται μία παράμετρο και εμφανίζει το κωδικοποιημένο password που πρέπει να
+χρησιμοποιηθεί στην εφαρμογή. Παράδειγμα:
+```
+$ ./yii2/yii generatepassword thisisthepass
+thisisthepass = $2y$13$.gEuId2QUC8StOCdA2L9KupL9rj1Vze.KmGjIh0N7WvbQM34ZVhZi
+```

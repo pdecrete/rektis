@@ -51,6 +51,15 @@ AppAsset::register($this);
                             ['label' => 'Auth rules', 'url' => ['/auth-rule']],
                         ],
                     ],
+                    [ 'label' => 'Χρήστες',
+                        'items' => [
+                            '<li class="dropdown-header">Λογαριασμός</li>',
+                            ['label' => 'Ο λογαριασμός μου', 'url' => ['/employee']],
+                            '<li class="divider"></li>',
+                            '<li class="dropdown-header">Διαχειριστικά</li>',
+                            ['label' => 'Όλοι οι χρήστες', 'url' => ['/employee']],
+                        ],
+                    ],
                     [ 'label' => 'Σχετικά', 'url' => ['/site/about']],
                     [ 'label' => 'Επικοινωνία', 'url' => ['/site/contact']],
                     Yii::$app->user->isGuest ?
