@@ -33,18 +33,19 @@ AppAsset::register($this);
                 ],
             ]);
             echo Nav::widget([
+                'activateParents' => true,
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    [ 'label' => 'Αρχική', 'url' => ['/site/index']],
+                    [ 'label' => '<i class="glyphicon glyphicon-home"></i> Αρχική', 'encode' => false, 'url' => ['/site/index']],
                     [ 'label' => 'Παράμετροι',
                         'items' => [
-                            '<li class="dropdown-header">Εφαρμογής</li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Εφαρμογής</li>',
                             ['label' => 'Ειδικότητες', 'url' => ['/specialisation']],
                             ['label' => 'Υπηρεσίες', 'url' => ['/service']],
                             ['label' => 'Θέσεις', 'url' => ['/position']],
                             ['label' => 'Καταστάσεις υπαλλήλων', 'url' => ['/employee-status']],
                             '<li class="divider"></li>',
-                            '<li class="dropdown-header">Διαχειριστικές</li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-dashboard"></i> Διαχειριστικές</li>',
                             ['label' => 'Auth items', 'url' => ['/auth-item']],
                             ['label' => 'Auth item connections', 'url' => ['/auth-item-child']],
                             ['label' => 'Auth assignments', 'url' => ['/auth-assignment']],
@@ -53,24 +54,29 @@ AppAsset::register($this);
                     ],
                     [ 'label' => 'Χρήστες',
                         'items' => [
-                            '<li class="dropdown-header">Λογαριασμός</li>',
-                            ['label' => 'Ο λογαριασμός μου', 'url' => ['/employee']],
-                            '<li class="divider"></li>',
-                            '<li class="dropdown-header">Διαχειριστικά</li>',
-                            ['label' => 'Όλοι οι χρήστες', 'url' => ['/employee']],
+                            ['label' => 'Όλοι οι χρήστες', 'url' => ['/user/index']],
+                        ],
+                    ],
+                    [ 'label' => 'Εργαζόμενοι', 
+                        'items' => [
+                            ['label' => 'Όλοι οι εργαζόμενοι', 'url' => ['/employee/index']],
                         ],
                     ],
                     [ 'label' => 'Σχετικά', 'url' => ['/site/about']],
                     [ 'label' => 'Επικοινωνία', 'url' => ['/site/contact']],
                     Yii::$app->user->isGuest ?
-                            [
-                        'label' => 'Είσοδος',
+                            [ 'label' => '<i class="glyphicon glyphicon-log-in"></i> Είσοδος', 'encode' => false,
+                        'visible' => Yii::$app->user->isGuest,
                         'url' => ['/site/login']
                             ] :
-                            [
-                        'label' => 'Έξοδος (' . Yii::$app->user->identity->username . ')',
-                        'url' => ['/site/logout'],
-                        'linkOptions' => ['data-method' => 'post']
+                            [ 'label' => '<i class="glyphicon glyphicon-user"></i>', 'encode' => false,
+                        'visible' => !Yii::$app->user->isGuest,
+                        'items' => [
+                            '<li class="dropdown-header">' . Yii::$app->user->identity->username . '</li>',
+                            ['label' => 'Ο λογαριασμός μου', 'url' => ['/user/account']],
+                            '<li class="divider"></li>',
+                            ['label' => '<i class="glyphicon glyphicon-log-out"></i> Έξοδος', 'encode' => false, 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
+                        ],
                             ],
                 ],
             ]);
@@ -90,9 +96,19 @@ AppAsset::register($this);
 
         <footer class="footer">
             <div class="container">
-                <p class="pull-left">&copy; <?= Yii::$app->params['companyName'] ?> <?= date('Y') ?></p>
-
-                <p class="pull-right"><?= Yii::powered() ?></p>
+                <div class="container">
+                    <p class="pull-left">&copy; <?= Yii::$app->params['companyName'] ?> <?= date('Y') ?> |
+                        <?= Html::a('Αρχική', ['site/index']) ?> | 
+                        <?= Html::a('Σχετικά', ['site/about']) ?> | 
+                        <?= Html::a('Επικοινωνία', ['site/contact']) ?> | 
+                        <?=
+                        Yii::$app->user->isGuest ?
+                                Html::a('Είσοδος', ['site/login']) :
+                                Html::a('Έξοδος ' . Yii::$app->user->identity->username, ['site/logout'], ['data-method' => 'post'])
+                        ?>
+                    </p>
+                    <p class="pull-right"><?= Yii::powered() ?></p>
+                </div>
             </div>
         </footer>
 

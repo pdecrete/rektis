@@ -63,7 +63,75 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            [['username', 'password_hash', 'password_reset_token', 'email', 'name', 'surname'], 'required'],
+//            ['auth_key', 'required'],
+            [['status'], 'integer'],
+            [['last_login', 'create_ts', 'update_ts'], 'safe'],
+            [['username', 'email', 'name', 'surname'], 'string', 'max' => 128],
+            [['auth_key'], 'string', 'max' => 32],
+            [['password_hash', 'password_reset_token'], 'string', 'max' => 200],
+            [['username'], 'unique'],
+            [['password_reset_token'], 'unique']
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Όνομα χρήστη',
+            'auth_key' => 'Κλειδί επαλήθευσης',
+            'password_hash' => 'Κρυπτογραφημένος κωδικός',
+            'password_reset_token' => 'Τεκμήριο επαναφοράς κωδικού πρόσβασης',
+            'email' => 'Email',
+            'name' => 'Όνομα',
+            'surname' => 'Επώνυμο',
+            'status' => 'Κατάσταση',
+            'last_login' => 'Τελευταία σύνδεση',
+            'create_ts' => 'Χρονοσφραγίδα δημιουργίας',
+            'update_ts' => 'Χρονοσφραγίδα ενημέρωσης',
+        ];
+    }
+
+    public static function getStatusLabelsArray()
+    {
+        return [
+            self::STATUS_ACTIVE => self::getLabelForStatus(User::STATUS_ACTIVE),
+            self::STATUS_DELETED => self::getLabelForStatus(User::STATUS_DELETED)
+        ];
+    }
+
+    public static function getLabelForStatus($status_code)
+    {
+        switch ($status_code) {
+            case self::STATUS_DELETED:
+                $status_label = 'Διεγραμμένος';
+                break;
+            case self::STATUS_ACTIVE:
+                $status_label = 'Ενεργός';
+                break;
+            default:
+                $status_label = 'ΑΓΝΩΣΤΗ ΚΑΤΑΣΤΑΣΗ';
+                break;
+        }
+        return $status_label;
+    }
+
+    public function getStatuslabel()
+    {
+        return self::getLabelForStatus($this->status);
+    }
+
+    /**
+     * @inheritdoc
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 
     /**

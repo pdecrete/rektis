@@ -39,6 +39,7 @@ AppAsset::register($this);
             ul.info li { margin-bottom: 20px; clear: both; float: left; }
             ul.info li p { font-size: 0.9em; line-height: 2em; color: #fff; float: left; margin: 0; }
             ul.info h3 { font-size: 1.5em; color: #333; float: left; margin-right: 15px; padding-top: 5px; }
+            pre { white-space: pre-line; }
         </style>
     </head>
     <body>

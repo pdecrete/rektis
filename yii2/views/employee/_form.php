@@ -20,17 +20,11 @@ use yii\widgets\ActiveForm;
     ]);
     ?>
 
-    <? // $form->field($model, 'status')->textInput() ?>
-    <?=
-    $form->field($model, 'status')->dropdownList(
-            \app\models\EmployeeStatus::find()->select(['name', 'id'])->indexBy('id')->column(), ['prompt' => 'Select status']
-    );
-    ?>
     <pre>
-    <?php
+        <?php
         \yii\helpers\VarDumper::dump(\app\models\EmployeeStatus::find()->select(['name', 'id'])->indexBy('id')->column());
         \yii\helpers\VarDumper::dump(\app\models\EmployeeStatus::find()->select(['name', 'id'])->column());
-    ?>
+        ?>
     </pre>
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -51,6 +45,12 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'identity_number')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'social_security_number')->textInput(['maxlength' => true]) ?>
+
+    <?=
+    $form->field($model, 'status')->dropdownList(
+            \app\models\EmployeeStatus::find()->select(['name', 'id'])->indexBy('id')->column(), ['prompt' => 'Επιλέξτε...']
+    );
+    ?>
 
     <?= $form->field($model, 'specialisation')->textInput() ?>
 
