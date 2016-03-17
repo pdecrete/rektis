@@ -95,18 +95,73 @@
         ]
     },
     {
-        "name": "bower-asset/jquery",
-        "version": "2.2.0",
-        "version_normalized": "2.2.0.0",
+        "name": "swiftmailer/swiftmailer",
+        "version": "v5.4.1",
+        "version_normalized": "5.4.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/jquery/jquery-dist.git",
-            "reference": "6fc01e29bdad0964f62ef56d01297039cdcadbe5"
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/6fc01e29bdad0964f62ef56d01297039cdcadbe5",
-            "reference": "6fc01e29bdad0964f62ef56d01297039cdcadbe5",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/0697e6aa65c83edf97bb0f23d8763f94e3f11421",
+            "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1,<0.9.4"
+        },
+        "time": "2015-06-06 14:19:39",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "http://swiftmailer.org",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
+        "name": "bower-asset/jquery",
+        "version": "2.2.1",
+        "version_normalized": "2.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jquery/jquery-dist.git",
+            "reference": "788eaba2f83e7b7445c7a83a50c81c0704423874"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jquery/jquery-dist/zipball/788eaba2f83e7b7445c7a83a50c81c0704423874",
+            "reference": "788eaba2f83e7b7445c7a83a50c81c0704423874",
             "shasum": ""
         },
         "type": "bower-asset-library",
@@ -129,17 +184,17 @@
     },
     {
         "name": "bower-asset/yii2-pjax",
-        "version": "v2.0.5",
-        "version_normalized": "2.0.5.0",
+        "version": "v2.0.6",
+        "version_normalized": "2.0.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/jquery-pjax.git",
-            "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67"
+            "reference": "60728da6ade5879e807a49ce59ef9a72039b8978"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/6818718408086db6bdcf33649cecb86b6b4f9b67",
-            "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67",
+            "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/60728da6ade5879e807a49ce59ef9a72039b8978",
+            "reference": "60728da6ade5879e807a49ce59ef9a72039b8978",
             "shasum": ""
         },
         "require": {
@@ -152,6 +207,7 @@
                 ".travis.yml",
                 "Gemfile",
                 "Gemfile.lock",
+                "CONTRIBUTING.md",
                 "vendor/",
                 "script/",
                 "test/"
@@ -399,80 +455,25 @@
         ]
     },
     {
-        "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.1",
-        "version_normalized": "5.4.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/0697e6aa65c83edf97bb0f23d8763f94e3f11421",
-            "reference": "0697e6aa65c83edf97bb0f23d8763f94e3f11421",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9.1,<0.9.4"
-        },
-        "time": "2015-06-06 14:19:39",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.4-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "lib/swift_required.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Chris Corbyn"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Swiftmailer, free feature-rich PHP mailer",
-        "homepage": "http://swiftmailer.org",
-        "keywords": [
-            "email",
-            "mail",
-            "mailer"
-        ]
-    },
-    {
         "name": "yiisoft/yii2-swiftmailer",
-        "version": "2.0.4",
-        "version_normalized": "2.0.4.0",
+        "version": "2.0.5",
+        "version_normalized": "2.0.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-swiftmailer.git",
-            "reference": "4ec435a89e30b203cea99770910fb5499cb3627a"
+            "reference": "e2c6315caff30a9271a7afad4d684627721dc69a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/4ec435a89e30b203cea99770910fb5499cb3627a",
-            "reference": "4ec435a89e30b203cea99770910fb5499cb3627a",
+            "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/e2c6315caff30a9271a7afad4d684627721dc69a",
+            "reference": "e2c6315caff30a9271a7afad4d684627721dc69a",
             "shasum": ""
         },
         "require": {
             "swiftmailer/swiftmailer": "~5.0",
             "yiisoft/yii2": ">=2.0.4"
         },
-        "time": "2015-05-10 22:12:32",
+        "time": "2016-03-17 03:58:49",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -506,49 +507,47 @@
         ]
     },
     {
-        "name": "yiisoft/yii2-codeception",
-        "version": "2.0.4",
-        "version_normalized": "2.0.4.0",
+        "name": "himiklab/yii2-recaptcha-widget",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/yiisoft/yii2-codeception.git",
-            "reference": "de5007e7a99359597abbfe1c88dca3ce620061c5"
+            "url": "https://github.com/himiklab/yii2-recaptcha-widget.git",
+            "reference": "eee29a367c352d0110d4d5310613798af59bc4fe"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/de5007e7a99359597abbfe1c88dca3ce620061c5",
-            "reference": "de5007e7a99359597abbfe1c88dca3ce620061c5",
+            "url": "https://api.github.com/repos/himiklab/yii2-recaptcha-widget/zipball/eee29a367c352d0110d4d5310613798af59bc4fe",
+            "reference": "eee29a367c352d0110d4d5310613798af59bc4fe",
             "shasum": ""
         },
         "require": {
-            "yiisoft/yii2": ">=2.0.4"
+            "yiisoft/yii2": "*"
         },
-        "time": "2015-05-10 22:08:30",
+        "time": "2015-02-15 15:55:23",
         "type": "yii2-extension",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "yii\\codeception\\": ""
+                "himiklab\\yii2\\recaptcha\\": ""
             }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "BSD-3-Clause"
+            "MIT"
         ],
         "authors": [
             {
-                "name": "Mark Jebri",
-                "email": "mark.github@yandex.ru"
+                "name": "HimikLab",
+                "homepage": "https://github.com/himiklab/"
             }
         ],
-        "description": "The Codeception integration for the Yii framework",
+        "description": "Yii2 Google reCAPTCHA widget",
         "keywords": [
-            "codeception",
+            "captcha",
+            "google",
+            "recaptcha",
+            "widget",
             "yii2"
         ]
     },
@@ -605,24 +604,24 @@
     },
     {
         "name": "yiisoft/yii2-bootstrap",
-        "version": "2.0.5",
-        "version_normalized": "2.0.5.0",
+        "version": "2.0.6",
+        "version_normalized": "2.0.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/yiisoft/yii2-bootstrap.git",
-            "reference": "1464f93834b1d5edb1f5625f7ffd6c3723fa4923"
+            "reference": "3fd2b8c950cce79d60e9702d6bcb24eb3c80f6c5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/1464f93834b1d5edb1f5625f7ffd6c3723fa4923",
-            "reference": "1464f93834b1d5edb1f5625f7ffd6c3723fa4923",
+            "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/3fd2b8c950cce79d60e9702d6bcb24eb3c80f6c5",
+            "reference": "3fd2b8c950cce79d60e9702d6bcb24eb3c80f6c5",
             "shasum": ""
         },
         "require": {
             "bower-asset/bootstrap": "3.3.* | 3.2.* | 3.1.*",
             "yiisoft/yii2": ">=2.0.6"
         },
-        "time": "2015-09-23 17:48:24",
+        "time": "2016-03-17 03:29:28",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
@@ -656,25 +655,217 @@
         ]
     },
     {
-        "name": "yiisoft/yii2-debug",
+        "name": "kartik-v/yii2-krajee-base",
+        "version": "1.8.2",
+        "version_normalized": "1.8.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kartik-v/yii2-krajee-base.git",
+            "reference": "0c274e31e4392cbafc5fe158eae81738794e02ce"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/0c274e31e4392cbafc5fe158eae81738794e02ce",
+            "reference": "0c274e31e4392cbafc5fe158eae81738794e02ce",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2-bootstrap": "@dev"
+        },
+        "time": "2016-01-10 12:26:29",
+        "type": "yii2-extension",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "kartik\\base\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Kartik Visweswaran",
+                "email": "kartikv2@gmail.com",
+                "homepage": "http://www.krajee.com/"
+            }
+        ],
+        "description": "Base library and foundation components for all Yii2 Krajee extensions.",
+        "homepage": "https://github.com/kartik-v/yii2-krajee-base",
+        "keywords": [
+            "base",
+            "extension",
+            "foundation",
+            "krajee",
+            "widget",
+            "yii2"
+        ]
+    },
+    {
+        "name": "kartik-v/strength-meter",
+        "version": "v1.1.3",
+        "version_normalized": "1.1.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kartik-v/strength-meter.git",
+            "reference": "2df5f073d4fe245bb295d4a9b3ba831aee5829b7"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kartik-v/strength-meter/zipball/2df5f073d4fe245bb295d4a9b3ba831aee5829b7",
+            "reference": "2df5f073d4fe245bb295d4a9b3ba831aee5829b7",
+            "shasum": ""
+        },
+        "time": "2015-09-12 20:17:42",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "kartik\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Kartik Visweswaran",
+                "email": "kartikv2@gmail.com",
+                "homepage": "http://www.krajee.com/"
+            }
+        ],
+        "description": "A dynamic strength meter for password input validation with various configurable options.",
+        "homepage": "https://github.com/kartik-v/strength-meter",
+        "keywords": [
+            "bootstrap",
+            "jquery",
+            "meter",
+            "password",
+            "strength"
+        ]
+    },
+    {
+        "name": "kartik-v/yii2-password",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kartik-v/yii2-password.git",
+            "reference": "3d1577bf5fd36991a56a8d8b8b459c434f418df1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kartik-v/yii2-password/zipball/3d1577bf5fd36991a56a8d8b8b459c434f418df1",
+            "reference": "3d1577bf5fd36991a56a8d8b8b459c434f418df1",
+            "shasum": ""
+        },
+        "require": {
+            "kartik-v/strength-meter": "~1.1",
+            "kartik-v/yii2-krajee-base": "~1.7"
+        },
+        "time": "2016-02-21 09:05:19",
+        "type": "yii2-extension",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "kartik\\password\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Kartik Visweswaran",
+                "email": "kartikv2@gmail.com",
+                "homepage": "http://www.krajee.com/"
+            }
+        ],
+        "description": "Useful password strength validation utilities for Yii Framework 2.0",
+        "homepage": "https://github.com/kartik-v/yii2-password",
+        "keywords": [
+            "auth",
+            "bootstrap",
+            "extension",
+            "form",
+            "input",
+            "jquery",
+            "password",
+            "strength",
+            "yii",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-codeception",
         "version": "2.0.5",
         "version_normalized": "2.0.5.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/yiisoft/yii2-debug.git",
-            "reference": "1b302e67521d46feb2413d9d96ca94ed82b39b0e"
+            "url": "https://github.com/yiisoft/yii2-codeception.git",
+            "reference": "c916a36d09fc128b05a374e7922bc56854334d56"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/1b302e67521d46feb2413d9d96ca94ed82b39b0e",
-            "reference": "1b302e67521d46feb2413d9d96ca94ed82b39b0e",
+            "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/c916a36d09fc128b05a374e7922bc56854334d56",
+            "reference": "c916a36d09fc128b05a374e7922bc56854334d56",
+            "shasum": ""
+        },
+        "require": {
+            "yiisoft/yii2": ">=2.0.4"
+        },
+        "time": "2016-03-17 03:41:26",
+        "type": "yii2-extension",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\codeception\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Mark Jebri",
+                "email": "mark.github@yandex.ru"
+            }
+        ],
+        "description": "The Codeception integration for the Yii framework",
+        "keywords": [
+            "codeception",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-debug",
+        "version": "2.0.6",
+        "version_normalized": "2.0.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-debug.git",
+            "reference": "55ed2e853ed8050a34415f63a4da84f88a56f895"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/55ed2e853ed8050a34415f63a4da84f88a56f895",
+            "reference": "55ed2e853ed8050a34415f63a4da84f88a56f895",
             "shasum": ""
         },
         "require": {
             "yiisoft/yii2": ">=2.0.4",
             "yiisoft/yii2-bootstrap": "*"
         },
-        "time": "2015-08-06 16:14:06",
+        "time": "2016-03-17 03:50:19",
         "type": "yii2-extension",
         "extra": {
             "branch-alias": {
