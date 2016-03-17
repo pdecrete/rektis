@@ -57,7 +57,7 @@ AppAsset::register($this);
                             ['label' => 'Όλοι οι χρήστες', 'url' => ['/user/index']],
                         ],
                     ],
-                    [ 'label' => 'Εργαζόμενοι', 
+                    [ 'label' => 'Εργαζόμενοι',
                         'items' => [
                             ['label' => 'Όλοι οι εργαζόμενοι', 'url' => ['/employee/index']],
                         ],
@@ -89,6 +89,11 @@ AppAsset::register($this);
                     'homeLink' => [ 'label' => 'Αρχική', 'url' => ['/site/index']],
                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                 ])
+                ?>
+                <?php
+                foreach (Yii::$app->session->getAllFlashes() as $key => $message) {
+                    echo '<div class="alert alert-' . $key . '">' . $message . '</div>';
+                }
                 ?>
                 <?= $content ?>
             </div>

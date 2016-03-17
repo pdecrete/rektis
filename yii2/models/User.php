@@ -29,8 +29,12 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
 
+    const SCENARIO_UPDATE = 'update';
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
+
+    public $new_password;
+    public $new_password_repeat;
 
     /**
      * @inheritdoc
@@ -66,12 +70,15 @@ class User extends ActiveRecord implements IdentityInterface
             [['username', 'password_hash', 'password_reset_token', 'email', 'name', 'surname'], 'required'],
 //            ['auth_key', 'required'],
             [['status'], 'integer'],
-            [['last_login', 'create_ts', 'update_ts'], 'safe'],
             [['username', 'email', 'name', 'surname'], 'string', 'max' => 128],
             [['auth_key'], 'string', 'max' => 32],
             [['password_hash', 'password_reset_token'], 'string', 'max' => 200],
             [['username'], 'unique'],
-            [['password_reset_token'], 'unique']
+            [['password_reset_token'], 'unique'],
+            [['new_password', 'new_password_repeat'], 'safe', 'on' => self::SCENARIO_UPDATE],
+            ['new_password', 'string', 'min' => 6],
+            ['new_password', 'compare', 'on' => self::SCENARIO_UPDATE],
+            [['last_login', 'create_ts', 'update_ts'], 'safe'],
         ];
     }
 
@@ -85,6 +92,8 @@ class User extends ActiveRecord implements IdentityInterface
             'username' => 'Όνομα χρήστη',
             'auth_key' => 'Κλειδί επαλήθευσης',
             'password_hash' => 'Κρυπτογραφημένος κωδικός',
+            'new_password' => 'Κωδικός πρόσβασης',
+            'new_password_repeat' => 'Επανάληψη κωδικού πρόσβασης',
             'password_reset_token' => 'Τεκμήριο επαναφοράς κωδικού πρόσβασης',
             'email' => 'Email',
             'name' => 'Όνομα',
@@ -263,6 +272,25 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * 
+     * {@inheritdoc}
+     * Also, if scenario is update, and password is set, update password.
+     * 
+     * @return boolean
+     */
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if (($this->scenario === self::SCENARIO_UPDATE) && (strlen($this->new_password) > 0)) {
+                $password_hash = Yii::$app->security->generatePasswordHash($this->new_password);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

@@ -22,7 +22,15 @@ use admapp\Util\Html as admappHtml;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'surname')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'password_hash')->textInput(['maxlength' => true]) ?>
+    <?php // $form->field($model, 'password_hash')->textInput(['maxlength' => true]) ?>
+    <div class="form-group">
+        <div class="col-lg-offset-2 col-lg-10">
+            Συμπληρώστε τον κωδικό πρόσβασης <strong>μόνο εάν θέλετε να 
+                αλλάξετε τον κωδικό πρόσβασης</strong>.
+        </div>
+    </div>
+    <?= $form->field($model, 'new_password')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'new_password_repeat')->textInput(['maxlength' => true]) ?>
 
     <?= admappHtml::displayValueOfField($model, ['status', 'statuslabel'], 2, 6) ?>
     <?= admappHtml::displayValueOfField($model, 'last_login', 2, 6) ?>

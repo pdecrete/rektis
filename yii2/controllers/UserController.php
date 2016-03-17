@@ -107,22 +107,34 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->setScenario(User::SCENARIO_UPDATE);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων.');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων.');
+                return $this->render('update', ['model' => $model]);
+            }
         } else {
-            return $this->render('update', [
-                        'model' => $model,
-            ]);
+            return $this->render('update', ['model' => $model]);
         }
     }
 
     public function actionUpdateaccount()
     {
         $model = $this->findModel(Yii::$app->user->getId());
+        $model->setScenario(User::SCENARIO_UPDATE);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['account']);
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων σας.');
+                return $this->redirect(['account']);
+            } else {
+                Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
+                return $this->render('updateaccount', ['model' => $model]);
+            }
         } else {
             return $this->render('updateaccount', ['model' => $model]);
         }
@@ -153,6 +165,7 @@ class UserController extends Controller
         if (!$this->userSetStatus($id, User::STATUS_DELETED)) {
             throw new HttpException(400, 'Δεν ολοκληρώθηκε η ενημέρωση των στοιχείων.');
         }
+        Yii::$app->session->setFlash('success', 'Ο χρήστης απενεργοποιήθηκε.');
 
         return $this->redirect(['index']);
     }
@@ -162,6 +175,7 @@ class UserController extends Controller
         if (!$this->userSetStatus($id, User::STATUS_ACTIVE)) {
             throw new HttpException(400, 'Δεν ολοκληρώθηκε η ενημέρωση των στοιχείων.');
         }
+        Yii::$app->session->setFlash('success', 'Ο χρήστης ενεργοποιήθηκε.');
 
         return $this->redirect(['index']);
     }
