@@ -29,8 +29,14 @@ use admapp\Util\Html as admappHtml;
                 αλλάξετε τον κωδικό πρόσβασης</strong>.
         </div>
     </div>
-    <?= $form->field($model, 'new_password')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'new_password_repeat')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'new_password')->passwordInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'new_password_repeat')->passwordInput(['maxlength' => true]) ?>
+
+    <?=
+    $form->field($model, 'activeroles')->checkboxList(
+            array_combine(array_keys(Yii::$app->authManager->getRoles()), array_keys(Yii::$app->authManager->getRoles()))
+    )
+    ?>
 
     <?= admappHtml::displayValueOfField($model, ['status', 'statuslabel'], 2, 6) ?>
     <?= admappHtml::displayValueOfField($model, 'last_login', 2, 6) ?>

@@ -128,13 +128,37 @@ class UserController extends Controller
         $model->setScenario(User::SCENARIO_UPDATE);
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων σας.');
-                return $this->redirect(['account']);
-            } else {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    $auth = Yii::$app->authManager;
+                    $auth->revokeAll($model->id);
+                    foreach ($model->activeroles as $role) {
+                        $role_obj = $auth->getRole($role);
+                        $auth->assign($role_obj, $model->id);
+                    }
+                    Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων σας.');
+                    $transaction->commit();
+                    return $this->redirect(['account']);
+                } else {
+                    Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
+                    $transaction->rollBack();
+                    return $this->render('updateaccount', ['model' => $model]);
+                }
+            } catch (Exception $e) {
                 Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
-                return $this->render('updateaccount', ['model' => $model]);
+                $transaction->rollBack();
             }
+
+
+
+//            if ($model->save()) {
+//                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων σας.');
+//                return $this->redirect(['account']);
+//            } else {
+//                Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
+//                return $this->render('updateaccount', ['model' => $model]);
+//            }
         } else {
             return $this->render('updateaccount', ['model' => $model]);
         }

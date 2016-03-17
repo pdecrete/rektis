@@ -40,6 +40,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => User::getStatusLabelsArray()
             ],
             [
+                'attribute' => 'searchrole',
+                'value' => 'roles',
+                'filter' => array_combine(array_keys(Yii::$app->authManager->getRoles()), array_keys(Yii::$app->authManager->getRoles()))
+            ],
+            [
                 'attribute' => 'last_login',
                 'format' => 'datetime',
                 'filter' => false

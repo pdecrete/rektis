@@ -12,6 +12,10 @@ use yii\web\IdentityInterface;
 /**
  * User model
  *
+ * Derived from base User model of Yii framework. 
+ *
+ * @author Stavros Papadakis <spapad@gmail.com>
+ *
  * @property integer $id
  * @property string $name
  * @property string $surname
@@ -25,6 +29,9 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * 
+ * @property ActiveRecord authassignments
+ * @property string[] roles
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -33,6 +40,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    protected $_roles;
+    public $searchrole;
     public $new_password;
     public $new_password_repeat;
 
@@ -67,7 +76,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            [['username', 'password_hash', 'password_reset_token', 'email', 'name', 'surname'], 'required'],
+            [['username', 'password_hash', 'password_reset_token', 'email', 'name', 'surname'], 'required', 'on' => self::SCENARIO_DEFAULT],
 //            ['auth_key', 'required'],
             [['status'], 'integer'],
             [['username', 'email', 'name', 'surname'], 'string', 'max' => 128],
@@ -76,10 +85,37 @@ class User extends ActiveRecord implements IdentityInterface
             [['username'], 'unique'],
             [['password_reset_token'], 'unique'],
             [['new_password', 'new_password_repeat'], 'safe', 'on' => self::SCENARIO_UPDATE],
-            ['new_password', 'string', 'min' => 6],
+            ['new_password', 'string', 'min' => 8],
             ['new_password', 'compare', 'on' => self::SCENARIO_UPDATE],
-            [['last_login', 'create_ts', 'update_ts'], 'safe'],
+            ['new_password', 'validatePasswordStrength', 'on' => self::SCENARIO_UPDATE],
+            ['activeroles', 'required', 'on' => self::SCENARIO_UPDATE],
+            ['activeroles', 'validateArrayCount', 'params' => ['min' => 1], 'on' => self::SCENARIO_UPDATE],
+            [['last_login', 'create_ts', 'update_ts', 'searchrole', 'activeroles'], 'safe'],
         ];
+    }
+
+    public function validateArrayCount($attribute, $params)
+    {
+        $value = $this->$attribute;
+
+        if (!is_array($value)) {
+            $this->addError($attribute, 'Πρέπει να επιλέξετε τουλάχιστο ένα ρόλο');
+        }
+        if (count($value) < $params['min']) {
+            $this->addError($attribute, 'Πρέπει να επιλέξετε τουλάχιστο ένα ρόλο');
+        }
+}
+
+    public function validatePasswordStrength($attribute, $params)
+    {
+        $value = $this->$attribute;
+
+        if ((!preg_match("#[0-9]+#", $value)) ||
+                (!preg_match("#[a-zA-Z]+#", $value)) ||
+                (!preg_match("#[A-Z]+#", $value)) ||
+                (!preg_match("#\W+#", $value))) {
+            $this->addError($attribute, 'Ο κωδικός πρέπει να περιλαμβάνει τουλάχιστον ένα από τα παρακάτω: αριθμητικό ψηφίο, πεζό γράμμα, κεφαλαίο γράμμα και σύμβολο.');
+        }
     }
 
     /**
@@ -102,6 +138,9 @@ class User extends ActiveRecord implements IdentityInterface
             'last_login' => 'Τελευταία σύνδεση',
             'create_ts' => 'Χρονοσφραγίδα δημιουργίας',
             'update_ts' => 'Χρονοσφραγίδα ενημέρωσης',
+            'searchrole' => 'Ρόλος',
+            'roles' => 'Ρόλοι',
+            'activeroles' => 'Ρόλοι'
         ];
     }
 
@@ -132,6 +171,39 @@ class User extends ActiveRecord implements IdentityInterface
     public function getStatuslabel()
     {
         return self::getLabelForStatus($this->status);
+    }
+
+    protected function userRoles()
+    {
+        return Yii::$app->authManager->getRolesByUser($this->id);
+    }
+
+    public function getRoles()
+    {
+        return implode(', ', array_keys($this->userRoles()));
+    }
+
+    public function getActiveroles()
+    {
+        if (!isset($this->_roles)) {
+            $this->_roles = array_keys($this->userRoles());
+        }
+        return $this->_roles;
+    }
+
+    public function setActiveroles($v)
+    {
+        $this->_roles = $v;
+    }
+
+    /**
+     * This is a relation to auth assignments used to filter data
+     * 
+     * @return ActiveQuery
+     */
+    public function getAuthassignments()
+    {
+        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
     }
 
     /**
@@ -285,7 +357,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         if (parent::beforeSave($insert)) {
             if (($this->scenario === self::SCENARIO_UPDATE) && (strlen($this->new_password) > 0)) {
-                $password_hash = Yii::$app->security->generatePasswordHash($this->new_password);
+                $this->password_hash = Yii::$app->security->generatePasswordHash($this->new_password);
             }
             return true;
         } else {
