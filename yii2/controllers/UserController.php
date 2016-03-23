@@ -89,13 +89,28 @@ class UserController extends Controller
     {
         $model = new User();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                        'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    $auth = Yii::$app->authManager;
+                    foreach ($model->activeroles as $role) {
+                        $role_obj = $auth->getRole($role);
+                        $auth->assign($role_obj, $model->id);
+                    }
+                    Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η δημιουργία νέου χρήστη.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε η δημιουργία νέου χρήστη.[1]');
+                    $transaction->rollBack();
+                }
+            } catch (Exception $e) {
+                Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε η δημιουργία νέου χρήστη.[2]');
+                $transaction->rollBack();
+            }
         }
+        return $this->render('create', ['model' => $model]);
     }
 
     /**
@@ -110,16 +125,28 @@ class UserController extends Controller
         $model->setScenario(User::SCENARIO_UPDATE);
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων.');
-                return $this->redirect(['view', 'id' => $model->id]);
-            } else {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    $auth = Yii::$app->authManager;
+                    $auth->revokeAll($model->id);
+                    foreach ($model->activeroles as $role) {
+                        $role_obj = $auth->getRole($role);
+                        $auth->assign($role_obj, $model->id);
+                    }
+                    Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων.');
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων.');
+                    $transaction->rollBack();
+                }
+            } catch (Exception $e) {
                 Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων.');
-                return $this->render('update', ['model' => $model]);
+                $transaction->rollBack();
             }
-        } else {
-            return $this->render('update', ['model' => $model]);
         }
+        return $this->render('update', ['model' => $model]);
     }
 
     public function actionUpdateaccount()
@@ -143,25 +170,13 @@ class UserController extends Controller
                 } else {
                     Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
                     $transaction->rollBack();
-                    return $this->render('updateaccount', ['model' => $model]);
                 }
             } catch (Exception $e) {
                 Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
                 $transaction->rollBack();
             }
-
-
-
-//            if ($model->save()) {
-//                Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων σας.');
-//                return $this->redirect(['account']);
-//            } else {
-//                Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε ενημέρωση των στοιχείων σας.');
-//                return $this->render('updateaccount', ['model' => $model]);
-//            }
-        } else {
-            return $this->render('updateaccount', ['model' => $model]);
         }
+        return $this->render('updateaccount', ['model' => $model]);
     }
 
     /**

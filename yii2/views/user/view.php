@@ -7,8 +7,8 @@ use app\models\User;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = $model->name . ' ' . $model->surname . ' ' . $model->username;
+$this->params['breadcrumbs'][] = ['label' => 'Χρήστες', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-view">
@@ -46,17 +46,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
-            'email:email',
-            'name',
-            'surname',
+            'roles',
             [
                 'attribute' => 'status',
                 'value' => $model->statuslabel,
             ],
             'last_login:datetime',
+            'name',
+            'surname',
+            'email:email',
+            'auth_key',
+            'password_hash',
+            'password_reset_token',
             'create_ts:datetime',
             'update_ts:datetime',
         ],

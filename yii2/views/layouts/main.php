@@ -55,6 +55,7 @@ AppAsset::register($this);
                     [ 'label' => 'Χρήστες',
                         'items' => [
                             ['label' => 'Όλοι οι χρήστες', 'url' => ['/user/index']],
+                            ['label' => 'Νέος χρήστης', 'url' => ['/user/create']],
                         ],
                     ],
                     [ 'label' => 'Εργαζόμενοι',

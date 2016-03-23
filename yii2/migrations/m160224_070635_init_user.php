@@ -16,7 +16,7 @@ create table if not exists `{$table_name}` (
     `username` varchar(128) not null,
     `auth_key` varchar(32) not null,
     `password_hash` varchar(200) not null,
-    `password_reset_token` varchar(200) not null,
+    `password_reset_token` varchar(200),
     `email` varchar(128) not null,
     `name` varchar(128) not null,
     `surname` varchar(128) not null,

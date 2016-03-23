@@ -7,6 +7,7 @@ $authmanager = require(__DIR__ . '/authmanager.php');
 
 $config = [
     'id' => 'adm',
+    'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
     'language' => 'el',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
