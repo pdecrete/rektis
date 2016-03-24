@@ -37,6 +37,7 @@ class User extends ActiveRecord implements IdentityInterface
 {
 
     const SCENARIO_UPDATE = 'update';
+    const SCENARIO_ACTIVATION = 'activation';
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
@@ -80,13 +81,14 @@ class User extends ActiveRecord implements IdentityInterface
 //            [['password_hash', 'password_reset_token'], 'required', 'on' => self::SCENARIO_DEFAULT],
 //            ['auth_key', 'required'],
             [['status'], 'integer'],
+            ['status', 'safe', 'on' => self::SCENARIO_ACTIVATION],
             [['username', 'email', 'name', 'surname'], 'string', 'max' => 128],
             [['auth_key'], 'string', 'max' => 32],
             [['password_hash', 'password_reset_token'], 'string', 'max' => 200],
             [['username'], 'unique'],
             [['password_reset_token'], 'unique'],
             [['new_password', 'new_password_repeat'], 'safe', 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
-            ['new_password', 'string', 'min' => 8, 'skipOnEmpty' => false, 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
+            ['new_password', 'string', 'min' => 8, 'skipOnEmpty' => true, 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
             ['new_password', 'compare', 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
             ['new_password', 'validatePasswordStrength', 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
             ['activeroles', 'required', 'on' => [self::SCENARIO_UPDATE, self::SCENARIO_DEFAULT]],
@@ -169,7 +171,8 @@ class User extends ActiveRecord implements IdentityInterface
         return $status_label;
     }
 
-    public function getFullname() {
+    public function getFullname()
+    {
         return $this->name . ' ' . $this->surname;
     }
 
@@ -364,6 +367,9 @@ class User extends ActiveRecord implements IdentityInterface
 //            if (($this->scenario === self::SCENARIO_UPDATE) && (strlen($this->new_password) > 0)) {
             if (strlen($this->new_password) > 0) {
                 $this->password_hash = Yii::$app->security->generatePasswordHash($this->new_password);
+            }
+            if (empty($this->password_reset_token)) {
+                $this->password_reset_token = $this->generatePasswordResetToken();
             }
             return true;
         } else {

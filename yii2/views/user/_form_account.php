@@ -32,12 +32,7 @@ use admapp\Util\Html as admappHtml;
     <?= $form->field($model, 'new_password')->passwordInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'new_password_repeat')->passwordInput(['maxlength' => true]) ?>
 
-    <?=
-    $form->field($model, 'activeroles')->checkboxList(
-            array_combine(array_keys(Yii::$app->authManager->getRoles()), array_keys(Yii::$app->authManager->getRoles()))
-    )
-    ?>
-
+    <?= admappHtml::displayValueOfField($model, 'roles', 2, 6) ?>
     <?= admappHtml::displayValueOfField($model, ['status', 'statuslabel'], 2, 6) ?>
     <?= admappHtml::displayValueOfField($model, 'last_login', 2, 6) ?>
     <?= admappHtml::displayValueOfField($model, 'create_ts', 2, 6) ?>
