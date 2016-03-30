@@ -1120,17 +1120,17 @@
     },
     {
         "name": "phpoffice/phpexcel",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
+        "version": "1.8.0",
+        "version_normalized": "1.8.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PHPExcel.git",
-            "reference": "049e85ae98a90869e1bc83087f755010e9223091"
+            "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/049e85ae98a90869e1bc83087f755010e9223091",
-            "reference": "049e85ae98a90869e1bc83087f755010e9223091",
+            "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+            "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
             "shasum": ""
         },
         "require": {
@@ -1138,9 +1138,9 @@
             "ext-xmlwriter": "*",
             "php": ">=5.2.0"
         },
-        "time": "2015-05-05 00:10:25",
+        "time": "2014-03-02 15:22:49",
         "type": "library",
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-0": {
                 "PHPExcel": "Classes/"
