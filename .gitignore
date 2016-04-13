@@ -17,4 +17,8 @@ phpunit.phar
 # local phpunit config
 /phpunit.xml
 
+# vendor files on repos
+/yii2/vendor/*
+!/yii2/vendor/admapp/
+
 /yii2/config/db.php
