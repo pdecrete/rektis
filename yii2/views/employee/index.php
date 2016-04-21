@@ -25,23 +25,45 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'status',
-            'name',
-            'surname',
-            'fathersname',
+            [
+              'label' => 'Κατάσταση',
+              'value' => 'status0.name',
+              //'contentOptions' => ['style'=>'width: 10px']
+            ],
+            'identification_number',
+            'tax_identification_number',
+            [
+              'label' => 'Όνομα',
+              'format' => 'raw',
+              'value' => function($data) { return yii\helpers\Html::a($data['surname'],['employee/view', 'id'=>$data['id']]); }
+            ],
+            [
+              'label' => 'Επώνυμο',
+              'format' => 'raw',
+              'value' => function($data) { return yii\helpers\Html::a($data['surname'],['employee/view', 'id'=>$data['id']]); }
+            ],
+            // 'fathersname',
             // 'mothersname',
-            // 'tax_identification_number',
             // 'email:email',
             // 'telephone',
             // 'address',
             // 'identity_number',
             // 'social_security_number',
-            // 'specialisation',
-            // 'identification_number',
+            [
+              'label' => 'Ειδικότητα',
+              'value' => 'specialisation0.code'
+            ],
+
             // 'appointment_fek',
             // 'appointment_date',
-            // 'service_organic',
+            [
+              'label' => 'Οργανική',
+              'value' => 'serviceOrganic.name'
+            ],
+            [
+              'label' => 'Υπηρέτηση',
+              'value' => 'serviceServe.name'
+            ],
             // 'service_serve',
             // 'position',
             // 'rank',

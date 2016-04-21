@@ -81,7 +81,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
-            [['name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'work_experience', 'comments'], 'required'],
+            [['name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'work_experience'], 'required'],
             ['email', 'email'],
             [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'create_ts', 'update_ts'], 'safe'],
             [['comments'], 'string'],
@@ -103,7 +103,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'status' => 'Εργασιακή κατάσταση',
+            'status' => 'Εργασιακ�� κατάσταση',
             'name' => 'Όνομα',
             'surname' => 'Επώνυμο',
             'fathersname' => 'Όνομα πατέρα',
@@ -127,8 +127,8 @@ class Employee extends \yii\db\ActiveRecord
             'pay_scale_date' => 'Ημερομηνία απόκτησης κλιμακίου',
             'service_adoption' => 'Ανάληψη υπηρεσίας',
             'service_adoption_date' => 'Ημερομηνία ανάληψης υπηρεσίας',
-            'master_degree' => 'Πλήθος μεταπτυχιακών τίτλων',
-            'doctorate_degree' => 'Πλήθος διδακτορικών τίτλων',
+            'master_degree' => 'Πλ��θος μεταπτυχιακών τίτλων',
+            'doctorate_degree' => 'Πλ��θος διδακτορικών τίτλων',
             'work_experience' => 'Προϋπηρεσία σε ημέρες',
             'comments' => 'Σχόλια',
             'create_ts' => 'create ts',
@@ -143,7 +143,7 @@ class Employee extends \yii\db\ActiveRecord
 
     public function payscaleList()
     {
-        return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
+        return [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
     }
 
     /**
