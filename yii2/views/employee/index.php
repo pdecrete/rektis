@@ -26,18 +26,29 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             [
+              'attribute' => 'status',
               'label' => 'Κατάσταση',
               'value' => 'status0.name',
-              //'contentOptions' => ['style'=>'width: 10px']
+              'contentOptions' => ['style'=>'width: 10px']
             ],
-            'identification_number',
-            'tax_identification_number',
             [
+              'attribute' => 'identification_number',
+              'label' => 'Α.Μ.',
+              'contentOptions' => ['style'=>'width: 10px']
+            ],
+            [
+              'attribute' => 'tax_identification_number',
+              'label' => 'Α.Φ.Μ.',
+              'contentOptions' => ['style'=>'width: 10px']
+            ],
+            [
+              'attribute' => 'name',
               'label' => 'Όνομα',
               'format' => 'raw',
-              'value' => function($data) { return yii\helpers\Html::a($data['surname'],['employee/view', 'id'=>$data['id']]); }
+              'value' => function($data) { return yii\helpers\Html::a($data['name'],['employee/view', 'id'=>$data['id']]); }
             ],
             [
+              'attribute' => 'surname',
               'label' => 'Επώνυμο',
               'format' => 'raw',
               'value' => function($data) { return yii\helpers\Html::a($data['surname'],['employee/view', 'id'=>$data['id']]); }
@@ -50,17 +61,21 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'identity_number',
             // 'social_security_number',
             [
+              'attribute' => 'specialisation',
               'label' => 'Ειδικότητα',
-              'value' => 'specialisation0.code'
+              'value' => 'specialisation0.code',
+              'contentOptions' => ['style'=>'width: 10px']
             ],
 
             // 'appointment_fek',
             // 'appointment_date',
             [
+              'attribute' => 'service_organic',
               'label' => 'Οργανική',
               'value' => 'serviceOrganic.name'
             ],
             [
+              'attribute' => 'service_serve',
               'label' => 'Υπηρέτηση',
               'value' => 'serviceServe.name'
             ],

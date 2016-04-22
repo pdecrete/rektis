@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Employee */
 
-$this->title = $model->name;
+$this->title = $model->surname . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Employees', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'status',
+            'status0.name',
             'name',
             'surname',
             'fathersname',
@@ -40,25 +40,55 @@ $this->params['breadcrumbs'][] = $this->title;
             'address',
             'identity_number',
             'social_security_number',
-            'specialisation',
+            [
+              'label' => 'Ειδικότητα',
+              'attribute' => 'specialisation0.code',
+            ],
             'identification_number',
             'appointment_fek',
-            'appointment_date',
-            'service_organic',
-            'service_serve',
-            'position',
+            [
+              'label' => 'Ημ/νία διορισμού',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['appointment_date']); }
+            ],
+            [
+              'label' => 'Οργανική',
+              'attribute' => 'serviceOrganic.name'
+            ],
+            [
+              'label' => 'Υπηρέτηση',
+              'attribute' => 'serviceServe.name'
+            ],
+            [
+              'label' => 'Θέση',
+              'attribute' => 'position0.name'
+            ],
             'rank',
-            'rank_date',
+            [
+              'label' => 'Ημ/νία απόκτησης Βαθμού',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['rank_date']); }
+            ],
             'pay_scale',
-            'pay_scale_date',
+            [
+              'label' => 'Ημ/νία απόκτησης κλιμακίου',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['pay_scale_date']); }
+            ],
             'service_adoption',
-            'service_adoption_date',
+            [
+              'label' => 'Ημ/νία ανάληψης υπηρεσίας',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['service_adoption_date']); }
+            ],
             'master_degree',
             'doctorate_degree',
             'work_experience',
             'comments:ntext',
-            'create_ts',
-            'update_ts',
+            [
+              'label' => 'Ημ/νία Δημιουργίας',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDateTime($data['create_ts']); }
+            ],
+            [
+              'label' => 'Ημ/νία Μεταβολής',
+              'attribute' => function ($data) { return \Yii::$app->formatter->asDateTime($data['update_ts']); }
+            ]
         ],
     ]) ?>
 

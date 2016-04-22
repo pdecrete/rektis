@@ -103,7 +103,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'status' => 'Εργασιακ�� κατάσταση',
+            'status' => 'Εργασιακή κατάσταση',
             'name' => 'Όνομα',
             'surname' => 'Επώνυμο',
             'fathersname' => 'Όνομα πατέρα',
@@ -127,8 +127,8 @@ class Employee extends \yii\db\ActiveRecord
             'pay_scale_date' => 'Ημερομηνία απόκτησης κλιμακίου',
             'service_adoption' => 'Ανάληψη υπηρεσίας',
             'service_adoption_date' => 'Ημερομηνία ανάληψης υπηρεσίας',
-            'master_degree' => 'Πλ��θος μεταπτυχιακών τίτλων',
-            'doctorate_degree' => 'Πλ��θος διδακτορικών τίτλων',
+            'master_degree' => 'Πλήθος μεταπτυχιακών τίτλων',
+            'doctorate_degree' => 'Πλήθος διδακτορικών τίτλων',
             'work_experience' => 'Προϋπηρεσία σε ημέρες',
             'comments' => 'Σχόλια',
             'create_ts' => 'create ts',
