@@ -22,3 +22,6 @@ phpunit.phar
 !/yii2/vendor/admapp/
 
 /yii2/config/db.php
+
+composer.lock
+
