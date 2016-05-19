@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\ActiveRecord;
+use admapp\Validators\VatNumberValidator;
 
 /**
  * This is the model class for table "{{%employee}}".
@@ -82,11 +83,12 @@ class Employee extends \yii\db\ActiveRecord
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
             [['name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'work_experience'], 'required'],
+            [['tax_identification_number'], 'string', 'max' => 9],
+            [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],
             [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'create_ts', 'update_ts'], 'safe'],
             [['comments'], 'string'],
             [['name', 'surname', 'fathersname', 'mothersname', 'email'], 'string', 'max' => 100],
-            [['tax_identification_number'], 'string', 'max' => 9],
             [['telephone', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
             [['address'], 'string', 'max' => 200],
             [['identification_number', 'appointment_fek', 'service_adoption'], 'string', 'max' => 10],
@@ -138,12 +140,12 @@ class Employee extends \yii\db\ActiveRecord
 
     public function ranksList()
     {
-        return ['ΣΤ','Ε','Δ','Γ','Β','Α'];
+        return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
     }
 
     public function payscaleList()
     {
-        return [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
 
     /**
