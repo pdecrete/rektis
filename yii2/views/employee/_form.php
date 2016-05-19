@@ -52,7 +52,7 @@ use kartik\date\DatePicker;
         ]);
         ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
-          'data' => \app\models\Specialisation::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
           'pluginOptions' => [
               'allowClear' => true
