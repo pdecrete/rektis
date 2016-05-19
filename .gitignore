@@ -23,5 +23,3 @@ phpunit.phar
 
 /yii2/config/db.php
 
-composer.lock
-
