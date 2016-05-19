@@ -1,4 +1,5 @@
 <?php
+use \kartik\datecontrol\Module;
 
 $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
@@ -8,7 +9,7 @@ $authmanager = require(__DIR__ . '/authmanager.php');
 $config = [
     'id' => 'adm',
     'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
-    'language' => 'el',
+    'language' => 'el-GR',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
@@ -44,10 +45,37 @@ $config = [
         ],
         'db' => $db,
         'authManager' => $authmanager,
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'dateFormat' => 'dd/MM/yyyy',
+            'datetimeFormat' => 'dd/MM/yyyy, hh:mm',
+            'decimalSeparator' => ',',
+            'thousandSeparator' => ' ',
+            'currencyCode' => 'EUR',
+        ],
     ],
     'params' => $params,
     'aliases' => $aliases,
         // 'catchAll' => ['site/offline'],
+    'modules' => [
+     'datecontrol' =>  [
+        'class' => '\kartik\datecontrol\Module',
+        // set your display timezone
+        'displayTimezone' => 'Europe/Athens',
+
+        // set your timezone for date saved to db
+        //'saveTimezone' => 'UTC+2',
+
+        // automatically use kartik\widgets for each of the above formats
+        'autoWidget' => true,
+        // default settings for each widget from kartik\widgets used when autoWidget is true
+        'autoWidgetSettings' => [
+            Module::FORMAT_DATE => ['type'=>2, 'pluginOptions'=>['autoclose'=>true]], // example
+            Module::FORMAT_DATETIME => [], // setup if needed
+            Module::FORMAT_TIME => [], // setup if needed
+        ],
+      ]
+    ]
 ];
 
 if (YII_ENV_DEV) {
