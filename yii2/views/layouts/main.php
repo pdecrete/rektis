@@ -44,6 +44,7 @@ AppAsset::register($this);
                             ['label' => 'Υπηρεσίες', 'url' => ['/service']],
                             ['label' => 'Θέσεις', 'url' => ['/position']],
                             ['label' => 'Καταστάσεις υπαλλήλων', 'url' => ['/employee-status']],
+                            ['label' => 'Είδη αδειών', 'url' => ['/leave-type']],
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-dashboard"></i> Διαχειριστικές</li>',
                             ['label' => 'Auth items', 'url' => ['/auth-item']],
@@ -61,6 +62,7 @@ AppAsset::register($this);
                     [ 'label' => 'Εργαζόμενοι',
                         'items' => [
                             ['label' => 'Όλοι οι εργαζόμενοι', 'url' => ['/employee/index']],
+                            ['label' => 'Άδειες', 'url' => ['/leave']],
                         ],
                     ],
                     [ 'label' => 'Σχετικά', 'url' => ['/site/about']],
