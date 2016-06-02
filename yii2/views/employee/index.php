@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\EmployeeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Employees';
+$this->title = 'Εργαζόμενοι';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-index">
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Employee', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Προσθήκη εργαζομένου', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -29,17 +29,17 @@ $this->params['breadcrumbs'][] = $this->title;
               'attribute' => 'status',
               'label' => 'Κατάσταση',
               'value' => 'status0.name',
-              'contentOptions' => ['style'=>'width: 10px']
+              'contentOptions' => ['style'=>'width: 5%']
             ],
             [
               'attribute' => 'identification_number',
               'label' => 'Α.Μ.',
-              'contentOptions' => ['style'=>'width: 10px']
+              'contentOptions' => ['style'=>'width: 5%']
             ],
             [
               'attribute' => 'tax_identification_number',
               'label' => 'Α.Φ.Μ.',
-              'contentOptions' => ['style'=>'width: 10px']
+              'contentOptions' => ['style'=>'width: 5%']
             ],
             [
               'attribute' => 'name',
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
               'attribute' => 'specialisation',
               'label' => 'Ειδικότητα',
               'value' => 'specialisation0.code',
-              'contentOptions' => ['style'=>'width: 10px']
+              'contentOptions' => ['style'=>'width: 5%']
             ],
 
             // 'appointment_fek',

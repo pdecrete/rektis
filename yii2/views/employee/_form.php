@@ -3,7 +3,9 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
-use kartik\date\DatePicker;
+use yii\widgets\MaskedInput;
+use kartik\datecontrol\DateControl;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Employee */
@@ -21,6 +23,8 @@ use kartik\date\DatePicker;
                 ],
     ]);
     ?>
+   <!-- display error summary -->
+   <?= $form->errorSummary($model); ?>
 
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#personal" aria-controls="personal" role="tab" data-toggle="tab">Προσωπικά</a></li>
@@ -34,12 +38,15 @@ use kartik\date\DatePicker;
         <?= $form->field($model, 'surname')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'fathersname')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'mothersname')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'tax_identification_number')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'telephone')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'tax_identification_number')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '999999999']) ?>
+        <?= $form->field($model, 'email')->widget(MaskedInput::classname(),['name' => 'email','clientOptions' => [
+               'alias' =>  'email'
+            ],
+         ]) ?>
+        <?= $form->field($model, 'telephone')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '9999-999999']) ?>
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'identity_number')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'social_security_number')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'AA-999999']) ?>
+        <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
       </div>
       <div role="tabpanel" class="tab-pane fade" id="service">
         <br>
@@ -59,14 +66,11 @@ use kartik\date\DatePicker;
           ],
         ]);
         ?>
-        <?= $form->field($model, 'identification_number')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999']) ?>
         <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'appointment_date')->widget(DatePicker::classname(), [
-            'options' => ['placeholder' => 'Εισάγετε ημερομηνία...'],
-            'pluginOptions' => [
-                'autoclose'=>true
-            ]
-        ]);
+        <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
         ?>
 
         <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
@@ -103,12 +107,9 @@ use kartik\date\DatePicker;
         ]);
         ?>
 
-        <?= $form->field($model, 'rank_date')->widget(DatePicker::classname(), [
-            'options' => ['placeholder' => 'Εισάγετε ημερομηνία...'],
-            'pluginOptions' => [
-                'autoclose'=>true
-            ]
-        ]);
+        <?= $form->field($model, 'rank_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
         ?>
         <?= $form->field($model, 'pay_scale')->widget(Select2::classname(), [
           'data' => \app\models\Employee::payscaleList(),
@@ -118,20 +119,14 @@ use kartik\date\DatePicker;
           ],
         ]);
         ?>
-        <?= $form->field($model, 'pay_scale_date')->widget(DatePicker::classname(), [
-            'options' => ['placeholder' => 'Εισάγετε ημερομηνία...'],
-            'pluginOptions' => [
-                'autoclose'=>true
-            ]
-        ]);
+        <?= $form->field($model, 'pay_scale_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
         ?>
         <?= $form->field($model, 'service_adoption')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'service_adoption_date')->widget(DatePicker::classname(), [
-            'options' => ['placeholder' => 'Εισάγετε ημερομηνία...'],
-            'pluginOptions' => [
-                'autoclose'=>true
-            ]
-        ]);
+        <?= $form->field($model, 'service_adoption_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
         ?>
 
         <?= $form->field($model, 'master_degree')->textInput() ?>

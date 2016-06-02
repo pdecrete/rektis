@@ -1,5 +1,5 @@
 <?php
-use \kartik\datecontrol\Module;
+use kartik\datecontrol\Module;
 
 $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
@@ -59,7 +59,19 @@ $config = [
         // 'catchAll' => ['site/offline'],
     'modules' => [
      'datecontrol' =>  [
-        'class' => '\kartik\datecontrol\Module',
+        'class' => 'kartik\datecontrol\Module',
+        // format settings for displaying each date attribute (ICU format example)
+        'displaySettings' => [
+            Module::FORMAT_DATE => 'dd/MM/yyyy',
+            Module::FORMAT_TIME => 'hh:mm:ss a',
+            Module::FORMAT_DATETIME => 'dd/MM/yyyy hh:mm:ss a', 
+        ],
+        // format settings for saving each date attribute (PHP format example)
+        'saveSettings' => [
+            Module::FORMAT_DATE => 'php:Y-m-d', // saves as unix timestamp
+            Module::FORMAT_TIME => 'php:H:i:s',
+            Module::FORMAT_DATETIME => 'php:Y-m-d H:i:s',
+        ],
         // set your display timezone
         'displayTimezone' => 'Europe/Athens',
 
