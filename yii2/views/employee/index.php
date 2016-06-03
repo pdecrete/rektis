@@ -13,9 +13,15 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="employee-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <div id='searchForm' style="display: none;">
+      <?= $this->render('_search', ['model' => $searchModel]); ?>
+    </div>
+   <?php
+      $searchJs = "$('#searchBtn').click(function(){ \$('#searchForm').toggle('slow'); });";
+      $this->registerJs($searchJs, $this::POS_END);
+   ?>
     <p>
+        <?= Html::a('Αναζήτηση', NULL, ['id' => 'searchBtn', 'class' => 'btn btn-info']) ?>
         <?= Html::a('Προσθήκη εργαζομένου', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
@@ -29,6 +35,8 @@ $this->params['breadcrumbs'][] = $this->title;
               'attribute' => 'status',
               'label' => 'Κατάσταση',
               'value' => 'status0.name',
+              'filter' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->column(),
+              //'filter' => \kartik\select2\Select2::widget(['name'=>'status1','data'=> \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->column(),'options' =>['width' => '100%']]),
               'contentOptions' => ['style'=>'width: 5%']
             ],
             [

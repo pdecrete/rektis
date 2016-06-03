@@ -82,7 +82,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
-            [['name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'work_experience'], 'required'],
+            [['name', 'surname', 'fathersname', 'tax_identification_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],
@@ -94,7 +94,8 @@ class Employee extends \yii\db\ActiveRecord
             [['identification_number', 'appointment_fek', 'service_adoption'], 'string', 'max' => 10],
             [['rank'], 'string', 'max' => 4],
             [['identification_number'], 'unique'],
-            [['identity_number'], 'unique']
+            [['identity_number'], 'unique'],
+            [['master_degree','doctorate_degree','work_experience'], 'default', 'value' => 0],
         ];
     }
 
@@ -148,6 +149,10 @@ class Employee extends \yii\db\ActiveRecord
         return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
 
+    public function getRank0(){
+       if ($this->rank)
+         return $this->ranksList()[$this->rank];
+    }
     /**
      * @return \yii\db\ActiveQuery
      */

@@ -28,10 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            [
+            /*[
               'label' => 'A/A',
               'attribute' => 'id',
-            ],
+            ],*/
             [
               'label' => 'Κατάσταση',
               'attribute' => 'status0.name',
@@ -68,7 +68,11 @@ $this->params['breadcrumbs'][] = $this->title;
               'label' => 'Θέση',
               'attribute' => 'position0.name'
             ],
-            'rank',
+            [
+              'label' => 'Βαθμός',
+              'attribute' => 'rank0'
+            ],
+            //'rank0',
             [
               'label' => 'Ημ/νία απόκτησης Βαθμού',
               'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['rank_date']); }

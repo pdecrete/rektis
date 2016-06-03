@@ -32,6 +32,7 @@ use kartik\datecontrol\DateControl;
     </ul>
 
     <div class="tab-content">
+      <!-- Personal Tab -->
       <div role="tabpanel" class="tab-pane fade-in active" id="personal">
         <br>
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
@@ -48,10 +49,20 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'AA-999999']) ?>
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
       </div>
+      
+      <!-- Service Tab -->
       <div role="tabpanel" class="tab-pane fade" id="service">
         <br>
         <?= $form->field($model, 'status')->widget(Select2::classname(), [
           'data' => \app\models\EmployeeStatus::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'pluginOptions' => [
+              'allowClear' => true
+          ],
+        ]);
+        ?>
+        <?= $form->field($model, 'position')->widget(Select2::classname(), [
+          'data' => \app\models\Position::find()->select(['name', 'id'])->indexBy('id')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
           'pluginOptions' => [
               'allowClear' => true
@@ -67,12 +78,6 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999']) ?>
-        <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
-             'type'=>DateControl::FORMAT_DATE
-         ]);
-        ?>
-
         <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
           'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
@@ -90,14 +95,19 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
 
-        <?= $form->field($model, 'position')->widget(Select2::classname(), [
-          'data' => \app\models\Position::find()->select(['name', 'id'])->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
-          'pluginOptions' => [
-              'allowClear' => true
-          ],
-        ]);
+        <hr>
+        <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
         ?>
+        <?= $form->field($model, 'service_adoption')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'service_adoption_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
+        ?>
+        <hr>
+        
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
@@ -123,11 +133,7 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
-        <?= $form->field($model, 'service_adoption')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'service_adoption_date')->widget(DateControl::classname(), [
-             'type'=>DateControl::FORMAT_DATE
-         ]);
-        ?>
+        <hr>
 
         <?= $form->field($model, 'master_degree')->textInput() ?>
         <?= $form->field($model, 'doctorate_degree')->textInput() ?>
