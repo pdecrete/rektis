@@ -110,6 +110,18 @@ create table if not exists `{$types_table_name}` (
           ")
                 ->execute();
 
+        Yii::$app->db->createCommand("alter table `{$types_table_name}`
+                    change `create_ts`
+                    `create_ts` timestamp not null default CURRENT_TIMESTAMP"
+                )
+                ->execute();
+
+        Yii::$app->db->createCommand("alter table `{$table_name}`
+                    change `create_ts`
+                    `create_ts` timestamp not null default CURRENT_TIMESTAMP"
+                )
+                ->execute();
+
         $table_schema = Yii::$app->db->schema->getTableSchema($table_name);
         if ($table_schema === null) {
             Console::stdout("Table '{$table_name}' does not appear to exist; considering create unsuccessful.\n", Console::FG_RED);
