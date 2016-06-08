@@ -62,7 +62,7 @@ class Leave extends \yii\db\ActiveRecord
     {
         return [
             [['employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
-            [['decision_protocol', 'decision_protocol_date', 'application_protocol', 'application_protocol_date', 'application_date', 'duration', 'start_date', 'end_date', 'comment'], 'required'],
+            [['employee', 'type', 'decision_protocol', 'decision_protocol_date', 'application_protocol', 'application_protocol_date', 'application_date', 'duration', 'start_date', 'end_date'], 'required'],
             [['decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['comment'], 'string'],
             [['accompanying_document'], 'string', 'max' => 100],
@@ -100,7 +100,7 @@ class Leave extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEmployee0()
+    public function getEmployeeObj()
     {
         return $this->hasOne(Employee::className(), ['id' => 'employee']);
     }
@@ -108,7 +108,7 @@ class Leave extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getType0()
+    public function getTypeObj()
     {
         return $this->hasOne(LeaveType::className(), ['id' => 'type']);
     }

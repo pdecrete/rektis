@@ -95,7 +95,7 @@ class Employee extends \yii\db\ActiveRecord
             [['rank'], 'string', 'max' => 4],
             [['identification_number'], 'unique'],
             [['identity_number'], 'unique'],
-            [['master_degree','doctorate_degree','work_experience'], 'default', 'value' => 0],
+            [['master_degree', 'doctorate_degree', 'work_experience'], 'default', 'value' => 0],
         ];
     }
 
@@ -149,10 +149,17 @@ class Employee extends \yii\db\ActiveRecord
         return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
 
-    public function getRank0(){
-       if ($this->rank)
-         return $this->ranksList()[$this->rank];
+    public function getFullname()
+    {
+        return $this->name . ' ' . $this->surname;
     }
+
+    public function getRank0()
+    {
+        if ($this->rank)
+            return $this->ranksList()[$this->rank];
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
