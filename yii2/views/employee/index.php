@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EmployeeSearch */
@@ -12,8 +13,17 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-index">
 
+<?php
+// check if query params are set in order to display search form or not...
+if (count(Yii::$app->request->queryParams) > 0)
+{
+   $hasSearchParams = array_filter(Yii::$app->request->queryParams['EmployeeSearch']);
+}
+else
+   $hasSearchParams = null;
+?>
     <h1><?= Html::encode($this->title) ?></h1>
-    <div id='searchForm' style="display: none;">
+    <div id='searchForm' <?= $hasSearchParams ? '' : "style='display: none;'"?>>
       <?= $this->render('_search', ['model' => $searchModel]); ?>
     </div>
    <?php
@@ -30,13 +40,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             [
               'attribute' => 'status',
               'label' => 'Κατάσταση',
               'value' => 'status0.name',
               'filter' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->column(),
-              //'filter' => \kartik\select2\Select2::widget(['name'=>'status1','data'=> \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->column(),'options' =>['width' => '100%']]),
               'contentOptions' => ['style'=>'width: 5%']
             ],
             [
@@ -101,7 +109,6 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'comments:ntext',
             // 'create_ts',
             // 'update_ts',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

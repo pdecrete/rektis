@@ -53,6 +53,15 @@ $config = [
             'thousandSeparator' => ' ',
             'currencyCode' => 'EUR',
         ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'enableStrictParsing' => false,
+            'rules' => [
+                'employees' => 'employee/index',
+                'employee/<id:\d+>' => 'employee/view'
+            ],
+        ],
     ],
     'params' => $params,
     'aliases' => $aliases,

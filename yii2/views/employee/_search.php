@@ -38,7 +38,6 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-        <!-- not working - needs to be reviewed -->
          <?= $form->field($model, 'position')->widget(Select2::classname(), [
           'data' => \app\models\Position::find()->select(['name', 'name'])->indexBy('name')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
@@ -55,8 +54,6 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-         
-        
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
@@ -65,7 +62,6 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-        <!-- not working - needs to be reviewed -->
         <?= $form->field($model, 'pay_scale')->widget(Select2::classname(), [
           'data' => \app\models\Employee::payscaleList(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
