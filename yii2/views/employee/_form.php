@@ -46,7 +46,7 @@ use kartik\datecontrol\DateControl;
          ]) ?>
         <?= $form->field($model, 'telephone')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '9999-999999']) ?>
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'AA-999999']) ?>
+        <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'A[A]-999999']) ?>
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
       </div>
       
@@ -54,7 +54,7 @@ use kartik\datecontrol\DateControl;
       <div role="tabpanel" class="tab-pane fade" id="service">
         <br>
         <?= $form->field($model, 'status')->widget(Select2::classname(), [
-          'data' => \app\models\EmployeeStatus::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'data' => \app\models\EmployeeStatus::find()->select(['name', 'id'])->orderby('id')->indexBy('id')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
           'pluginOptions' => [
               'allowClear' => true
@@ -62,7 +62,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'position')->widget(Select2::classname(), [
-          'data' => \app\models\Position::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'data' => \app\models\Position::find()->select(['name', 'id'])->orderby('id')->indexBy('id')->column(),
           'options' => ['placeholder' => 'Επιλέξτε...'],
           'pluginOptions' => [
               'allowClear' => true

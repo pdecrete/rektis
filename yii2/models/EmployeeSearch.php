@@ -20,6 +20,10 @@ class EmployeeSearch extends Employee
         return [
             //[['id',  'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
             [['status', 'specialisation', 'service_organic', 'service_serve', 'name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'comments', 'create_ts', 'update_ts','position','pay_scale'], 'safe'],
+            [['social_security_number'], 'integer'],
+            [['social_security_number'], 'string', 'length' => 11],
+            [['identification_number'], 'integer'],
+            [['identification_number'], 'string', 'length' => 6]
         ];
     }
 

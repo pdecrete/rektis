@@ -96,6 +96,10 @@ class Employee extends \yii\db\ActiveRecord
             [['identification_number'], 'unique'],
             [['identity_number'], 'unique'],
             [['master_degree','doctorate_degree','work_experience'], 'default', 'value' => 0],
+            [['social_security_number'], 'integer'],
+            [['social_security_number'], 'string', 'length' => 11],
+            [['identification_number'], 'integer'],
+            [['identification_number'], 'string', 'length' => 6]
         ];
     }
 
