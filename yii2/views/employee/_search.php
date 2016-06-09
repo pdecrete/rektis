@@ -27,7 +27,7 @@ use kartik\datecontrol\DateControl;
          
          <?= $form->field($model, 'identity_number') ?>
          
-         <?= $form->field($model, 'social_security_number') ?>
+         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
       </div>
       <div class="col-md-4">
          <?= $form->field($model, 'status')->widget(Select2::classname(), [
