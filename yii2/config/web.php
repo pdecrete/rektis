@@ -5,6 +5,7 @@ $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
 $aliases = require(__DIR__ . '/aliases.php');
 $authmanager = require(__DIR__ . '/authmanager.php');
+$messages = require(__DIR__ . '/messages.php');
 
 $config = [
     'id' => 'adm',
@@ -62,6 +63,7 @@ $config = [
                 'employee/<id:\d+>' => 'employee/view'
             ],
         ],
+        'i18n' => $messages,
     ],
     'params' => $params,
     'aliases' => $aliases,
