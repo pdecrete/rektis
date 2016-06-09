@@ -23,6 +23,7 @@ use yii\db\Expression;
  * @property string $end_date
  * @property string $reason
  * @property string $comment
+ * @property integer $deleted
  * @property string $create_ts
  * @property string $update_ts
  *
@@ -61,7 +62,7 @@ class Leave extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
+            [['employee', 'type', 'decision_protocol', 'application_protocol', 'duration', 'deleted'], 'integer'],
             [['employee', 'type', 'decision_protocol', 'decision_protocol_date', 'application_protocol', 'application_protocol_date', 'application_date', 'duration', 'start_date', 'end_date'], 'required'],
             [['decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['comment'], 'string'],
@@ -92,9 +93,22 @@ class Leave extends \yii\db\ActiveRecord
             'end_date' => Yii::t('app', 'End date'),
             'reason' => Yii::t('app', 'Reason (for special leaves etc.)'),
             'comment' => Yii::t('app', 'Comments'),
+            'deleted' => Yii::t('app', 'Deleted'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
         ];
+    }
+
+    /**
+     * @return String Leave info str
+     */
+    public function getInformation()
+    {
+        return ($this->employeeObj ? $this->employeeObj->fullname : Yii::t('UNKNOWN'))
+                . ' (' . ($this->typeObj ? $this->typeObj->name : Yii::t('UNKNOWN'))
+                . ') ' . Yii::$app->formatter->asDate($this->start_date, 'short')
+                . '-' . Yii::$app->formatter->asDate($this->end_date, 'short')
+                . '';
     }
 
     /**

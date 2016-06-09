@@ -68,6 +68,7 @@ class LeaveSearch extends Leave
             'application_protocol_date' => $this->application_protocol_date,
             'application_date' => $this->application_date,
             'duration' => $this->duration,
+            'deleted' => $this->deleted,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'create_ts' => $this->create_ts,

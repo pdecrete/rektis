@@ -7,6 +7,7 @@ use app\models\Leave;
 use app\models\LeaveSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 use yii\filters\VerbFilter;
 
 /**
@@ -14,6 +15,7 @@ use yii\filters\VerbFilter;
  */
 class LeaveController extends Controller
 {
+
     /**
      * @inheritdoc
      */
@@ -36,11 +38,24 @@ class LeaveController extends Controller
     public function actionIndex()
     {
         $searchModel = new LeaveSearch();
+        $searchModel->deleted = 0;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionPrint($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->deleted) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
+        }
+
+        return $this->render('view', [
+                    'model' => $model,
         ]);
     }
 
@@ -52,7 +67,7 @@ class LeaveController extends Controller
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -69,7 +84,7 @@ class LeaveController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
@@ -88,22 +103,28 @@ class LeaveController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                        'model' => $model,
             ]);
         }
     }
 
     /**
-     * Deletes an existing Leave model.
+     * Deletes (marks as deleted) an existing Leave model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
+     * @throws ServerErrorHttpException if the model cannot be deleted
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+//        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->deleted = 1;
+        if ($model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            throw new ServerErrorHttpException('The requested page does not exist.');
+        }
     }
 
     /**
@@ -121,4 +142,5 @@ class LeaveController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }

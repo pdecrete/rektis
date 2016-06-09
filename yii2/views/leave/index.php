@@ -9,11 +9,12 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Leaves');
+$subtitle = Yii::t('app', 'Not deleted leaves');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="leave-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?> <small><?= Html::encode($subtitle) ?></small></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
 
     <p>
