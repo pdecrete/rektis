@@ -91,6 +91,7 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
+        <?= $form->field($model, 'deleted')->checkbox(['label' => Yii::t('app','Search deleted employees only')]) ?>
       </div>
     </div>
     

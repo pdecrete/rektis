@@ -39,12 +39,13 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'surname')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'fathersname')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'mothersname')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'tax_identification_number')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '999999999']) ?>
+        <?= $form->field($model, 'tax_identification_number')->widget(MaskedInput::classname(),['name' => 'tin','mask' => '999999999']) ?>
         <?= $form->field($model, 'email')->widget(MaskedInput::classname(),['name' => 'email','clientOptions' => [
                'alias' =>  'email'
             ],
          ]) ?>
         <?= $form->field($model, 'telephone')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '9999-999999']) ?>
+        <?= $form->field($model, 'mobile')->widget(MaskedInput::classname(),['name' => 'mobile','mask' => '9999-999999']) ?>
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'A[A]-999999']) ?>
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>

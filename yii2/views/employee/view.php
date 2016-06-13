@@ -43,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'tax_identification_number',
             'email:email',
             'telephone',
+            'mobile',
             'address',
             'identity_number',
             'social_security_number',

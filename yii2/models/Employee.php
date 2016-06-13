@@ -81,7 +81,7 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience','deleted'], 'integer'],
             [['name', 'surname', 'fathersname', 'tax_identification_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
@@ -89,7 +89,7 @@ class Employee extends \yii\db\ActiveRecord
             [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'create_ts', 'update_ts'], 'safe'],
             [['comments'], 'string'],
             [['name', 'surname', 'fathersname', 'mothersname', 'email'], 'string', 'max' => 100],
-            [['telephone', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
+            [['telephone', 'mobile', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
             [['address'], 'string', 'max' => 200],
             [['identification_number', 'appointment_fek', 'service_adoption'], 'string', 'max' => 10],
             [['rank'], 'string', 'max' => 4],
@@ -118,6 +118,7 @@ class Employee extends \yii\db\ActiveRecord
             'tax_identification_number' => Yii::t('app', 'TIN'),
             'email' => 'Email',
             'telephone' => Yii::t('app', 'Telephone'),
+            'mobile' => Yii::t('app', 'Mobile'),
             'address' => Yii::t('app', 'Address'),
             'identity_number' => Yii::t('app', 'ID'),
             'social_security_number' => Yii::t('app', 'Social Security Number'),

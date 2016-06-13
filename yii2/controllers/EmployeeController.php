@@ -91,14 +91,16 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Deletes an existing Employee model.
+     * Deletes an existing Employee model, by marking them as 'deleted' (deleted = 1)
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = Employee::findOne($id);
+        $model->deleted = 1;
+        $model->save();
 
         return $this->redirect(['index']);
     }
