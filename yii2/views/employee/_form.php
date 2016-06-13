@@ -27,8 +27,8 @@ use kartik\datecontrol\DateControl;
    <?= $form->errorSummary($model); ?>
 
     <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active"><a href="#personal" aria-controls="personal" role="tab" data-toggle="tab">Προσωπικά</a></li>
-      <li role="presentation"><a href="#service" aria-controls="service" role="tab" data-toggle="tab">Υπηρεσιακά</a></li>
+      <li role="presentation" class="active"><a href="#personal" aria-controls="personal" role="tab" data-toggle="tab"><?= Yii::t('app', 'Personal') ?></a></li>
+      <li role="presentation"><a href="#service" aria-controls="service" role="tab" data-toggle="tab"><?= Yii::t('app', 'Professional') ?></a></li>
     </ul>
 
     <div class="tab-content">
@@ -55,7 +55,7 @@ use kartik\datecontrol\DateControl;
         <br>
         <?= $form->field($model, 'status')->widget(Select2::classname(), [
           'data' => \app\models\EmployeeStatus::find()->select(['name', 'id'])->orderby('id')->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -63,7 +63,7 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'position')->widget(Select2::classname(), [
           'data' => \app\models\Position::find()->select(['name', 'id'])->orderby('id')->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -71,7 +71,7 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
           'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -80,7 +80,7 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999']) ?>
         <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
           'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -88,7 +88,7 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'service_serve')->widget(Select2::classname(), [
           'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->column(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -110,7 +110,7 @@ use kartik\datecontrol\DateControl;
         
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -123,7 +123,7 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'pay_scale')->widget(Select2::classname(), [
           'data' => \app\models\Employee::payscaleList(),
-          'options' => ['placeholder' => 'Επιλέξτε...'],
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
@@ -143,7 +143,7 @@ use kartik\datecontrol\DateControl;
     </div>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Δημιουργία' : 'Ενημέρωση', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
