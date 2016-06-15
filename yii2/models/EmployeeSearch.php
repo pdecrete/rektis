@@ -19,7 +19,11 @@ class EmployeeSearch extends Employee
     {
         return [
             //[['id',  'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'integer'],
-            [['status', 'specialisation', 'service_organic', 'service_serve', 'name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'comments', 'create_ts', 'update_ts','position','pay_scale'], 'safe'],
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'name', 'surname', 'fathersname', 'mothersname', 'tax_identification_number', 'email', 'telephone', 'address', 'identity_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'rank_date', 'pay_scale_date', 'service_adoption', 'service_adoption_date', 'comments', 'create_ts', 'update_ts','position','pay_scale','mobile','deleted'], 'safe'],
+            [['social_security_number'], 'integer'],
+            [['social_security_number'], 'string', 'length' => 11],
+            [['identification_number'], 'integer'],
+            [['identification_number'], 'string', 'length' => 6]
         ];
     }
 
@@ -73,7 +77,7 @@ class EmployeeSearch extends Employee
             //'rank_date' => $this->rank_date,
             'identity_number' => $this->identity_number,
             'pay_scale' => $this->pay_scale,
-            'social_security_number' => $this->social_security_number
+            'social_security_number' => $this->social_security_number,
             //'pay_scale_date' => $this->pay_scale_date,
             //'service_adoption_date' => $this->service_adoption_date,
             //'master_degree' => $this->master_degree,
@@ -81,6 +85,9 @@ class EmployeeSearch extends Employee
             //'work_experience' => $this->work_experience,
             //'create_ts' => $this->create_ts,
             //'update_ts' => $this->update_ts,
+            
+            // if unset, set to 0 to display only active employees
+            'deleted' => $this->deleted ? 1 : 0
         ]);
 
         // with help from: http://www.yiiframework.com/wiki/653/displaying-sorting-and-filtering-model-relations-on-a-gridview/
