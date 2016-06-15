@@ -54,7 +54,7 @@ class LeaveController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
         }
 
-        return $this->render('view', [
+        return $this->render('print', [
                     'model' => $model,
         ]);
     }
