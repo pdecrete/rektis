@@ -5,9 +5,10 @@ use yii\db\Migration;
 
 class m160613_080630_employee_additions extends Migration
 {
+
     public function up()
     {
-      $table_name = $this->db->tablePrefix . 'employee';
+        $table_name = $this->db->tablePrefix . 'employee';
         Console::stdout("Altering table '{$table_name}': Adding mobile & deleted fields.\n");
 
         Yii::$app->db->createCommand("ALTER TABLE `admapp_employee` ADD `mobile` VARCHAR(40) NULL AFTER `telephone`;")->execute();
@@ -16,19 +17,10 @@ class m160613_080630_employee_additions extends Migration
 
     public function down()
     {
-        echo "m160613_080630_employee_additions cannot be reverted.\n";
+        Console::stdout("Altering table 'admapp_employee': Dropping mobile & deleted fields.\n");
 
-        return false;
+        Yii::$app->db->createCommand("ALTER TABLE `admapp_employee` DROP COLUMN `mobile`;")->execute();
+        Yii::$app->db->createCommand("ALTER TABLE `admapp_employee` DROP COLUMN `deleted`;")->execute();
     }
 
-    /*
-    // Use safeUp/safeDown to run migration code within a transaction
-    public function safeUp()
-    {
-    }
-
-    public function safeDown()
-    {
-    }
-    */
 }
