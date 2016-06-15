@@ -8,7 +8,7 @@ use yii\helpers\ArrayHelper;
 /* @var $searchModel app\models\EmployeeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Εργαζόμενοι';
+$this->title = Yii::t('app', 'Employees');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-index">
@@ -31,8 +31,8 @@ else
       $this->registerJs($searchJs, $this::POS_END);
    ?>
     <p>
-        <?= Html::a('Αναζήτηση', NULL, ['id' => 'searchBtn', 'class' => 'btn btn-info']) ?>
-        <?= Html::a('Προσθήκη εργαζομένου', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Search'), NULL, ['id' => 'searchBtn', 'class' => 'btn btn-info']) ?>
+        <?= Html::a(Yii::t('app', 'Add Employee'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -42,7 +42,7 @@ else
             ['class' => 'yii\grid\SerialColumn'],
             [
               'attribute' => 'status',
-              'label' => 'Κατάσταση',
+              'label' => Yii::t('app', 'Status'),
               'value' => 'status0.name',
               'filter' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->column(),
               'contentOptions' => ['style'=>'width: 5%']
@@ -54,18 +54,18 @@ else
             ],
             [
               'attribute' => 'tax_identification_number',
-              'label' => 'Α.Φ.Μ.',
+              'label' => Yii::t('app', 'TIN'),
               'contentOptions' => ['style'=>'width: 5%']
             ],
             [
               'attribute' => 'name',
-              'label' => 'Όνομα',
+              'label' => Yii::t('app', 'Name'),
               'format' => 'raw',
               'value' => function($data) { return yii\helpers\Html::a($data['name'],['employee/view', 'id'=>$data['id']]); }
             ],
             [
               'attribute' => 'surname',
-              'label' => 'Επώνυμο',
+              'label' => Yii::t('app', 'Surname'),
               'format' => 'raw',
               'value' => function($data) { return yii\helpers\Html::a($data['surname'],['employee/view', 'id'=>$data['id']]); }
             ],
@@ -78,7 +78,7 @@ else
             // 'social_security_number',
             [
               'attribute' => 'specialisation',
-              'label' => 'Ειδικότητα',
+              'label' => Yii::t('app', 'Specialisation'),
               'value' => 'specialisation0.code',
               'contentOptions' => ['style'=>'width: 5%']
             ],
@@ -87,12 +87,12 @@ else
             // 'appointment_date',
             [
               'attribute' => 'service_organic',
-              'label' => 'Οργανική',
+              'label' => Yii::t('app', 'Service Organic'),
               'value' => 'serviceOrganic.name'
             ],
             [
               'attribute' => 'service_serve',
-              'label' => 'Υπηρέτηση',
+              'label' => Yii::t('app', 'Service Serve'),
               'value' => 'serviceServe.name'
             ],
             // 'service_serve',

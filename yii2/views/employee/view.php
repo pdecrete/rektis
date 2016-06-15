@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Employee */
 
 $this->title = $model->surname . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Εργαζόμενοι', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Employees'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-view">
@@ -15,11 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Μεταβολή', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Διαγραφή', ['delete', 'id' => $model->id], [
+        <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => Yii::t('app', 'Are you sure you want to delete?'),
                 'method' => 'post',
             ],
         ]) ?>
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
               'attribute' => 'id',
             ],*/
             [
-              'label' => 'Κατάσταση',
+              'label' => Yii::t('app', 'Status'),
               'attribute' => 'status0.name',
             ],
             'name',
@@ -43,48 +43,49 @@ $this->params['breadcrumbs'][] = $this->title;
             'tax_identification_number',
             'email:email',
             'telephone',
+            'mobile',
             'address',
             'identity_number',
             'social_security_number',
             [
-              'label' => 'Ειδικότητα',
+              'label' => Yii::t('app', 'Specialisation'),
               'attribute' => 'specialisation0.code',
             ],
             'identification_number',
             'appointment_fek',
             [
-              'label' => 'Ημ/νία διορισμού',
+              'label' => Yii::t('app', 'Appointment Date'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['appointment_date']); }
             ],
             [
-              'label' => 'Οργανική',
+              'label' => Yii::t('app', 'Service Organic'),
               'attribute' => 'serviceOrganic.name'
             ],
             [
-              'label' => 'Υπηρέτηση',
+              'label' => Yii::t('app', 'Service Serve'),
               'attribute' => 'serviceServe.name'
             ],
             [
-              'label' => 'Θέση',
+              'label' => Yii::t('app', 'Position'),
               'attribute' => 'position0.name'
             ],
             [
-              'label' => 'Βαθμός',
+              'label' => Yii::t('app', 'Rank'),
               'attribute' => 'rank0'
             ],
             //'rank0',
             [
-              'label' => 'Ημ/νία απόκτησης Βαθμού',
+              'label' => Yii::t('app', 'Rank Date'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['rank_date']); }
             ],
             'pay_scale',
             [
-              'label' => 'Ημ/νία απόκτησης κλιμακίου',
+              'label' => Yii::t('app', 'Pay Scale Date'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['pay_scale_date']); }
             ],
             'service_adoption',
             [
-              'label' => 'Ημ/νία ανάληψης υπηρεσίας',
+              'label' => Yii::t('app', 'Service Adoption Date'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDate($data['service_adoption_date']); }
             ],
             'master_degree',
@@ -92,11 +93,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'work_experience',
             'comments:ntext',
             [
-              'label' => 'Ημ/νία Δημιουργίας',
+              'label' => Yii::t('app', 'Created At'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDateTime($data['create_ts']); }
             ],
             [
-              'label' => 'Ημ/νία Μεταβολής',
+              'label' => Yii::t('app', 'Updated At'),
               'attribute' => function ($data) { return \Yii::$app->formatter->asDateTime($data['update_ts']); }
             ]
         ],
