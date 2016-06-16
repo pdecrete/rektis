@@ -37,7 +37,7 @@ if ($model->deleted) {
         ])
         ?>
         <?=
-        Html::a(Yii::t('app', 'Print'), ['print', 'id' => $model->id], [
+        Html::a(Yii::t('app', 'Print file'), ['print', 'id' => $model->id], [
             'class' => 'btn btn-warning',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to print this leave?'),

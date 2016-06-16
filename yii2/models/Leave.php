@@ -23,12 +23,13 @@ use yii\db\Expression;
  * @property string $end_date
  * @property string $reason
  * @property string $comment
- * @property integer $deleted
  * @property string $create_ts
  * @property string $update_ts
+ * @property integer $deleted
  *
- * @property Employee $employee0
- * @property LeaveType $type0
+ * @property Employee $employeeObj
+ * @property LeaveType $typeObj
+ * @property LeavePrint[] $leavePrints 
  */
 class Leave extends \yii\db\ActiveRecord
 {
@@ -104,8 +105,8 @@ class Leave extends \yii\db\ActiveRecord
      */
     public function getInformation()
     {
-        return ($this->employeeObj ? $this->employeeObj->fullname : Yii::t('UNKNOWN'))
-                . ' (' . ($this->typeObj ? $this->typeObj->name : Yii::t('UNKNOWN'))
+        return ($this->employeeObj ? $this->employeeObj->fullname : Yii::t('app', 'UNKNOWN'))
+                . ' (' . ($this->typeObj ? $this->typeObj->name : Yii::t('app', 'UNKNOWN'))
                 . ') ' . Yii::$app->formatter->asDate($this->start_date, 'short')
                 . '-' . Yii::$app->formatter->asDate($this->end_date, 'short')
                 . '';
@@ -125,6 +126,14 @@ class Leave extends \yii\db\ActiveRecord
     public function getTypeObj()
     {
         return $this->hasOne(LeaveType::className(), ['id' => 'type']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery 
+     */
+    public function getLeavePrints()
+    {
+        return $this->hasMany(LeavePrint::className(), ['leave' => 'id']);
     }
 
     /**
