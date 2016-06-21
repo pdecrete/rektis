@@ -51,6 +51,7 @@ return [
     'Filename' => 'Όνομα αρχείου',
     'ID' => 'ID',
     'Identification Number' => 'Α.Δ.Ταυτότητας',
+    'Identity Number' => 'Αριθμός Μητρώου',
     'Leave' => 'Άδεια',
     'Leave Prints' => 'Εκτυπώσεις αδειών',
     'Leave Types' => 'Τύποι αδειών',
@@ -88,6 +89,7 @@ return [
     'Status' => 'Κατάσταση',
     'Succesfully generated file on {date}.' => 'Το αρχείο δημιουργήθηκε με επιτυχία την {date}.',
     'Surname' => 'Επώνυμο',
+    'System information' => 'Πληροφορίες συστήματος',
     'TIN' => 'Α.Φ.Μ.',
     'Telephone' => 'Τηλέφωνο',
     'The print document for the requested leave was not generated.' => 'Το αρχείο εκτύπωσης για την ζητούμενη άδεια δεν δημιουργήθηκε.',
@@ -101,4 +103,5 @@ return [
     'Update {modelClass}: ' => 'Ενημέρωση {modelClass}:',
     'Updated At' => 'Μεταβλήθηκε στις',
     'Work Experience' => 'Προϋπηρεσία',
+    '{days} days, from {start_date} to {end_date}' => '{days} ημέρες, από {start_date} έως {end_date}',
 ];

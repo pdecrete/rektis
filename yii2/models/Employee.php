@@ -20,6 +20,7 @@ use admapp\Validators\VatNumberValidator;
  * @property string $tax_identification_number
  * @property string $email
  * @property string $telephone
+ * @property string $mobile
  * @property string $address
  * @property string $identity_number
  * @property string $social_security_number
@@ -40,6 +41,7 @@ use admapp\Validators\VatNumberValidator;
  * @property integer $doctorate_degree
  * @property string $work_experience
  * @property string $comments
+ * @property integer $deleted
  * @property string $create_ts
  * @property string $update_ts
  *
@@ -48,6 +50,7 @@ use admapp\Validators\VatNumberValidator;
  * @property Service $serviceOrganic
  * @property Service $serviceServe
  * @property Position $position0
+ * @property Leave[] $leaves
  */
 class Employee extends \yii\db\ActiveRecord
 {
@@ -81,7 +84,7 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience','deleted'], 'integer'],
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted'], 'integer'],
             [['name', 'surname', 'fathersname', 'tax_identification_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
@@ -95,11 +98,16 @@ class Employee extends \yii\db\ActiveRecord
             [['rank'], 'string', 'max' => 4],
             [['identification_number'], 'unique'],
             [['identity_number'], 'unique'],
-            [['master_degree','doctorate_degree','work_experience'], 'default', 'value' => 0],
+            [['master_degree', 'doctorate_degree', 'work_experience'], 'default', 'value' => 0],
             [['social_security_number'], 'integer'],
             [['social_security_number'], 'string', 'length' => 11],
             [['identification_number'], 'integer'],
-            [['identification_number'], 'string', 'length' => 6]
+            [['identification_number'], 'string', 'length' => 6],
+            [['position'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position' => 'id']],
+            [['service_organic'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_organic' => 'id']],
+            [['service_serve'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_serve' => 'id']],
+            [['specialisation'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation' => 'id']],
+            [['status'], 'exist', 'skipOnError' => true, 'targetClass' => EmployeeStatus::className(), 'targetAttribute' => ['status' => 'id']],
         ];
     }
 
@@ -120,7 +128,7 @@ class Employee extends \yii\db\ActiveRecord
             'telephone' => Yii::t('app', 'Telephone'),
             'mobile' => Yii::t('app', 'Mobile'),
             'address' => Yii::t('app', 'Address'),
-            'identity_number' => Yii::t('app', 'ID'),
+            'identity_number' => Yii::t('app', 'Identity Number'),
             'social_security_number' => Yii::t('app', 'Social Security Number'),
             'specialisation' => Yii::t('app', 'Specialisation'),
             'identification_number' => Yii::t('app', 'Identification Number'),
@@ -203,6 +211,22 @@ class Employee extends \yii\db\ActiveRecord
     public function getPosition0()
     {
         return $this->hasOne(Position::className(), ['id' => 'position']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLeaves()
+    {
+        return $this->hasMany(Leave::className(), ['employee' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLeavesDuration()
+    {
+        return $this->hasMany(Leave::className(), ['employee' => 'id'])->where(['deleted' => 0])->sum('duration');
     }
 
     /**
