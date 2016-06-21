@@ -25,9 +25,11 @@ use yii\db\Expression;
  * @property string $comment
  * @property string $create_ts
  * @property string $update_ts
+ * @property integer $deleted
  *
- * @property Employee $employee0
- * @property LeaveType $type0
+ * @property Employee $employeeObj
+ * @property LeaveType $typeObj
+ * @property LeavePrint[] $leavePrints 
  */
 class Leave extends \yii\db\ActiveRecord
 {
@@ -61,7 +63,7 @@ class Leave extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
+            [['employee', 'type', 'decision_protocol', 'application_protocol', 'duration', 'deleted'], 'integer'],
             [['employee', 'type', 'decision_protocol', 'decision_protocol_date', 'application_protocol', 'application_protocol_date', 'application_date', 'duration', 'start_date', 'end_date'], 'required'],
             [['decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['comment'], 'string'],
@@ -92,9 +94,22 @@ class Leave extends \yii\db\ActiveRecord
             'end_date' => Yii::t('app', 'End date'),
             'reason' => Yii::t('app', 'Reason (for special leaves etc.)'),
             'comment' => Yii::t('app', 'Comments'),
+            'deleted' => Yii::t('app', 'Deleted'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
         ];
+    }
+
+    /**
+     * @return String Leave info str
+     */
+    public function getInformation()
+    {
+        return ($this->employeeObj ? $this->employeeObj->fullname : Yii::t('app', 'UNKNOWN'))
+                . ' (' . ($this->typeObj ? $this->typeObj->name : Yii::t('app', 'UNKNOWN'))
+                . ') ' . Yii::$app->formatter->asDate($this->start_date, 'short')
+                . '-' . Yii::$app->formatter->asDate($this->end_date, 'short')
+                . '';
     }
 
     /**
@@ -111,6 +126,14 @@ class Leave extends \yii\db\ActiveRecord
     public function getTypeObj()
     {
         return $this->hasOne(LeaveType::className(), ['id' => 'type']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery 
+     */
+    public function getLeavePrints()
+    {
+        return $this->hasMany(LeavePrint::className(), ['leave' => 'id']);
     }
 
     /**

@@ -9,11 +9,12 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Leaves');
+$subtitle = Yii::t('app', 'Not deleted leaves');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="leave-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?> <small><?= Html::encode($subtitle) ?></small></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
 
     <p>
@@ -55,8 +56,23 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'comment:ntext',
             // 'create_ts',
             // 'update_ts',
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]);
-    ?>
-    <?php Pjax::end(); ?></div>
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {update} {delete} {download}',
+                'buttons' => [
+                    'download' => function ($url, $model, $key) {
+                        return Html::a(
+                                        '<span class="glyphicon glyphicon-download"></span>', $url, [
+                                    'title' => Yii::t('app', 'Download'),
+                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to download this leave?'),
+                                    'data-method' => 'post',
+//                                    'data-pjax' => '0',
+                                        ]
+                        );
+                    }
+                        ]
+                    ],
+                ],
+            ]);
+            ?>
+            <?php Pjax::end(); ?></div>

@@ -30,7 +30,9 @@ $this->title = Yii::$app->name;
                 <?php if (!Yii::$app->user->isGuest) : ?>
                     <div class="well" style="white-space: pre-line;">
                         <p>DEMO and SAMPLE calls; to be removed on production</p>
+                        <p>YII_ENV = [<?= YII_ENV ?>]</p>
                         <?= "User ID: " . Yii::$app->user->getId() . " username: " . Yii::$app->user->identity->username . " roles: " . implode(', ', array_keys(Yii::$app->authManager->getRolesByUser(Yii::$app->user->getId()))); ?> <br/>
+                        <?= "User has role 'admin': " . yii\helpers\VarDumper::dumpAsString(Yii::$app->user->can('admin')); ?> <br/>
                         Last login: <?= Yii::$app->user->identity->last_login; ?>, Create at: <?= Yii::$app->user->identity->create_ts; ?>, Update at: <?= Yii::$app->user->identity->update_ts; ?> <br/>
                         <?= "Params: " . yii\helpers\VarDumper::dumpAsString(Yii::$app->params); ?> <br/>
                         <?php

@@ -63,6 +63,11 @@ AppAsset::register($this);
                         'items' => [
                             ['label' => 'Όλοι οι εργαζόμενοι', 'url' => ['/employee/index']],
                             ['label' => 'Άδειες', 'url' => ['/leave']],
+                            [
+                                'label' => 'Αρχεία εκτύπωσης',
+                                'url' => ['/leave-print'],
+                                'visible' => !Yii::$app->user->isGuest && Yii::$app->user->can('admin'),
+                            ],
                         ],
                     ],
                     [ 'label' => 'Σχετικά', 'url' => ['/site/about']],
@@ -95,7 +100,10 @@ AppAsset::register($this);
                 ?>
                 <?php
                 foreach (Yii::$app->session->getAllFlashes() as $key => $message) {
-                    echo '<div class="alert alert-' . $key . '">' . $message . '</div>';
+                    if (!is_array($message)) {
+                        $messages = array($message);
+                    }
+                    echo '<div class="alert alert-' . $key . '">' . implode('<br/>', $message) . '</div>';
                 }
                 ?>
                 <?= $content ?>
