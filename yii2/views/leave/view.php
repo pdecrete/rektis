@@ -55,7 +55,9 @@ if ($model->deleted) {
 //            'employee',
             [
                 'label' => $model->getAttributeLabel('employee'),
-                'value' => $model->employeeObj ? $model->employeeObj->fullname : null
+                'value' => $model->employeeObj ? $model->employeeObj->fullname . ' ' . Html::a('<span class="glyphicon glyphicon-chevron-right"></span>', ['/employee/view', 'id' => $model->employee], ['class' => 'btn btn-primary btn-xs', 'role' => 'button']) : null,
+                'format' => 'raw'
+//                'value' => $model->employeeObj ? $model->employeeObj->fullname : null
             ],
 //            'type',
             [
