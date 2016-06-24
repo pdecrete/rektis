@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 //use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\filters\AccessControl;
 
 /**
  * LeavePrintController implements the CRUD actions for LeavePrint model.
@@ -24,7 +25,7 @@ class LeavePrintController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'user'],
                     ],
                 ],
             ],

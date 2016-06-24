@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\filters\VerbFilter;
 use \PhpOffice\PhpWord\TemplateProcessor;
+use yii\filters\AccessControl;
 
 /**
  * LeaveController implements the CRUD actions for Leave model.
@@ -29,6 +30,15 @@ class LeaveController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
 //                    'print' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['admin', 'user'],
+                    ],
                 ],
             ],
         ];
