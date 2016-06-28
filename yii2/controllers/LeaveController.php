@@ -113,16 +113,14 @@ class LeaveController extends Controller
             $filename = $prints[0]->filename;
         } else {
             // generate document if it does not exist
-            if (!is_readable($filename)) {
-                $filename = $this->generatePrintDocument($model);
-                Yii::$app->session->addFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
-                $set = $this->setPrintDocument($model, $filename);
-            }
+            $filename = $this->generatePrintDocument($model);
+            Yii::$app->session->addFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
+            $set = $this->setPrintDocument($model, $filename);
         }
 
         // if file is STILL not generated, redirect to page
-        if (!is_readable($filename)) {
-            $this->redirect(['print', 'id' => $model->id]);
+        if (!is_readable(LeavePrint::path($filename))) {
+            return $this->redirect(['print', 'id' => $model->id]);
         }
 
         // all well, send file 

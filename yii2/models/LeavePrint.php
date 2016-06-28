@@ -78,6 +78,7 @@ class LeavePrint extends \yii\db\ActiveRecord
      */
     public static function path($filename)
     {
+        $fname = basename($filename);
         return Yii::getAlias("@vendor/admapp/exports/{$filename}");
     }
 
