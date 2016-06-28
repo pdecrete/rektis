@@ -23,7 +23,11 @@ use admapp\Util\Html as admappHtml;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-
+    <?php
+    $availabletemplatefilenames = $model->availabletemplatefilenames;
+    $atf = array_combine($availabletemplatefilenames, $availabletemplatefilenames);
+    echo $form->field($model, 'templatefilename')->dropDownList($atf, ['prompt' => Yii::t('app', 'Select a template file')])
+    ?>
     <?php if (!$model->isNewRecord) : ?>
         <?= admappHtml::displayValueOfField($model, 'create_ts', 2, 6) ?>
         <?= admappHtml::displayValueOfField($model, 'update_ts', 2, 6) ?>

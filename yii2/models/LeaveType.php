@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use \yii\helpers\FileHelper;
 
 /**
  * This is the model class for table "{{%leave_type}}".
@@ -12,6 +13,7 @@ use yii\db\Expression;
  * @property integer $id
  * @property string $name
  * @property string $description
+ * @property string $templatefilename
  * @property string $create_ts
  * @property string $update_ts
  *
@@ -49,8 +51,9 @@ class LeaveType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description'], 'required'],
-            [['description'], 'string'],
+            [['name'], 'required'],
+            [['description', 'templatefilename'], 'string'],
+            [['templatefilename'], 'default', 'value' => null],
             [['create_ts', 'update_ts'], 'safe'],
             [['name'], 'string', 'max' => 100],
             [['name'], 'unique'],
@@ -66,6 +69,7 @@ class LeaveType extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
             'description' => Yii::t('app', 'Description'),
+            'templatefilename' => Yii::t('app', 'Template filename'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
         ];
@@ -77,6 +81,19 @@ class LeaveType extends \yii\db\ActiveRecord
     public function getLeaves()
     {
         return $this->hasMany(Leave::className(), ['type' => 'id']);
+    }
+
+    public function getAvailabletemplatefilenames()
+    {
+        $base_template_dir = Yii::getAlias("@vendor/admapp/resources/");
+
+        $files = FileHelper::findFiles($base_template_dir, ['recursive' => false]);
+        if (count($files) > 0) {
+            array_walk($files, function (&$item, $key) {
+                $item = basename($item);
+            });
+        }
+        return $files;
     }
 
     /**

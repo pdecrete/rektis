@@ -19,7 +19,7 @@ class LeaveTypeSearch extends LeaveType
     {
         return [
             [['id'], 'integer'],
-            [['name', 'description', 'create_ts', 'update_ts'], 'safe'],
+            [['name', 'description', 'templatefilename', 'create_ts', 'update_ts'], 'safe'],
         ];
     }
 
@@ -65,6 +65,7 @@ class LeaveTypeSearch extends LeaveType
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'templatefilename', $this->templatefilename])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
