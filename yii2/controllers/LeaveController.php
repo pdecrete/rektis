@@ -61,6 +61,7 @@ class LeaveController extends Controller
     }
 
     /**
+     * Creates an exported print for the provided model. 
      * 
      * @param Leave $leaveModel
      * @return String the generated file filename
@@ -69,19 +70,23 @@ class LeaveController extends Controller
     protected function generatePrintDocument($leaveModel)
     {
         $dts = date('YmdHis');
-        $filename = Yii::getAlias("@vendor/admapp/exports/ADEIA_TEST_FILE_{$dts}.docx");
 
-        // TODO replace ADEIA_TEST_FILE.docx with file from LeaveTypes 
-        $templateProcessor = new TemplateProcessor(Yii::getAlias('@vendor/admapp/resources/ADEIA_TEST_FILE.docx'));
+//        $templateProcessor = new TemplateProcessor(Yii::getAlias('@vendor/admapp/resources/ADEIA_TEST_FILE.docx'));
+        $templatefilename = $leaveModel->typeObj ? $leaveModel->typeObj->templatefilename : null;
+        if ($templatefilename === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this leave type.'));
+        }
+        $exportfilename = Yii::getAlias("@vendor/admapp/exports/{$dts}_{$templatefilename}");
+        $templateProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/{$templatefilename}"));
         $templateProcessor->setValue('DATE', date('d/m/Y'));
         $templateProcessor->setValue('PROTOCOL', $leaveModel->decision_protocol);
         $templateProcessor->setValue('FULLNAME', $leaveModel->employeeObj->fullname);
-        $templateProcessor->saveAs($filename);
-        if (!is_readable($filename)) {
+        $templateProcessor->saveAs($exportfilename);
+        if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.'));
         }
 
-        return $filename;
+        return $exportfilename;
     }
 
     protected function setPrintDocument($leaveModel, $filename)

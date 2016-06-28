@@ -53,6 +53,7 @@ class LeaveType extends \yii\db\ActiveRecord
         return [
             [['name'], 'required'],
             [['description', 'templatefilename'], 'string'],
+            [['templatefilename'], 'default', 'value' => null],
             [['create_ts', 'update_ts'], 'safe'],
             [['name'], 'string', 'max' => 100],
             [['name'], 'unique'],
