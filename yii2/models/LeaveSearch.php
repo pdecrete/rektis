@@ -12,6 +12,7 @@ use app\models\Leave;
  */
 class LeaveSearch extends Leave
 {
+
     /**
      * @inheritdoc
      */
@@ -20,6 +21,7 @@ class LeaveSearch extends Leave
         return [
             [['id', 'employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
             [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'reason', 'comment', 'create_ts', 'update_ts'], 'safe'],
+            [['type'], 'safe'],
         ];
     }
 
@@ -76,9 +78,10 @@ class LeaveSearch extends Leave
         ]);
 
         $query->andFilterWhere(['like', 'accompanying_document', $this->accompanying_document])
-            ->andFilterWhere(['like', 'reason', $this->reason])
-            ->andFilterWhere(['like', 'comment', $this->comment]);
+                ->andFilterWhere(['like', 'reason', $this->reason])
+                ->andFilterWhere(['like', 'comment', $this->comment]);
 
         return $dataProvider;
     }
+
 }

@@ -52,8 +52,10 @@ class LeaveType extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['description', 'templatefilename'], 'string'],
+            [['description'], 'string'],
+            [['templatefilename'], 'string', 'max' => 255],
             [['templatefilename'], 'default', 'value' => null],
+            [['deleted'], 'integer'],
             [['create_ts', 'update_ts'], 'safe'],
             [['name'], 'string', 'max' => 100],
             [['name'], 'unique'],
@@ -93,6 +95,7 @@ class LeaveType extends \yii\db\ActiveRecord
                 $item = basename($item);
             });
         }
+        sort($files, SORT_STRING);
         return $files;
     }
 
