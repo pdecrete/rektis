@@ -30,6 +30,7 @@ use yii\db\Expression;
  * @property Employee $employeeObj
  * @property LeaveType $typeObj
  * @property LeavePrint[] $leavePrints 
+ * @property Leave[] $leavesSameDecision 
  */
 class Leave extends \yii\db\ActiveRecord
 {
@@ -71,6 +72,7 @@ class Leave extends \yii\db\ActiveRecord
             [['reason'], 'string', 'max' => 200],
             [['employee'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['employee' => 'id']],
             [['type'], 'exist', 'skipOnError' => true, 'targetClass' => LeaveType::className(), 'targetAttribute' => ['type' => 'id']],
+            [['type'], 'safe'],
         ];
     }
 
@@ -134,6 +136,17 @@ class Leave extends \yii\db\ActiveRecord
     public function getLeavePrints()
     {
         return $this->hasMany(LeavePrint::className(), ['leave' => 'id']);
+    }
+
+    public function allSameDecision()
+    {
+        return Leave::find()
+                        ->where([
+                            'decision_protocol' => $this->decision_protocol,
+                            'decision_protocol_date' => $this->decision_protocol_date
+                        ])
+                        ->orderBy('id')
+                        ->all();
     }
 
     /**

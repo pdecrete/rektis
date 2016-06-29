@@ -71,16 +71,35 @@ class LeaveController extends Controller
     {
         $dts = date('YmdHis');
 
-//        $templateProcessor = new TemplateProcessor(Yii::getAlias('@vendor/admapp/resources/ADEIA_TEST_FILE.docx'));
         $templatefilename = $leaveModel->typeObj ? $leaveModel->typeObj->templatefilename : null;
         if ($templatefilename === null) {
             throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this leave type.'));
         }
         $exportfilename = Yii::getAlias("@vendor/admapp/exports/{$dts}_{$templatefilename}");
         $templateProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/{$templatefilename}"));
-        $templateProcessor->setValue('DATE', date('d/m/Y'));
-        $templateProcessor->setValue('PROTOCOL', $leaveModel->decision_protocol);
-        $templateProcessor->setValue('FULLNAME', $leaveModel->employeeObj->fullname);
+
+        $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($leaveModel->decision_protocol_date));
+        $templateProcessor->setValue('DECISION_PROTOCOL', $leaveModel->decision_protocol);
+
+        $sameDecisionModels = $leaveModel->allSameDecision();
+        $all_count = count($sameDecisionModels);
+
+        $templateProcessor->cloneRow('SURNAME', $all_count);
+        for ($c = 0; $c < $all_count; $c++) {
+            $i = $c + 1;
+            $currentModel = $sameDecisionModels[$c];
+            $templateProcessor->setValue('SURNAME' . "#{$i}", $currentModel->employeeObj->surname);
+            $templateProcessor->setValue('NAME' . "#{$i}", $currentModel->employeeObj->name);
+            $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->duration);
+            $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
+            $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
+            $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($currentModel->application_protocol_date));
+            $templateProcessor->setValue('REMAINING' . "#{$i}", '');
+            $templateProcessor->setValue('POSITION_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
+            $templateProcessor->setValue('POSITION_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
+            $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
+        }
+
         $templateProcessor->saveAs($exportfilename);
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.'));

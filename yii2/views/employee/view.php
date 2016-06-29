@@ -143,7 +143,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             'default' => SORT_DESC,
                             'label' => 'Duration',
                         ],
-                        'decision_protocol_date'
+                        'decision_protocol_date',
+                        'type',
                     ],
                 ]
             ]);
