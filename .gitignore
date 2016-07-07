@@ -25,3 +25,4 @@ phpunit.phar
 /yii2/config/db.php
 /yii2/composer.lock
 
+/yii2/data/pde_employees.sql 
