@@ -153,8 +153,10 @@ class Employee extends \yii\db\ActiveRecord
     }
 
     public function ranksList()
-    {
-        return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
+    {	// associative array ώστε και η τιμή στα select αλλά και η τιμή στη βάση να είναι το αλφαριθμητικό που βλέπω
+		// αν αποφασίσουμε να κρατάμε στη βάση κωδικούς 0..5 αντί Α..ΣΤ απλά το ξανακάνω απλό array
+		// return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
+        return ['Α'=>'Α', 'Β'=>'Β', 'Γ'=>'Γ', 'Δ' =>'Δ', 'Ε' =>'Ε', 'ΣΤ' => 'ΣΤ'];
     }
 
     public function payscaleList()
