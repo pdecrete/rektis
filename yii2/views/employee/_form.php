@@ -71,7 +71,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
-          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->column(),
+          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->orderby('id')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
@@ -80,7 +80,7 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999']) ?>
         <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
-          'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->orderby('id')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
@@ -88,7 +88,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'service_serve')->widget(Select2::classname(), [
-          'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->column(),
+          'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->orderby('id')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
