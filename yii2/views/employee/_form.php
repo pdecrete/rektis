@@ -47,7 +47,9 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'telephone')->widget(MaskedInput::classname(),['name' => 'telephone','mask' => '9999-999999']) ?>
         <?= $form->field($model, 'mobile')->widget(MaskedInput::classname(),['name' => 'mobile','mask' => '9999-999999']) ?>
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number','mask' => 'A[A]-999999']) ?>
+        
+        <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number', 'clientOptions' => ['alias' => 'Regex', 'regex' => '[A-ZΑ-Ω]{1,2}[0-9]{6}]']]) ?>
+        
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
       </div>
       
