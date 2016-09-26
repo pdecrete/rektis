@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'status',
                 'label' => Yii::t('app', 'Status'),
                 'value' => 'status0.name',
-                'filter' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->orderby('id')->column(),
+                'filter' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->orderby('name')->column(),
                 'contentOptions' => ['style' => 'width: 5%']
             ],
             [
