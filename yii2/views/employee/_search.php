@@ -31,7 +31,7 @@ use kartik\datecontrol\DateControl;
       </div>
       <div class="col-md-4">
          <?= $form->field($model, 'status')->widget(Select2::classname(), [
-          'data' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->orderBy('id')->column(),
+          'data' => \app\models\EmployeeStatus::find()->select(['name', 'name'])->indexBy('name')->orderBy('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
@@ -39,7 +39,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
          <?= $form->field($model, 'position')->widget(Select2::classname(), [
-          'data' => \app\models\Position::find()->select(['name', 'name'])->indexBy('name')->orderBy('id')->column(),
+          'data' => \app\models\Position::find()->select(['name', 'name'])->indexBy('name')->orderBy('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
@@ -47,7 +47,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
-          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'code'])->indexBy('code')->orderBy('id')->column(),
+          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'code'])->indexBy('code')->orderBy('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
@@ -73,18 +73,18 @@ use kartik\datecontrol\DateControl;
          
       </div>
       <div class="col-md-4">
-         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999']) ?>
+         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999'])
+         ?>
          <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
-          'data' => \app\models\Service::find()->select(['name', 'name'])->indexBy('name')->orderBy('id')->column(),
+          'data' => \app\models\Service::find()->select(['name', 'name'])->indexBy('name')->orderBy('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
           ],
         ]);
         ?>
-
          <?= $form->field($model, 'service_serve')->widget(Select2::classname(), [
-          'data' => \app\models\Service::find()->select(['name', 'name'])->indexBy('name')->orderBy('id')->column(),
+          'data' => \app\models\Service::find()->select(['name', 'name'])->indexBy('name')->orderBy('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true
