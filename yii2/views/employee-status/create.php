@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\EmployeeStatus */
 
-$this->title = 'Create Employee Status';
-$this->params['breadcrumbs'][] = ['label' => 'Employee Statuses', 'url' => ['index']];
+$this->title = Yii::t('app', 'Create Employee Status');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Employee Statuses'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-status-create">

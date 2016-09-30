@@ -43,9 +43,9 @@ class Specialisation extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'code' => 'Κωδικός',
-            'name' => 'Λεκτικό',
+            'id' => Yii::t('app', 'ID'),
+            'code' => Yii::t('app', 'Code'),
+            'name' => Yii::t('app', 'SpecName'),
         ];
     }
 

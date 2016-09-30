@@ -44,8 +44,8 @@ class Service extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'information' => 'Information',
+            'name' => Yii::t('app', 'Name'),
+            'information' => Yii::t('app', 'Information'),
         ];
     }
 
