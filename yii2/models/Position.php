@@ -42,9 +42,9 @@ class Position extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Name',
-            'comments' => 'Comments',
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Name'),
+            'comments' => Yii::t('app', 'Comments'),
         ];
     }
 
