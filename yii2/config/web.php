@@ -25,6 +25,8 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'on '.\yii\web\User::EVENT_AFTER_LOGIN => ['app\models\LoginForm', 'loginLog'],
+            'on '.\yii\web\User::EVENT_BEFORE_LOGOUT => ['app\models\LoginForm', 'loginLog']
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -43,6 +45,13 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['login'],
+                    'logFile' => '@runtime/logs/login.log',
+                    'logVars' => []
+                ]
             ],
         ],
         'db' => $db,

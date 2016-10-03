@@ -91,5 +91,23 @@ class LoginForm extends Model
 
         return $this->_user;
     }
+    
+    /**
+     * Log logins and logouts to log file
+     * (configured @ web.php file->components->log)
+     *
+     */
+     public function loginLog($event)
+     {
+        $userName = Yii::$app->user->identity->username;
+        if ($event->name == 'afterLogin'){
+           $logStr = $userName . ' has logged in.';
+           Yii::info($logStr,'login');
+        }
+        else {
+           $logStr = $userName . ' has logged out.';
+           Yii::info($logStr,'login');
+        }
+     }
 
 }
