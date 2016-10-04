@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\data\ArrayDataProvider;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Employee */
@@ -13,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -26,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ])
         ?>
+		<?= Html::a(Yii::t('app', 'Create Leave'), [ 'leave/create', 'employee' => $model->id], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <ul class="nav nav-tabs" role="tablist">
@@ -122,7 +125,43 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
         </div>
         <div role="tabpanel" class="tab-pane fade-in" id="leaves">
-            <?php
+        <h1>Σύνολα αδειών <small> Οι διεγραμμένες άδειες δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
+		<?php					
+			//Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
+			$count = $model->getCountLeavesTotals();
+			$leavesSumDataProvider = $model->getLeavesTotals();
+			$leavesSumDataProvider->totalCount = $count;
+			$leavesSumDataProvider->pagination = [
+					'pagesize' => 5, 
+					'pageParam' => 'sumPage',
+					];
+			$leavesSumDataProvider->sort =[
+					'attributes' => [
+						'leaveYear' => SORT_DESC,
+						'leaveTypeName' => SORT_ASC,
+						],
+					'sortParam' => 'sumSort',
+				];
+				
+		?>
+		<?php Pjax::begin(); ?>
+		<?=
+			GridView::widget([
+				'dataProvider' => $leavesSumDataProvider,       
+				'columns' => [
+					['class' => 'yii\grid\SerialColumn'],
+					['label' => Yii::t('app', 'Leave type'),
+						'attribute' => 'leaveTypeName'],
+					['label' => Yii::t('app', 'Year'),
+						'attribute' => 'leaveYear'],
+					['label' => Yii::t('app', 'Duration in days'),
+						'attribute' => 'duration'],			
+				],	
+			]);
+		?>
+		<?php Pjax::end(); ?>
+	
+			<?php
 //            $sd = (new \yii\db\Query())
 //                    ->from('admapp_leave')
 //                    ->where(['employee' => 1, 'deleted' => 0])
@@ -134,6 +173,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'allModels' => $model->leaves,
                 'pagination' => [
                     'pagesize' => 10,
+                    'pageParam' => 'leavePage',
                 ],
                 'sort' => [
                     'attributes' => [
@@ -146,11 +186,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'decision_protocol_date',
                         'type',
                     ],
+                    'sortParam' => 'leaveSort',	
                 ]
             ]);
             echo $this->render('/leave/_employee', ['dataProvider' => $leavesDataProvider, 'employeeModel' => $model]);
             ?>
-        </div>
+        </div>        
         <div role="tabpanel" class="tab-pane fade-in" id="system">
             <?=
             DetailView::widget([
