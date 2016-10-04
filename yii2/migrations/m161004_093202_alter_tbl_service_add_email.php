@@ -2,7 +2,7 @@
 use yii\helpers\Console;
 use yii\db\Migration;
 
-class m161003_115510_alter_tbl_service_add_email extends Migration
+class m161004_093202_alter_tbl_service_add_email extends Migration
 {
     public function safeUp()
     {
