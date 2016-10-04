@@ -195,10 +195,14 @@ class LeaveController extends Controller
     public function actionCreate()
     {
         $model = new Leave();
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+			//Αν κάνω create από άλλο σημείο με employee_id (από καρτέλα εργαζομένου)
+			if ((Yii::$app->request->isGet) && (Yii::$app->request->get('employee') !== NULL) ) 
+			{
+				$model->employee = Yii::$app->request->get('employee');
+			};
             return $this->render('create', [
                         'model' => $model,
             ]);

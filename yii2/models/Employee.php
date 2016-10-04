@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\ActiveRecord;
 use admapp\Validators\VatNumberValidator;
+use yii\data\SqlDataProvider;
 
 /**
  * This is the model class for table "{{%employee}}".
@@ -54,6 +55,7 @@ use admapp\Validators\VatNumberValidator;
  */
 class Employee extends \yii\db\ActiveRecord
 {
+	public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
 
     /**
      * @inheritdoc
@@ -85,7 +87,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted'], 'integer'],
-            [['name', 'surname', 'fathersname', 'tax_identification_number', 'social_security_number', 'identification_number', 'appointment_fek', 'appointment_date', 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
+            [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],
@@ -221,7 +223,7 @@ class Employee extends \yii\db\ActiveRecord
      */
     public function getLeaves()
     {
-        return $this->hasMany(Leave::className(), ['employee' => 'id']);
+        return $this->hasMany(Leave::className(), ['employee' => 'id'])->orderBy(['start_date' => SORT_DESC]);
     }
 
     /**
@@ -231,7 +233,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Leave::className(), ['employee' => 'id'])->where(['deleted' => 0])->sum('duration');
     }
-
+ 
     /**
      * @inheritdoc
      * @return EmployeeQuery the active query used by this AR class.
@@ -240,5 +242,59 @@ class Employee extends \yii\db\ActiveRecord
     {
         return new EmployeeQuery(get_called_class());
     }
+
+	/*return */
+	public function getCountLeavesTotals()
+	{
+		$total = Yii::$app->db->createCommand(
+					' select count(*) ' .
+					' from ( select admapp_employee.id as id ' .
+							' FROM admapp_leave 	 LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,  admapp_leave_type  ' .
+							' WHERE admapp_leave.type = admapp_leave_type.id  ' .
+							' AND admapp_employee.id = :id  ' .
+							' AND admapp_leave.deleted = :del  ' .
+							' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted ) as e  ' .
+					' group by e.id ',
+					 [':id' => $this->id, 
+					':del' => $this->leaveSumDelFlag])->queryScalar();
+		return $total;
+	}
+
+	/*return DataProvider*/
+	public function getLeavesTotals()
+	{
+		return new SqlDataProvider([
+				'sql' => ' select admapp_employee.id as employeeID, ' .
+					' admapp_leave_type.name as leaveTypeName , ' .
+					' Year(admapp_leave.start_date) as leaveYear, ' .
+					' admapp_leave.deleted as deleted, ' .
+					' sum(admapp_leave.duration) as duration ' . 
+					' FROM admapp_leave ' .
+					' LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,' .
+					' admapp_leave_type ' .
+					' WHERE admapp_leave.type = admapp_leave_type.id ' .
+					' AND admapp_employee.id = :id ' .
+					' AND admapp_leave.deleted = :del ' .
+					' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted' .
+					' ORDER BY Year(admapp_leave.start_date) DESC, admapp_leave_type.name ASC '	,
+				'params' => [
+					':id' => $this->id, 
+					':del' => $this->leaveSumDelFlag,	
+				],
+		]);
+	}
+	
+
+	/**
+     * @return \yii\db\ActiveQuery
+     */
+ /*   public function getLeavesDurationByType($myYear, $LeaveType)
+    {  // Παράμετροι ο τύπος άδειας και η χρονιά, π.χ. $LeaveType = 10;  $myYear = date("Y"); 
+        return $this->hasMany(Leave::className(), ['employee' => 'id'])
+		->where(['deleted' => 0])
+		->andWhere(['type' => $LeaveType])
+		->andWhere(['YEAR(start_date)' =>  $myYear])
+		->sum('duration');
+    } */
 
 }
