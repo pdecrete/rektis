@@ -73,13 +73,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attribute' => 'specialisation0.code',
                     ],
                     'identification_number',
-                    'appointment_fek',
-                    [
-                        'label' => Yii::t('app', 'Appointment Date'),
-                        'attribute' => function ($data) {
-                            return \Yii::$app->formatter->asDate($data['appointment_date']);
-                        }
-                    ],
                     [
                         'label' => Yii::t('app', 'Service Organic'),
                         'attribute' => 'serviceOrganic.name'
@@ -92,6 +85,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Position'),
                         'attribute' => 'position0.name'
                     ],
+                    'appointment_fek',
+                    [
+                        'label' => Yii::t('app', 'Appointment Date'),
+                        'attribute' => function ($data) {
+                            return \Yii::$app->formatter->asDate($data['appointment_date']);
+                        }
+                    ],
+                    'service_adoption',
+                    [
+                        'label' => Yii::t('app', 'Service Adoption Date'),
+                        'attribute' => function ($data) {
+                            return \Yii::$app->formatter->asDate($data['service_adoption_date']);
+                        }
+                    ],                   
                     [
                         'label' => Yii::t('app', 'Rank'),
                         'attribute' => 'rank0'
@@ -110,16 +117,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             return \Yii::$app->formatter->asDate($data['pay_scale_date']);
                         }
                     ],
-                    'service_adoption',
-                    [
-                        'label' => Yii::t('app', 'Service Adoption Date'),
-                        'attribute' => function ($data) {
-                            return \Yii::$app->formatter->asDate($data['service_adoption_date']);
-                        }
-                    ],
                     'master_degree',
                     'doctorate_degree',
                     'work_experience',
+                    'comments',
                 ],
             ])
             ?>

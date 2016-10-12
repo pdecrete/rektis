@@ -64,14 +64,6 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-        <?= $form->field($model, 'position')->widget(Select2::classname(), [
-          'data' => \app\models\Position::find()->select(['name', 'id'])->orderby('name')->indexBy('id')->column(),
-          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
-          'pluginOptions' => [
-              'allowClear' => true
-          ],
-        ]);
-        ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
           'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->orderby('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
@@ -97,8 +89,15 @@ use kartik\datecontrol\DateControl;
               'allowClear' => true
           ],
         ]);
+        ?>   
+        <?= $form->field($model, 'position')->widget(Select2::classname(), [
+          'data' => \app\models\Position::find()->select(['name', 'id'])->orderby('name')->indexBy('id')->column(),
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+          'pluginOptions' => [
+              'allowClear' => true
+          ],
+        ]);
         ?>
-
         <hr>
         <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
@@ -110,8 +109,7 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
-        <hr>
-        
+        <hr>       
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
@@ -120,7 +118,6 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-
         <?= $form->field($model, 'rank_date')->widget(DateControl::classname(), [
              'type'=>DateControl::FORMAT_DATE
          ]);
@@ -138,7 +135,6 @@ use kartik\datecontrol\DateControl;
          ]);
         ?>
         <hr>
-
         <?= $form->field($model, 'master_degree')->textInput() ?>
         <?= $form->field($model, 'doctorate_degree')->textInput() ?>
         <?= $form->field($model, 'work_experience')->textInput(['maxlength' => true]) ?>

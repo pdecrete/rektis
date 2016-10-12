@@ -30,8 +30,9 @@ class Service extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'information'], 'required'],
+            [['name', 'information', 'email'], 'required'],
             [['name'], 'string', 'max' => 100],
+            ['email', 'email'],
             [['information'], 'string', 'max' => 500],
             [['name'], 'unique']
         ];
@@ -46,6 +47,7 @@ class Service extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => Yii::t('app', 'Name'),
             'information' => Yii::t('app', 'Information'),
+            'email' => 'E-mail',
         ];
     }
 
