@@ -87,7 +87,7 @@ class LeaveController extends Controller
         $templateProcessor->cloneRow('SURNAME', $all_count);
         for ($c = 0; $c < $all_count; $c++) {
             $i = $c + 1;
-            $currentModel = $sameDecisionModels[$c];
+            $currentModel = $sameDecisionModels[$c];	
             $templateProcessor->setValue('SURNAME' . "#{$i}", $currentModel->employeeObj->surname);
             $templateProcessor->setValue('NAME' . "#{$i}", $currentModel->employeeObj->name);
             $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->duration);
@@ -110,7 +110,17 @@ class LeaveController extends Controller
 
     protected function setPrintDocument($leaveModel, $filename)
     {
-//        LeavePrint::deleteAll(['leave' => $model->id]);
+        $new_print = new LeavePrint();
+        $new_print->filename = basename($filename);
+        $new_print->leave = $leaveModel->id;
+        $ins = $new_print->insert();
+		
+        return $ins;
+    }
+
+	protected function deleteAllPrints($leaveModel)
+	{
+		//        LeavePrint::deleteAll(['leave' => $model->id]);
         foreach ($leaveModel->leavePrints as $print) {
             $unlink_filename = $print->path;
             if (file_exists($unlink_filename)) {
@@ -118,14 +128,30 @@ class LeaveController extends Controller
             }
             $print->delete();
         }
-        $new_print = new LeavePrint();
-        $new_print->filename = basename($filename);
-        $new_print->leave = $leaveModel->id;
-        $ins = $new_print->insert();
-
-        return $ins;
-    }
-
+	}
+	
+	/* Generate file
+	 * Set filename to all leave_prints if same decision 
+	 * @return Filename	 
+	 */
+	protected function fixPrintDocument($model)
+	{
+		$filename = $this->generatePrintDocument($model);
+        
+        $sameDecisionModels = $model->allSameDecision();
+        $all_count = count($sameDecisionModels);	
+        
+        for ($c = 0; $c < $all_count; $c++) {
+            $currentModel = $sameDecisionModels[$c];	
+            $this->deleteAllPrints($currentModel); // Σβήνει όλες τις σχετικές με την άδεια εκτυπώσεις...
+			$set = $this->setPrintDocument($currentModel, $filename);
+			if (!$set) {
+				throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.') . $currentModel->id);
+			}
+		}
+		return $filename;
+	}
+	
     public function actionDownload($id)
     {
         $model = $this->findModel($id);
@@ -135,11 +161,9 @@ class LeaveController extends Controller
 
         if (($prints = $model->leavePrints) != null) {
             $filename = $prints[0]->filename;
-        } else {
-            // generate document if it does not exist
-            $filename = $this->generatePrintDocument($model);
-            Yii::$app->session->addFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
-            $set = $this->setPrintDocument($model, $filename);
+        } else { // generate - set document if it does not exist
+            $filename = $this->fixPrintDocument($model);
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
         }
 
         // if file is STILL not generated, redirect to page
@@ -160,20 +184,40 @@ class LeaveController extends Controller
      * @throws NotFoundHttpException
      */
     public function actionPrint($id)
-    {
+    {	
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
         }
+        if (($prints = $model->leavePrints) != null) {
+            $filename = $prints[0]->filename;
+            return $this->render('print', [
+                    'model' => $model,
+                    'filename' => $filename
+			]);
+        } else {          
+            $filename = $this->fixPrintDocument($model);
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
+			return $this->redirect(['print', 'id' => $id]);
+        }
 
-        $filename = $this->generatePrintDocument($model);
-        $set = $this->setPrintDocument($model, $filename);
+    }
 
+	public function actionReprint($id)
+    {	
+        $model = $this->findModel($id);
+        if ($model->deleted) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
+        }
+        
+        $filename = $this->fixPrintDocument($model);
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
         return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename
         ]);
     }
+
 
     /**
      * Displays a single Leave model.
@@ -256,11 +300,112 @@ class LeaveController extends Controller
      */
     protected function findModel($id)
     {
+		Yii::error('FindModel @' . get_called_class());
         if (($model = Leave::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+	/* Send multiple emails to $emails with $filename attached 
+	 * @return Integer = number of emails successfully sent 
+	 */  
+	protected function sendEmail($filename, $emails)
+    { 
+		$subject = Yii::t('app', 'Leave decision post');
+		$txtBody = Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email');
+		$htmlBody = '<b>' . Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email') .'</b>';
+		$messages = [];
+		foreach ($emails as $email) {
+			$messages[] = Yii::$app->mailer->compose()
+                ->setFrom(Yii::$app->params['adminEmail'])
+                ->setSubject($subject)
+                ->setTextBody($txtBody)
+                ->setHtmlBody($htmlBody)
+                ->attach($filename)
+				->setTo($email);
+		}
+		$num = -1;
+		try {
+			$num = Yii::$app->mailer->sendMultiple($messages);
+		} catch (\Swift_TransportException $e) { // exception 'Swift_TransportException'
+			$logStr = 'Swift_TransportException in leave-email-sending: ';
+			$pos = strpos($e, 'Stack trace:');
+			if ($pos>0) {
+				$logStr .= substr($e,0, $pos);	
+			}
+			Yii::info($logStr,'leave-email');
+		}
+		
+		return  $num;//num of messages successfully sent
+    }
+    
+    protected function updateEmailSent($emails, $model)
+    {
+		$ids = [];
+		$k = 0;
+        $sameDecisionModels = $model->allSameDecision();
+        $all_count = count($sameDecisionModels);
+
+        for ($c = 0; $c < $all_count; $c++) {
+            $currentModel = $sameDecisionModels[$c];	
+            $prints = $currentModel->leavePrints;
+            if ($prints !== NULL) {
+				if (count($emails) > 0) {
+					$prints[0]->to_emails = implode(',', array_filter($emails, function($v){ return $v !== null; }));
+				}
+				
+				$prints[0]->send_ts = date("Y-m-d H:i:s");
+				$upd = $prints[0]->save();
+				if ($upd) {
+					$ids[$k] = $prints[0]->id;
+					$k++;
+				}
+			}
+		}		
+		return $ids;
+	}
+
+    public function actionEmail($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->deleted) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
+        }
+        if (($prints = $model->leavePrints) != null) {
+            $filename = $prints[0]->filename;
+        } else {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested leave was not found.'));
+		}
+        if (!is_readable(LeavePrint::path($filename))) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested leave was not found.') . LeavePrint::path($filename));
+        }
+
+		$emails = $model->getDecisionEmails(); 
+		$leaveIDs = $model->getconnectedLeaveIDs();
+		$simpleLeaveIDs = implode(',', array_filter($leaveIDs, function($v){ return $v !== null; }));
+		$sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
+ 
+		$userName = Yii::$app->user->identity->username;
+		$simple_emails = implode(',', array_filter($emails, function($v){ return $v !== null; }));
+		
+        if ( isset($sendNum) && ($sendNum > 0)) {
+			$updated = $this->updateEmailSent($emails, $model);
+			$numUpd = count($updated);
+			$idsUpd = implode(',', array_filter($updated, function($v){ return $v !== null; }));
+			$logStr = 'User ' . $userName . ' sent leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [' . $numUpd . ']. Leave_prints IDs: [' . $idsUpd . ']. Filename: [' . $filename . '].';
+			Yii::info($logStr,'leave-email');
+			Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully emailed file on {date} to {num} recepients.', ['date' => date('d/m/Y'), 'num' => $sendNum]));
+		} else {
+			$logStr = 'User ' . $userName . ' tried to send leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [None]. Filename: [' . $filename . '].';	
+			Yii::info($logStr,'leave-email');
+			Yii::$app->session->setFlash('danger', Yii::t('app', 'The file was not emailed.'));		
+		}
+
+        return $this->redirect(['print', 'id' => $id]);
+    }
+
+
 
 }

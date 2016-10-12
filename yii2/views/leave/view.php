@@ -37,10 +37,10 @@ if ($model->deleted) {
         ])
         ?>
         <?=
-        Html::a(Yii::t('app', 'Print file'), ['print', 'id' => $model->id], [
+        Html::a(Yii::t('app', 'Leave file'), ['print', 'id' => $model->id], [
             'class' => 'btn btn-warning',
             'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to print this leave?'),
+                //'confirm' => Yii::t('app', 'Are you sure you want to print this leave?'),
                 'method' => 'post',
             ],
         ])
@@ -86,6 +86,18 @@ if ($model->deleted) {
             'deleted:boolean',
             'create_ts',
             'update_ts',
+//            'emailed_at',
+            [
+                'label' => Yii::t('app', 'Sent at'),
+                'value' => $model->leavePrints ? $model->leavePrints[0]->send_ts : null,
+                'format' => 'raw',
+            ],
+//            'emailed_to',
+            [
+                'label' => Yii::t('app', 'Email recipients'),
+                'value' => $model->leavePrints ? $model->leavePrints[0]->to_emails : null,
+                'format' => 'raw',
+            ],
         ],
     ])
     ?>

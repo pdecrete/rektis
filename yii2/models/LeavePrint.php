@@ -11,7 +11,9 @@ use Yii;
  * @property integer $leave
  * @property string $filename
  * @property string $create_ts
- *
+ * @property string $send_ts
+ * @property string $to_emails
+ * 
  * @property Leave $leave0
  */
 class LeavePrint extends \yii\db\ActiveRecord
@@ -33,9 +35,8 @@ class LeavePrint extends \yii\db\ActiveRecord
         return [
             [['leave'], 'integer'],
             [['filename'], 'required'],
-            [['create_ts'], 'safe'],
+            [['create_ts', 'send_ts','to_emails'], 'safe'],
             [['filename'], 'string', 'max' => 255],
-            [['filename'], 'unique'],
             [['leave'], 'exist', 'skipOnError' => true, 'targetClass' => Leave::className(), 'targetAttribute' => ['leave' => 'id']],
         ];
     }
@@ -50,6 +51,8 @@ class LeavePrint extends \yii\db\ActiveRecord
             'leave' => Yii::t('app', 'Leave'),
             'filename' => Yii::t('app', 'Filename'),
             'create_ts' => Yii::t('app', 'Create Ts'),
+            'send_ts' => Yii::t('app', 'Sent Ts'),
+            'to_emails' => Yii::t('app', 'Email recipients'),
         ];
     }
 

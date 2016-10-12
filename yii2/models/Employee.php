@@ -87,7 +87,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted'], 'integer'],
-            [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale', 'service_adoption_date'], 'required'],
+            [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale'/*, 'service_adoption_date'*/], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],

@@ -149,6 +149,52 @@ class Leave extends \yii\db\ActiveRecord
                         ->all();
     }
 
+	/**
+	 * @return distinct all emails (employee, service_organic) for all employees of decision-date
+	 * deletes duplicate values
+	 * deletes empty strings
+	 **/
+	public function getDecisionEmails()
+	{	
+		$emails = [];
+		$sameDecisionModels = $this->allSameDecision();
+        $all_count = count($sameDecisionModels);
+        for ($c = 0; $c < $all_count; $c++) {
+            $currentModel = $sameDecisionModels[$c];	
+            $emails[$c*2] = $currentModel->employeeObj->email;
+			$emails[$c*2+1] = $currentModel->employeeObj->serviceOrganic->email;
+        }
+        $num = count($emails);
+        $k = 0;
+        $final_emails = [];
+        for ($i = 0; $i < $num; $i++) {
+			if (($emails[$i] !== '') && ($emails[$i] !== ' ')) {
+				$final_emails[$k] = $emails[$i];
+				$k++;
+			}
+		}	    
+        $dist_emails = array_unique($final_emails);      
+        $dist_emails = array_diff($dist_emails, ['']);      
+        return $dist_emails;
+	}
+
+	/**
+	 * @return connected Leave IDs for all employees of decision-date
+	 **/
+	public function getconnectedLeaveIDs()
+	{	
+		$IDs = [];
+		$k = 0; 
+		$sameDecisionModels = $this->allSameDecision();
+        $all_count = count($sameDecisionModels);
+        for ($c = 0; $c < $all_count; $c++) {
+            $currentModel = $sameDecisionModels[$c];	
+			$IDs[$k] = $currentModel->id;
+			$k++;
+        }
+        return $IDs;
+	}
+	
     /**
      * @inheritdoc
      * @return LeaveQuery the active query used by this AR class.
