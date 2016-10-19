@@ -43,7 +43,7 @@ if ($model->deleted) {
         <?= Html::a(Yii::t('app', 'Send e-mail'), ['email', 'id' => $model->id], [
             'class' => 'btn btn-warning',
             'data' => [
-                'confirm' => Yii::t('app', 'The leave is sent automatically to all recipients concerned (employees - organic services).') . ' ' . Yii::t('app', 'Are you sure you want to e-mail this leave?'),
+                'confirm' => Yii::t('app', 'The leave is sent automatically to all recipients concerned (employees - organic and serve services).') . ' ' . Yii::t('app', 'Are you sure you want to e-mail this leave?'),
                 'method' => 'post',
             ],
         ])

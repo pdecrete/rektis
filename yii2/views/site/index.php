@@ -25,9 +25,8 @@ $this->title = Yii::$app->name;
                 <p><?= Html::a('<i class="glyphicon glyphicon-log-out"></i> Αποσύνδεση', ['/site/logout'], ['data-method' => 'post', 'class' => 'btn btn-danger btn-block']) ?></p>
             </div>
             <div class="col-lg-8">
+                <?php if (!Yii::$app->user->isGuest && defined(YII_ENV) && YII_ENV === 'dev' ) : ?>
                 <h2>DEBUG</h2>
-
-                <?php if (!Yii::$app->user->isGuest) : ?>
                     <div class="well" style="white-space: pre-line;">
                         <p>DEMO and SAMPLE calls; to be removed on production</p>
                         <p>YII_ENV = [<?= YII_ENV ?>]</p>
@@ -41,7 +40,12 @@ $this->title = Yii::$app->name;
                         ?> <br/>
                         <?= admapp\Util\Core::generateToken(20); ?> <br/>
                     </div>
+				<?php else: ?>
+                    <div class="well" style="white-space: pre-line;">
+                        <h2> <?= Yii::t('app', 'Welcome!') ?> </h2>
+					</div>
                 <?php endif; ?>
+                
             </div>
         </div>
 
