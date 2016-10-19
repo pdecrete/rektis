@@ -161,8 +161,9 @@ class Leave extends \yii\db\ActiveRecord
         $all_count = count($sameDecisionModels);
         for ($c = 0; $c < $all_count; $c++) {
             $currentModel = $sameDecisionModels[$c];	
-            $emails[$c*2] = $currentModel->employeeObj->email;
-			$emails[$c*2+1] = $currentModel->employeeObj->serviceOrganic->email;
+            $emails[$c*3] = $currentModel->employeeObj->email;
+			$emails[$c*3+1] = $currentModel->employeeObj->serviceOrganic->email;
+			$emails[$c*3+2] = $currentModel->employeeObj->serviceServe->email;
         }
         $num = count($emails);
         $k = 0;

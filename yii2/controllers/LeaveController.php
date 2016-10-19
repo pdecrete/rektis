@@ -94,9 +94,10 @@ class LeaveController extends Controller
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
             $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($currentModel->application_protocol_date));
-            $templateProcessor->setValue('REMAINING' . "#{$i}", '');
-            $templateProcessor->setValue('POSITION_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
-            $templateProcessor->setValue('POSITION_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
+            //$templateProcessor->setValue('REMAINING' . "#{$i}", '');
+            $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
+            $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
+            $templateProcessor->setValue('POSITION' . "#{$i}", $currentModel->employeeObj->position0->name);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
         }
 

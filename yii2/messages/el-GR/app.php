@@ -125,7 +125,7 @@ return [
     'Telephone' => 'Τηλέφωνο',
     'Thank you for contacting us. We will respond to you as soon as possible.' => 'Ευχαριστούμε που επικοινωνήσατε μαζί μας. Θα ανταποκριθούμε στο αίτημά σας το συντομότερο δυνατόν.',
     'The file was not emailed.' => 'Δεν έγινε αποστολή e-mail',
-    'The leave is sent automatically to all recipients concerned (employees - organic services).' => 'Η άδεια αποστέλλεται αυτόματα σε όλους τους παραλήπτες (εργαζομένους και υπηρεσίες οργανικών θέσεων).',
+    'The leave is sent automatically to all recipients concerned (employees - organic and serve services).' => 'Η άδεια αποστέλλεται αυτόματα σε όλους τους παραλήπτες (εργαζόμενους - υπηρεσίες οργανικών θέσεων και θέσεων υπηρέτησης).',
     'The print document for the requested leave was not generated.' => 'Το αρχείο εκτύπωσης για την ζητούμενη άδεια δεν δημιουργήθηκε.',
     'The requested leave is deleted.' => 'Η άδεια που ζητήθηκε είναι διεγραμμένη.',
     'The requested leave was not found.' => 'Η άδεια που ζητήθηκε δεν βρέθηκε.',
