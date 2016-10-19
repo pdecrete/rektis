@@ -300,7 +300,6 @@ class LeaveController extends Controller
      */
     protected function findModel($id)
     {
-		Yii::error('FindModel @' . get_called_class());
         if (($model = Leave::findOne($id)) !== null) {
             return $model;
         } else {
