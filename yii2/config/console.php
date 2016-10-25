@@ -25,6 +25,18 @@ return [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+                // for future use. Declared here to create migration from console
+                // create log table with: yii migrate --migrationPath=@yii/log/migrations/ @ console
+                /*
+                [
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    'categories' => ['employee'],
+                    'logTable' => 'employee_log',
+                    'logVars' => [],
+                    'db' => $db
+                ]
+                */
             ],
         ],
         'db' => $db,

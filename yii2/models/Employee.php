@@ -111,6 +111,8 @@ class Employee extends \yii\db\ActiveRecord
             [['service_serve'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_serve' => 'id']],
             [['specialisation'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation' => 'id']],
             [['status'], 'exist', 'skipOnError' => true, 'targetClass' => EmployeeStatus::className(), 'targetAttribute' => ['status' => 'id']],
+            // use filter to avoid getting attributes marked as dirty (changed)
+            [['status','specialisation','service_organic','service_serve','position','pay_scale','master_degree','doctorate_degree','work_experience'], 'filter', 'filter' => 'intval']
         ];
     }
 
@@ -296,5 +298,23 @@ class Employee extends \yii\db\ActiveRecord
 		->andWhere(['YEAR(start_date)' =>  $myYear])
 		->sum('duration');
     } */
-
+   
+   
+   // Override beforeSave() to log employee table changes to log target
+   public function beforeSave($insert)
+   {
+      if (parent::beforeSave($insert)) {
+         if ($dirty = $this->getDirtyAttributes())
+         {
+            $out = Yii::$app->user->identity->username . ' has modified ' . $this->surname . ' ' . $this->name . ' (id: ' . $this->id . '): ';
+            foreach($dirty as $k => $v) {
+               if ($k == 'update_ts')
+                  continue;
+               $out .= $k . ' from ' .$this->getOldAttribute($k) . ' to ' . $v . ', ';
+            }
+            Yii::info($out,'employee');
+         }
+         return true;
+      }
+   }
 }
