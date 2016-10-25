@@ -58,20 +58,33 @@ $config = [
                     'logFile' => '@runtime/logs/login.log',
                     'logVars' => [],
                 ],
-				[
+                [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
-                    'categories' => ['leave-email'],
+                    'categories' => ['leave-email', 'contact-email'],
                     'logFile' => '@runtime/logs/email.log',
                     'logVars' => [],
                 ],                
-				[
+                // for now, log employee changes to employee.log file
+                [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
-                    'categories' => ['contact-email'],
-                    'logFile' => '@runtime/logs/email.log',
+                    'categories' => ['employee'],
+                    'logFile' => '@runtime/logs/employee.log',
+                    'logVars' => []
+                ],
+                // future use (or not?): log to db
+                /*
+                [
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    'categories' => ['employee'],
+                    'logTable' => 'employee_log',
                     'logVars' => [],
-                ],                
+                    'db' => $db
+                ]
+                */
+				
             ],
         ],
         'db' => $db,
