@@ -31,6 +31,11 @@ class EmployeeController extends Controller
                         'allow' => true,
                         'roles' => ['admin', 'user'],
                     ],
+                    [
+                        'allow' => true,
+                        'actions' => ['view', 'index'],
+                        'roles' => ['leave_user', 'transport_user'],
+                    ],
                 ],
             ],
         ];
