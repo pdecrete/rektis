@@ -8,6 +8,7 @@ use app\models\LeaveTypeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * LeaveTypeController implements the CRUD actions for LeaveType model.
@@ -26,6 +27,15 @@ class LeaveTypeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['admin'],
+                    ],
+                ],
+            ],           
         ];
     }
 

@@ -24,7 +24,7 @@ class LeavePrintController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['admin', 'user'],
+                        'roles' => ['admin', 'user', 'leave_user'],
                     ],
                 ],
             ],
