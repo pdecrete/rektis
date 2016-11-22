@@ -58,7 +58,7 @@ class EmployeeController extends Controller
 						'actions' => ['update', 'create'],
 						'allow' => true,
 						// Allow only admins to create, delete, update
-						'roles' => ['admin', 'user', 'leaveuser'],
+						'roles' => ['admin', 'user', 'leave_user'],
 					],
 				],
 			],                        
