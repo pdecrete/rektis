@@ -25,7 +25,7 @@ class AuthRuleController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -33,7 +33,25 @@ class AuthRuleController extends Controller
                         'roles' => ['superadmin'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'only' => ['index', 'create', 'update', 'view', 'delete'],
+				'rules' => [
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						// Allow all registered users to index, view
+						'roles' => ['admin'],
+					],
+					[
+						'actions' => ['create', 'update', 'delete'],
+						'allow' => true,
+						// Allow only superadmins to create, delete, update
+						'roles' => ['superadmin'],
+					],
+				],
+			],            
         ];
     }
 
