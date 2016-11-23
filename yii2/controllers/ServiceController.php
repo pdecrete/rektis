@@ -36,16 +36,13 @@ class ServiceController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index', 'create', 'update', 'view', 'delete'],
 				'rules' => [
 					[
 						'actions' => ['index','view'],
 						'allow' => true,
-						// Allow all registered users to index, view
 						'roles' => ['@'],
 					],
 					[
-						'actions' => ['create', 'update', 'delete'],
 						'allow' => true,
 						'roles' => ['admin', 'user'],
 					],

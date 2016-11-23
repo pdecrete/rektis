@@ -30,7 +30,6 @@ class LeavePrintController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index'],
 				'rules' => [
 					[
 						'actions' => ['index'],

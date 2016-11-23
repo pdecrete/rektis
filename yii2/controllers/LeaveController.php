@@ -43,18 +43,14 @@ class LeaveController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index', 'create', 'update', 'view', 'delete', 'download', 'email', 'print', 'reprint'],
 				'rules' => [
 					[
 						'actions' => ['index', 'view'],
 						'allow' => true,
-						// Allow all registered users to index, view
 						'roles' => ['@'],
 					],
 					[
-						'actions' => ['create', 'update', 'delete', 'download', 'email', 'print', 'reprint'],
 						'allow' => true,
-						// Allow only admins to create, delete, update
 						'roles' => ['admin', 'user', 'leave_user'],
 					],
 				],
