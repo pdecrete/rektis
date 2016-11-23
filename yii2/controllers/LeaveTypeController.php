@@ -27,7 +27,7 @@ class LeaveTypeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -35,7 +35,21 @@ class LeaveTypeController extends Controller
                         'roles' => ['admin'],
                     ],
                 ],
-            ],           
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						'roles' => ['@'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin'],
+					],
+				],
+			],            
         ];
     }
 

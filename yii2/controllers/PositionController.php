@@ -24,7 +24,7 @@ class PositionController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -32,7 +32,21 @@ class PositionController extends Controller
                         'roles' => ['admin'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						'roles' => ['@'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user'],
+					],
+				],
+			],            
         ];
     }
 

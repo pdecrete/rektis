@@ -25,7 +25,7 @@ class SpecialisationController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -33,7 +33,22 @@ class SpecialisationController extends Controller
                         'roles' => ['admin'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						// Allow all registered users to index, view
+						'roles' => ['@'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user'],
+					],
+				],
+			],            
         ];
     }
 

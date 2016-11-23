@@ -24,7 +24,7 @@ class EmployeeStatusController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -32,7 +32,21 @@ class EmployeeStatusController extends Controller
                         'roles' => ['admin'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						'roles' => ['@'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user'],
+					],
+				],
+			],                        
         ];
     }
 

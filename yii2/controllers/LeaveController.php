@@ -32,7 +32,7 @@ class LeaveController extends Controller
 //                    'print' => ['POST'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -40,8 +40,22 @@ class LeaveController extends Controller
                         'roles' => ['admin', 'user', 'leave_user'],
                     ],
                 ],
-            ],
-        ];
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index', 'view'],
+						'allow' => true,
+						'roles' => ['@'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user', 'leave_user'],
+					],
+				],
+			],                        
+		];
     }
 
     /**

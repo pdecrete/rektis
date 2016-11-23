@@ -27,6 +27,8 @@ use yii\data\SqlDataProvider;
  * @property string $social_security_number
  * @property integer $specialisation
  * @property string $identification_number
+ * @property string $serve_desicion
+ * @property string $serve_decision_date
  * @property string $appointment_fek
  * @property string $appointment_date
  * @property integer $service_organic
@@ -38,6 +40,8 @@ use yii\data\SqlDataProvider;
  * @property string $pay_scale_date
  * @property string $service_adoption
  * @property string $service_adoption_date
+ * @property string $work_base
+ * @property string $home_base
  * @property integer $master_degree
  * @property integer $doctorate_degree
  * @property string $work_experience
@@ -56,6 +60,7 @@ use yii\data\SqlDataProvider;
 class Employee extends \yii\db\ActiveRecord
 {
 	public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
+	public $transportSumDelFlag = 0; // Για τα σύνολα των μετακινήσεων αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
 
     /**
      * @inheritdoc
@@ -91,10 +96,10 @@ class Employee extends \yii\db\ActiveRecord
             [['tax_identification_number'], 'string', 'max' => 9],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],
-            [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'create_ts', 'update_ts'], 'safe'],
+            [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'serve_decision_date', 'create_ts', 'update_ts'], 'safe'],
             [['comments'], 'string'],
             [['name', 'surname', 'fathersname', 'mothersname', 'email'], 'string', 'max' => 100],
-            [['telephone', 'mobile', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
+            [['telephone', 'serve_decision', 'work_base', 'home_base', 'mobile', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
             [['address'], 'string', 'max' => 200],
             [['identification_number', 'appointment_fek', 'service_adoption'], 'string', 'max' => 10],
             [['rank'], 'string', 'max' => 4],
@@ -148,6 +153,10 @@ class Employee extends \yii\db\ActiveRecord
             'pay_scale_date' => Yii::t('app', 'Pay Scale Date'),
             'service_adoption' => Yii::t('app', 'Service Adoption'),
             'service_adoption_date' => Yii::t('app', 'Service Adoption Date'),
+            'serve_decision' => Yii::t('app', 'Service Decision'),
+            'serve_decision_date' => Yii::t('app', 'Service Decision Date'),
+            'work_base' => Yii::t('app', 'Work base'),
+            'home_base' => Yii::t('app', 'Home base'),           
             'master_degree' => Yii::t('app', 'No of Master Degrees'),
             'doctorate_degree' => Yii::t('app', 'No of Doctorate Degrees'),
             'work_experience' => Yii::t('app', 'Work Experience'),
@@ -231,11 +240,27 @@ class Employee extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getTransports()
+    {
+        return $this->hasMany(Transport::className(), ['employee' => 'id'])->orderBy(['start_date' => SORT_DESC]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getLeavesDuration()
     {
         return $this->hasMany(Leave::className(), ['employee' => 'id'])->where(['deleted' => 0])->sum('duration');
     }
- 
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTransportsDuration()
+    {
+        return $this->hasMany(Transport::className(), ['employee' => 'id'])->where(['deleted' => 0])->sum('days_applied');
+    }
+  
     /**
      * @inheritdoc
      * @return EmployeeQuery the active query used by this AR class.
@@ -285,7 +310,6 @@ class Employee extends \yii\db\ActiveRecord
 				],
 		]);
 	}
-	
 
 	/**
      * @return \yii\db\ActiveQuery
@@ -298,7 +322,6 @@ class Employee extends \yii\db\ActiveRecord
 		->andWhere(['YEAR(start_date)' =>  $myYear])
 		->sum('duration');
     } */
-   
    
    // Override beforeSave() to log employee table changes to log target
    public function beforeSave($insert)
@@ -317,4 +340,72 @@ class Employee extends \yii\db\ActiveRecord
          return true;
       }
    }
+   
+	/*return */
+	public function getCountTransportTotals()
+	{
+		$total = Yii::$app->db->createCommand(
+					' select count(*) ' .
+					' from ( select admapp_employee.id as id ' .
+							' FROM admapp_transport LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,  admapp_transport_type  ' .
+							' WHERE admapp_transport.type = admapp_transport_type.id  ' .
+							' AND admapp_employee.id = :id  ' .
+							' AND admapp_transport.deleted = :del  ' .
+							' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) as e  ' .
+					' group by e.id ',
+					 [':id' => $this->id, 
+					':del' => $this->transportSumDelFlag])->queryScalar();
+		return $total;
+	}
+
+	/*return DataProvider*/
+	public function getTransportsTotals()
+	{
+		return new SqlDataProvider([
+				'sql' => ' select admapp_employee.id as employeeID, ' .
+					' admapp_transport_type.name as transportTypeName , ' .
+					' Year(admapp_transport.start_date) as transportYear, ' .
+					' admapp_transport.deleted as deleted, ' .
+					' sum(admapp_transport.days_applied) as duration ' . 
+					' FROM admapp_transport ' .
+					' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
+					' admapp_transport_type ' .
+					' WHERE admapp_transport.type = admapp_transport_type.id ' .
+					' AND admapp_employee.id = :id ' .
+					' AND admapp_transport.deleted = :del ' .
+					' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted' .
+					' ORDER BY Year(admapp_transport.start_date) DESC, admapp_transport_type.name ASC '	,
+				'params' => [
+					':id' => $this->id, 
+					':del' => $this->transportSumDelFlag,	
+				],
+		]);
+	}
+
+	/*return */
+	public function getTransportTypeTotal($empid, $typeid, $year)
+	{
+		$total = Yii::$app->db->createCommand(
+			' select duration from ( ' .
+				' select admapp_employee.id as employeeID, ' .
+					' admapp_transport_type.name as transportTypeName , ' .
+					' Year(admapp_transport.start_date) as transportYear, ' .
+					' admapp_transport.deleted as deleted, ' .
+					' sum(admapp_transport.days_applied) as duration ' . 
+				' FROM admapp_transport ' .
+					' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
+					' admapp_transport_type ' .
+				' WHERE admapp_transport.type = admapp_transport_type.id ' .
+					' AND admapp_employee.id = :id ' .
+					' AND admapp_transport.type = :type ' .
+					' AND YEAR(admapp_transport.start_date) = :year ' .
+					' AND admapp_transport.deleted = :del ' .
+				' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l',
+					 [':id' => $empid, 
+					 ':type' => $typeid,
+					 ':year' => $year,
+					':del' => 0])->queryScalar();
+		return $total;
+	}
+   
 }

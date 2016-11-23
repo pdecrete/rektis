@@ -25,7 +25,7 @@ class AuthItemController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -33,7 +33,21 @@ class AuthItemController extends Controller
                         'roles' => ['superadmin'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['superadmin'],
+					],
+					[
+						'actions' => ['index','view'],
+						'allow' => true,
+						'roles' => ['admin'],
+					],
+				],
+			],            
         ];
     }
 

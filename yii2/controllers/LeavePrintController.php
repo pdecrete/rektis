@@ -19,7 +19,7 @@ class LeavePrintController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
+/*            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
@@ -27,7 +27,18 @@ class LeavePrintController extends Controller
                         'roles' => ['admin', 'user', 'leave_user'],
                     ],
                 ],
-            ],
+            ],*/
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'actions' => ['index'],
+						'allow' => true,
+						// Allow all registered users to index
+						'roles' => ['@'],
+					],
+				],
+			],                                   
         ];
     }
 
