@@ -29,12 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ])
         ?>
 		<?= Html::a(Yii::t('app', 'Create Leave'), [ 'leave/create', 'employee' => $model->id], ['class' => 'btn btn-primary']) ?>
+		<?= Html::a(Yii::t('app', 'Create Transport'), [ 'transport/create', 'employee' => $model->id], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#personal" aria-controls="personal" role="tab" data-toggle="tab"><?= Yii::t('app', 'Personal') ?></a></li>
         <li role="presentation"><a href="#service" aria-controls="service" role="tab" data-toggle="tab"><?= Yii::t('app', 'Professional') ?></a></li>
         <li role="presentation"><a href="#leaves" aria-controls="leaves" role="tab" data-toggle="tab"><?= Yii::t('app', 'Leaves') ?></a></li>
+        <li role="presentation"><a href="#transports" aria-controls="transports" role="tab" data-toggle="tab"><?= Yii::t('app', 'Transports') ?></a></li>
         <li role="presentation"><a href="#system" aria-controls="system" role="tab" data-toggle="tab"><?= Yii::t('app', 'System information') ?></a></li>
     </ul>
 
@@ -85,6 +87,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Position'),
                         'attribute' => 'position0.name'
                     ],
+                    'serve_decision',
+                    [
+                        'label' => Yii::t('app', 'Service Decision Date'),
+                        'attribute' => function ($data) {
+                            return \Yii::$app->formatter->asDate($data['serve_decision_date']);
+                        }
+                    ],                   
                     'appointment_fek',
                     [
                         'label' => Yii::t('app', 'Appointment Date'),
@@ -117,6 +126,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             return \Yii::$app->formatter->asDate($data['pay_scale_date']);
                         }
                     ],
+                    'work_base',
+                    'home_base',                  
                     'master_degree',
                     'doctorate_degree',
                     'work_experience',
@@ -193,6 +204,78 @@ $this->params['breadcrumbs'][] = $this->title;
             echo $this->render('/leave/_employee', ['dataProvider' => $leavesDataProvider, 'employeeModel' => $model]);
             ?>
         </div>        
+        <div role="tabpanel" class="tab-pane fade-in" id="transports">
+        <h1>Σύνολα μετακινήσεων <small> Οι διεγραμμένες μετακινήσεις δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
+		<?php					
+			//Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
+
+			$count = $model->getCountTransportTotals();
+			$transportsSumDataProvider = $model->getTransportsTotals();
+			$transportsSumDataProvider->totalCount = $count;
+			$transportsSumDataProvider->pagination = [
+					'pagesize' => 5, 
+					'pageParam' => 'sumPage',
+					];
+			$transportsSumDataProvider->sort =[
+					'attributes' => [
+						'transportYear' => SORT_DESC,
+						'transportTypeName' => SORT_ASC,
+						],
+					'sortParam' => 'sumSort',
+				];
+				
+		?>
+		<?php Pjax::begin(); ?>
+		<?=
+			GridView::widget([
+				'dataProvider' => $transportsSumDataProvider,       
+				'columns' => [
+					['class' => 'yii\grid\SerialColumn'],
+					['label' => Yii::t('app', 'Transport type'),
+						'attribute' => 'transportTypeName'],
+					['label' => Yii::t('app', 'Year'),
+						'attribute' => 'transportYear'],
+					['label' => Yii::t('app', 'Duration in days'),
+						'attribute' => 'duration'],			
+				],	
+			]);
+		?>
+		<?php Pjax::end(); ?>
+	
+			<?php
+//            $sd = (new \yii\db\Query())
+//                    ->from('admapp_leave')
+//                    ->where(['employee' => 1, 'deleted' => 0])
+//                    ->sum('duration');
+//            yii\helpers\VarDumper::dump($sd);
+//            \yii\helpers\VarDumper::dump($model->leavesDuration);
+
+            $transportsDataProvider = new ArrayDataProvider([
+                'allModels' => $model->transports,
+                'pagination' => [
+                    'pagesize' => 10,
+                    'pageParam' => 'transportPage',
+                ],
+                'sort' => [
+                    'attributes' => [
+                        'duration' => [
+                            'asc' => ['start_date' => SORT_ASC, 'duration' => SORT_ASC],
+                            'desc' => ['start_date' => SORT_DESC, 'duration' => SORT_DESC],
+                            'default' => SORT_DESC,
+                            'label' => 'Duration',
+                        ],
+                        'decision_protocol_date',
+                        'type',
+                    ],
+                    'sortParam' => 'transportSort',	
+                ]
+            ]);
+            echo $this->render('/transport/_employee', ['dataProvider' => $transportsDataProvider, 'employeeModel' => $model]);
+
+            ?>
+        </div>        
+
+
         <div role="tabpanel" class="tab-pane fade-in" id="system">
             <?=
             DetailView::widget([

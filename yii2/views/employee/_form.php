@@ -98,6 +98,12 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
+		<?= $form->field($model, 'serve_decision')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'serve_decision_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
+        ?>
+
         <hr>
         <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
@@ -134,6 +140,8 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
+        <?= $form->field($model, 'work_base')->textInput() ?>
+        <?= $form->field($model, 'home_base')->textInput() ?>       
         <hr>
         <?= $form->field($model, 'master_degree')->textInput() ?>
         <?= $form->field($model, 'doctorate_degree')->textInput() ?>
