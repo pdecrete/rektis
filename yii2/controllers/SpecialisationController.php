@@ -36,7 +36,6 @@ class SpecialisationController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index', 'create', 'update', 'view', 'delete'],
 				'rules' => [
 					[
 						'actions' => ['index','view'],
@@ -45,7 +44,6 @@ class SpecialisationController extends Controller
 						'roles' => ['@'],
 					],
 					[
-						'actions' => ['create', 'update', 'delete'],
 						'allow' => true,
 						'roles' => ['admin', 'user'],
 					],

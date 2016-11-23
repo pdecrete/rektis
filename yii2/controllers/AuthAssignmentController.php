@@ -36,19 +36,15 @@ class AuthAssignmentController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index', 'create', 'update', 'view', 'delete'],
 				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['superadmin'],
+					],
 					[
 						'actions' => ['index','view'],
 						'allow' => true,
-						// Allow all registered users to index, view
 						'roles' => ['admin'],
-					],
-					[
-						'actions' => ['create', 'update', 'delete'],
-						'allow' => true,
-						// Allow only superadmins to create, delete, update
-						'roles' => ['superadmin'],
 					],
 				],
 			],            

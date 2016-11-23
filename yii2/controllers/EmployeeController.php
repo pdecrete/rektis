@@ -40,7 +40,6 @@ class EmployeeController extends Controller
             ],*/
 			'access' => [
 				'class' => AccessControl::className(),
-				'only' => ['index', 'create', 'update', 'view', 'delete'],
 				'rules' => [
 					[
 						'actions' => ['index','view'],
@@ -49,16 +48,13 @@ class EmployeeController extends Controller
 						'roles' => ['@'],
 					],
 					[
-						'actions' => ['delete'],
-						'allow' => true,
-						// Allow only admins to create, delete, update
-						'roles' => ['admin', 'user'],
-					],
-					[
 						'actions' => ['update', 'create'],
 						'allow' => true,
-						// Allow only admins to create, delete, update
-						'roles' => ['admin', 'user', 'leave_user'],
+						'roles' => ['leave_user'],
+					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user'],
 					],
 				],
 			],                        
