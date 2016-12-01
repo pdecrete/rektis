@@ -8,13 +8,12 @@ use Yii;
  * This is the model class for table "admapp_transport_print".
  *
  * @property integer $id
- * @property integer $transport
  * @property string $filename
  * @property string $create_ts
  * @property string $send_ts
  * @property string $to_emails
  *
- * @property Transport $transport0
+ * @property TransportPrintConnections $transportPrintConnections
  */
 class TransportPrint extends \yii\db\ActiveRecord
 {
@@ -32,12 +31,10 @@ class TransportPrint extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transport'], 'integer'],
             [['filename'], 'required'],
             [['create_ts', 'send_ts'], 'safe'],
             [['filename'], 'string', 'max' => 255],
             [['to_emails'], 'string', 'max' => 1000],
-            [['transport'], 'exist', 'skipOnError' => true, 'targetClass' => Transport::className(), 'targetAttribute' => ['transport' => 'id']],
         ];
     }
 
@@ -48,7 +45,6 @@ class TransportPrint extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'transport' => Yii::t('app', 'Transport'),
             'filename' => Yii::t('app', 'Filename'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'send_ts' => Yii::t('app', 'Send Ts'),
@@ -76,12 +72,29 @@ class TransportPrint extends \yii\db\ActiveRecord
         $fname = basename($filename);
         return Yii::getAlias("@vendor/admapp/exports/transports/{$fname}");
     }
-
-    /**
+       
+     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getTransportPrintConnections()
+    {
+        return $this->hasMany(TransportPrintConnection::className(), ['transport_print' => 'id']);
+    }
+
+    public function transportPrintID($filename)
+    {
+        return TransportPrint::find()
+                        ->where(['filename' => $filename])
+                        ->one();
+    }
+    
+    /**
+    * @return \yii\db\ActiveQuery
+    */
     public function getTransport0()
     {
-        return $this->hasOne(Transport::className(), ['id' => 'transport']);
+        return $this->hasOne(Transport::className(), ['transport_print' => 'id'])
+					->viaTable('admapp_transport_print_connection', ['id' => 'transport']);
     }   
+
 }

@@ -46,6 +46,7 @@ use yii\data\SqlDataProvider;
  * @property integer $doctorate_degree
  * @property string $work_experience
  * @property string $comments
+ * @property string $iban
  * @property integer $deleted
  * @property string $create_ts
  * @property string $update_ts
@@ -94,6 +95,7 @@ class Employee extends \yii\db\ActiveRecord
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted'], 'integer'],
             [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale'/*, 'service_adoption_date'*/], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
+            [['iban'], 'string', 'max' => 27],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
             ['email', 'email'],
             [['appointment_date', 'rank_date', 'pay_scale_date', 'service_adoption_date', 'serve_decision_date', 'create_ts', 'update_ts'], 'safe'],
@@ -142,6 +144,7 @@ class Employee extends \yii\db\ActiveRecord
             'social_security_number' => Yii::t('app', 'Social Security Number'),
             'specialisation' => Yii::t('app', 'Specialisation'),
             'identification_number' => Yii::t('app', 'Identification Number'),
+            'iban' => Yii::t('app', 'IBAN'),
             'appointment_fek' => Yii::t('app', 'Appointment FEK'),
             'appointment_date' => Yii::t('app', 'Appointment Date'),
             'service_organic' => Yii::t('app', 'Service Organic'),
