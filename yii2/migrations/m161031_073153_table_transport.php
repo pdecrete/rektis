@@ -96,7 +96,6 @@ class m161031_073153_table_transport extends Migration
 				PRIMARY KEY (`id`),
 				KEY `employee_fk_index` (`employee`),
 				KEY `transport_type_fk_index` (`type`),
-				KEY `transport_type_journal_fk_index` (`type`),
 				KEY `transport_mode_fk_index` (`mode`),
 				KEY `transport_funds1_fk_index` (`fund1`),
 				KEY `transport_funds2_fk_index` (`fund2`),
@@ -112,14 +111,20 @@ class m161031_073153_table_transport extends Migration
 			"],
         ['transport_print', "
 				`id` integer NOT NULL AUTO_INCREMENT,
-				`transport` integer DEFAULT NULL COMMENT 'Μετακίνηση',
 				`filename` varchar(255) NOT NULL,
 				`doctype` smallint NULL DEFAULT NULL,
 				`create_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 				`send_ts` timestamp NULL DEFAULT NULL,
 				`to_emails` varchar(1000) DEFAULT NULL,
+				PRIMARY KEY (`id`)
+			"],
+        ['transport_print_connection', "
+				`id` integer NOT NULL AUTO_INCREMENT,
+				`transport` integer DEFAULT NULL COMMENT 'Μετακίνηση',
+				`transport_print` integer DEFAULT NULL COMMENT 'Έγγραφο',
 				PRIMARY KEY (`id`),
-				KEY `transport_fk_index` (`transport`)    
+				KEY `transport_fk_index` (`transport`),
+				KEY `transport_print_fk_index` (`transport_print`)			
 			"],
 	];
 
@@ -149,15 +154,16 @@ class m161031_073153_table_transport extends Migration
 					$this->addForeignKey('transport_funds_fk2', $table_name, 'fund2', 'admapp_transport_funds', 'id', 'SET NULL', 'CASCADE');
 					$this->addForeignKey('transport_funds_fk3', $table_name, 'fund3', 'admapp_transport_funds', 'id', 'SET NULL', 'CASCADE');
 				}
-				if ($table_name == 'admapp_transport_print') {
-					$this->addForeignKey('transport_print_trans_fk', $table_name, 'transport', 'admapp_transport', 'id', 'SET NULL', 'CASCADE');
-				}
 				if ($table_name == 'admapp_transport_status_date') {
 					$this->addForeignKey('transport_status_date_trans_fk', $table_name, 'transport', 'admapp_transport', 'id', 'SET NULL', 'CASCADE');
 					$this->addForeignKey('transport_status_date_status_fk', $table_name, 'status', 'admapp_transport_status', 'id', 'SET NULL', 'CASCADE');
 				}
 				if ($table_name == 'admapp_transport_funds') {
 					$this->addForeignKey('transport_funds_service_fk', $table_name, 'service', 'admapp_service', 'id', 'SET NULL', 'CASCADE');
+				}
+				if ($table_name == 'admapp_transport_print_connection') {
+					$this->addForeignKey('transport_print_connection_trans_fk', $table_name, 'transport', 'admapp_transport', 'id', 'SET NULL', 'CASCADE');
+					$this->addForeignKey('transport_print_connection_print_fk', $table_name, 'transport_print', 'admapp_transport_print', 'id', 'SET NULL', 'CASCADE');
 				}
             }
         }

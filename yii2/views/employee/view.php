@@ -57,6 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'address',
                     'identity_number',
                     'social_security_number',
+                    'iban',
                 ]
             ])
             ?>

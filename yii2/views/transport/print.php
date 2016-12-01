@@ -33,17 +33,6 @@ if ($model->deleted) {
 
     <p>
         <?= Html::a(Yii::t('app', 'Return to view'), ['view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-        <?=
-        Html::a(Yii::t('app', 'Print all'), ['reprint', 'id' => $model->id, 'ftype' => fall ], [
-            'class' => 'btn btn-default',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to print all transport files?'),
-                'method' => 'post',
-            ],
-        ])
-        ?>
-
         <?=
         Html::a(Yii::t('app', 'Print approval'), ['reprint', 'id' => $model->id, 'ftype' => fapproval ], [
             'class' => 'btn btn-success',
@@ -53,7 +42,6 @@ if ($model->deleted) {
             ],
         ])
         ?>
-
         <?=
         Html::a(Yii::t('app', 'Print journal'), ['reprint', 'id' => $model->id, 'ftype' => fjournal ], [
             'class' => 'btn btn-success',
@@ -63,7 +51,6 @@ if ($model->deleted) {
             ],
         ])
         ?>
-
         <?=
         Html::a(Yii::t('app', 'Delete all'), ['deleteprints', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -73,6 +60,15 @@ if ($model->deleted) {
             ],
         ])
         ?>
+        <?=
+        Html::a(Yii::t('app', 'Email journal'), ['emailjournal', 'id' => $model->id, 'ftype' => fjournal ], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('app', 'Are you sure you want to email this transport journal?'),
+                'method' => 'post',
+            ],
+        ])
+        ?>               
     </p>
     <?php if ($filename != null) : ?>
         <div class="alert alert-info" role="alert">Το-α αρχείο-α εκτύπωσης της μετακίνησης είναι διαθέσιμο-α για μεταφόρτωση.</div>
@@ -94,7 +90,7 @@ if ($model->deleted) {
 					//'to_emails',					
                     ],
                 ]
-            ]);   
+            ]);
     ?>
 	<?php Pjax::begin(); ?>
 	<?=
@@ -110,9 +106,9 @@ if ($model->deleted) {
                 'class' => 'yii\grid\ActionColumn',
 					'template' => '{show} {download}',
 					'buttons' => [
-						'download' => function ($url, $model, $key) {
+						'download' => function ($url, $tpmodel, $key) use ($model) {
 							return Html::a(
-								'<span class="glyphicon glyphicon-download"></span>', Url::to(['/transport/download', 'id' => $model->transport, 'printid' => $model->id ]), [
+								'<span class="glyphicon glyphicon-download"></span>', Url::to(['/transport/download', 'id' => $model->id /* $model->transport */ , 'printid' => $tpmodel->id ]), [
 									'title' => Yii::t('app', 'Download'),
 									'data-confirm' => Yii::t('app', 'Are you sure you want to download this transport?'),
 									'data-method' => 'post',

@@ -50,11 +50,13 @@ use Yii;
  * @property Fund1 $transportFund1
  * @property Fund2 $transportFund2
  * @property Fund3 $transportFund3
- * @property TransportPrint[] $transportPrints
+ * @property TransportPrintConnection[] $transportPrintConnections
  */
 class Transport extends \yii\db\ActiveRecord
 {
-	
+	public $from = '2016-11-01';
+	public $to = '2016-12-31';		
+
 	/**
      * @inheritdoc
      */
@@ -190,6 +192,36 @@ class Transport extends \yii\db\ActiveRecord
         return $this->hasOne(TransportFunds::className(), ['id' => 'fund3']);
     }
 
+    public function allSameDecision()
+    {
+        return Transport::find()
+                        ->where([
+                            'decision_protocol' => $this->decision_protocol,
+                            'decision_protocol_date' => $this->decision_protocol_date,
+                            'type' => $this->type,
+                            'employee' => $this->employee
+                        ])
+                        ->orderBy('id')
+                        ->all();
+    }
+
+    public function selectForPayment($from, $to)
+    {
+        return Transport::find()
+                        ->where(['type' => $this->type, 'employee' => $this->employee])
+                        ->andWhere(['between', 'start_date', $from, $to])
+                        ->orderBy('id')
+                        ->all();
+    }
+
+    public function lastTransport($employee_id)
+    {
+        return Transport::find()
+                        ->where(['employee' => $employee_id])
+                        ->orderBy('start_date DESC')
+                        ->one();
+    }
+
     /**
      * @return String Transport info str
      */
@@ -205,8 +237,17 @@ class Transport extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getTransportPrintConnections()
+    {
+        return $this->hasMany(TransportPrintConnection::className(), ['transport' => 'id']);
+    }  
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTransportPrints()
     {
-        return $this->hasMany(TransportPrint::className(), ['transport' => 'id']);
-    }
+        return $this->hasMany(TransportPrint::className(), ['id' => 'transport_print'])
+					->viaTable('admapp_transport_print_connection', ['transport' => 'id']);
+    }   
 }

@@ -51,6 +51,7 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number', 'clientOptions' => ['alias' => 'Regex', 'regex' => '[A-ZΑ-Ω]{1,2}[0-9]{6}]']]) ?>
         
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
+        <?= $form->field($model, 'iban')->widget(MaskedInput::classname(),['name' => 'iban','mask' => 'AA9999999999999999999999999']) ?>
       </div>
       
       <!-- Service Tab -->
