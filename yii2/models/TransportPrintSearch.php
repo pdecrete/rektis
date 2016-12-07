@@ -19,7 +19,7 @@ class TransportPrintSearch extends TransportPrint
     {
         return [
             [['id'], 'integer'],
-            [['filename', 'create_ts', 'send_ts', 'to_emails'], 'safe'],
+            [['filename', 'create_ts', 'send_ts', 'to_emails', 'transport'], 'safe'],
         ];
     }
 
