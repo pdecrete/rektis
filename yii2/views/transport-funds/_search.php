@@ -27,8 +27,14 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'code') ?>
 
-    <?= $form->field($model, 'kae') ?>
-
+	<?= $form->field($model, 'kae')->widget(Select2::classname(), [
+		'data' => \app\models\TransportFunds::kaeList(),
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+          'pluginOptions' => [
+              'allowClear' => true
+          ],
+        ]);
+        ?>
     <?php //echo $form->field($model, 'amount') ?>
 
     <?php //echo $form->field($model, 'count_flag') ?>

@@ -136,4 +136,21 @@ class TransportPrintController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+   	public function actionDownload($id)
+    {
+        $model = $this->findModel($id);
+        if ($model != null) {
+			$filename = $model->filename;
+        } else { // print doesnot exist...
+			throw new NotFoundHttpException(Yii::t('app', 'The requested transport file was not found.'));
+        }
+		if (is_readable(TransportPrint::path($filename))) {
+			// all well, send file 
+			Yii::$app->response->sendFile(TransportPrint::path($filename));
+		} else {
+			throw new NotFoundHttpException(Yii::t('app', 'The requested transport file was not found.'));	
+		}
+    }    
+
 }

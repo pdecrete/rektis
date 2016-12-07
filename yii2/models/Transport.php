@@ -54,8 +54,8 @@ use Yii;
  */
 class Transport extends \yii\db\ActiveRecord
 {
-	public $from = '2016-11-01';
-	public $to = '2016-12-31';		
+	public $from; //date('d/m/Y')
+	public $to;
 
 	/**
      * @inheritdoc
@@ -73,7 +73,7 @@ class Transport extends \yii\db\ActiveRecord
         return [
             [['employee', 'type', 'decision_protocol', 'application_protocol', 'from_to', 'days_applied', 'days_out', 'mode', 'deleted', 'fund1', 'fund2', 'fund3' ], 'integer'],
             [[ 'employee', 'start_date', 'end_date', 'reason', 'from_to', 'mode', 'days_applied', 'ticket_value'], 'required'],
-            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
+            [['from', 'to', 'decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['ticket_value', 'klm_reimb', 'day_reimb', 'night_reimb', 'klm', 'reimbursement', 'mtpy', 'pay_amount', 'code719', 'code721', 'code722'], 'number'],
             [['comment'], 'string'],           
             [['count_flag'], 'boolean'],
@@ -133,6 +133,8 @@ class Transport extends \yii\db\ActiveRecord
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
             'deleted' => Yii::t('app', 'Deleted'),
+            'from' => Yii::t('app', 'From'),
+            'to' => Yii::t('app', 'To'),
         ];
     }
 
@@ -207,6 +209,10 @@ class Transport extends \yii\db\ActiveRecord
 
     public function selectForPayment($from, $to)
     {
+//		echo 'TYPE: ' . $this->type . '<br>';
+//		echo 'EMPLOYEE: ' . $this->employee . '<br>';
+//		echo 'FROM: ' . $from . '<br>';
+//		echo 'TO: ' . $to . '<br>';
         return Transport::find()
                         ->where(['type' => $this->type, 'employee' => $this->employee])
                         ->andWhere(['between', 'start_date', $from, $to])

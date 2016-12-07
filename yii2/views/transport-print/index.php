@@ -30,30 +30,28 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             //'send_ts',
             // 'to_emails:email',
+
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{show} {download}',
                 'buttons' => [
                     'download' => function ($url, $model, $key) {
                         return Html::a(
-                                    '<span class="glyphicon glyphicon-download"></span>', Url::to(['/transport/download', 'id' => $model->transport, 'printid' => $model->id]), [
+                                    '<span class="glyphicon glyphicon-download"></span>', Url::to(['download', 'id' => $model->id]), [
                                     'title' => Yii::t('app', 'Download'),
                                     'data-confirm' => Yii::t('app', 'Are you sure you want to download this transport?'),
                                     'data-method' => 'post',
                                         ]
                         );
                     },
-                        'show' => function ($url, $model, $key) {
-                        return Html::a(
-                                        '<span class="glyphicon glyphicon-eye-open"></span>', Url::to(['/transport/view', 'id' => $model->transport]), [
-                                    'title' => Yii::t('app', 'Transport'),
-                                        ]
-                        );
-                    },
                         ]
                     ],
+
+
+
+
                 ],
             ]);
             ?>
-            <?php Pjax::end(); ?>
+	<?php Pjax::end(); ?>
 </div>

@@ -64,6 +64,11 @@ class TransportFunds extends \yii\db\ActiveRecord
         ];
     }
 
+    public function kaeList()
+    {
+        return ['719'=>'719', '721'=>'721', '722'=>'722'];
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

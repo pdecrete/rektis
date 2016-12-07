@@ -33,12 +33,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'date',
             'ada',
           //  'service',
-		[
-			'label' => $model->getAttributeLabel('service'),
-			'value' => $model->service0 ? $model->service0->name  : null
-		],       
-            'code',
-            'kae',
+			[
+				'label' => $model->getAttributeLabel('service'),
+				'value' => $model->service0 ? $model->service0->name  : null
+			],       
+				'code',
+			[
+				'label' => Yii::t('app', 'KAE'),
+				'attribute' => 'kae'
+			], 
+            //'kae',
             'amount:currency',
 			[
 				'label' => $model->getAttributeLabel('count_flag'),

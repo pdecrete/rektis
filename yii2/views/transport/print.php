@@ -43,10 +43,10 @@ if ($model->deleted) {
         ])
         ?>
         <?=
-        Html::a(Yii::t('app', 'Print journal'), ['reprint', 'id' => $model->id, 'ftype' => fjournal ], [
+        Html::a(Yii::t('app', 'Print journal'), ['datesel', 'id' => $model->id, 'ftype' => fjournal ], [
             'class' => 'btn btn-success',
             'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to print this transport journal?'),
+//                'confirm' => Yii::t('app', 'Are you sure you want to print this transport journal?'),
                 'method' => 'post',
             ],
         ])
