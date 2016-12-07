@@ -42,7 +42,14 @@ use kartik\datecontrol\DateControl;
 
     <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'kae')->textInput(['maxlength' => true]) ?>
+	<?= $form->field($model, 'kae')->widget(Select2::classname(), [
+		'data' => \app\models\TransportFunds::kaeList(),
+		'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+			'pluginOptions' => [
+			'allowClear' => true
+			],
+        ]);
+	?>
 
 	<?= $form->field($model, 'amount')->widget(MaskedInput::classname(), [
 			'name' => 'amount', 

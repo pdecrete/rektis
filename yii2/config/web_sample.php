@@ -61,7 +61,7 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
-                    'categories' => ['leave-email', 'contact-email'],
+                    'categories' => ['leave-email', 'contact-email', 'transport-journal-email'],
                     'logFile' => '@runtime/logs/email.log',
                     'logVars' => [],
                 ],                

@@ -150,6 +150,10 @@ AppAsset::register($this);
                                 'label' => 'Αρχεία εκτύπωσης μετακινήσεων',
                                 'url' => ['/transport-print'],
                             ],
+                            [
+                                'label' => 'Υπόλοιπα Κ.Α.Ε. μετακινήσεων',
+                                'url' => ['/transport/kae'],
+                            ],
                         ],
                     ],
                     [ 	'label' => 'Σχετικά', 

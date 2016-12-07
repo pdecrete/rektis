@@ -16,6 +16,8 @@ use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use \PhpOffice\PhpWord\TemplateProcessor;
 use yii\filters\AccessControl;
+use yii\helpers\Html;
+use yii\data\SqlDataProvider;
 
 define ('fall', '0'); // τύπος αρχείου για εκτύπωση: ΟΛΑ
 define ('fapproval', '1'); // τύπος αρχείου για εκτύπωση: ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
@@ -27,6 +29,8 @@ define ('fdocument', '3'); // τύπος αρχείου για εκτύπωση:
  */
 class TransportController extends Controller
 {
+    public $from, $to;
+    
     /**
      * @inheritdoc
      */
@@ -69,6 +73,15 @@ class TransportController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * Lists Transport KAE sums.
+     * @return 
+    */
+    public function actionKae()
+    {
+        return $this->render('kae');
     }
 
     /**
@@ -336,7 +349,7 @@ class TransportController extends Controller
 			$sameDecisionModels = $model->allSameDecision();
 			$all_count = count($sameDecisionModels);	
         } elseif ($which == fjournal) {
-			$sameDecisionModels = $model->selectForPayment($model->from, $model->to);
+			$sameDecisionModels = $model->selectForPayment($this->from, $this->to);
 			$all_count = count($sameDecisionModels);
 		}
         for ($c = 0; $c < $all_count; $c++) {
@@ -527,11 +540,15 @@ class TransportController extends Controller
 			$templateProcessor->setValue('FIN_NAME', Yii::$app->params['fin_director']);      
 
 			// ΔΙΑΣΤΗΜΑΤΑ ΑΠΟ ΜΕΧΡΙ
-			$templateProcessor->setValue('D_STA', Yii::$app->formatter->asDate($transportModel->from));
-			$templateProcessor->setValue('D_END', Yii::$app->formatter->asDate($transportModel->to));
-			
-			$sameDecisionModels = $transportModel->selectForPayment($transportModel->from, $transportModel->to);
+			$templateProcessor->setValue('D_STA', Yii::$app->formatter->asDate($this->from));
+			$templateProcessor->setValue('D_END', Yii::$app->formatter->asDate($this->to));
+					
+			$sameDecisionModels = $transportModel->selectForPayment($this->from, $this->to);
 			$all_count = count($sameDecisionModels);
+			
+//			echo 'ALL_COUNT: ' . $all_count . ' <br>';
+//			echo 'FROM: ' . $this->from . ' <br>';
+//			echo 'TO: ' . $this->to . ' <br>';
 			
 			$S1 = $S2 = $S3 = $S4 = $S5 = $S6 = $S7 = $S8 = $S9 = $S10 = $SDA = $S719 = $S721 = $S722 = 0.00;
 			$templateProcessor->cloneRow('START', $all_count);
@@ -619,22 +636,90 @@ class TransportController extends Controller
 			$ins = $new_print2->insert();
 		}
         return $ins;
-    }
-    
+    }   
+
 	public function actionReprint($id, $ftype)
     {	
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
-		$which = $ftype;
-        $filename = $this->fixPrintDocument($model, $which);
+        $filename = $this->fixPrintDocument($model, $ftype);
         Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
         return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename
         ]);
     }
+
+	public function actionPrintjournal()
+    {	
+		$request = Yii::$app->request;	
+		if ($request->isPost) {
+			$post = $request->post();
+			if ($request->post('id') !== NULL) {			
+				$id = $request->post('id');
+//				echo 'ID = ' . $id . '<br>'; 
+				$model = $this->findModel($id);
+				if ($model->deleted) {
+					throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
+				}
+			}
+			if ($request->post('ftype') !== NULL) {			
+				$ftype = $request->post('ftype');
+//				echo 'FTYPE = ' . $ftype . '<br>'; 
+			}
+			if ($request->post('from') !== NULL) {			
+				$date1 = $request->post('from');
+				$date = str_replace('/', '-', $date1);
+				$this->from = date('Y-m-d', strtotime($date));
+//				echo 'FROM = ' . $this->from . '<br>'; 
+			}
+			if ($request->post('to') !== NULL) {			
+				$date1 = $request->post('to');
+				$date = str_replace('/', '-', $date1);
+				$this->to = date('Y-m-d', strtotime($date));
+//				echo 'TO = ' . $this->to . '<br>'; 
+			}
+			return $this->actionReprint($id, $ftype);
+		}
+    }
+    
+/*
+	public function actionPrintjournal()
+    	{	
+		if (Yii::$app->request->isGet) {		
+			if (Yii::$app->request->get('id') !== NULL) {			
+				$id = Yii::$app->request->get('id');		
+				echo 'ID = ' . $id . '<br>'; 
+				$model = $this->findModel($id);
+				if ($model->deleted) {
+					throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
+				}
+			}
+			if (Yii::$app->request->get('ftype') !== NULL) {			
+				$ftype = Yii::$app->request->get('ftype');
+				echo 'FTYPE = ' . $ftype . '<br>'; 
+			}
+			if (Yii::$app->request->get('from') !== NULL) {			
+				$date=date_create(Yii::$app->request->get('from'));
+				$new_date = date_format($date,"Y-m-d");
+				$this->from = $new_date; // Yii::$app->request->get('from');
+				echo 'FROM = ' . $this->from . '<br>'; 
+			}
+			if (Yii::$app->request->get('to') !== NULL) {			
+				$date=date_create(Yii::$app->request->get('to'));
+				$new_date = date_format($date,"Y-m-d");
+				$this->to = $new_date; // Yii::$app->request->get('to');
+				echo 'TO = ' . $this->to . '<br>'; 
+			}
+			$this->actionReprint($id, $ftype);
+		} else {
+			return $this->render('index');	
+		}
+    }
+
+*/
 
     public function actionDownload($id, $printid)
     {
@@ -660,6 +745,16 @@ class TransportController extends Controller
         // all well, send file 
         Yii::$app->response->sendFile(TransportPrint::path($filename));
     }
+
+    public function actionDatesel($id, $ftype)
+    {
+        $model = $this->findModel($id);
+        if ($model->deleted) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
+        }
+		return $this->render('fromto', ['model' => $model, 'ftype' => $ftype ]);
+    }
+
 
     public function actionDeleteprints($id)
     {
@@ -822,6 +917,58 @@ class TransportController extends Controller
 			$upd = $printModel->save();
 		}		
 		return $upd;
+	}
+ 
+ 	/*return countTotal*/
+	public function getCountFundsTotals()
+	{
+		$total = Yii::$app->db->createCommand(
+					' select count(*) as total ' .
+					' from ( SELECT kae, inamount, outamount, inamount -  outamount as balance ' .
+						'	FROM ( ' .
+						' 		select A.kae AS kae, A.amount as inamount, CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount ' . 
+							'	from 	( ' . 
+									'	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount ' . 
+									'	from admapp_transport_funds ' .
+									'	where (admapp_transport_funds.count_flag = 1) ' . 
+									'	group by admapp_transport_funds.kae ' . 
+									'	) as A, ' .
+									'	(	' . 
+									'	select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722 ' .
+									'	from admapp_transport ' .
+									'	where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del ' .
+									'	) as B ' .
+							' ) AS C ' .
+						' ) AS D ' ,
+					 [	':del' => 0 //μη διεγραμμένες	
+					])
+					->queryScalar();
+		return $total;
+	}
+
+	/*return DataProvider*/
+	public function getFundsTotals()
+	{
+		return new SqlDataProvider([
+				'sql' => ' SELECT kae, inamount, outamount, inamount -  outamount as balance ' .
+						'	FROM ( ' .
+						' 		select A.kae AS kae, A.amount as inamount, CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount ' . 
+							'	from 	( ' . 
+									'	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount ' . 
+									'	from admapp_transport_funds ' .
+									'	where (admapp_transport_funds.count_flag = 1) ' . 
+									'	group by admapp_transport_funds.kae ' . 
+									'	) as A, ' .
+									'	(	' . 
+									'	select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722 ' .
+									'	from admapp_transport ' .
+									'	where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del ' .
+									'	) as B ' .
+								' ) AS C ',
+				'params' => [
+					':del' => 0, //μη διεγραμμένες	
+				],
+		]);
 	}
     
 }

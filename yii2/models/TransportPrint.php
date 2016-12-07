@@ -86,15 +86,15 @@ class TransportPrint extends \yii\db\ActiveRecord
         return TransportPrint::find()
                         ->where(['filename' => $filename])
                         ->one();
-    }
+    } 
     
     /**
     * @return \yii\db\ActiveQuery
     */
-    public function getTransport0()
+ /*   public function getTransport0()
     {
         return $this->hasOne(Transport::className(), ['transport_print' => 'id'])
 					->viaTable('admapp_transport_print_connection', ['id' => 'transport']);
     }   
-
+*/
 }

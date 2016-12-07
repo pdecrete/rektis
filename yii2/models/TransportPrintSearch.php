@@ -18,7 +18,7 @@ class TransportPrintSearch extends TransportPrint
     public function rules()
     {
         return [
-            [['id', 'transport'], 'integer'],
+            [['id'], 'integer'],
             [['filename', 'create_ts', 'send_ts', 'to_emails'], 'safe'],
         ];
     }
@@ -60,7 +60,6 @@ class TransportPrintSearch extends TransportPrint
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'transport' => $this->transport,
             'create_ts' => $this->create_ts,
             'send_ts' => $this->send_ts,
         ]);
@@ -69,5 +68,5 @@ class TransportPrintSearch extends TransportPrint
             ->andFilterWhere(['like', 'to_emails', $this->to_emails]);
 
         return $dataProvider;
-    }
+    }   
 }
