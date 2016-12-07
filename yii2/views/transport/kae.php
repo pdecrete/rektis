@@ -35,11 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
 				['label' => Yii::t('app', 'KAE'),
 					'attribute' => 'kae'],
 				['label' => Yii::t('app', 'In Amount'),
-					'attribute' => 'inamount'],
+					'attribute' => 'inamount',
+					'format' => 'Currency' ],
 				['label' => Yii::t('app', 'Out Amount'),
-					'attribute' => 'outamount'],			
+					'attribute' => 'outamount',
+					'format' => 'Currency' ],			
 				['label' => Yii::t('app', 'Balance'),
-					'attribute' => 'balance'],			
+					'attribute' => 'balance',
+					'format' => 'Currency' ],			
 			],	
 		]);
 	?>

@@ -430,8 +430,11 @@ class TransportController extends Controller
 				}		
 			}
 			$templateProcessor->setValue('APPLICATION_PROTOCOL', $prot);
-			
-			$templateProcessor->setValue('PLAC_DATE', Yii::$app->formatter->asDate($transportModel->employee0->serve_decision_date));
+			if ($transportModel->employee0->serve_decision_date !== null) { 
+				$templateProcessor->setValue('PLAC_DATE', Yii::$app->formatter->asDate($transportModel->employee0->serve_decision_date));
+			} else {
+				$templateProcessor->setValue('PLAC_DATE', '');
+			}
 			$templateProcessor->setValue('PLACEMENT_NUM', $transportModel->employee0->serve_decision);
 		 
 			$templateProcessor->setValue('SURNAME', $transportModel->employee0->surname);
@@ -489,10 +492,8 @@ class TransportController extends Controller
 			}
 			//Διαχωρισμός διπλοτύπων...
 			$funds = array_unique($funds);      
-
 			$fund_str = '';
 			$kae_str = '';
-
 			$k = 5; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
 
 			$num = count($funds);

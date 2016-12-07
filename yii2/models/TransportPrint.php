@@ -32,7 +32,7 @@ class TransportPrint extends \yii\db\ActiveRecord
     {
         return [
             [['filename'], 'required'],
-            [['create_ts', 'send_ts'], 'safe'],
+            [['create_ts', 'send_ts', 'transport'], 'safe'],
             [['filename'], 'string', 'max' => 255],
             [['to_emails'], 'string', 'max' => 1000],
         ];
@@ -46,6 +46,7 @@ class TransportPrint extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'filename' => Yii::t('app', 'Filename'),
+            'transport' => Yii::t('app', 'Transport'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'send_ts' => Yii::t('app', 'Send Ts'),
             'to_emails' => Yii::t('app', 'To Emails'),
@@ -89,12 +90,15 @@ class TransportPrint extends \yii\db\ActiveRecord
     } 
     
     /**
-    * @return \yii\db\ActiveQuery
-    */
- /*   public function getTransport0()
-    {
-        return $this->hasOne(Transport::className(), ['transport_print' => 'id'])
-					->viaTable('admapp_transport_print_connection', ['id' => 'transport']);
-    }   
-*/
+     * @return String TransportPrint info str
+     */
+    public function getInformation()
+    {    	
+		$transportsconnections = $this->transportPrintConnections;
+		$transconn = $transportsconnections[0];
+		$trans = Transport::findOne($transconn->transport);
+		
+		return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
+                . ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+    } 
 }
