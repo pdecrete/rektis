@@ -383,6 +383,7 @@ class TransportController extends Controller
 			if ($templatefilename === null) {
 				throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
 			} 	
+			$dts .= '_' . str_replace('-', '', $this->from) . '-' . str_replace('-', '', $this->to);
 		} elseif ($which == fdocument) { //ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
 				$templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename3 : null;
 				if ($templatefilename === null) {
@@ -670,6 +671,7 @@ class TransportController extends Controller
 				$ftype = $request->post('ftype');
 //				echo 'FTYPE = ' . $ftype . '<br>'; 
 			}
+			echo $this->from;
 			if ($request->post('from') !== NULL) {			
 				$date1 = $request->post('from');
 				$date = str_replace('/', '-', $date1);
@@ -794,6 +796,7 @@ class TransportController extends Controller
 				if ($printConnection->transportPrint0->delete() == false) {
 					$success = false;
 				}
+							
 			} else {
 				if ($printConnection->transportPrint0->doctype == $type) {
 					$unlink_filename = $printConnection->transportPrint0->path;
