@@ -5,8 +5,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
-use kartik\datecontrol\DateControl;
-//use yii\helpers\Url;
+use kartik\date\DatePicker;
 
 $this->title = ($model->employee0 ? $model->employee0->fullname : Yii::t('app', 'UNKNOWN')) . ': ' . Yii::t('app', 'Journal');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Transports'), 'url' => ['index']];
@@ -17,31 +16,43 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Print');
 	<h1><?= Html::encode($this->title) ?></h1>
 	<div class="row">
 		<div class="col-lg-5">	
-			<?php //$form = ActiveForm::begin(['action' => 'printjournal', 'method' => 'post']); ?>
 			<?= Html::beginForm(['printjournal'], 'post', ['enctype' => 'multipart/form-data']) ?>
 				<h2><?= Yii::t('app', 'Journal Dates') ?> </h2>
 				<?=
 					\yii\helpers\Html::hiddenInput('id', $model->id);
-					//$form->field($model, 'id',['inputOptions' => ['value' => $model->id]])->hiddenInput()->label(false);
 				?>	
 				<?=		
 					\yii\helpers\Html::hiddenInput('ftype', $ftype);
-					//$form->field($model, 'ftype',['inputOptions' => ['value' => $ftype]])->hiddenInput()->label(false);
-				?>					
-				<?= Html::label(Yii::t('app', 'From'), 'lbfrom') ?>
-				<?=	
-					\yii\helpers\Html::Input('date', 'from');
-				?>
-				<br>
-				<?= Html::label(Yii::t('app', 'To'), 'lbto') ?>
-				<?= 
-					\yii\helpers\Html::Input('date', 'to'); 
-				?>
+				?>	
+
+				<label class="col-xs-4 col-sm-4 col-md-3 col-lg-3 control-label"><?= Yii::t('app', 'From')?> </label>
+				<?= DatePicker::widget([
+					'name' => 'from', 
+					'value' => Yii::$app->formatter->asDate($model->start_date), //date('d/m/Y'),
+					'options' => ['placeholder' => ' '],
+					'pluginOptions' => [
+						'format' => 'dd/mm/yyyy',
+						'todayHighlight' => true
+						]
+					]);
+				?>				
+
+				<label class="col-xs-4 col-sm-4 col-md-3 col-lg-3 control-label"><?= Yii::t('app', 'To')?></label>
+				<?= DatePicker::widget([
+					'name' => 'to', 
+					'value' => Yii::$app->formatter->asDate($model->end_date), //date('d/m/Y'),
+					'options' => ['placeholder' => ' '],
+					'pluginOptions' => [
+						'format' => 'dd/mm/yyyy',
+						'todayHighlight' => true
+						]
+					]);
+				?>			
 				<div class="form-group">
-					<?= Html::submitButton(Yii::t('app', 'Continue'), ['class' => 'btn btn-primary']) ?> 
+					<?= Html::a(Yii::t('app', 'Return'), ['print', 'id' => $model->id, 'ftype' => $ftype], ['class' => 'btn btn-primary']) ?>	
+					<?= Html::submitButton(Yii::t('app', 'Continue'), ['class' => 'btn btn-success']) ?> 
 				</div>
 				<?= Html::endForm() ?>
-			<?php //ActiveForm::end(); ?>
 		</div>
 	</div>
 </div>
