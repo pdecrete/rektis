@@ -19,7 +19,7 @@ class TransportTypeSearch extends TransportType
     {
         return [
             [['id', 'deleted'], 'integer'],
-            [['name', 'description', 'create_ts', 'update_ts', 'templatefilename1', 'templatefilename2', 'templatefilename3'], 'safe'],
+            [['name', 'description', 'create_ts', 'update_ts', 'templatefilename1', 'templatefilename2', 'templatefilename3', 'templatefilename4'], 'safe'],
         ];
     }
 
@@ -69,7 +69,8 @@ class TransportTypeSearch extends TransportType
             ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'templatefilename1', $this->templatefilename1])
             ->andFilterWhere(['like', 'templatefilename2', $this->templatefilename2])
-            ->andFilterWhere(['like', 'templatefilename3', $this->templatefilename3]);
+            ->andFilterWhere(['like', 'templatefilename3', $this->templatefilename3])
+            ->andFilterWhere(['like', 'templatefilename4', $this->templatefilename4]);
 
         return $dataProvider;
     }

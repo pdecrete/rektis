@@ -32,6 +32,7 @@ use admapp\Util\Html as admappHtml;
     <?= $form->field($model, 'templatefilename1')->dropDownList($atf, ['prompt' => Yii::t('app', 'Select a template file')]); ?>
 	<?=	$form->field($model, 'templatefilename2')->dropDownList($atf, ['prompt' => Yii::t('app', 'Select a template file')]); ?>
 	<?=	$form->field($model, 'templatefilename3')->dropDownList($atf, ['prompt' => Yii::t('app', 'Select a template file')]); ?>
+    <?=	$form->field($model, 'templatefilename4')->dropDownList($atf, ['prompt' => Yii::t('app', 'Select a template file')]); ?>
     <?php if (!$model->isNewRecord) : ?>
         <?= admappHtml::displayValueOfField($model, 'create_ts', 2, 6) ?>
         <?= admappHtml::displayValueOfField($model, 'update_ts', 2, 6) ?>

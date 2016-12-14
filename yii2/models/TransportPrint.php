@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\Transport;
 
 /**
  * This is the model class for table "admapp_transport_print".
@@ -47,9 +48,24 @@ class TransportPrint extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'filename' => Yii::t('app', 'Filename'),
             'transport' => Yii::t('app', 'Transport'),
+            'doctype' => Yii::t('app', 'Doctype'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'send_ts' => Yii::t('app', 'Send Ts'),
             'to_emails' => Yii::t('app', 'To Emails'),
+            'from' => Yii::t('app', 'Date From'),
+            'to' => Yii::t('app', 'Date To'),
+            'sum719' => Yii::t('app', 'Sum 719'),
+            'sum721' => Yii::t('app', 'Sum 721'),
+            'sum722' => Yii::t('app', 'Sum 722'),
+            'sum_mtpy' => Yii::t('app', 'Sum MTPY'),
+            'total' => Yii::t('app', 'Total'),
+            'clean' => Yii::t('app', 'Clean Amount'),
+            'asum719' => Yii::t('app', 'Approved Sum 719'),
+            'asum721' => Yii::t('app', 'Approved Sum 721'),
+            'asum722' => Yii::t('app', 'Approved Sum 722'),
+            'asum_mtpy' => Yii::t('app', 'Approved Sum MTPY'),
+            'atotal' => Yii::t('app', 'Approved Total'),
+            'aclean' => Yii::t('app', 'Approved Clean Amount')          
         ];
     }
 
@@ -97,8 +113,38 @@ class TransportPrint extends \yii\db\ActiveRecord
 		$transportsconnections = $this->transportPrintConnections;
 		$transconn = $transportsconnections[0];
 		$trans = Transport::findOne($transconn->transport);
-		
-		return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
-                . ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+		if (($this->doctype == Transport::fapproval) || ($this->doctype == Transport::fjournal)) {
+			return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
+					. ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+		} else {
+			return ( $trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN'));
+		}
     } 
+    
+    /**
+    * @return String TransportPrint info str
+    */
+    public function getDocname()
+    {    	
+	//	$name = 'doctype = ' . $this->doctype;
+		switch ($this->doctype) {
+			case Transport::fapproval:
+				$name = Yii::t('app', 'Approval');
+				break;
+			case Transport::fjournal:
+				$name = Yii::t('app', 'Journal');
+				break;
+			case Transport::fdocument:
+				$name = Yii::t('app', 'Cover');
+				break;
+			case Transport::freport:
+				$name = Yii::t('app', 'Report');
+				break;
+			default:
+				$name = Yii::t('app', '	UNKNOWN');
+				break;
+		} 
+		return $name;
+    } 
+
 }

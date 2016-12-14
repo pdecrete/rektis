@@ -31,7 +31,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'templatefilename2') ?>
 
-\    <?= $form->field($model, 'templatefilename3') ?>
+    <?= $form->field($model, 'templatefilename3') ?>
+
+    <?= $form->field($model, 'templatefilename4') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

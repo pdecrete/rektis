@@ -19,11 +19,6 @@ use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\data\SqlDataProvider;
 
-define ('fall', '0'); // τύπος αρχείου για εκτύπωση: ΟΛΑ
-define ('fapproval', '1'); // τύπος αρχείου για εκτύπωση: ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
-define ('fjournal', '2'); // τύπος αρχείου για εκτύπωση: ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
-define ('fdocument', '3'); // τύπος αρχείου για εκτύπωση: ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
-
 /**
  * TransportController implements the CRUD actions for Transport model.
  */
@@ -318,18 +313,16 @@ class TransportController extends Controller
                     'filename' => $filename
 			]);
         } else {          
-            if ($ftype > fall) {
+            if ($ftype > Transport::fall) {
 				$which = $ftype;
 				$filename = $this->fixPrintDocument($model, $which);
 			} else { // fall means all types... WE DON'T USE fall ON CREATE ... 
 					// but if for some reason we do want fall onCREATE, the following code creates all documents
-				$which = fapproval;
+				$which = Transport::fapproval;
 				$filename = $this->fixPrintDocument($model, $which);				
-				$which = fjournal;
+				$which = Transport::fjournal;
 				$filename2 = $this->fixPrintDocument($model, $which);				
-/*				$which = fdocument;
-				$filename3 = $this->fixPrintDocument($model, $which);				
-*/			}
+			}
             Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
 			return $this->redirect(['print', 'id' => $id, 'ftype' => $ftype]);
         }
@@ -340,21 +333,21 @@ class TransportController extends Controller
 	 */
 	protected function fixPrintDocument($model, $which)
 	{
-		$filename = $this->generatePrintDocument($model, $which);      
-        
+		$results = $this->generatePrintDocument($model, $which);      
+        $filename = $results[0];
 		// Σβήνει όλες τις σχετικές με τον τύπο μετακίνησης εκτυπώσεις...και τα φιλαράκια
 		$this->deleteAllPrints($model, $which); 
-
-        if ($which == fapproval) {
+        if ($which == Transport::fapproval) {
 			$sameDecisionModels = $model->allSameDecision();
 			$all_count = count($sameDecisionModels);	
         } elseif ($which == fjournal) {
 			$sameDecisionModels = $model->selectForPayment($this->from, $this->to);
 			$all_count = count($sameDecisionModels);
 		}
+		
         for ($c = 0; $c < $all_count; $c++) {
             $currentModel = $sameDecisionModels[$c];	
-            $set = $this->setPrintDocument($currentModel, $filename, $which);
+            $set = $this->setPrintDocument($currentModel, $results, $which);
 			if (!$set) {
 				throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
 			}
@@ -373,7 +366,7 @@ class TransportController extends Controller
     protected function generatePrintDocument($transportModel, $which)
     {
         $dts = date('YmdHis');
-		if ($which == fapproval) { //ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
+		if ($which == Transport::fapproval) { //ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
 			$templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename1 : null;
 			if ($templatefilename === null) {
 				throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
@@ -384,16 +377,12 @@ class TransportController extends Controller
 				throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
 			} 	
 			$dts .= '_' . str_replace('-', '', $this->from) . '-' . str_replace('-', '', $this->to);
-		} elseif ($which == fdocument) { //ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
-				$templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename3 : null;
-				if ($templatefilename === null) {
-					throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
-				}
-		}
+		} 
         $exportfilename = Yii::getAlias("@vendor/admapp/exports/transports/{$dts}_{$templatefilename}");
         $templateProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/transports/{$templatefilename}"));
 
-		if ($which == fapproval) { //ΓΙΑ ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
+		// ------------------------  ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
+		if ($which == Transport::fapproval) { 
 	        $templateProcessor->setValue('YEAR_LIMIT', Yii::$app->params['trans_year_limit']);
 			
 			$empid = $transportModel->employee;
@@ -463,6 +452,9 @@ class TransportController extends Controller
 			// Fund ids της απόφασης ώστε να τα εμφανίσω μόνο μία φορά...
 			$funds = [];
 			$fnum = 0;
+			
+			$S8 = $S9 = $S10 = $S719 = $S721 = $S722 = 0.00;
+			
 			$templateProcessor->cloneRow('DATES', $all_count);
 			for ($c = 0; $c < $all_count; $c++) {
 				$i = $c + 1;
@@ -476,6 +468,13 @@ class TransportController extends Controller
 				$templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
 				$templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
 				$templateProcessor->setValue('CAUSE' . "#{$i}", $currentModel->reason);
+				
+				$S719 += $currentModel->code719;
+				$S721 += $currentModel->code721;
+				$S722 += $currentModel->code722;
+				$S8 += $currentModel->reimbursement;
+				$S9 += $currentModel->mtpy;
+				$S10 += $currentModel->pay_amount;
 
 				// Τα fund->id που θα χρησιμοποιήσω
 				if ($currentModel->fund1 !== null) {
@@ -526,9 +525,11 @@ class TransportController extends Controller
 				$templateProcessor->setValue('FUND1', $fund_str);      
 			}
 		}
+		// ------------------------ end ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
 
-
-		if ($which == fjournal) { //ΓΙΑ ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
+		
+		// ------------------------  ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
+		if ($which == fjournal) { 
 			$templateProcessor->setValue('EMP_NAME', $transportModel->employee0->name . ' ' . $transportModel->employee0->surname);
 			$templateProcessor->setValue('RANK', $transportModel->employee0->rank);
 			$templateProcessor->setValue('CODE', $transportModel->employee0->specialisation0->code . ' (' . $transportModel->employee0->specialisation0->name . ')' );
@@ -606,17 +607,27 @@ class TransportController extends Controller
 			$templateProcessor->setValue('S9', number_format($S9, 2 , ',', ''));
 			$templateProcessor->setValue('S10', number_format($S10, 2 , ',', ''));
 		}			
+		// ------------------------ end ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
 		
         $templateProcessor->saveAs($exportfilename);
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
         }
-
-        return $exportfilename;
+		$results = [];
+		$results[0] = $exportfilename;
+		$results[1] = $S719; 
+		$results[2] = $S721; 
+		$results[3] = $S722; 
+		$results[4] = $S8; //total amount
+		$results[5] = $S9;  //mtpy
+		$results[6] = $S10; // clean amount
+		
+        return $results;
     }
     
-    protected function setPrintDocument($transportModel, $filename, $which)
+    protected function setPrintDocument($transportModel, $results, $which)
     {
+		$filename = $results[0];
 		$new_print_id = 0;
 		$printM = TransportPrint::transportPrintID(basename($filename));
 		if ($printM !== null) { //Υπάρχει ήδη από σχετιζόμενη μετακίνηση
@@ -624,7 +635,15 @@ class TransportController extends Controller
 		} else {   // Δεν υπάρχει και το δημιουργώ
 			$new_print = new TransportPrint();
 			$new_print->filename = basename($filename);
-			$new_print->doctype = $which;       
+			$new_print->doctype = $which;
+			$new_print->from = $this->from;
+			$new_print->to = $this->to;
+			$new_print->sum719 = $results[1]; 
+			$new_print->sum721 = $results[2]; 
+			$new_print->sum722 = $results[3]; 
+			$new_print->total = $results[4]; 
+			$new_print->sum_mtpy = $results[5]; 
+			$new_print->clean = $results[6]; 			
 			$ins = $new_print->insert();
 			if ($ins == true) { // έγινε εισαγωγή στον Transport_Print
 				$new_printM = TransportPrint::transportPrintID(basename($filename));
@@ -735,14 +754,14 @@ class TransportController extends Controller
 			$printmodel = TransportPrint::findOne($printid);
 			$filename = $printmodel->filename;
         } else { // generate - set document if it does not exist
-            $which = fapproval;
+            $which = Transport::fapproval;
             $filename = $this->fixPrintDocument($model, $which);
             Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
         }
 
         // if file is STILL not generated, redirect to page
         if (!is_readable(TransportPrint::path($filename))) {
-            return $this->redirect(['print', 'id' => $model->id, 'ftype' => fapproval ]);
+            return $this->redirect(['print', 'id' => $model->id, 'ftype' => Transport::fapproval ]);
         }
 
         // all well, send file 
@@ -765,7 +784,7 @@ class TransportController extends Controller
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
-		$delsuccess = $this->deleteAllPrints($model, fall);
+		$delsuccess = $this->deleteAllPrints($model, Transport::fall);
         if ($delsuccess == true) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Deletion completed succesfully.'));          
 		} else {
@@ -774,11 +793,11 @@ class TransportController extends Controller
         return $this->redirect(['view', 'id' => $model->id]);
     }
 
-	protected function deleteAllPrints($transportModel, $type)
+	public function deleteAllPrints($transportModel, $type)
 	{
 		$success = true;
 		foreach ($transportModel->transportPrintConnections as $printConnection) {
-			if ($type == fall) { //Υπάρχει κουμπί Διαγραφή ΟΛΩΝ
+			if ($type == Transport::fall) { //Υπάρχει κουμπί Διαγραφή ΟΛΩΝ
 				$unlink_filename = $printConnection->transportPrint0->path;
 				if (file_exists($unlink_filename)) {
 					unlink($unlink_filename);
