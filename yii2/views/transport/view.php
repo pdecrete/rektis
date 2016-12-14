@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\bootstrap\Alert;
+use app\models\Transport;
 //use yii\data\ArrayDataProvider;
 //use yii\grid\GridView;
 //use yii\widgets\Pjax;
@@ -40,7 +41,7 @@ if ($model->deleted) {
         ]) 
         ?>
         <?=
-        Html::a(Yii::t('app', 'Transport file'), ['print', 'id' => $model->id, 'ftype' => fapproval ], [
+        Html::a(Yii::t('app', 'Transport file'), ['print', 'id' => $model->id, 'ftype' => Transport::fapproval ], [
             'class' => 'btn btn-warning',
             'data' => [
                 //'confirm' => Yii::t('app', 'Are you sure you want to print this transport?'),

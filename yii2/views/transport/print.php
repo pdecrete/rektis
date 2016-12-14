@@ -7,6 +7,7 @@ use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\helpers\Url;
+use app\models\Transport;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Transport */
@@ -34,7 +35,7 @@ if ($model->deleted) {
     <p>
         <?= Html::a(Yii::t('app', 'Return to view'), ['view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?=
-        Html::a(Yii::t('app', 'Print approval'), ['reprint', 'id' => $model->id, 'ftype' => fapproval ], [
+        Html::a(Yii::t('app', 'Print approval'), ['reprint', 'id' => $model->id, 'ftype' => Transport::fapproval ], [
             'class' => 'btn btn-success',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to print this transport approval?'),
@@ -43,7 +44,7 @@ if ($model->deleted) {
         ])
         ?>
         <?=
-        Html::a(Yii::t('app', 'Print journal'), ['datesel', 'id' => $model->id, 'ftype' => fjournal ], [
+        Html::a(Yii::t('app', 'Print journal'), ['datesel', 'id' => $model->id, 'ftype' => Transport::fjournal ], [
             'class' => 'btn btn-success',
             'data' => [
 //                'confirm' => Yii::t('app', 'Are you sure you want to print this transport journal?'),
@@ -61,7 +62,7 @@ if ($model->deleted) {
         ])
         ?>
         <?=
-        Html::a(Yii::t('app', 'Email journal'), ['emailjournal', 'id' => $model->id, 'ftype' => fjournal ], [
+        Html::a(Yii::t('app', 'Email journal'), ['emailjournal', 'id' => $model->id, 'ftype' => Transport::fjournal ], [
             'class' => 'btn btn-warning',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to email this transport journal?'),
