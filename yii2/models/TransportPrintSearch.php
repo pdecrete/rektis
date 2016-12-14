@@ -19,7 +19,8 @@ class TransportPrintSearch extends TransportPrint
     {
         return [
             [['id'], 'integer'],
-            [['filename', 'create_ts', 'send_ts', 'to_emails', 'transport'], 'safe'],
+            [['filename', 'doctype', 'create_ts', 'send_ts', 'to_emails', 'transport', 'from', 'to', 'sum719', 'sum721', 'sum722', 'sum_mtpy', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'safe'],
+			[['sum719', 'sum721', 'sum722', 'sum_mtpy', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'number'],
         ];
     }
 
@@ -62,6 +63,22 @@ class TransportPrintSearch extends TransportPrint
             'id' => $this->id,
             'create_ts' => $this->create_ts,
             'send_ts' => $this->send_ts,
+            'doctype' => $this->doctype,
+            'sum719' => $this->sum719, 
+            'sum721' => $this->sum721, 
+            'sum722' => $this->sum722, 
+            'sum_mtpy' => $this->sum_mtpy, 
+            'total' => $this->total, 
+            'clean' => $this->clean, 
+            'asum719' => $this->asum719, 
+            'asum721' => $this->asum721, 
+            'asum722' => $this->asum722, 
+            'asum_mtpy' => $this->asum_mtpy, 
+            'atotal' => $this->atotal, 
+            'aclean' => $this->aclean,
+            'from' => $this->from,
+            'to' => $this->to,
+            
         ]);
 
         $query->andFilterWhere(['like', 'filename', $this->filename])

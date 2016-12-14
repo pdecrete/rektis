@@ -18,6 +18,7 @@ use \yii\helpers\FileHelper;
  * @property string $templatefilename1
  * @property string $templatefilename2
  * @property string $templatefilename3
+ * @property string $templatefilename4
  *
  * @property Transport[] $transports
  */
@@ -42,7 +43,7 @@ class TransportType extends \yii\db\ActiveRecord
             [['create_ts', 'update_ts'], 'safe'],
             [['deleted'], 'integer'],
             [['name'], 'string', 'max' => 100],
-            [['templatefilename1', 'templatefilename2', 'templatefilename3'], 'string', 'max' => 255],
+            [['templatefilename1', 'templatefilename2', 'templatefilename3', 'templatefilename4'], 'string', 'max' => 255],
             [['name'], 'unique'],
         ];
     }
@@ -62,6 +63,7 @@ class TransportType extends \yii\db\ActiveRecord
             'templatefilename1' => Yii::t('app', 'Approval filename'),
             'templatefilename2' => Yii::t('app', 'Journal filename'),
             'templatefilename3' => Yii::t('app', 'Document filename'),
+            'templatefilename4' => Yii::t('app', 'Report filename'),
         ];
     }
 

@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'templatefilename1',
             'templatefilename2',
             'templatefilename3',
+            'templatefilename4',
             'create_ts',
             'update_ts',
          //   'deleted',
