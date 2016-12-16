@@ -335,16 +335,28 @@ class TransportController extends Controller
 	{
 		$results = $this->generatePrintDocument($model, $which);      
         $filename = $results[0];
-		// Σβήνει όλες τις σχετικές με τον τύπο μετακίνησης εκτυπώσεις...και τα φιλαράκια
-		$this->deleteAllPrints($model, $which); 
+
+		if ($which == Transport::fdocument) {
+			$delsuccess1 = $this->deleteAllPrints($model, Transport::freport);
+			$delsuccess2 = $this->deleteAllPrints($model, $ftype);
+			$delsuccess = $delsuccess1 && $delsuccess2;
+		}	
+		if ($which == Transport::freport) {
+			$delsuccess1 = $this->deleteAllPrints($model, $ftype);
+			$delsuccess2 = $this->deleteAllPrints($model, Transport::fdocument);
+			$delsuccess = $delsuccess1 && $delsuccess2;
+		}	
+		if (($which !== Transport::fdocument) && ($which !== Transport::freport)) {
+			$this->deleteAllPrints($model, $which); 
+		}
+
         if ($which == Transport::fapproval) {
 			$sameDecisionModels = $model->allSameDecision();
 			$all_count = count($sameDecisionModels);	
-        } elseif ($which == fjournal) {
+        } elseif ($which == Transport::fjournal) {
 			$sameDecisionModels = $model->selectForPayment($this->from, $this->to);
 			$all_count = count($sameDecisionModels);
-		}
-		
+		}		
         for ($c = 0; $c < $all_count; $c++) {
             $currentModel = $sameDecisionModels[$c];	
             $set = $this->setPrintDocument($currentModel, $results, $which);
@@ -371,7 +383,7 @@ class TransportController extends Controller
 			if ($templatefilename === null) {
 				throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
 			}
-		} elseif ($which == fjournal) { //ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
+		} elseif ($which == Transport::fjournal) { //ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
 			$templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename2 : null;
 			if ($templatefilename === null) {
 				throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
@@ -457,13 +469,25 @@ class TransportController extends Controller
 			
 			$templateProcessor->cloneRow('DATES', $all_count);
 			for ($c = 0; $c < $all_count; $c++) {
-				$i = $c + 1;
+				$i = $c + 1;			
 				$currentModel = $sameDecisionModels[$c];	
 				if ($currentModel->start_date == $currentModel->end_date) {
 					$templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
 				} else {
 					$templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date) . '-' . Yii::$app->formatter->asDate($currentModel->end_date));		
 				}
+
+				if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
+					$minFrom = $currentModel->start_date;
+					$maxTo = $currentModel->end_date;
+				}
+				if (($currentModel->start_date !== null) && ($currentModel->start_date < $minFrom)) {
+					$minFrom = $currentModel->start_date;		
+				}
+				if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
+					$maxTo = $currentModel->end_date;
+				}
+				
 				$templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);
 				$templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
 				$templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
@@ -529,7 +553,7 @@ class TransportController extends Controller
 
 		
 		// ------------------------  ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
-		if ($which == fjournal) { 
+		if ($which == Transport::fjournal) { 
 			$templateProcessor->setValue('EMP_NAME', $transportModel->employee0->name . ' ' . $transportModel->employee0->surname);
 			$templateProcessor->setValue('RANK', $transportModel->employee0->rank);
 			$templateProcessor->setValue('CODE', $transportModel->employee0->specialisation0->code . ' (' . $transportModel->employee0->specialisation0->name . ')' );
@@ -558,6 +582,18 @@ class TransportController extends Controller
 			for ($c = 0; $c < $all_count; $c++) {
 				$i = $c + 1;
 				$currentModel = $sameDecisionModels[$c];	
+				
+				if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
+					$minFrom = $currentModel->start_date;
+					$maxTo = $currentModel->end_date;
+				}
+				if (($currentModel->start_date !== null) && ($currentModel->start_date < $minFrom)) {
+					$minFrom = $currentModel->start_date;		
+				}
+				if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
+					$maxTo = $currentModel->end_date;
+				}		
+				
 				$templateProcessor->setValue('START' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));		
 				$templateProcessor->setValue('END' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));		
 				$templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);		
@@ -621,6 +657,8 @@ class TransportController extends Controller
 		$results[4] = $S8; //total amount
 		$results[5] = $S9;  //mtpy
 		$results[6] = $S10; // clean amount
+		$results[7] = $minFrom; // minDate
+		$results[8] = $maxTo; // maxDate
 		
         return $results;
     }
@@ -636,14 +674,19 @@ class TransportController extends Controller
 			$new_print = new TransportPrint();
 			$new_print->filename = basename($filename);
 			$new_print->doctype = $which;
-			$new_print->from = $this->from;
-			$new_print->to = $this->to;
 			$new_print->sum719 = $results[1]; 
 			$new_print->sum721 = $results[2]; 
 			$new_print->sum722 = $results[3]; 
 			$new_print->total = $results[4]; 
 			$new_print->sum_mtpy = $results[5]; 
 			$new_print->clean = $results[6]; 			
+			if ($which == Transport::fjournal) {	
+				$new_print->from = $this->from;
+				$new_print->to = $this->to;
+			} else {
+				$new_print->from = $results[7];
+				$new_print->to = $results[8];			
+			}
 			$ins = $new_print->insert();
 			if ($ins == true) { // έγινε εισαγωγή στον Transport_Print
 				$new_printM = TransportPrint::transportPrintID(basename($filename));
@@ -777,20 +820,55 @@ class TransportController extends Controller
 		return $this->render('fromto', ['model' => $model, 'ftype' => $ftype ]);
     }
 
+	private function checkImportance($printConnection) 
+	{	// check μόνο για το συγκεκριμένο transport αν υπάρχουν μεγαλύτερης σημαντικότητας έγγραφα...
+		// αγνοώ το freport αφού θέλω να σβηστεί μαζί με το fdocument
+		$exist = false;
+		$transportid = $printConnection->transport0->id;
+		$sameTransportIdConnections = TransportPrintConnection::sameTransportId($transportid);
+		$all_count = count($sameTransportIdConnections);
+		for ($c = 0; $c < $all_count; $c++) {
+			$current = $sameTransportIdConnections[$c];	
+			if ($current->transportPrint0->doctype > $printConnection->transportPrint0->doctype) {
+				if (!(($current->transportPrint0->doctype == Transport::freport) && ($printConnection->transportPrint0->doctype == Transport::fdocument))) {
+					$exist = true;
+				}
+			}
+		}
+		return $exist;
+	}
 
-    public function actionDeleteprints($id)
+    public function actionDeleteprints($id, $ftype)
     {
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
-		$delsuccess = $this->deleteAllPrints($model, Transport::fall);
+		
+		if ($ftype == Transport::fdocument) {
+			$delsuccess1 = $this->deleteAllPrints($model, Transport::freport);
+			$delsuccess2 = $this->deleteAllPrints($model, $ftype);
+			$delsuccess = $delsuccess1 && $delsuccess2;
+		}	
+		if ($ftype == Transport::freport) {
+			$delsuccess1 = $this->deleteAllPrints($model, $ftype);
+			$delsuccess2 = $this->deleteAllPrints($model, Transport::fdocument);
+			$delsuccess = $delsuccess1 && $delsuccess2;
+		}	
+		if (($ftype !== Transport::fdocument) && ($ftype !== Transport::freport)) {
+			$delsuccess = $this->deleteAllPrints($model, $ftype); 
+		}
+		
         if ($delsuccess == true) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Deletion completed succesfully.'));          
 		} else {
 			Yii::$app->session->setFlash('warning', Yii::t('app', 'Deletion did not complete succesfully.'));          
 		}
-        return $this->redirect(['view', 'id' => $model->id]);
+		if ($ftype > Transport::fapproval) {
+			return $this->redirect(['print', 'id' => $model->id, 'ftype' => $ftype]);
+		} else {
+			return $this->redirect(['view', 'id' => $model->id]);
+		}
     }
 
 	public function deleteAllPrints($transportModel, $type)
@@ -802,14 +880,21 @@ class TransportController extends Controller
 				if (file_exists($unlink_filename)) {
 					unlink($unlink_filename);
 				}
-				$printid = $printConnection->transportPrint0->id;
-
+				$printid = $printConnection->transportPrint0->id;			
+				
 				//σβήνω κι όλα τα φιλαράκια...
 				$samePrintIdConnections = TransportPrintConnection::samePrintId($printid);
 				$all_count = count($samePrintIdConnections);
 				for ($c = 0; $c < $all_count; $c++) {
 					$current = $samePrintIdConnections[$c];	
-					$current->delete();
+					// Unlock transport
+					$transportid = $current->transport0->id;
+					$trans = Transport::FindOne($transportid);
+					$trans->locked = 0;
+					$trans->save();			
+					if ($current->delete() == false) {
+						$success = false;
+					}
 				}
 
 				if ($printConnection->transportPrint0->delete() == false) {
@@ -817,28 +902,43 @@ class TransportController extends Controller
 				}
 							
 			} else {
-				if ($printConnection->transportPrint0->doctype == $type) {
-					$unlink_filename = $printConnection->transportPrint0->path;
-					if (file_exists($unlink_filename)) {
-						unlink($unlink_filename);
-					}
-					$printid = $printConnection->transportPrint0->id;
-
-					//σβήνω κι όλα τα φιλαράκια...
-					$samePrintIdConnections = TransportPrintConnection::samePrintId($printid);
-					$all_count = count($samePrintIdConnections);
-					for ($c = 0; $c < $all_count; $c++) {
-						$current = $samePrintIdConnections[$c];	
-						$current->delete();
-					}
-					
-					if ($printConnection->transportPrint0->delete() == false) {
+				if ($printConnection->transportPrint0->doctype == $type) {				
+					$moreImportant = $this->checkImportance($printConnection); 
+					if ($moreImportant == false) {	// ΔΕΝ ΣΒΗΝΩ ΚΑΤΙ ΑΝ ΥΠΑΡΧΕΙ ΕΓΓΡΑΦΟ ΜΕΓΑΛΥΤΕΡΗΣ ΙΕΡΑΡΧΗΣΗΣ
+						$unlink_filename = $printConnection->transportPrint0->path;
+						if (file_exists($unlink_filename)) {
+							unlink($unlink_filename);
+						}
+						$printid = $printConnection->transportPrint0->id;
+								
+						//σβήνω κι όλα τα φιλαράκια...
+						$samePrintIdConnections = TransportPrintConnection::samePrintId($printid);
+						$all_count = count($samePrintIdConnections);
+						for ($c = 0; $c < $all_count; $c++) {
+							$current = $samePrintIdConnections[$c];	
+							if (($type == Transport::fdocument) || ($type == Transport::freport)) {
+								// Unlock transport
+								$transportid = $current->transport0->id;
+								$trans = Transport::FindOne($transportid);
+								$trans->locked = 0;
+								$trans->save();
+							}
+							if ($current->delete() == false) {
+								$success = false;
+							}
+						}
+						
+						if ($printConnection->transportPrint0->delete() == false) {
+							$success = false;
+						}
+					} else {
 						$success = false;
+						Yii::$app->session->setFlash('danger', Yii::t('app', 'You can not delete this document, as you have issued more important documents for this transport.'));          
 					}
 				}	
 			}			
-			
         }
+        
         return $success;
 	}
 

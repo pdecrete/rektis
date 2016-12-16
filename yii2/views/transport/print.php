@@ -47,23 +47,13 @@ if ($model->deleted) {
         Html::a(Yii::t('app', 'Print journal'), ['datesel', 'id' => $model->id, 'ftype' => Transport::fjournal ], [
             'class' => 'btn btn-success',
             'data' => [
-//                'confirm' => Yii::t('app', 'Are you sure you want to print this transport journal?'),
-                'method' => 'post',
-            ],
-        ])
-        ?>
-        <?=
-        Html::a(Yii::t('app', 'Delete all'), ['deleteprints', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete all prints of this transport?'),
                 'method' => 'post',
             ],
         ])
         ?>
         <?=
         Html::a(Yii::t('app', 'Email journal'), ['emailjournal', 'id' => $model->id, 'ftype' => Transport::fjournal ], [
-            'class' => 'btn btn-warning',
+            'class' => 'btn btn-info',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to email this transport journal?'),
                 'method' => 'post',
@@ -122,4 +112,44 @@ if ($model->deleted) {
 		]);
 	?>
 	<?php Pjax::end(); ?>
+    <p>
+        <?= Html::a(Yii::t('app', 'Return to view'), ['view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?=
+        Html::a(Yii::t('app', 'Delete approval'), ['deleteprints', 'id' => $model->id, 'ftype' => Transport::fapproval], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('app', 'Are you sure you want to delete approval of this transport?'),
+                'method' => 'post',
+            ],
+        ])
+        ?>
+        <?=
+        Html::a(Yii::t('app', 'Delete journal'), ['deleteprints', 'id' => $model->id, 'ftype' => Transport::fjournal], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('app', 'Are you sure you want to delete journal of this transport?'),
+                'method' => 'post',
+            ],
+        ])
+        ?>
+        <?=
+        Html::a(Yii::t('app', 'Delete cover doc - report'), ['deleteprints', 'id' => $model->id, 'ftype' => Transport::freport], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('app', 'Are you sure you want to delete cover document and report of this transport?'),
+                'method' => 'post',
+            ],
+        ])
+        ?>
+        <?=
+        Html::a(Yii::t('app', 'Delete all'), ['deleteprints', 'id' => $model->id, 'ftype' => Transport::fall], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => Yii::t('app', 'Are you sure you want to delete all prints of this transport?'),
+                'method' => 'post',
+            ],
+        ])
+        ?>
+    </p>
+	
 </div>

@@ -111,13 +111,17 @@ class TransportPrint extends \yii\db\ActiveRecord
     public function getInformation()
     {    	
 		$transportsconnections = $this->transportPrintConnections;
-		$transconn = $transportsconnections[0];
-		$trans = Transport::findOne($transconn->transport);
-		if (($this->doctype == Transport::fapproval) || ($this->doctype == Transport::fjournal)) {
-			return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
-					. ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+		if (count($transportsconnections) > 0 ) {
+			$transconn = $transportsconnections[0];
+			$trans = Transport::findOne($transconn->transport);
+			if (($this->doctype == Transport::fapproval) || ($this->doctype == Transport::fjournal)) {
+				return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
+						. ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+			} else {
+				return ( $trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN'));
+			}
 		} else {
-			return ( $trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN'));
+			return Yii::t('app', 'UNKNOWN');	
 		}
     } 
     
