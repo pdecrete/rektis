@@ -62,7 +62,6 @@ class TransportPrintConnection extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TransportPrint::className(), ['id' => 'transport_print']);
     }   
-    
 
 	public function samePrintId($printid)
     {
@@ -73,5 +72,13 @@ class TransportPrintConnection extends \yii\db\ActiveRecord
                         ->all();
     }
 
+	public function sameTransportId($transportid)
+    {
+        return TransportPrintConnection::find()
+                        ->where([
+                            'transport' => $transportid
+                        ])
+                        ->all();
+    }
 
 }

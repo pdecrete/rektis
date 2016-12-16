@@ -158,10 +158,15 @@ class TransportPrintController extends Controller
 	
 	public function actionBulk(){
 		$selection = (array)Yii::$app->request->post('selection');
-		
-		$this->fixPrintDocument($selection);      
-		
-		return $this->redirect(['index']);
+
+		if (count($selection) > 0) {
+			
+			
+			$this->fixPrintDocument($selection);      
+		} else {
+			Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some journals to proceed.'));          
+		}
+		return $this->redirect(['index']);			
     }
 
 	protected function getEmployeeFromPrintId($printid) {
@@ -210,75 +215,80 @@ class TransportPrintController extends Controller
 				$k++;
 			}
 		}
-		$comma_separated = implode(",", $filteredSel);
-		$transportPrints = TransportPrint::Find()
-							->where(' id IN ( ' . $comma_separated . ' ) ' )
-							->all();			
+		if (count($filteredSel) > 0) {
+			$comma_separated = implode(",", $filteredSel);
+			$transportPrints = TransportPrint::Find()
+								->where(' id IN ( ' . $comma_separated . ' ) ' )
+								->all();			
 
-		$transports = $this->getTransportsFromPrintId($filteredSel);
-		
-		//ΕΛΕΓΧΩ ΑΝ ΚΑΠΟΙΑ ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ ΚΛΕΙΔΩΜΕΝΗ, ΔΗΛΑΔΗ ΕΧΕΙ ΗΔΗ ΑΠΟΣΤΑΛΕΙ ΣΤΗΝ ΥΔΕ
-		$locked = false;
-		$lockedids = [];
-		$k = 0;
-		$all_count = count($transports);	
-		for ($c = 0; $c < $all_count; $c++) {
-            $currentModel = $transports[$c];	
-			if ($currentModel->locked) {
-				$locked = true;
-				$lockedids[$k] = $currentModel->id;
-				$k++;
-			}
-		}
-		
-		if (!$locked) {			
-			$transportModel = $transports[0]; //send one model for File Types...
-			$results = $this->generatePrintDocument($transportModel, $transportPrints);      
-			$reportfname = $results[1];
-
-			// Σβήνει όλες τις σχετικές με τον τύπο μετακίνησης εκτυπώσεις...και τα φιλαράκια
-			$which = Transport::fdocument;
-			TransportController::deleteAllPrints($transportModel, $which); 	
+			$transports = $this->getTransportsFromPrintId($filteredSel);
+			
+			//ΕΛΕΓΧΩ ΑΝ ΚΑΠΟΙΑ ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ ΚΛΕΙΔΩΜΕΝΗ, ΔΗΛΑΔΗ ΕΧΕΙ ΗΔΗ ΑΠΟΣΤΑΛΕΙ ΣΤΗΝ ΥΔΕ
+			$locked = false;
+			$lockedids = [];
+			$k = 0;
+			$all_count = count($transports);	
 			for ($c = 0; $c < $all_count; $c++) {
 				$currentModel = $transports[$c];	
-				$set = $this->setPrintDocument($currentModel, $results, $which);
-				if (!$set) {
-					throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
-				}
-			}
-			$which = Transport::freport;
-			TransportController::deleteAllPrints($transportModel, $which); 	
-			for ($c = 0; $c < $all_count; $c++) {
-				$currentModel = $transports[$c];	
-				$set = $this->setPrintDocument($currentModel, $results, $which);
-				if (!$set) {
-					throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
+				if ($currentModel->locked) {
+					$locked = true;
+					$lockedids[$k] = $currentModel->id;
+					$k++;
 				}
 			}
 			
-			//Κλειδώνω τα Transports που χρησιμοποιήθηκαν
-			for ($c = 0; $c < $all_count; $c++) {
-				$currentModel = $transports[$c];	
-				$currentModel->locked = True;
-				$currentModel->save();
-			}
-			Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated files on {date}.', ['date' => date('d/m/Y')]));          
-			return true;
-		}	
-		else {
-			$transStr = '';
-			$count = count($lockedids);
-			for ($c = 0; $c < $count; $c++) {
-				$trans = Transport::FindOne($lockedids[$c]);
-				if ($transStr != '') {
-					$transStr .= ' && ';
+			if (!$locked) {			
+				$transportModel = $transports[0]; //send one model for File Types...
+				$results = $this->generatePrintDocument($transportModel, $transportPrints);      
+				$reportfname = $results[1];
+
+				// Σβήνει όλες τις σχετικές με τον τύπο μετακίνησης εκτυπώσεις...και τα φιλαράκια
+				$which = Transport::freport;
+				TransportController::deleteAllPrints($transportModel, $which); 	
+				for ($c = 0; $c < $all_count; $c++) {
+					$currentModel = $transports[$c];	
+					$set = $this->setPrintDocument($currentModel, $results, $which);
+					if (!$set) {
+						throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
+					}
 				}
-				$transStr .= $trans->employee0->fullname . ' (' .  Yii::$app->formatter->asDate($trans->start_date) . '-' . Yii::$app->formatter->asDate($trans->end_date) . ')';
+				$which = Transport::fdocument;
+				TransportController::deleteAllPrints($transportModel, $which); 	
+				for ($c = 0; $c < $all_count; $c++) {
+					$currentModel = $transports[$c];	
+					$set = $this->setPrintDocument($currentModel, $results, $which);
+					if (!$set) {
+						throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
+					}
+				}
+				
+				//Κλειδώνω τα Transports που χρησιμοποιήθηκαν
+				for ($c = 0; $c < $all_count; $c++) {
+					$currentModel = $transports[$c];	
+					$currentModel->locked = True;
+					$currentModel->save();
+				}
+				Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated files on {date}.', ['date' => date('d/m/Y')]));          
+				return true;
+			}	
+			else {
+				$transStr = '';
+				$count = count($lockedids);
+				for ($c = 0; $c < $count; $c++) {
+					$trans = Transport::FindOne($lockedids[$c]);
+					if ($transStr != '') {
+						$transStr .= ' && ';
+					}
+					$transStr .= $trans->employee0->fullname . ' (' .  Yii::$app->formatter->asDate($trans->start_date) . '-' . Yii::$app->formatter->asDate($trans->end_date) . ')';
+				}
+				$msg = Yii::t('app', 'There are transports already sent. Please correct your data.') . ' ' . $transStr;
+				
+				Yii::$app->session->setFlash('danger', $msg);          		    		
+				return false;
 			}
-			$msg = Yii::t('app', 'There are transports already sent. Please correct your data.') . ' ' . $transStr;
-			
-			Yii::$app->session->setFlash('danger', $msg);          		    		
-			return false;
+		} else {
+			Yii::$app->session->setFlash('danger', Yii::t('app', 'You must select journals to proceed. Please correct your selection.'));          		    		
+			return false;	
 		}
 	}
 
