@@ -104,6 +104,15 @@ class TransportPrint extends \yii\db\ActiveRecord
                         ->where(['filename' => $filename])
                         ->one();
     } 
+
+    public function transportNum($year)
+    {
+        return TransportPrint::find()
+                        ->where(['report_year' => $year])
+                        ->andWhere(['doctype' => Transport::fdocument])
+                        ->orderBy('report_num DESC')
+                        ->one();
+    } 
     
     /**
      * @return String TransportPrint info str
@@ -118,7 +127,7 @@ class TransportPrint extends \yii\db\ActiveRecord
 				return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
 						. ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
 			} else {
-				return ( $trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN'));
+				return ( ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ' (' . $this->report_num . ' - ' . $this->report_year . ')');
 			}
 		} else {
 			return Yii::t('app', 'UNKNOWN');	
