@@ -518,7 +518,7 @@ class TransportController extends Controller
 			$funds = array_unique($funds);      
 			$fund_str = '';
 			$kae_str = '';
-			$k = 5; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
+			$k = 6; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
 
 			$num = count($funds);
 			if ($num > 0) {
@@ -723,7 +723,6 @@ class TransportController extends Controller
 			$post = $request->post();
 			if ($request->post('id') !== NULL) {			
 				$id = $request->post('id');
-//				echo 'ID = ' . $id . '<br>'; 
 				$model = $this->findModel($id);
 				if ($model->deleted) {
 					throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
@@ -731,60 +730,21 @@ class TransportController extends Controller
 			}
 			if ($request->post('ftype') !== NULL) {			
 				$ftype = $request->post('ftype');
-//				echo 'FTYPE = ' . $ftype . '<br>'; 
 			}
-			echo $this->from;
 			if ($request->post('from') !== NULL) {			
 				$date1 = $request->post('from');
 				$date = str_replace('/', '-', $date1);
 				$this->from = date('Y-m-d', strtotime($date));
-//				echo 'FROM = ' . $this->from . '<br>'; 
 			}
 			if ($request->post('to') !== NULL) {			
 				$date1 = $request->post('to');
 				$date = str_replace('/', '-', $date1);
 				$this->to = date('Y-m-d', strtotime($date));
-//				echo 'TO = ' . $this->to . '<br>'; 
 			}
 			return $this->actionReprint($id, $ftype);
 		}
     }
     
-/*
-	public function actionPrintjournal()
-    	{	
-		if (Yii::$app->request->isGet) {		
-			if (Yii::$app->request->get('id') !== NULL) {			
-				$id = Yii::$app->request->get('id');		
-				echo 'ID = ' . $id . '<br>'; 
-				$model = $this->findModel($id);
-				if ($model->deleted) {
-					throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
-				}
-			}
-			if (Yii::$app->request->get('ftype') !== NULL) {			
-				$ftype = Yii::$app->request->get('ftype');
-				echo 'FTYPE = ' . $ftype . '<br>'; 
-			}
-			if (Yii::$app->request->get('from') !== NULL) {			
-				$date=date_create(Yii::$app->request->get('from'));
-				$new_date = date_format($date,"Y-m-d");
-				$this->from = $new_date; // Yii::$app->request->get('from');
-				echo 'FROM = ' . $this->from . '<br>'; 
-			}
-			if (Yii::$app->request->get('to') !== NULL) {			
-				$date=date_create(Yii::$app->request->get('to'));
-				$new_date = date_format($date,"Y-m-d");
-				$this->to = $new_date; // Yii::$app->request->get('to');
-				echo 'TO = ' . $this->to . '<br>'; 
-			}
-			$this->actionReprint($id, $ftype);
-		} else {
-			return $this->render('index');	
-		}
-    }
-
-*/
 
     public function actionDownload($id, $printid)
     {
@@ -897,13 +857,11 @@ class TransportController extends Controller
 					}
 				}
 
-				if ($printConnection->transportPrint0->delete() == false) {
-					$success = false;
-				}
+				$printConnection->transportPrint0->delete();
 							
 			} else {
 				if ($printConnection->transportPrint0->doctype == $type) {				
-					$moreImportant = $this->checkImportance($printConnection); 
+					$moreImportant = TransportController::checkImportance($printConnection); 
 					if ($moreImportant == false) {	// ΔΕΝ ΣΒΗΝΩ ΚΑΤΙ ΑΝ ΥΠΑΡΧΕΙ ΕΓΓΡΑΦΟ ΜΕΓΑΛΥΤΕΡΗΣ ΙΕΡΑΡΧΗΣΗΣ
 						$unlink_filename = $printConnection->transportPrint0->path;
 						if (file_exists($unlink_filename)) {
@@ -928,9 +886,8 @@ class TransportController extends Controller
 							}
 						}
 						
-						if ($printConnection->transportPrint0->delete() == false) {
-							$success = false;
-						}
+						$printConnection->transportPrint0->delete();
+						
 					} else {
 						$success = false;
 						Yii::$app->session->setFlash('danger', Yii::t('app', 'You can not delete this document, as you have issued more important documents for this transport.'));          

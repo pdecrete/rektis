@@ -158,15 +158,13 @@ class TransportPrintController extends Controller
 	
 	public function actionBulk(){
 		$selection = (array)Yii::$app->request->post('selection');
-
-		if (count($selection) > 0) {
-			
-			
-			$this->fixPrintDocument($selection);      
+		$id = Yii::$app->request->post('id');
+		if (count($selection) > 0) {			
+			return $this->fixPrintDocument($selection, $id);      
 		} else {
 			Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some journals to proceed.'));          
-		}
-		return $this->redirect(['index']);			
+			return $this->redirect(['index']);			
+		}			
     }
 
 	protected function getEmployeeFromPrintId($printid) {
@@ -200,10 +198,114 @@ class TransportPrintController extends Controller
 		return $transports;
 	}
 	
+	public function actionPrintdata()
+    {		
+		$request = Yii::$app->request;	
+		if ($request->isPost) {
+			$post = $request->post();
+			$results = [];
+			if ($request->post('results0') !== NULL) {			
+				$results[0] = $request->post('results0');
+			}
+			if ($request->post('results1') !== NULL) {			
+				$results[1] = $request->post('results1');
+			}
+			if ($request->post('results2') !== NULL) {			
+				$results[2] = $request->post('results2');
+			}
+			if ($request->post('results3') !== NULL) {			
+				$results[3] = $request->post('results3');
+			}
+			if ($request->post('results4') !== NULL) {			
+				$results[4] = $request->post('results4');
+			}
+			if ($request->post('results5') !== NULL) {			
+				$results[5] = $request->post('results5');
+			}
+			if ($request->post('results6') !== NULL) {			
+				$results[6] = $request->post('results6');
+			}
+			if ($request->post('results7') !== NULL) {			
+				$results[7] = $request->post('results7');
+			}
+			if ($request->post('results8') !== NULL) {			
+				$results[8] = $request->post('results8');
+			}
+			if ($request->post('results9') !== NULL) {			
+				$results[9] = $request->post('results9');
+			}
+			if ($request->post('results10') !== NULL) {			
+				$results[10] = $request->post('results10');
+			}
+			if ($request->post('results11') !== NULL) {			
+				$results[11] = $request->post('results11');
+			}
+			if ($request->post('rep_num') !== NULL) {			
+				$rep_num = $request->post('rep_num');
+				if ($results[11] !== $rep_num) {
+					$results[11] = $rep_num;
+				}
+			}
+			if ($request->post('whole_amount') !== NULL) {			
+				$results[12] = $request->post('whole_amount');
+			}
+			if ($request->post('protocol_date') !== NULL) {			
+				$date1 = $request->post('protocol_date');
+				$date = str_replace('/', '-', $date1);
+				$results[13] = date('Y-m-d', strtotime($date));				
+			}
+			if ($request->post('protocol') !== NULL) {			
+				$results[14] = $request->post('protocol');
+			}
+			if ($request->post('comma_separated') !== NULL) {			
+				$comma_separated = $request->post('comma_separated');
+				$filteredSel = explode(',', $comma_separated);
+			}
+				
+			$results[0] = $this->generateCoverDocument($results); //Δημιουργώ και αλλάζω το filename σε exportfilename
+			
+			$reportfname = $results[1];
+
+			$transports = $this->getTransportsFromPrintId($filteredSel);
+			$transportModel = $transports[0];
+			$all_count = count($transports);
+				
+			$which = Transport::fdocument;
+			TransportController::deleteAllPrints($transportModel, $which); 	
+			for ($c = 0; $c < $all_count; $c++) {
+				$currentModel = $transports[$c];	
+				$set = $this->setPrintDocument($currentModel, $results, $which); // Εδώ θα στείλω κι άλλα δεδομένα
+				if (!$set) {
+					throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
+				}
+			}
+			
+			//Κλειδώνω τα Transports που χρησιμοποιήθηκαν
+			for ($c = 0; $c < $all_count; $c++) {
+				$currentModel = $transports[$c];	
+				$currentModel->locked = True;
+				$currentModel->save();
+			}
+			//Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated report.'));          
+			Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated files on {date}.', ['date' => date('d/m/Y')]));          
+			
+			return $this->redirect(['index']);			
+		}
+    }
+	
+
+	
+    public function Coversel($comma_separated, $results, $id, $ftype)
+    {   // SUBMIT στην PRINTDATA
+		$model = $this->findModel($id);
+		return $this->render('coverdata', ['comma_separated' => $comma_separated, 'results' => $results, 'model' => $model, 'ftype' => $ftype] );
+    }
+	
+	
 	/* Generate file
 	 * @return Filename	 
 	 */
-	protected function fixPrintDocument($selection)
+	protected function fixPrintDocument($selection, $id)
 	{
 		$filteredSel = []; //Θα πάρω μόνο αυτά που είναι Journals
 		$k = 0;
@@ -239,9 +341,17 @@ class TransportPrintController extends Controller
 			
 			if (!$locked) {			
 				$transportModel = $transports[0]; //send one model for File Types...
-				$results = $this->generatePrintDocument($transportModel, $transportPrints);      
-				$reportfname = $results[1];
+				$results = $this->generatePrintDocument($transportModel, $transportPrints); //REPORT
 
+				$year = $results[8];
+				$maxPrint = TransportPrint::transportNum($year);
+				if ($maxPrint !== null) {
+					$rep_num =  $maxPrint->report_num + 1;
+				} else {
+					$rep_num = 1;
+				}		
+				$results[11] = $rep_num;
+				
 				// Σβήνει όλες τις σχετικές με τον τύπο μετακίνησης εκτυπώσεις...και τα φιλαράκια
 				$which = Transport::freport;
 				TransportController::deleteAllPrints($transportModel, $which); 	
@@ -252,24 +362,9 @@ class TransportPrintController extends Controller
 						throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
 					}
 				}
-				$which = Transport::fdocument;
-				TransportController::deleteAllPrints($transportModel, $which); 	
-				for ($c = 0; $c < $all_count; $c++) {
-					$currentModel = $transports[$c];	
-					$set = $this->setPrintDocument($currentModel, $results, $which);
-					if (!$set) {
-						throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
-					}
-				}
-				
-				//Κλειδώνω τα Transports που χρησιμοποιήθηκαν
-				for ($c = 0; $c < $all_count; $c++) {
-					$currentModel = $transports[$c];	
-					$currentModel->locked = True;
-					$currentModel->save();
-				}
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated files on {date}.', ['date' => date('d/m/Y')]));          
-				return true;
+			
+				return $this->Coversel($comma_separated, $results, $id, Transport::fdocument);		
+				 
 			}	
 			else {
 				$transStr = '';
@@ -282,13 +377,12 @@ class TransportPrintController extends Controller
 					$transStr .= $trans->employee0->fullname . ' (' .  Yii::$app->formatter->asDate($trans->start_date) . '-' . Yii::$app->formatter->asDate($trans->end_date) . ')';
 				}
 				$msg = Yii::t('app', 'There are transports already sent. Please correct your data.') . ' ' . $transStr;
-				
 				Yii::$app->session->setFlash('danger', $msg);          		    		
-				return false;
+				return $this->redirect(['index']);		//false;
 			}
 		} else {
 			Yii::$app->session->setFlash('danger', Yii::t('app', 'You must select journals to proceed. Please correct your selection.'));          		    		
-			return false;	
+			return $this->redirect(['index']);		//false;	
 		}
 	}
 
@@ -314,7 +408,14 @@ class TransportPrintController extends Controller
 			$new_print->sum722 = $results[4]; 
 			$new_print->total = $results[5]; 
 			$new_print->sum_mtpy = $results[6]; 
-			$new_print->clean = $results[7]; 			
+			$new_print->clean = $results[7]; 	
+			$new_print->report_year = $results[8];		
+			$new_print->report_num = $results[11];		
+			if ($which == Transport::fdocument) {
+				$new_print->whole_amount = $results[12];		
+				$new_print->report_date = $results[13];		
+				$new_print->report_prot = $results[14];		
+			}
 			$ins = $new_print->insert();
 			if ($ins == true) { // έγινε εισαγωγή στον Transport_Print
 				$new_printM = TransportPrint::transportPrintID(basename($filename));
@@ -329,7 +430,67 @@ class TransportPrintController extends Controller
 		}
         return $ins;
     }   
+    
+	protected function generateCoverDocument($results)
+	{
+/*		$results[0] 	// document
+		$results[1] 	// report
+		$results[2] 	// sum code 719
+		$results[3] 	// sum code 721
+		$results[4] 	// sum code 722
+		$results[5] 	// total amount
+		$results[6] 	// mtpy
+		$results[7] 	// clean amount
+		$results[8] 	// year of, may be YYYY or YYYY-YYYY
+		$results[9] 	// minDate
+		$results[10] 	// maxDate
+		$results[11] 	// αύξων αριθμός αποστολής
+		$results[12] 	// ποσό ολογράφως			
+		$results[13] 	// protocol_date
+		$results[14] 	// protocol 	*/
 
+		$dts = date('YmdHis');
+		$documentFilename = $results[0];
+		$whole_amount = $results[12];
+		$rep_date = $results[13];
+		$rep_prot = $results[14];
+		$rep_num = $results[11];
+		$S719 = $results[2];
+		$S721 = $results[3];
+		$S722 = $results[4];
+		$total = $results[5];
+		
+		//------------------- DOCUMENT ---------------------------------
+        $exportfilename1 = Yii::getAlias("@vendor/admapp/exports/transports/{$dts}_{$documentFilename}");
+		$documentProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/transports/{$documentFilename}"));       
+
+		$documentProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($rep_date));
+		$documentProcessor->setValue('DEC_PROT', $rep_prot);	
+		$documentProcessor->setValue('TRANS_PERSON', Yii::$app->params['transportPerson']);
+		$documentProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
+		$documentProcessor->setValue('TRANS_FAX', Yii::$app->params['transportFax']);
+		$documentProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
+		$documentProcessor->setValue('DIRECTOR', Yii::$app->params['director']);      
+		//Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
+		//$documentProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
+		//$documentProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);      
+	
+		$documentProcessor->setValue('WHOLE_AMOUNT', $whole_amount);
+		$documentProcessor->setValue('DEC_NUM', $rep_num);
+		
+		$documentProcessor->setValue('AM19', number_format($S719, 2 , ',', ''));
+		$documentProcessor->setValue('AM21', number_format($S721, 2 , ',', ''));
+		$documentProcessor->setValue('AM22', number_format($S722, 2 , ',', ''));
+		$documentProcessor->setValue('NUM_TOTAL', number_format($total, 2 , ',', ''));
+        $documentProcessor->saveAs($exportfilename1);
+        if (!is_readable($exportfilename1)) {
+            throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
+        }
+        //------------------- END DOCUMENT ------------------------------
+                
+        return $exportfilename1; // document	
+	}
+	
      /**
      * Creates two exported prints - A cover document and a report for the selected journals
      * @param TransportModel $transportModel 
@@ -340,21 +501,21 @@ class TransportPrintController extends Controller
     protected function generatePrintDocument($transportModel, $transportPrints)
     {
         $dts = date('YmdHis');
-		$documentFilename = $transportModel->type0 ? $transportModel->type0->templatefilename3 : null;
 		$reportFilename = $transportModel->type0 ? $transportModel->type0->templatefilename4 : null;
-		if (($documentFilename === null) || ($reportFilename === null)) {
+		$documentFilename = $transportModel->type0 ? $transportModel->type0->templatefilename3 : null;
+		if (($reportFilename === null) || ($documentFilename === null)) {
 			throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
 		}
-        $exportfilename1 = Yii::getAlias("@vendor/admapp/exports/transports/{$dts}_{$documentFilename}");
         $exportfilename2 = Yii::getAlias("@vendor/admapp/exports/transports/{$dts}_{$reportFilename}");
-        $documentProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/transports/{$documentFilename}"));
-        $reportProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/transports/{$reportFilename}"));
-	
+
 		//------------------- REPORT ---------------------------------
+
+        $reportProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/transports/{$reportFilename}"));
 		
 		$reportProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
 		$reportProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
 		$reportProcessor->setValue('DIRECTOR', Yii::$app->params['director']);      
+		$reportProcessor->setValue('MT', (Yii::$app->params['trans_mtpy'] * 100));      
 		//Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
 		//$reportProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
 		//$reportProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);      
@@ -420,38 +581,9 @@ class TransportPrintController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
         }
         //------------------- END REPORT ------------------------------
-        
-		
-		//------------------- DOCUMENT ---------------------------------
-		
-		//---------------------------
-		$dec_date = '2016-12-31';
-		$dec_prot = 15;
-		//---------------------------
-	
-		$documentProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($dec_date));
-		$documentProcessor->setValue('DEC_PROT', $dec_prot);	
-		$documentProcessor->setValue('TRANS_PERSON', Yii::$app->params['transportPerson']);
-		$documentProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
-		$documentProcessor->setValue('TRANS_FAX', Yii::$app->params['transportFax']);
-		$documentProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
-		$documentProcessor->setValue('DIRECTOR', Yii::$app->params['director']);      
-		//Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
-		//$documentProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
-		//$documentProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);      
-	
-		$documentProcessor->setValue('AM19', number_format($S719, 2 , ',', ''));
-		$documentProcessor->setValue('AM21', number_format($S721, 2 , ',', ''));
-		$documentProcessor->setValue('AM22', number_format($S722, 2 , ',', ''));
-		$documentProcessor->setValue('NUM_TOTAL', number_format($S8, 2 , ',', ''));
-        $documentProcessor->saveAs($exportfilename1);
-        if (!is_readable($exportfilename1)) {
-            throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
-        }
-        //------------------- END DOCUMENT ------------------------------
-                
+      
 		$results = [];
-		$results[0] = $exportfilename1; // document
+		$results[0] = $documentFilename; // document
 		$results[1] = $exportfilename2; // report
 		$results[2] = $S719; //sum code 719
 		$results[3] = $S721; //sum code 721
