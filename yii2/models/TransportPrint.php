@@ -18,6 +18,7 @@ use app\models\Transport;
  */
 class TransportPrint extends \yii\db\ActiveRecord
 {
+	
     /**
      * @inheritdoc
      */
@@ -33,7 +34,7 @@ class TransportPrint extends \yii\db\ActiveRecord
     {
         return [
             [['filename'], 'required'],
-            [['create_ts', 'send_ts', 'transport'], 'safe'],
+            [['create_ts', 'send_ts', 'transport', 'paid'], 'safe'],
             [['filename'], 'string', 'max' => 255],
             [['to_emails'], 'string', 'max' => 1000],
         ];
@@ -65,7 +66,8 @@ class TransportPrint extends \yii\db\ActiveRecord
             'asum722' => Yii::t('app', 'Approved Sum 722'),
             'asum_mtpy' => Yii::t('app', 'Approved Sum MTPY'),
             'atotal' => Yii::t('app', 'Approved Total'),
-            'aclean' => Yii::t('app', 'Approved Clean Amount')          
+            'aclean' => Yii::t('app', 'Approved Clean Amount'),
+            'paid' => Yii::t('app', 'Paid')          
         ];
     }
 

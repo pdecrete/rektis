@@ -95,6 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return \Yii::$app->formatter->asDate($data['serve_decision_date']);
                         }
                     ],                   
+                    'serve_decision_subject',
                     'appointment_fek',
                     [
                         'label' => Yii::t('app', 'Appointment Date'),

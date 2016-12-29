@@ -43,11 +43,12 @@ class TransportPrintSearch extends TransportPrint
     public function search($params)
     {
         $query = TransportPrint::find();
-
+		$query->orderby(' create_ts DESC '); 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [ 'pageSize' => 10 ],
         ]);
 
         $this->load($params);
@@ -78,6 +79,7 @@ class TransportPrintSearch extends TransportPrint
             'aclean' => $this->aclean,
             'from' => $this->from,
             'to' => $this->to,
+            'paid' => $this->paid,
             
         ]);
 

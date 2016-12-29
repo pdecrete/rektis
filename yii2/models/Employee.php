@@ -29,6 +29,7 @@ use yii\data\SqlDataProvider;
  * @property string $identification_number
  * @property string $serve_desicion
  * @property string $serve_decision_date
+ * @property string $serve_decision_subject
  * @property string $appointment_fek
  * @property string $appointment_date
  * @property integer $service_organic
@@ -102,7 +103,7 @@ class Employee extends \yii\db\ActiveRecord
             [['comments'], 'string'],
             [['name', 'surname', 'fathersname', 'mothersname', 'email'], 'string', 'max' => 100],
             [['telephone', 'serve_decision', 'work_base', 'home_base', 'mobile', 'identity_number', 'social_security_number'], 'string', 'max' => 40],
-            [['address'], 'string', 'max' => 200],
+            [['address', 'serve_decision_subject'], 'string', 'max' => 200],
             [['identification_number', 'appointment_fek', 'service_adoption'], 'string', 'max' => 10],
             [['rank'], 'string', 'max' => 4],
             [['identification_number'], 'unique'],
@@ -158,6 +159,7 @@ class Employee extends \yii\db\ActiveRecord
             'service_adoption_date' => Yii::t('app', 'Service Adoption Date'),
             'serve_decision' => Yii::t('app', 'Service Decision'),
             'serve_decision_date' => Yii::t('app', 'Service Decision Date'),
+            'serve_decision_subject' => Yii::t('app', 'Service Decision Subject'),
             'work_base' => Yii::t('app', 'Work base'),
             'home_base' => Yii::t('app', 'Home base'),           
             'master_degree' => Yii::t('app', 'No of Master Degrees'),

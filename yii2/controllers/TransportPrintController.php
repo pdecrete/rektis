@@ -13,6 +13,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use \PhpOffice\PhpWord\TemplateProcessor;
+use yii\data\ActiveDataProvider;
 
 /**
  * TransportPrintController implements the CRUD actions for TransportPrint model.
@@ -52,15 +53,41 @@ class TransportPrintController extends Controller
      * Lists all TransportPrint models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($selected = '')
     {
-        $searchModel = new TransportPrintSearch();
+/*      $searchModel = new TransportPrintSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
+        ]);*/
+        
+		$searchModel = new TransportPrintSearch();
+		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+		if ($selected == '') {
+			//Δημιουργώ (άδειο) τον DataProvider
+			$query = TransportPrint::find();
+			$query->where('0=1');
+			$choiceDataProvider = new ActiveDataProvider([
+				'query' => $query,
+				'pagination' => [ 'pageSize' => 10 ],
+			]);	
+		} else {
+			$query = TransportPrint::find();
+			$query->where(' id IN ( ' . $selected . ' ) ' );
+			$choiceDataProvider = new ActiveDataProvider([
+				'query' => $query,
+				'pagination' => [ 'pageSize' => 10 ],
+			]);									
+		}
+		return $this->render('index',[
+			'choiceDataProvider' => $choiceDataProvider, 
+			'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'selected' => $selected,
+		]);			        
     }
 
     /**
@@ -156,15 +183,111 @@ class TransportPrintController extends Controller
 		}
     }    
 	
-	public function actionBulk(){
-		$selection = (array)Yii::$app->request->post('selection');
-		$id = Yii::$app->request->post('id');
-		if (count($selection) > 0) {			
-			return $this->fixPrintDocument($selection, $id);      
+	public function actionBulk()
+	{ // $selected έχει όλα τα Ids του κάτω grid
+		$comma_separated = Yii::$app->request->post('selected');
+		if ($comma_separated !== '') {
+			$selected = explode(',', $comma_separated);
 		} else {
-			Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some journals to proceed.'));          
-			return $this->redirect(['index']);			
-		}			
+			$selected = [];
+		}
+		if(isset($_POST['createdocs'])) {
+			if (count($selected) > 0) {			
+				return $this->fixPrintDocument($selected);
+			} else {
+				Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some journals to proceed.'));          
+				return $this->redirect(['index']);			
+			}			
+		} else if(isset($_POST['remove'])) {
+			$selection = (array)Yii::$app->request->post('selection');
+			$selected = array_diff($selected, $selection); 	
+			$count = count($selected);
+			if ($count > 0) {
+				$comma_separated = implode(",", $selected);
+				return $this->redirect(['index', 'selected' => $comma_separated]);
+			} else {
+				return $this->redirect(['index']);
+			}		
+		} else {
+			return $this->redirect(['index', 'selected' => $comma_separated]);
+		}
+    }
+
+	public function actionChoose()
+	{	
+		$comma_separated = Yii::$app->request->post('selected');
+		if (isset($_POST['chosen'])) {
+			if ($comma_separated !== '') {
+				$selected = explode(',', $comma_separated);
+			} else {
+				$selected = [];
+			}
+			$selection = (array)Yii::$app->request->post('selection');
+			$selection = array_merge($selected, $selection); 	
+			$selection = array_unique ($selection);
+			$filteredSel = $this->filterSelected($selection, Transport::fjournal);
+			$count = count($filteredSel);
+			if ($count > 0) {
+				$comma_separated = implode(",", $filteredSel);
+				$this->redirect(['index', 'selected' => $comma_separated]);
+			} else {
+				$this->redirect(['index']);
+			}		
+		} elseif ((isset($_POST['paid']))) {
+			$selection = (array)Yii::$app->request->post('selection');
+			$filteredSel = $this->filterSelected($selection, Transport::fdocument);
+			if (count($filteredSel) > 0) {			
+				$filteredSel = array_unique($filteredSel);
+				// Mark prints
+				$count = count($filteredSel);
+				for ($c = 0; $c < $count; $c++) {
+					$currentModel = TransportPrint::Findone($filteredSel[$c]);
+					if ($currentModel !== null) {
+						$currentModel->paid = true;
+						$currentModel->save();
+					}	
+				}
+				// Mark Transports
+				$transports = $this->getTransportsFromPrintId($filteredSel);
+				$all_count = count($transports);		
+				for ($c = 0; $c < $all_count; $c++) {
+					$currentModel = $transports[$c];	
+					$currentModel->paid = true;
+					$currentModel->save();
+				}	
+			} else {
+				Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some documents or reports to proceed.'));          
+			}
+			return $this->redirect(['index', 'selected' => $comma_separated]);							
+		} elseif ((isset($_POST['unpaid']))) {
+			$selection = (array)Yii::$app->request->post('selection');
+			$filteredSel = $this->filterSelected($selection, Transport::fdocument);
+			if (count($filteredSel) > 0) {
+				$filteredSel = array_unique($filteredSel);		
+				// Mark prints
+				$count = count($filteredSel);
+				for ($c = 0; $c < $count; $c++) {
+					$currentModel = TransportPrint::Findone($filteredSel[$c]);
+					if ($currentModel !== null) {
+						$currentModel->paid = false;
+						$currentModel->save();
+					}	
+				}
+				// Mark Transports		
+				$transports = $this->getTransportsFromPrintId($filteredSel);
+				$all_count = count($transports);		
+				for ($c = 0; $c < $all_count; $c++) {
+					$currentModel = $transports[$c];	
+					$currentModel->paid = false;
+					$currentModel->save();
+				}
+			} else {
+				Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some documents or reports to proceed.'));          
+			}
+			return $this->redirect(['index', 'selected' => $comma_separated]);							
+		} else {
+			return $this->redirect(['index', 'selected' => $comma_separated]);
+		}
     }
 
 	protected function getEmployeeFromPrintId($printid) {
@@ -288,41 +411,48 @@ class TransportPrintController extends Controller
 			}
 			//Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated report.'));          
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated files on {date}.', ['date' => date('d/m/Y')]));          
-			
 			return $this->redirect(['index']);			
 		}
     }
 	
-
-	
-    public function Coversel($comma_separated, $results, $id, $ftype)
+    public function Coversel($comma_separated, $results, $ftype)
     {   // SUBMIT στην PRINTDATA
-		$model = $this->findModel($id);
-		return $this->render('coverdata', ['comma_separated' => $comma_separated, 'results' => $results, 'model' => $model, 'ftype' => $ftype] );
+		return $this->render('coverdata', ['comma_separated' => $comma_separated, 'results' => $results, 'ftype' => $ftype] );
     }
 	
+	
+	protected function filterSelected($selection, $ftype)
+	{
+		$filteredSel = []; //Θα πάρω μόνο αυτά που είναι $ftype
+		$k = 0;
+		foreach ($selection as $id) {
+			$trPrint = TransportPrint::findOne((int)$id);
+			if (($ftype !== Transport::fdocument) && ($ftype !== Transport::freport)) {
+				if ($trPrint->doctype == $ftype) {
+					$filteredSel[$k] = $trPrint->id;
+					$k++;
+				}
+			} else { //asked for Report or Document
+				if (($trPrint->doctype == Transport::fdocument) || ($trPrint->doctype == Transport::freport)) {
+					$filteredSel[$k] = $trPrint->id;
+					$k++;
+				}		
+			}
+		}
+		return $filteredSel;
+	}
 	
 	/* Generate file
 	 * @return Filename	 
 	 */
-	protected function fixPrintDocument($selection, $id)
+	protected function fixPrintDocument($selection)
 	{
-		$filteredSel = []; //Θα πάρω μόνο αυτά που είναι Journals
-		$k = 0;
-		foreach ($selection as $id) {
-			$trPrint = TransportPrint::findOne((int)$id);
-			// get only journals
-			if ($trPrint->doctype == Transport::fjournal) {
-				$filteredSel[$k] = $trPrint->id;
-				$k++;
-			}
-		}
+		$filteredSel = $this->filterSelected($selection, Transport::fjournal);
 		if (count($filteredSel) > 0) {
 			$comma_separated = implode(",", $filteredSel);
 			$transportPrints = TransportPrint::Find()
 								->where(' id IN ( ' . $comma_separated . ' ) ' )
 								->all();			
-
 			$transports = $this->getTransportsFromPrintId($filteredSel);
 			
 			//ΕΛΕΓΧΩ ΑΝ ΚΑΠΟΙΑ ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ ΚΛΕΙΔΩΜΕΝΗ, ΔΗΛΑΔΗ ΕΧΕΙ ΗΔΗ ΑΠΟΣΤΑΛΕΙ ΣΤΗΝ ΥΔΕ
@@ -362,9 +492,7 @@ class TransportPrintController extends Controller
 						throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.') . $currentModel->id);
 					}
 				}
-			
-				return $this->Coversel($comma_separated, $results, $id, Transport::fdocument);		
-				 
+				return $this->Coversel($comma_separated, $results, Transport::fdocument);		
 			}	
 			else {
 				$transStr = '';
@@ -378,11 +506,11 @@ class TransportPrintController extends Controller
 				}
 				$msg = Yii::t('app', 'There are transports already sent. Please correct your data.') . ' ' . $transStr;
 				Yii::$app->session->setFlash('danger', $msg);          		    		
-				return $this->redirect(['index']);		//false;
+				return $this->redirect(['index', 'selected' => $comma_separated]);
 			}
 		} else {
 			Yii::$app->session->setFlash('danger', Yii::t('app', 'You must select journals to proceed. Please correct your selection.'));          		    		
-			return $this->redirect(['index']);		//false;	
+			return $this->redirect(['index']);
 		}
 	}
 
