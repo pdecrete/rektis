@@ -249,13 +249,18 @@ class TransportController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+        if ($model->locked == false) {
+			if ($model->load(Yii::$app->request->post()) && $model->save()) {
+				return $this->redirect(['view', 'id' => $model->id]);
+			} else {
+				return $this->render('update', [
+					'model' => $model,
+				]);
+			}
+		} else {
+			Yii::$app->session->setFlash('danger', Yii::t('app', 'You can not edit this transport (locked). It is used in a transport costs post.'));          
+			return $this->redirect(['view', 'id' => $model->id]);
+		}		
     }
 
     /**
@@ -268,12 +273,17 @@ class TransportController extends Controller
     {
         //        $this->findModel($id)->delete();
         $model = $this->findModel($id);
-        $model->deleted = 1;
-        if ($model->save()) {
-            return $this->redirect(['index']);
-        } else {
-            throw new ServerErrorHttpException('The requested page does not exist.');
-        }
+        if ($model->locked == false) {
+			$model->deleted = 1;
+			if ($model->save()) {
+				return $this->redirect(['index']);
+			} else {
+				throw new ServerErrorHttpException('The requested page does not exist.');
+			}
+		} else {
+			Yii::$app->session->setFlash('danger', Yii::t('app', 'You can not delete this transport (locked). It is used in a transport costs post.'));          
+			return $this->redirect(['view', 'id' => $model->id]);
+		}
     }
 
     /**
@@ -432,13 +442,14 @@ class TransportController extends Controller
 				}		
 			}
 			$templateProcessor->setValue('APPLICATION_PROTOCOL', $prot);
+
 			if ($transportModel->employee0->serve_decision_date !== null) { 
 				$templateProcessor->setValue('PLAC_DATE', Yii::$app->formatter->asDate($transportModel->employee0->serve_decision_date));
 			} else {
 				$templateProcessor->setValue('PLAC_DATE', '');
 			}
 			$templateProcessor->setValue('PLACEMENT_NUM', $transportModel->employee0->serve_decision);
-		 
+			$templateProcessor->setValue('PLAC_SUBJ', $transportModel->employee0->serve_decision_subject);
 			$templateProcessor->setValue('SURNAME', $transportModel->employee0->surname);
 			$templateProcessor->setValue('NAME', $transportModel->employee0->name);
 			$templateProcessor->setValue('RANK', $transportModel->employee0->rank);
@@ -597,8 +608,8 @@ class TransportController extends Controller
 				$templateProcessor->setValue('START' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));		
 				$templateProcessor->setValue('END' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));		
 				$templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);		
-				$templateProcessor->setValue('KLM' . "#{$i}", number_format($currentModel->klm, 1 , ',', '')); 
-				$S1 += $currentModel->klm;
+				$templateProcessor->setValue('KLM' . "#{$i}", number_format($currentModel->klm * 2, 1 , ',', '')); 
+				$S1 += $currentModel->klm * 2;
 				$templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
 				$templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
 				$SDA += $currentModel->days_applied;		
@@ -1004,22 +1015,28 @@ class TransportController extends Controller
 	{
 		$total = Yii::$app->db->createCommand(
 					' select count(*) as total ' .
-					' from ( SELECT kae, inamount, outamount, inamount -  outamount as balance ' .
-						'	FROM ( ' .
-						' 		select A.kae AS kae, A.amount as inamount, CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount ' . 
-							'	from 	( ' . 
-									'	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount ' . 
-									'	from admapp_transport_funds ' .
-									'	where (admapp_transport_funds.count_flag = 1) ' . 
-									'	group by admapp_transport_funds.kae ' . 
-									'	) as A, ' .
-									'	(	' . 
-									'	select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722 ' .
-									'	from admapp_transport ' .
-									'	where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del ' .
-									'	) as B ' .
-							' ) AS C ' .
-						' ) AS D ' ,
+					' from ( SELECT kae, inamount, outamount, inamount - outamount as balance, paidamount, inamount - paidamount as balancepaid  ' .
+							' FROM (   ' .
+								' select A.kae AS kae, A.amount as inamount,   ' .
+									' CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount,   ' .
+									' CASE WHEN A.kae = "719" THEN C.code719 WHEN A.kae = "721" THEN C.code721 WHEN A.kae = "722" THEN C.code722 END AS paidamount 	  ' .
+								' from 	( 	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount   ' .
+										' from admapp_transport_funds   ' .
+										' where (admapp_transport_funds.count_flag = 1)  ' .
+										' group by admapp_transport_funds.kae   ' .
+									' ) as A, 	  ' .
+									' (  ' .
+										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722	' .
+										' from admapp_transport   ' .
+										' where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del   ' .
+									' ) as B,  ' .
+									' (  ' .
+										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722   ' .
+										' from admapp_transport   ' .
+										' where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del   ' .
+									' ) as C   ' .
+								' ) AS D  ' .
+						' ) AS E ' ,
 					 [	':del' => 0 //μη διεγραμμένες	
 					])
 					->queryScalar();
@@ -1030,25 +1047,30 @@ class TransportController extends Controller
 	public function getFundsTotals()
 	{
 		return new SqlDataProvider([
-				'sql' => ' SELECT kae, inamount, outamount, inamount -  outamount as balance ' .
-						'	FROM ( ' .
-						' 		select A.kae AS kae, A.amount as inamount, CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount ' . 
-							'	from 	( ' . 
-									'	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount ' . 
-									'	from admapp_transport_funds ' .
-									'	where (admapp_transport_funds.count_flag = 1) ' . 
-									'	group by admapp_transport_funds.kae ' . 
-									'	) as A, ' .
-									'	(	' . 
-									'	select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722 ' .
-									'	from admapp_transport ' .
-									'	where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del ' .
-									'	) as B ' .
-								' ) AS C ',
+				'sql' => 	' SELECT kae, inamount, outamount, inamount - outamount as balance, paidamount, inamount - paidamount as balancepaid  ' .
+							' FROM (   ' .
+								' select A.kae AS kae, A.amount as inamount,   ' .
+									' CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount,   ' .
+									' CASE WHEN A.kae = "719" THEN C.code719 WHEN A.kae = "721" THEN C.code721 WHEN A.kae = "722" THEN C.code722 END AS paidamount 	  ' .
+								' from 	( 	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount   ' .
+										' from admapp_transport_funds   ' .
+										' where (admapp_transport_funds.count_flag = 1)  ' .
+										' group by admapp_transport_funds.kae   ' .
+									' ) as A, 	  ' .
+									' (  ' .
+										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722	' .
+										' from admapp_transport   ' .
+										' where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del   ' .
+									' ) as B,  ' .
+									' (  ' .
+										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722   ' .
+										' from admapp_transport   ' .
+										' where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del   ' .
+									' ) as C   ' .
+								' ) AS D   ',
 				'params' => [
 					':del' => 0, //μη διεγραμμένες	
 				],
 		]);
-	}
-    
+	}				
 }

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-lg-5">	
 			<?= Html::beginForm(['printdata'], 'post', ['enctype' => 'multipart/form-data']) ?>
 				<h2><?= Yii::t('app', 'Cover document data') ?> </h2>
-				<?= Html::hiddenInput('id', $model->id); ?>	
+
 				<?=	Html::hiddenInput('ftype', $ftype); ?>	
 				
 				<?= Html::hiddenInput('results0', $results[0]); ?>	
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					<?=	Html::textArea('whole_amount'); ?>
 				</p>
 				<div class="form-group">
-					<?= Html::a(Yii::t('app', 'Return'), ['index', 'id' => $model->id, 'ftype' => $ftype], ['class' => 'btn btn-primary']) ?>	
+					<?= Html::a(Yii::t('app', 'Return'), ['index', 'selected' => $comma_separated], ['class' => 'btn btn-primary']) ?>	
 					<?= Html::submitButton(Yii::t('app', 'Continue'), ['class' => 'btn btn-success']) ?> 
 				</div>
 				<?= Html::endForm() ?>

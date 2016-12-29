@@ -104,8 +104,9 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
-
-        <hr>
+		<?= $form->field($model, 'serve_decision_subject')->textArea(['maxlength' => true]) ?>
+		
+        <hr/>
         <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
              'type'=>DateControl::FORMAT_DATE
@@ -116,7 +117,7 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
-        <hr>       
+        <hr/>       
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],

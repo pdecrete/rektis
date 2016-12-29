@@ -6,9 +6,9 @@ return [
     'adminEmail' => 'pdekritisweb@kritis.pde.sch.gr',
     'user.passwordResetTokenExpire' => 3600,
     'user.rememberMeDuration' => 172800, // seconds of cookie duration for auto login (if enabled)
-    'director_sign' => 'Ο Περιφερειακός Διευθυντής',
+    'director_sign' => 'Ο Περιφερειακός Διευθυντής Εκπ/σης Κρήτης',
     'director' => 'Γεώργιος Τερζάκης',
-    'surrogate_sign' => 'Ο Αναπληρωτής του Περιφερειακού Διευθυντή',
+    'surrogate_sign' => 'Ο Αν/τής του Περιφερειακού Διευθυντή Εκπ/σης Κρήτης',
     'surrogate' => 'Γεώργιος Περικλειδάκης',
     'finance_sign' => 'Η αναπληρώτρια προϊσταμένη',
     'finance_service' => 'της Υπηρεσίας Διοικητικής και Οικονομικής Υποστήριξης',
