@@ -240,21 +240,28 @@ class TransportPrintController extends Controller
 				$filteredSel = array_unique($filteredSel);
 				// Mark prints
 				$count = count($filteredSel);
+				$print_ids = '';
 				for ($c = 0; $c < $count; $c++) {
 					$currentModel = TransportPrint::Findone($filteredSel[$c]);
 					if ($currentModel !== null) {
 						$currentModel->paid = true;
 						$currentModel->save();
+						$print_ids .= ' ' . $currentModel->id;
 					}	
 				}
 				// Mark Transports
 				$transports = $this->getTransportsFromPrintId($filteredSel);
 				$all_count = count($transports);		
+				$transport_ids = '';
 				for ($c = 0; $c < $all_count; $c++) {
 					$currentModel = $transports[$c];	
 					$currentModel->paid = true;
 					$currentModel->save();
+					$transport_ids .= ' ' . $currentModel->id;
 				}	
+				$userName = Yii::$app->user->identity->username;
+				$logStr = 'User ' . $userName . ' marked as paid prints with ids [' . $print_ids . '] (and automatically transports with ids [' . $transport_ids . ']';
+				Yii::info($logStr,'transport');
 			} else {
 				Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some documents or reports to proceed.'));          
 			}
@@ -266,21 +273,28 @@ class TransportPrintController extends Controller
 				$filteredSel = array_unique($filteredSel);		
 				// Mark prints
 				$count = count($filteredSel);
+				$print_ids = '';
 				for ($c = 0; $c < $count; $c++) {
 					$currentModel = TransportPrint::Findone($filteredSel[$c]);
 					if ($currentModel !== null) {
 						$currentModel->paid = false;
 						$currentModel->save();
+						$print_ids .= ' ' . $currentModel->id;
 					}	
 				}
 				// Mark Transports		
 				$transports = $this->getTransportsFromPrintId($filteredSel);
 				$all_count = count($transports);		
+				$transport_ids = '';
 				for ($c = 0; $c < $all_count; $c++) {
 					$currentModel = $transports[$c];	
 					$currentModel->paid = false;
 					$currentModel->save();
+					$transport_ids .= ' ' . $currentModel->id;
 				}
+				$userName = Yii::$app->user->identity->username;
+				$logStr = 'User ' . $userName . ' marked as Unpaid prints with ids [' . $print_ids . '] (and automatically transports with ids [' . $transport_ids . ']';
+				Yii::info($logStr,'transport');			
 			} else {
 				Yii::$app->session->setFlash('warning', Yii::t('app', 'Please choose some documents or reports to proceed.'));          
 			}
@@ -611,6 +625,11 @@ class TransportPrintController extends Controller
 		$documentProcessor->setValue('AM22', number_format($S722, 2 , ',', ''));
 		$documentProcessor->setValue('NUM_TOTAL', number_format($total, 2 , ',', ''));
         $documentProcessor->saveAs($exportfilename1);
+
+   		$userName = Yii::$app->user->identity->username;
+		$logStr = 'User ' . $userName . ' generated transport cover document [' . $exportfilename1 . ']';
+		Yii::info($logStr,'transport');			
+
         if (!is_readable($exportfilename1)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
         }
@@ -651,10 +670,13 @@ class TransportPrintController extends Controller
 		$all_count = count($transportPrints);
 		$S8 = $S9 = $S10 = $S719 = $S721 = $S722 = 0.00;	
 		$reportProcessor->cloneRow('AA', $all_count);
+		$logprints = '';
 		for ($c = 0; $c < $all_count; $c++) {
 			$i = $c + 1;
 			$currentModel = $transportPrints[$c];
-				
+			
+			$logprints .= ' ' . $currentModel->id;
+			
 			if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
 				$minFrom = $currentModel->from;
 				$maxTo = $currentModel->to;
@@ -708,6 +730,11 @@ class TransportPrintController extends Controller
         if (!is_readable($exportfilename2)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
         }
+
+		$userName = Yii::$app->user->identity->username;
+		$logStr = 'User ' . $userName . ' generated transport report [' . $exportfilename2 . '] for transport_prints with ids [' . $logprints . ']';
+		Yii::info($logStr,'transport');			
+
         //------------------- END REPORT ------------------------------
       
 		$results = [];
