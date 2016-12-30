@@ -62,6 +62,7 @@ class TransportController extends Controller
     public function actionIndex()
     {
         $searchModel = new TransportSearch();
+        $searchModel->deleted = 0;       
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

@@ -143,8 +143,10 @@ class Leave extends \yii\db\ActiveRecord
         return Leave::find()
                         ->where([
                             'decision_protocol' => $this->decision_protocol,
-                            'decision_protocol_date' => $this->decision_protocol_date
-                        ])
+                            'decision_protocol_date' => $this->decision_protocol_date,
+                            'type' => $this->type,
+                            'deleted' => 0
+                           ])
                         ->orderBy('id')
                         ->all();
     }
