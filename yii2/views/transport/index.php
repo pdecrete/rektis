@@ -70,8 +70,17 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'create_ts',
             // 'update_ts',
             // 'deleted',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [ 
+				'class' => 'yii\grid\ActionColumn',
+				'visibleButtons' => [
+					 'update' => function ($model, $key, $index) {
+						return $model->locked === 1 ? false : true;
+					 },
+					 'delete' => function ($model, $key, $index) {
+						return $model->locked === 1 ? false : true;
+					 }
+				]
+			]
         ],
     ]); ?>
 </div>
