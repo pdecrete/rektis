@@ -216,7 +216,8 @@ class Transport extends \yii\db\ActiveRecord
                             'decision_protocol' => $this->decision_protocol,
                             'decision_protocol_date' => $this->decision_protocol_date,
                             'type' => $this->type,
-                            'employee' => $this->employee
+                            'employee' => $this->employee, 
+                            'deleted' => 0
                         ])
                         ->orderBy('id')
                         ->all();
@@ -231,6 +232,7 @@ class Transport extends \yii\db\ActiveRecord
         return Transport::find()
                         ->where(['type' => $this->type, 'employee' => $this->employee])
                         ->andWhere(['between', 'start_date', $from, $to])
+                        ->andWhere(['deleted' => 0])
                         ->orderBy('id')
                         ->all();
     }
@@ -239,6 +241,7 @@ class Transport extends \yii\db\ActiveRecord
     {
         return Transport::find()
                         ->where(['employee' => $employee_id])
+                        ->andWhere(['deleted' => 0])
                         ->orderBy('start_date DESC')
                         ->one();
     }
