@@ -32,13 +32,16 @@ class LeavePrintController extends Controller
 				'class' => AccessControl::className(),
 				'rules' => [
 					[
-						'actions' => ['index'],
+						'actions' => ['index', 'view'],
 						'allow' => true,
-						// Allow all registered users to index
 						'roles' => ['@'],
 					],
+					[
+						'allow' => true,
+						'roles' => ['admin', 'user', 'leave_user'],
+					],
 				],
-			],                                   
+			],                        
         ];
     }
 
