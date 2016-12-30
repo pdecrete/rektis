@@ -101,6 +101,9 @@ class TransportController extends Controller
         $model = new Transport();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' created transport with id [' . $model->id . ']';
+			Yii::info($logStr,'transport');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 			$model->count_flag = TRUE;
@@ -251,6 +254,9 @@ class TransportController extends Controller
 
         if ($model->locked == false) {
 			if ($model->load(Yii::$app->request->post()) && $model->save()) {
+				$userName = Yii::$app->user->identity->username;
+				$logStr = 'User ' . $userName . ' updated transport with id [' . $model->id . ']';
+				Yii::info($logStr,'transport');
 				return $this->redirect(['view', 'id' => $model->id]);
 			} else {
 				return $this->render('update', [
@@ -276,6 +282,9 @@ class TransportController extends Controller
         if ($model->locked == false) {
 			$model->deleted = 1;
 			if ($model->save()) {
+				$userName = Yii::$app->user->identity->username;
+				$logStr = 'User ' . $userName . ' deleted transport with id [' . $model->id . ']';
+				Yii::info($logStr,'transport');
 				return $this->redirect(['index']);
 			} else {
 				throw new ServerErrorHttpException('The requested page does not exist.');
@@ -327,7 +336,7 @@ class TransportController extends Controller
 				$which = $ftype;
 				$filename = $this->fixPrintDocument($model, $which);
 			} else { // fall means all types... WE DON'T USE fall ON CREATE ... 
-					// but if for some reason we do want fall onCREATE, the following code creates all documents
+					// but if for some reason we do want fall onCREATE, the following code creates the first 2 documents
 				$which = Transport::fapproval;
 				$filename = $this->fixPrintDocument($model, $which);				
 				$which = Transport::fjournal;
@@ -660,6 +669,11 @@ class TransportController extends Controller
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
         }
+
+		$userName = Yii::$app->user->identity->username;
+		$logStr = 'User ' . $userName . ' generated transport file [' . $exportfilename . '] for employee [' . $transportModel->employee . ', ' . $transportModel->employee0->name . ' ' . $transportModel->employee0->surname . '] and transport model [' . $transportModel->id . ']';
+		Yii::info($logStr,'transport');
+
 		$results = [];
 		$results[0] = $exportfilename;
 		$results[1] = $S719; 
@@ -779,6 +793,10 @@ class TransportController extends Controller
         }
 
         // all well, send file 
+		$userName = Yii::$app->user->identity->username;
+		$logStr = 'User ' . $userName . ' downloaded transport file [' . $filename . '] from transport id [' . $model->id . ']';
+		Yii::info($logStr,'transport');
+
         Yii::$app->response->sendFile(TransportPrint::path($filename));
     }
 
@@ -817,20 +835,26 @@ class TransportController extends Controller
         }
 		
 		if ($ftype == Transport::fdocument) {
+			$deltype = 'fdocument & freport';
 			$delsuccess1 = $this->deleteAllPrints($model, Transport::freport);
 			$delsuccess2 = $this->deleteAllPrints($model, $ftype);
 			$delsuccess = $delsuccess1 && $delsuccess2;
 		}	
 		if ($ftype == Transport::freport) {
+			$deltype = 'fdocument & freport';
 			$delsuccess1 = $this->deleteAllPrints($model, $ftype);
 			$delsuccess2 = $this->deleteAllPrints($model, Transport::fdocument);
 			$delsuccess = $delsuccess1 && $delsuccess2;
 		}	
 		if (($ftype !== Transport::fdocument) && ($ftype !== Transport::freport)) {
+			$deltype = $ftype;
 			$delsuccess = $this->deleteAllPrints($model, $ftype); 
 		}
 		
         if ($delsuccess == true) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' deleted transport files for transport id [' . $model->id . '] and filetype = [' . $deltype .']';
+			Yii::info($logStr,'transport');
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Deletion completed succesfully.'));          
 		} else {
 			Yii::$app->session->setFlash('warning', Yii::t('app', 'Deletion did not complete succesfully.'));          

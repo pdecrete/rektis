@@ -58,10 +58,10 @@ $config = [
                     'logFile' => '@runtime/logs/login.log',
                     'logVars' => [],
                 ],
-                [
+                [ // for now, all transport actions are added to email.log
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
-                    'categories' => ['leave-email', 'contact-email', 'transport-journal-email'],
+                    'categories' => ['leave-email', 'contact-email', 'transport-journal-email', 'transport'],
                     'logFile' => '@runtime/logs/email.log',
                     'logVars' => [],
                 ],                
