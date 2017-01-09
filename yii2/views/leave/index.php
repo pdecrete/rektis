@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'employee',
                 'value' => 'employeeObj.fullname',
-                'filter' => \app\models\Employee::find()->select(["CONCAT(name, ' ', surname)", 'id'])->indexBy('id')->column()
+                'filter' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column()
             ],
             [
                 'attribute' => 'type',
