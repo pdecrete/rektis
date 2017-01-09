@@ -152,6 +152,7 @@ if ($model->deleted) {
 				'klm_reimb:currency',
 				'days_out',
 				'day_reimb:currency',
+				'nights_out',
 				'reimbursement:currency',
 				'mtpy:currency',
 				'pay_amount:currency',

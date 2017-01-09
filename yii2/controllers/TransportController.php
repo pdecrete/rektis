@@ -184,7 +184,7 @@ class TransportController extends Controller
 	}
 
 
-	public function actionCalculate($routeid, $modeid, $days, $ticket, $night_reimb) 
+	public function actionCalculate($routeid, $modeid, $days, $ticket, $night_reimb, $nights_out) 
 	{
 		$klm = (float) (($tmodel = TransportDistance::findOne($routeid)) !== null) ? $tmodel->distance : 0.0;
 		if (($mmodel = TransportMode::findOne($modeid)) !== null) {
@@ -203,24 +203,35 @@ class TransportController extends Controller
 		if ($night_reimb == null) {
 			$night_reimb = 0;
 		}				
+		if ($nights_out == null) {
+			$nights_out = 0;
+		}				
 		$day_reimb = 0;	
 		if ($klm > Yii::$app->params['trans_out_limit']) {
 			$klm_reimb = 2 * $klm * $mode_value; //χλμ αποζημίωση (*2 για επιστροφή)
 			if ($klm <= $mode_out_limit) { //ημερήσια αποζημίωση
 				$days_out = $days;
 				$day_reimb = $days * Yii::$app->params['trans_day_limit1'] * Yii::$app->params['trans_day_reim'];
+				$proper_nights_out = 0;
 			} else {
 				$days_out = $days;
 				if ($days_out == 1) { // αυθημερόν
 					$day_reimb = Yii::$app->params['trans_day_limit2'] * Yii::$app->params['trans_day_reim'];
+					$proper_nights_out = 0;
 				} else { 
 					$day_reimb = $days * Yii::$app->params['trans_day_reim'];
+					$proper_nights_out = $days - 1;
 				}		
 			}
 		} else {
 			$days_out = 0;
 			$klm_reimb = 0;
+			$proper_nights_out = 0;
 		}
+		if ($nights_out > $proper_nights_out) { // διόρθωση χρήστη, αλλιώς κρατώ αυτό που δίνει (μπορεί να πηγαινοέρχεται αυθημερόν;)
+			$nights_out = $proper_nights_out;
+		} 
+		
 		$code719 = $klm_reimb + $ticket;
 		$code721 = $day_reimb;
 		$code722 = $night_reimb;
@@ -239,6 +250,7 @@ class TransportController extends Controller
 			'code719' => $code719,
 			'code721' => $code721,
 			'code722' => $code722,
+			'nights_out' => $nights_out,
 		];
 		return Json::encode($results);
 	}
@@ -621,14 +633,14 @@ class TransportController extends Controller
 				$templateProcessor->setValue('KLM' . "#{$i}", number_format($currentModel->klm * 2, 1 , ',', '')); 
 				$S1 += $currentModel->klm * 2;
 				$templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
-				$templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
-				$SDA += $currentModel->days_applied;		
+				$templateProcessor->setValue('D_OUT' . "#{$i}", $currentModel->nights_out);
+				$S4 += $currentModel->nights_out;		
 				$templateProcessor->setValue('KLMR' . "#{$i}", number_format($currentModel->klm_reimb, 2 , ',', ''));
 				$S2 += $currentModel->klm_reimb;
 				$templateProcessor->setValue('TICK' . "#{$i}", number_format($currentModel->ticket_value, 2 , ',', ''));
 				$S3 += $currentModel->ticket_value;	
-				$templateProcessor->setValue('D_OUT' . "#{$i}", $currentModel->days_out);	
-				$S4 += $currentModel->days_out;
+				$templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_out);	
+				$SDA += $currentModel->days_out;
 				$templateProcessor->setValue('DAYR' . "#{$i}", number_format($currentModel->day_reimb, 2 , ',', ''));
 				$S6 += $currentModel->day_reimb;
 				$templateProcessor->setValue('REIM' . "#{$i}", number_format($currentModel->night_reimb, 2 , ',', ''));
