@@ -66,11 +66,11 @@ class Transport extends \yii\db\ActiveRecord
 	public $from; //date('d/m/Y')
 	public $to;
 
-	const fall = 0;
-	const fapproval = 1;
-	const fjournal = 2;
-	const fdocument = 3;
-	const freport = 4;
+	const fall = 0; 	// τύπος αρχείου για εκτύπωση: ΟΛΑ
+	const fapproval = 1;// τύπος αρχείου για εκτύπωση: ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
+	const fjournal = 2;	// τύπος αρχείου για εκτύπωση: ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
+	const fdocument = 3;// τύπος αρχείου για εκτύπωση: ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
+	const freport = 4;	// τύπος αρχείου για εκτύπωση: ΣΥΓΚΕΝΤΡΩΤΙΚΗ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
 
 	/**
      * @inheritdoc
@@ -225,10 +225,6 @@ class Transport extends \yii\db\ActiveRecord
 
     public function selectForPayment($from, $to)
     {
-//		echo 'TYPE: ' . $this->type . '<br>';
-//		echo 'EMPLOYEE: ' . $this->employee . '<br>';
-//		echo 'FROM: ' . $from . '<br>';
-//		echo 'TO: ' . $to . '<br>';
         return Transport::find()
                         ->where(['type' => $this->type, 'employee' => $this->employee])
                         ->andWhere(['between', 'start_date', $from, $to])
