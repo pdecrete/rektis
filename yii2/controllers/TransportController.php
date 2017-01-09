@@ -656,7 +656,7 @@ class TransportController extends Controller
 			$templateProcessor->setValue('S5', number_format($S5, 2 , ',', ''));
 			$templateProcessor->setValue('SDA', $SDA);
 			$templateProcessor->setValue('S6', number_format($S6, 2 , ',', ''));
-			$templateProcessor->setValue('S7', number_format($S7, 2 , ',', ''));
+			//$templateProcessor->setValue('S7', number_format($S7, 2 , ',', ''));
 			$templateProcessor->setValue('S719', number_format($S719, 2 , ',', ''));
 			$templateProcessor->setValue('S721', number_format($S721, 2 , ',', ''));
 			$templateProcessor->setValue('S722', number_format($S722, 2 , ',', ''));
