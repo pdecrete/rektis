@@ -28,6 +28,7 @@ use Yii;
  * @property double $ticket_value
  * @property double $klm_reimb
  * @property double $night_reimb
+ * @property smallint $nights_out
  * @property double $days_out
  * @property double $day_reimb
  * @property double $reimbursement
@@ -86,7 +87,7 @@ class Transport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['employee', 'type', 'decision_protocol', 'application_protocol', 'from_to', 'days_applied', 'days_out', 'mode', 'deleted', 'fund1', 'fund2', 'fund3' ], 'integer'],
+            [['employee', 'type', 'decision_protocol', 'application_protocol', 'from_to', 'days_applied', 'days_out', 'mode', 'deleted', 'fund1', 'fund2', 'fund3', 'nights_out' ], 'integer'],
             [[ 'employee', 'start_date', 'end_date', 'reason', 'from_to', 'mode', 'days_applied', 'ticket_value'], 'required'],
             [['from', 'to', 'decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['ticket_value', 'klm_reimb', 'day_reimb', 'night_reimb', 'klm', 'reimbursement', 'mtpy', 'pay_amount', 'code719', 'code721', 'code722'], 'number'],
@@ -132,6 +133,7 @@ class Transport extends \yii\db\ActiveRecord
             'klm_reimb' => Yii::t('app', 'Klm Reimb'),
             'night_reimb' => Yii::t('app', 'Night Reimb'),
             'days_out' => Yii::t('app', 'Days Out'),
+			'nights_out' => Yii::t('app', 'Nights Out'),
             'day_reimb' => Yii::t('app', 'Day Reimb'),
             'reimbursement' => Yii::t('app', 'Reimbursement'),
             'mtpy' => Yii::t('app', 'Mtpy'),

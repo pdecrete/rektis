@@ -72,7 +72,7 @@ use yii\helpers\Url;
 					'options' => [
 						'placeholder' => Yii::t('app', 'Choose...'),
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'"+$(this).val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val() + "&days=" +$("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() , function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'"+$(this).val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val() + "&days=" +$("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -84,6 +84,7 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
 							});
 						',
 					],
@@ -117,7 +118,7 @@ use yii\helpers\Url;
 					'options' => [
 						'placeholder' => Yii::t('app', 'Choose...'),
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $(this).val() + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() , function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $(this).val() + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -129,6 +130,7 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
 							});
 						',
 					],
@@ -142,7 +144,7 @@ use yii\helpers\Url;
 					],
 					'options' => [
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $(this).val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() , function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $(this).val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" +$("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -154,6 +156,7 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
 							});
 						',
 					],
@@ -169,7 +172,7 @@ use yii\helpers\Url;
 					],
 					'options' => [
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" + $(this).val() + "&night_reimb=" + $("#' . Html::getInputId($model, 'night_reimb')  . '").val() , function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" + $(this).val() + "&night_reimb=" + $("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -181,6 +184,7 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
 							});
 						',
 					],
@@ -194,7 +198,7 @@ use yii\helpers\Url;
 					],
 					'options' => [
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" + $(this).val(), function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val() + "&night_reimb=" + $(this).val() 								+ "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -206,6 +210,7 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
 							});
 						',
 					],
@@ -282,7 +287,7 @@ use yii\helpers\Url;
 					'mask' => '9{1,2}' ,
 					'options' => [
 						'onchange' => '					
-							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $(this).val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val()  + "&night_reimb=" + $("#' . Html::getInputId($model, 'night_reimb')  . '").val() , function( data ) {
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" + $(this).val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val()  + "&night_reimb=" + $("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $("#' . Html::getInputId($model, 'nights_out')  . '").val() , function( data ) {
 								results = JSON.parse(data);
 								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
 								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
@@ -295,12 +300,37 @@ use yii\helpers\Url;
 								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
 								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
 								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);							
 							});
 						',
 					],
 				]);
 			?>
 			<?= $form->field($model, 'day_reimb')->textInput(['readonly' => true]) ?>
+			<?= $form->field($model, 'nights_out')->widget(MaskedInput::classname(), [
+					'name' => 'nights_out', 
+					'mask' => '9{1,2}' ,
+					'options' => [
+						'onchange' => '					
+							$.post( "'.Url::to('calculate?routeid=').'" + $("#' . Html::getInputId($model, 'from_to')  . '").val() + "&modeid=" + $("#' . Html::getInputId($model, 'mode')  . '").val()  + "&days=" +$("#' . Html::getInputId($model, 'days_applied')  . '").val() + "&ticket=" +$("#' . Html::getInputId($model, 'ticket_value')  . '").val()  + "&night_reimb=" + $("#' . Html::getInputId($model, 'night_reimb')  . '").val() + "&nights_out=" + $(this).val(), function( data ) {
+								results = JSON.parse(data);
+								$("#' . Html::getInputId($model, 'klm')  . '").val(results.klm);
+								$("#' . Html::getInputId($model, 'klm_reimb')  . '").val(results.klm_reimb);
+								$("#' . Html::getInputId($model, 'days_applied')  . '").val(results.days_out);
+								$("#' . Html::getInputId($model, 'days_out')  . '").val(results.days_out);
+								$("#' . Html::getInputId($model, 'day_reimb')  . '").val(results.day_reimb);
+								$("#' . Html::getInputId($model, 'reimbursement')  . '").val(results.reimbursement);
+								$("#' . Html::getInputId($model, 'mtpy')  . '").val(results.mtpy);
+								$("#' . Html::getInputId($model, 'pay_amount')  . '").val(results.pay_amount);
+								$("#' . Html::getInputId($model, 'code719')  . '").val(results.code719);
+								$("#' . Html::getInputId($model, 'code721')  . '").val(results.code721);
+								$("#' . Html::getInputId($model, 'code722')  . '").val(results.code722);
+								$("#' . Html::getInputId($model, 'nights_out')  . '").val(results.nights_out);
+							});
+						',
+					],
+				]);
+			?>
 			<?= $form->field($model, 'reimbursement')->textInput(['readonly' => true]) ?>
 			<?= $form->field($model, 'mtpy')->textInput(['readonly' => true]) ?>
 			<?= $form->field($model, 'pay_amount')->textInput(['readonly' => true]) ?>
