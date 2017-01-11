@@ -31,6 +31,12 @@ use kartik\datecontrol\DateControl;
     ]);
     ?>
 
+	<?= $form->field($model, 'year')->widget(MaskedInput::classname(), [
+			'name' => 'year', 
+			'mask' => '2999'
+		]);
+	?>     
+
     <?= $form->field($model, 'ada')->textInput(['maxlength' => true]) ?>
 
 	<?=

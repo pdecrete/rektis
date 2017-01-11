@@ -21,6 +21,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'date') ?>
 
+    <?= $form->field($model, 'year') ?>
+
     <?= $form->field($model, 'ada') ?>
 
     <?= $form->field($model, 'service') ?>

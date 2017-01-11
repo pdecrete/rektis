@@ -21,7 +21,7 @@ class TransportFundsSearch extends TransportFunds
             [['id', 'service'], 'integer'],
             [['amount'], 'number'],
             [['count_flag'], 'boolean'],
-            [['name', 'date', 'ada', 'code', 'kae', 'amount', 'count_flag'], 'safe'],
+            [['name', 'date', 'year', 'ada', 'code', 'kae', 'amount', 'count_flag'], 'safe'],
         ];
     }
 
@@ -71,7 +71,8 @@ class TransportFundsSearch extends TransportFunds
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'ada', $this->ada])
             ->andFilterWhere(['like', 'code', $this->code])
-            ->andFilterWhere(['like', 'kae', $this->kae]);
+            ->andFilterWhere(['like', 'kae', $this->kae])
+			->andFilterWhere(['like', 'year', $this->year]);
 
         return $dataProvider;
     }

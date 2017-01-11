@@ -117,6 +117,7 @@ return [
     'Duration' => 'Διάρκεια',
     'Duration in days' => 'Διάρκεια σε ημέρες',
     'Economic' => 'Οικονομικά',
+    'Economic Year' => 'Οικονομικό έτος',
     'Edit' => 'Επεξεργασία',
     'Email' => 'E-mail',
     'Email again' => 'Αποστολή e-mail ξανά',
