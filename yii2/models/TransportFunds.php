@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property string $name
  * @property string $date
+ * @property string $year
  * @property string $ada
  * @property integer $service
  * @property string $code
@@ -42,6 +43,7 @@ class TransportFunds extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 100],
             [['ada', 'code'], 'string', 'max' => 20],
             [['kae'], 'string', 'max' => 10],
+            [['year'], 'string', 'max' => 4],
             [['service'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service' => 'id']],
         ];
     }
@@ -55,6 +57,7 @@ class TransportFunds extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Protocol'),
             'date' => Yii::t('app', 'Date'),
+            'year' => Yii::t('app', 'Economic Year'),
             'ada' => Yii::t('app', 'ADA'),
             'service' => Yii::t('app', 'Service'),
             'code' => Yii::t('app', 'Budget'),
@@ -66,7 +69,7 @@ class TransportFunds extends \yii\db\ActiveRecord
 
     public function kaeList()
     {
-        return ['719'=>'719', '721'=>'721', '722'=>'722'];
+        return ['719'=>'719', '721'=>'721', '722'=>'722', '9711'=>'9711'];
     }
 
     /**

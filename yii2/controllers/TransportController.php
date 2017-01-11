@@ -1052,27 +1052,79 @@ class TransportController extends Controller
 	{
 		$total = Yii::$app->db->createCommand(
 					' select count(*) as total ' .
-					' from ( SELECT kae, inamount, outamount, inamount - outamount as balance, paidamount, inamount - paidamount as balancepaid  ' .
-							' FROM (   ' .
-								' select A.kae AS kae, A.amount as inamount,   ' .
-									' CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount,   ' .
-									' CASE WHEN A.kae = "719" THEN C.code719 WHEN A.kae = "721" THEN C.code721 WHEN A.kae = "722" THEN C.code722 END AS paidamount 	  ' .
-								' from 	( 	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount   ' .
-										' from admapp_transport_funds   ' .
-										' where (admapp_transport_funds.count_flag = 1)  ' .
-										' group by admapp_transport_funds.kae   ' .
-									' ) as A, 	  ' .
-									' (  ' .
-										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722	' .
-										' from admapp_transport   ' .
-										' where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del   ' .
-									' ) as B,  ' .
-									' (  ' .
-										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722   ' .
-										' from admapp_transport   ' .
-										' where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del   ' .
-									' ) as C   ' .
-								' ) AS D  ' .
+					' from (  ' . 
+							' select T_FUNDS.year as year, T_FUNDS.kae as kae, T_FUNDS.inamount as inamount, case when T_OUT.outamount is null then 0 else T_OUT.outamount end as outamount, case when T_OUT.outamount is null then T_FUNDS.inamount else T_FUNDS.inamount - T_OUT.outamount end as balance, case when T_PAID.paidamount is null then 0 else T_PAID.paidamount end as paidamount, case when T_PAID.paidamount is null then T_FUNDS.inamount else T_FUNDS.inamount - T_PAID.paidamount end as balancepaid  ' .
+							' from ' .
+							' 	( ' .
+							' 		select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as inamount    ' .
+							' 		from admapp_transport_funds    ' .
+							' 		where (admapp_transport_funds.count_flag = 1)   ' .
+							' 		group by admapp_transport_funds.year, admapp_transport_funds.kae    ' .
+							' 	) as T_FUNDS  ' .
+							' 	LEFT OUTER JOIN  ' .
+							' 	( ' .
+							' 			select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, CASE WHEN SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) is null then 0 else SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) end as outamount 	 ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) and (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del  ' .
+							' 			group by admapp_transport_funds.year, admapp_transport_funds.kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "719" as kae, CASE WHEN SUM(code719) is null then 0 else SUM(code719) end as outamount	 ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "721" as kae, CASE WHEN SUM(code721) is null then 0 else SUM(code721) end as outamount  ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "722" as kae, CASE WHEN SUM(code722) is null then 0 else SUM(code722) end as outamount ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 	) AS T_OUT  ' .
+							' 		ON T_FUNDS.year = T_OUT.year and T_FUNDS.kae = T_OUT.kae  ' .
+							' 	LEFT OUTER JOIN  ' .
+							' 	( ' .
+							' 			select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, CASE WHEN SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) is null then 0 else SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) end as paidamount 	 ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) and (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del  ' .
+							' 			group by admapp_transport_funds.year, admapp_transport_funds.kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "719" as kae, CASE WHEN SUM(code719) is null then 0 else SUM(code719) end as paidamount	 ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "721" as kae, CASE WHEN SUM(code721) is null then 0 else SUM(code721) end as paidamount  ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "722" as kae, CASE WHEN SUM(code722) is null then 0 else SUM(code722) end as paidamount ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 	 		group by year, kae ' .
+							' 	) AS T_PAID  ' .
+							' 	ON T_FUNDS.year = T_PAID.year and T_FUNDS.kae = T_PAID.kae 	 ' .
 						' ) AS E ' ,
 					 [	':del' => 0 //μη διεγραμμένες	
 					])
@@ -1084,27 +1136,79 @@ class TransportController extends Controller
 	public function getFundsTotals()
 	{
 		return new SqlDataProvider([
-				'sql' => 	' SELECT kae, inamount, outamount, inamount - outamount as balance, paidamount, inamount - paidamount as balancepaid  ' .
-							' FROM (   ' .
-								' select A.kae AS kae, A.amount as inamount,   ' .
-									' CASE WHEN A.kae = "719" THEN B.code719 WHEN A.kae = "721" THEN B.code721 WHEN A.kae = "722" THEN B.code722 END AS outamount,   ' .
-									' CASE WHEN A.kae = "719" THEN C.code719 WHEN A.kae = "721" THEN C.code721 WHEN A.kae = "722" THEN C.code722 END AS paidamount 	  ' .
-								' from 	( 	select admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as amount   ' .
-										' from admapp_transport_funds   ' .
-										' where (admapp_transport_funds.count_flag = 1)  ' .
-										' group by admapp_transport_funds.kae   ' .
-									' ) as A, 	  ' .
-									' (  ' .
-										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722	' .
-										' from admapp_transport   ' .
-										' where (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del   ' .
-									' ) as B,  ' .
-									' (  ' .
-										' select SUM(admapp_transport.code719) as code719, SUM(admapp_transport.code721) as code721, SUM(admapp_transport.code722) as code722   ' .
-										' from admapp_transport   ' .
-										' where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del   ' .
-									' ) as C   ' .
-								' ) AS D   ',
+				'sql' => 	' select T_FUNDS.year as year, T_FUNDS.kae as kae, T_FUNDS.inamount as inamount, case when T_OUT.outamount is null then 0 else T_OUT.outamount end as outamount, case when T_OUT.outamount is null then T_FUNDS.inamount else T_FUNDS.inamount - T_OUT.outamount end as balance, case when T_PAID.paidamount is null then 0 else T_PAID.paidamount end as paidamount, case when T_PAID.paidamount is null then T_FUNDS.inamount else T_FUNDS.inamount - T_PAID.paidamount end as balancepaid  ' .
+							' from ' .
+							' 	( ' .
+							' 		select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, sum(admapp_transport_funds.amount) as inamount    ' .
+							' 		from admapp_transport_funds    ' .
+							' 		where (admapp_transport_funds.count_flag = 1)   ' .
+							' 		group by admapp_transport_funds.year, admapp_transport_funds.kae    ' .
+							' 	) as T_FUNDS  ' .
+							' 	LEFT OUTER JOIN  ' .
+							' 	( ' .
+							' 			select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, CASE WHEN SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) is null then 0 else SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) end as outamount 	 ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) and (admapp_transport.count_flag = 1) and admapp_transport.deleted = :del  ' .
+							' 			group by admapp_transport_funds.year, admapp_transport_funds.kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "719" as kae, CASE WHEN SUM(code719) is null then 0 else SUM(code719) end as outamount	 ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "721" as kae, CASE WHEN SUM(code721) is null then 0 else SUM(code721) end as outamount  ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "722" as kae, CASE WHEN SUM(code722) is null then 0 else SUM(code722) end as outamount ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 	) AS T_OUT  ' .
+							' 		ON T_FUNDS.year = T_OUT.year and T_FUNDS.kae = T_OUT.kae  ' .
+							' 	LEFT OUTER JOIN  ' .
+							' 	( ' .
+							' 			select admapp_transport_funds.year as year, admapp_transport_funds.kae as kae, CASE WHEN SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) is null then 0 else SUM(admapp_transport.code719 + admapp_transport.code721 + admapp_transport.code722) end as paidamount 	 ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) and (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and admapp_transport.deleted = :del  ' .
+							' 			group by admapp_transport_funds.year, admapp_transport_funds.kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "719" as kae, CASE WHEN SUM(code719) is null then 0 else SUM(code719) end as paidamount	 ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "721" as kae, CASE WHEN SUM(code721) is null then 0 else SUM(code721) end as paidamount  ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 			group by year, kae ' .
+							' 		UNION ALL ' .
+							' 			select YEAR(admapp_transport.start_date) as year, "722" as kae, CASE WHEN SUM(code722) is null then 0 else SUM(code722) end as paidamount ' .
+							' 			from admapp_transport  ' .
+							' 			where (admapp_transport.count_flag = 1) and (admapp_transport.paid = 1) and (admapp_transport.deleted = :del)  and admapp_transport.id not in ( ' .
+							' 			select admapp_transport.id  ' .
+							' 			from admapp_transport, admapp_transport_funds  ' .
+							' 			where ((admapp_transport.fund1 = admapp_transport_funds.id) or (admapp_transport.fund2 = admapp_transport_funds.id) or (admapp_transport.fund3 = admapp_transport_funds.id)) and (admapp_transport_funds.kae = "9711") and (YEAR(admapp_transport.start_date) = admapp_transport_funds.year) ) ' .
+							' 	 		group by year, kae ' .
+							' 	) AS T_PAID  ' .
+							' 	ON T_FUNDS.year = T_PAID.year and T_FUNDS.kae = T_PAID.kae 	 ' .
+							' ORDER BY T_FUNDS.year DESC,  T_FUNDS.kae ',
 				'params' => [
 					':del' => 0, //μη διεγραμμένες	
 				],
