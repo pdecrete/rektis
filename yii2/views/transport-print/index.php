@@ -56,7 +56,15 @@ $this->params['breadcrumbs'][] = $this->title;
 									)
 					],
 					//'filename',
-					'paid:boolean',
+					[
+						'attribute' => 'paid',
+						'value' => 'paidname',
+						'filter' => array(
+										False => Yii::t('app', 'No'), 
+										True => Yii::t('app', 'Yes'), 
+									)
+					],
+
 					'from:date',
 					'to:date',
 					//'create_ts',
