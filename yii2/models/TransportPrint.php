@@ -162,4 +162,20 @@ class TransportPrint extends \yii\db\ActiveRecord
 		return $name;
     } 
 
+    public function getpaidname()
+    {    	
+		switch ($this->paid) {
+			case False:
+				$name = Yii::t('app', 'No');
+				break;
+			case True:
+				$name = Yii::t('app', 'Yes');
+				break;
+			default:
+				$name = Yii::t('app', '	UNKNOWN');
+				break;
+		} 
+		return $name;
+    } 
+
 }

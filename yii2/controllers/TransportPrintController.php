@@ -238,17 +238,23 @@ class TransportPrintController extends Controller
 			$filteredSel = $this->filterSelected($selection, Transport::fdocument);
 			if (count($filteredSel) > 0) {			
 				$filteredSel = array_unique($filteredSel);
+				
+				//from transports, we will find all involved documents (prints) and mark them
+				$transIds = $this->getTransportIdsFromPrintId($filteredSel);
+				$prints = $this->getTransportPrintsFromTransportId($transIds);
+				
 				// Mark prints
-				$count = count($filteredSel);
+				$count = count($prints);
 				$print_ids = '';
 				for ($c = 0; $c < $count; $c++) {
-					$currentModel = TransportPrint::Findone($filteredSel[$c]);
+					$currentModel = $prints[$c];
 					if ($currentModel !== null) {
 						$currentModel->paid = true;
 						$currentModel->save();
 						$print_ids .= ' ' . $currentModel->id;
 					}	
 				}
+				
 				// Mark Transports
 				$transports = $this->getTransportsFromPrintId($filteredSel);
 				$all_count = count($transports);		
@@ -271,17 +277,23 @@ class TransportPrintController extends Controller
 			$filteredSel = $this->filterSelected($selection, Transport::fdocument);
 			if (count($filteredSel) > 0) {
 				$filteredSel = array_unique($filteredSel);		
+
+				//from transports, we will find all involved documents (prints) and mark them
+				$transIds = $this->getTransportIdsFromPrintId($filteredSel);
+				$prints = $this->getTransportPrintsFromTransportId($transIds);
+
 				// Mark prints
-				$count = count($filteredSel);
+				$count = count($prints);
 				$print_ids = '';
 				for ($c = 0; $c < $count; $c++) {
-					$currentModel = TransportPrint::Findone($filteredSel[$c]);
+					$currentModel = $prints[$c];
 					if ($currentModel !== null) {
 						$currentModel->paid = false;
 						$currentModel->save();
 						$print_ids .= ' ' . $currentModel->id;
 					}	
 				}
+				
 				// Mark Transports		
 				$transports = $this->getTransportsFromPrintId($filteredSel);
 				$all_count = count($transports);		
@@ -333,6 +345,45 @@ class TransportPrintController extends Controller
 							->all();	
 		
 		return $transports;
+	}
+
+	protected function getTransportIdsFromPrintId($printids) {
+		$comma_separated = implode(",", $printids);
+		$transportPrints = TransportPrintConnection::Find()
+							->where(' transport_print IN ( ' . $comma_separated . ' ) ' )
+							->all();
+		$transportIds = [];
+		$k = 0;
+		$all_count = count($transportPrints);
+		for ($c = 0; $c < $all_count; $c++) {
+            $transportPrint = $transportPrints[$c];	
+			$transportIds[$k] = $transportPrint->transport;
+			$k++;
+		}
+		$transportIds = array_unique($transportIds);
+		
+		return $transportIds;
+	}
+
+	protected function getTransportPrintsFromTransportId($transportIds) {
+		$comma_separated = implode(",", $transportIds);
+		$transportsPrintConns = TransportPrintConnection::Find()
+							->where(' transport IN ( ' . $comma_separated . ' ) ' )
+							->all();
+		$transportPrintIds = [];
+		$k = 0;
+		$all_count = count($transportsPrintConns);
+		for ($c = 0; $c < $all_count; $c++) {
+            $transportPrintConn = $transportsPrintConns[$c];	
+			$transportPrintIds[$k] = $transportPrintConn->transport_print;
+			$k++;
+		}
+		$transportPrintIds = array_unique($transportPrintIds);
+		$comma_separated = implode(",", $transportPrintIds);
+		$transportPrints = TransportPrint::Find()
+					->where(' id IN ( ' . $comma_separated . ' ) ' )
+					->all();	
+		return $transportPrints;
 	}
 	
 	public function actionPrintdata()
