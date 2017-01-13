@@ -590,8 +590,8 @@ class TransportController extends Controller
 			$templateProcessor->setValue('EMP_NAME', $transportModel->employee0->name . ' ' . $transportModel->employee0->surname);
 			$templateProcessor->setValue('RANK', $transportModel->employee0->rank);
 			$templateProcessor->setValue('CODE', $transportModel->employee0->specialisation0->code . ' (' . $transportModel->employee0->specialisation0->name . ')' );
-			$templateProcessor->setValue('BASE', $transportModel->base);
-			$templateProcessor->setValue('BASE2', $transportModel->employee0->work_base);
+			$templateProcessor->setValue('BASE', $transportModel->employee0->work_base);
+			$templateProcessor->setValue('BASE2', $transportModel->base);
 			$templateProcessor->setValue('AFM', $transportModel->employee0->tax_identification_number);
 			$templateProcessor->setValue('AM', $transportModel->employee0->identification_number);		
 			$templateProcessor->setValue('IBAN', $transportModel->employee0->iban);
