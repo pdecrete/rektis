@@ -260,18 +260,27 @@ use yii\helpers\Url;
 				$form->field($model, 'fund1')->widget(Select2::classname(), [
 					'data' => \app\models\TransportFunds::find()->select(["CONCAT(kae, ' (', name, '/', date, ') - ', code )", 'id'])->orderBy('code', 'date DESC')->indexBy('id')->column(),
 					'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+					'pluginOptions' => [
+						  'allowClear' => true
+					],
 				]);
 			?>
 			<?=
 				$form->field($model, 'fund2')->widget(Select2::classname(), [
 					'data' => \app\models\TransportFunds::find()->select(["CONCAT(kae, ' (', name, '/', date, ') - ', code )", 'id'])->orderBy('code', 'date DESC')->indexBy('id')->column(),
 					'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+					'pluginOptions' => [
+						  'allowClear' => true
+					],
 				]);
 			?>
 			<?=
 				$form->field($model, 'fund3')->widget(Select2::classname(), [
 					'data' => \app\models\TransportFunds::find()->select(["CONCAT(kae, ' (', name, '/', date, ') - ', code )", 'id'])->orderBy('code', 'date DESC')->indexBy('id')->column(),
 					'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+					'pluginOptions' => [
+						  'allowClear' => true
+					],
 				]);
 			?>	
 		</div>
