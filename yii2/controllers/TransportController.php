@@ -581,6 +581,16 @@ class TransportController extends Controller
 				$templateProcessor->setValue('KAE', $kae_str);      
 				$templateProcessor->setValue('FUND1', $fund_str);      
 			}
+			if (isset($transportModel->extra_reason))  {
+				if ($transportModel->extra_reason !== '') {
+					$k++;
+					$templateProcessor->setValue('EXTRA', $k . '. ' . $transportModel->extra_reason . '.');
+				} else {
+					$templateProcessor->setValue('EXTRA', '');
+				}			
+			} else {
+				$templateProcessor->setValue('EXTRA', '');
+			}
 		}
 		// ------------------------ end ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
 

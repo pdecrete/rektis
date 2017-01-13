@@ -40,6 +40,7 @@ use Yii;
  * @property boolean $count_flag
  * @property string $expense_details
  * @property string $comment
+ * @property string $extra_reason
  * @property string $create_ts
  * @property string $update_ts
  * @property integer $deleted
@@ -94,7 +95,7 @@ class Transport extends \yii\db\ActiveRecord
             [['comment'], 'string'],           
             [['count_flag'], 'boolean'],
             [['accompanying_document', 'base'], 'string', 'max' => 100],
-            [['reason'], 'string', 'max' => 200],
+            [['reason', 'extra_reason'], 'string', 'max' => 200],
             [['expense_details'], 'string', 'max' => 255],
             [['mode'], 'exist', 'skipOnError' => true, 'targetClass' => TransportMode::className(), 'targetAttribute' => ['mode' => 'id']],
             [['from_to'], 'exist', 'skipOnError' => true, 'targetClass' => TransportDistance::className(), 'targetAttribute' => ['from_to' => 'id']],
@@ -124,6 +125,7 @@ class Transport extends \yii\db\ActiveRecord
             'start_date' => Yii::t('app', 'Start date'),
             'end_date' => Yii::t('app', 'End date'),
             'reason' => Yii::t('app', 'Reason'),
+            'extra_reason' => Yii::t('app', 'Extra Reason'),
             'from_to' => Yii::t('app', 'From To'),
             'base' => Yii::t('app', 'Base'),
             'days_applied' => Yii::t('app', 'Days Applied'),

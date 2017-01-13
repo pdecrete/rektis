@@ -19,7 +19,7 @@ class TransportSearch extends Transport
     {
         return [
             [['id', 'employee', 'type', 'decision_protocol', 'application_protocol', 'from_to', 'days_applied', 'days_out', 'mode', 'deleted'], 'integer'],
-            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'reason', 'expense_details', 'comment', 'create_ts', 'update_ts'], 'safe'],
+            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'reason', 'expense_details', 'extra_reason', 'comment', 'create_ts', 'update_ts'], 'safe'],
             [['ticket_value', 'klm_reimb', 'day_reimb', 'reimbursement', 'mtpy', 'pay_amount', 'night_reimb', 'klm', 'code719', 'code721', 'code722'], 'number'],
         ];
     }
@@ -92,6 +92,7 @@ class TransportSearch extends Transport
 
         $query->andFilterWhere(['like', 'accompanying_document', $this->accompanying_document])
             ->andFilterWhere(['like', 'reason', $this->reason])
+            ->andFilterWhere(['like', 'extra_reason', $this->extra_reason])
             ->andFilterWhere(['like', 'expense_details', $this->expense_details])
             ->andFilterWhere(['like', 'comment', $this->comment]);
 
