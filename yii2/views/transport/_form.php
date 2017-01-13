@@ -283,6 +283,7 @@ use yii\helpers\Url;
 					],
 				]);
 			?>	
+			<?= $form->field($model, 'extra_reason')->textArea(['maxlength' => true]) ?>
 		</div>
 			
 		<!-- Money Tab -->

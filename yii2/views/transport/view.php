@@ -140,6 +140,7 @@ if ($model->deleted) {
 				'application_protocol',
 				'application_protocol_date:date',
 				'application_date:date',
+				'extra_reason', 
 			],
 			]) ?>
 		</div>
