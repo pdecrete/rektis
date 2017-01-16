@@ -8,7 +8,7 @@ use yii\helpers\Url;
 <div class="leave-index">
     <h1>Ιστορικό αδειών <small>Σύνολο μη διεγραμμένων: <?= $employeeModel->leavesDuration; ?> ημέρες</small></h1>
     <p>Διεγραμμένες άδειες επισημαίνονται με <span class="bg-danger">κόκκινο χρώμα</span>.</p>
-    <?php Pjax::begin(); ?>
+    <?php //Pjax::begin(); ?>
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -45,7 +45,7 @@ use yii\helpers\Url;
                             // 'update_ts',
                             [
                                 'class' => 'yii\grid\ActionColumn',
-                                'template' => '{view} {download}',
+                                'template' => '{view}',
                                 'urlCreator' => function ($action, $model, $key, $index) {
                                     return Url::to(["/leave/{$action}", 'id' => $model->id]);
                                 },
@@ -71,5 +71,5 @@ use yii\helpers\Url;
                                         ],
                                     ]);
                                     ?>
-                                    <?php Pjax::end(); ?>
+                                    <?php //Pjax::end(); ?>
 </div>
