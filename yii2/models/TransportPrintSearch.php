@@ -19,7 +19,7 @@ class TransportPrintSearch extends TransportPrint
     {
         return [
             [['id'], 'integer'],
-            [['filename', 'doctype', 'create_ts', 'send_ts', 'to_emails', 'transport', 'from', 'to', 'sum719', 'sum721', 'sum722', 'sum_mtpy', 'paid', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'safe'],
+            [['filename', 'doctype', 'create_ts', 'send_ts', 'to_emails', 'from', 'to', 'sum719', 'sum721', 'sum722', 'sum_mtpy', 'paid', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'safe'],
 			[['sum719', 'sum721', 'sum722', 'sum_mtpy', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'number'],
         ];
     }
