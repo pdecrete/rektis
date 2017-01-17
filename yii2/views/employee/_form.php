@@ -51,6 +51,7 @@ use kartik\datecontrol\DateControl;
         <?= $form->field($model, 'identity_number')->widget(MaskedInput::classname(),['name' => 'identity_number', 'clientOptions' => ['alias' => 'Regex', 'regex' => '[A-ZΑ-Ω]{1,2}[0-9]{6}]']]) ?>
         
         <?= $form->field($model, 'social_security_number')->widget(MaskedInput::classname(),['name' => 'social_security_number','mask' => '99999999999']) ?>
+        <?= $form->field($model, 'iban')->widget(MaskedInput::classname(),['name' => 'iban','mask' => 'AA9999999999999999999999999']) ?>
       </div>
       
       <!-- Service Tab -->
@@ -98,7 +99,14 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-        <hr>
+		<?= $form->field($model, 'serve_decision')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'serve_decision_date')->widget(DateControl::classname(), [
+             'type'=>DateControl::FORMAT_DATE
+         ]);
+        ?>
+		<?= $form->field($model, 'serve_decision_subject')->textArea(['maxlength' => true]) ?>
+		
+        <hr/>
         <?= $form->field($model, 'appointment_fek')->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, 'appointment_date')->widget(DateControl::classname(), [
              'type'=>DateControl::FORMAT_DATE
@@ -109,7 +117,7 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
-        <hr>       
+        <hr/>       
         <?= $form->field($model, 'rank')->widget(Select2::classname(), [
           'data' => \app\models\Employee::ranksList(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
@@ -134,6 +142,8 @@ use kartik\datecontrol\DateControl;
              'type'=>DateControl::FORMAT_DATE
          ]);
         ?>
+        <?= $form->field($model, 'work_base')->textInput() ?>
+        <?= $form->field($model, 'home_base')->textInput() ?>       
         <hr>
         <?= $form->field($model, 'master_degree')->textInput() ?>
         <?= $form->field($model, 'doctorate_degree')->textInput() ?>

@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'employee',
                 'value' => 'employeeObj.fullname',
-                'filter' => \app\models\Employee::find()->select(["CONCAT(name, ' ', surname)", 'id'])->indexBy('id')->column()
+                'filter' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column()
             ],
             [
                 'attribute' => 'type',
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a(
                                         '<span class="glyphicon glyphicon-download"></span>', $url, [
                                     'title' => Yii::t('app', 'Download'),
-                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to download this leave?'),
+                                    'data-confirm' => Yii::t('app', 'Are you sure you want to download this leave?'),
                                     'data-method' => 'post',
 //                                    'data-pjax' => '0',
                                         ]

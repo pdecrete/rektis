@@ -24,7 +24,7 @@ use kartik\datecontrol\DateControl;
     ?>
     <?=
     $form->field($model, 'employee')->widget(Select2::classname(), [
-        'data' => \app\models\Employee::find()->select(["CONCAT(name, ' ', surname, ' (', ')')", 'id'])->indexBy('id')->column(),
+        'data' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column(),
         'options' => ['placeholder' => 'Επιλέξτε...'],
     ]);
     ?>
