@@ -31,6 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'description:ntext',
+            'limit', 
+			[
+				'label' => $model->getAttributeLabel('check'),
+				'value' => Yii::t('app', '{boxstate}', [							
+								'boxstate' => ($model->check == 1) ? Yii::t('app', 'YES') : Yii::t('app', 'NO'),
+								])
+			],
             'templatefilename',
             'create_ts',
             'update_ts',

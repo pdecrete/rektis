@@ -18,8 +18,8 @@ class LeaveTypeSearch extends LeaveType
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['name', 'description', 'templatefilename', 'create_ts', 'update_ts'], 'safe'],
+            [['id', 'limit'], 'integer'],
+            [['name', 'description', 'templatefilename', 'check', 'create_ts', 'update_ts'], 'safe'],
         ];
     }
 

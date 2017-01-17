@@ -23,6 +23,9 @@ use admapp\Util\Html as admappHtml;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'limit')->textInput() ?>
+	<?= $form->field($model, 'check')->checkbox($options = [], $enclosedByLabel = false ) ?>
+
     <?php
     $availabletemplatefilenames = $model->availabletemplatefilenames;
     $atf = array_combine($availabletemplatefilenames, $availabletemplatefilenames);
