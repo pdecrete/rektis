@@ -34,7 +34,7 @@ class TransportPrint extends \yii\db\ActiveRecord
     {
         return [
             [['filename'], 'required'],
-            [['create_ts', 'send_ts', 'transport', 'paid'], 'safe'],
+            [['create_ts', 'send_ts', 'paid'], 'safe'],
             [['filename'], 'string', 'max' => 255],
             [['to_emails'], 'string', 'max' => 1000],
         ];
@@ -48,7 +48,6 @@ class TransportPrint extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'filename' => Yii::t('app', 'Filename'),
-            'transport' => Yii::t('app', 'Transport'),
             'doctype' => Yii::t('app', 'Doctype'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'send_ts' => Yii::t('app', 'Send Ts'),
