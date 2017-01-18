@@ -20,7 +20,7 @@ class LeaveSearch extends Leave
     {
         return [
             [['id', 'employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
-            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'reason', 'comment', 'create_ts', 'update_ts'], 'safe'],
+            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'extra_reason1', 'extra_reason2', 'extra_reason3', 'reason', 'comment', 'create_ts', 'update_ts'], 'safe'],
             [['type'], 'safe'],
         ];
     }
@@ -79,6 +79,9 @@ class LeaveSearch extends Leave
 
         $query->andFilterWhere(['like', 'accompanying_document', $this->accompanying_document])
                 ->andFilterWhere(['like', 'reason', $this->reason])
+                ->andFilterWhere(['like', 'extra_reason1', $this->extra_reason1])
+                ->andFilterWhere(['like', 'extra_reason2', $this->extra_reason2])
+                ->andFilterWhere(['like', 'extra_reason3', $this->extra_reason3])
                 ->andFilterWhere(['like', 'comment', $this->comment]);
 
         return $dataProvider;

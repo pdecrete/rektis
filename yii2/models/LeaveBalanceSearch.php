@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\LeaveType;
+use app\models\LeaveBalance;
 
 /**
- * LeaveTypeSearch represents the model behind the search form about `app\models\LeaveType`.
+ * LeaveBalanceSearch represents the model behind the search form about `app\models\LeaveBalance`.
  */
-class LeaveTypeSearch extends LeaveType
+class LeaveBalanceSearch extends LeaveBalance
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class LeaveTypeSearch extends LeaveType
     public function rules()
     {
         return [
-            [['id', 'limit'], 'integer'],
-            [['name', 'description', 'templatefilename', 'check', 'create_ts', 'update_ts'], 'safe'],
+            [['id', 'employee', 'leave_type', 'days'], 'integer'],
+            [['year'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class LeaveTypeSearch extends LeaveType
      */
     public function search($params)
     {
-        $query = LeaveType::find();
+        $query = LeaveBalance::find();
 
         // add conditions that should always apply here
 
@@ -60,13 +60,12 @@ class LeaveTypeSearch extends LeaveType
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'create_ts' => $this->create_ts,
-            'update_ts' => $this->update_ts,
+            'employee' => $this->employee,
+            'leave_type' => $this->leave_type,
+            'days' => $this->days,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'templatefilename', $this->templatefilename])
-            ->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'year', $this->year]);
 
         return $dataProvider;
     }

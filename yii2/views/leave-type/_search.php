@@ -23,6 +23,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'description') ?>
 
+    <?= $form->field($model, 'limit') ?>
+
+    <?= $form->field($model, 'check') ?>
+
     <?= $form->field($model, 'create_ts') ?>
 
     <?= $form->field($model, 'update_ts') ?>

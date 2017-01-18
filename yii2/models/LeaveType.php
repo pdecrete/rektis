@@ -55,7 +55,8 @@ class LeaveType extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['templatefilename'], 'string', 'max' => 255],
             [['templatefilename'], 'default', 'value' => null],
-            [['deleted'], 'integer'],
+            [['check'], 'boolean'],
+            [['deleted', 'limit'], 'integer'],
             [['create_ts', 'update_ts'], 'safe'],
             [['name'], 'string', 'max' => 100],
             [['name'], 'unique'],
@@ -72,6 +73,8 @@ class LeaveType extends \yii\db\ActiveRecord
             'name' => Yii::t('app', 'Name'),
             'description' => Yii::t('app', 'Description'),
             'templatefilename' => Yii::t('app', 'Template filename'),
+            'limit' => Yii::t('app', 'Limit'),
+            'check' => Yii::t('app', 'Limit Check'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
         ];

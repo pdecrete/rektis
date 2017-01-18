@@ -82,7 +82,10 @@ use kartik\datecontrol\DateControl;
         </div>
     </div>
     <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'comment')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'extra_reason1')->textarea(['rows' => 4, 'maxlength' => true]) ?>
+    <?= $form->field($model, 'extra_reason2')->textarea(['rows' => 4, 'maxlength' => true]) ?>
+    <?= $form->field($model, 'extra_reason3')->textarea(['rows' => 4, 'maxlength' => true]) ?>
+    <?= $form->field($model, 'comment')->textarea(['rows' => 4, 'maxlength' => true]) ?>
 
     <?php if (!$model->isNewRecord) : ?>
         <?= admappHtml::displayValueOfField($model, 'create_ts', 2, 6) ?>
