@@ -4,13 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\LeaveType */
+/* @var $model app\models\LeaveBalance */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Leave Types'), 'url' => ['index']];
+$this->title = $model->information;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Leave Balances'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="leave-type-view">
+<div class="leave-balance-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -29,18 +29,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             //'id',
-            'name',
-            'description:ntext',
-            'limit', 
-			[
-				'label' => $model->getAttributeLabel('check'),
-				'value' => Yii::t('app', '{boxstate}', [							
-								'boxstate' => ($model->check == 1) ? Yii::t('app', 'YES') : Yii::t('app', 'NO'),
-								])
-			],
-            'templatefilename',
-            'create_ts',
-            'update_ts',
+            //'employee',
+            [
+                'label' => $model->getAttributeLabel('employee'),
+                'value' => $model->employee0 ? $model->employee0->fullname : null ,
+                'format' => 'raw'
+            ],
+            //'leave_type',
+            [
+                'label' => $model->getAttributeLabel('leave_type'),
+                'value' => $model->leaveType ? $model->leaveType->name : null
+            ],
+            'year',
+            'days',
         ],
     ]) ?>
 

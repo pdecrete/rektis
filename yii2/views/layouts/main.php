@@ -140,6 +140,10 @@ AppAsset::register($this);
                                 'label' => 'Αρχεία εκτύπωσης αδειών',
                                 'url' => ['/leave-print'],
                             ],
+                            [
+                                'label' => 'Υπόλοιπα αδειών',
+                                'url' => ['/leave-balance'],
+                            ],
                             
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',

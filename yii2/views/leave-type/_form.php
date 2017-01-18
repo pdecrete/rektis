@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use admapp\Util\Html as admappHtml;
+use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\LeaveType */
@@ -23,7 +24,7 @@ use admapp\Util\Html as admappHtml;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-    <?= $form->field($model, 'limit')->textInput() ?>
+    <?= $form->field($model, 'limit')->widget(MaskedInput::classname(), ['name' => 'limit', 'mask' => '9{1,2}']) ?>
 	<?= $form->field($model, 'check')->checkbox($options = [], $enclosedByLabel = false ) ?>
 
     <?php
