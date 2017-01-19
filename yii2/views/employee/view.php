@@ -170,6 +170,12 @@ $this->params['breadcrumbs'][] = $this->title;
 						'attribute' => 'leaveYear'],
 					['label' => Yii::t('app', 'Duration in days'),
 						'attribute' => 'duration'],			
+					['label' => Yii::t('app', 'Limit'),
+						'attribute' => 'leaveLimit'],			
+					['label' => Yii::t('app', 'Previous year left'),
+						'attribute' => 'days'],			
+					['label' => Yii::t('app', 'Left'),
+						'attribute' => 'daysleft'],			
 				],	
 			]);
 		?>

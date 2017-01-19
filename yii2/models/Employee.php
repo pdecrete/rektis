@@ -296,7 +296,22 @@ class Employee extends \yii\db\ActiveRecord
 	public function getLeavesTotals()
 	{
 		return new SqlDataProvider([
-				'sql' => ' select admapp_employee.id as employeeID, ' .
+				
+		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+			'	from ' . 
+			'	 ( ' . 
+			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
+			'	FROM admapp_leave ' . 
+			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
+			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
+			'	AND admapp_employee.id = :id   ' . 
+			'	AND admapp_leave.deleted = :del ' . 
+			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
+			'	 ) AS A  ' . 
+			'	LEFT OUTER JOIN  ' . 
+			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
+			'	 ORDER BY leaveYear DESC, leaveTypeName ASC ' , 			
+/*			'sql' => ' select admapp_employee.id as employeeID, ' .
 					' admapp_leave_type.name as leaveTypeName , ' .
 					' Year(admapp_leave.start_date) as leaveYear, ' .
 					' admapp_leave.deleted as deleted, ' .
@@ -309,7 +324,7 @@ class Employee extends \yii\db\ActiveRecord
 					' AND admapp_leave.deleted = :del ' .
 					' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted' .
 					' ORDER BY Year(admapp_leave.start_date) DESC, admapp_leave_type.name ASC '	,
-				'params' => [
+*/				'params' => [
 					':id' => $this->id, 
 					':del' => $this->leaveSumDelFlag,	
 				],

@@ -90,6 +90,9 @@ class LeaveTypeController extends Controller
         $model = new LeaveType();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' created leave type with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -109,6 +112,9 @@ class LeaveTypeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' updated leave type with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -126,6 +132,9 @@ class LeaveTypeController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
+		$userName = Yii::$app->user->identity->username;
+		$logStr = 'User ' . $userName . ' deleted leave type with id [' . $id . ']';
+		Yii::info($logStr,'leave');
 
         return $this->redirect(['index']);
     }

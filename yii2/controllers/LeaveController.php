@@ -95,6 +95,24 @@ class LeaveController extends Controller
         $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($leaveModel->decision_protocol_date));
         $templateProcessor->setValue('DECISION_PROTOCOL', $leaveModel->decision_protocol);
 
+		$templateProcessor->setValue('LEAVE_PERSON', Yii::$app->params['leavePerson']);
+		$templateProcessor->setValue('LEAVE_PHONE', Yii::$app->params['leavePhone']);
+		$templateProcessor->setValue('LEAVE_FAX', Yii::$app->params['leaveFax']);
+				
+		$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
+		$templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);      
+		//Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
+		//$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
+		//$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);      
+
+		$extra = '';
+		$reason_num = $leaveModel->typeObj ? $leaveModel->typeObj->reason_num : null;
+		if ($reason_num !== null) {
+			$k = $reason_num;
+		} else {
+			$k = 7; // τα έχοντας υπόψη της κανονικής άδειας
+		}
+		
         $sameDecisionModels = $leaveModel->allSameDecision();
         $all_count = count($sameDecisionModels);
 
@@ -108,13 +126,27 @@ class LeaveController extends Controller
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
             $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($currentModel->application_protocol_date));
-            //$templateProcessor->setValue('REMAINING' . "#{$i}", '');
+			$rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)));
+			$templateProcessor->setValue('REM' . "#{$i}", $rem);
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
             $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
             $templateProcessor->setValue('POSITION' . "#{$i}", $currentModel->employeeObj->position0->name);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
+            if (($currentModel->extra_reason1 !== '') && ($currentModel->extra_reason1 !== null)) {
+				$k++;
+				$extra .= $k . '. ' . $currentModel->extra_reason1 . '<w:br/>';
+			}
+            if (($currentModel->extra_reason2 !== '') && ($currentModel->extra_reason2 !== null)) {
+				$k++;
+				$extra .= $k . '. ' . $currentModel->extra_reason2 . '<w:br/>';
+			}
+            if (($currentModel->extra_reason3 !== '') && ($currentModel->extra_reason3 !== null)) {
+				$k++;
+				$extra .= $k . '. ' . $currentModel->extra_reason3 . '<w:br/>';
+			}
         }
-
+		$templateProcessor->setValue('EXTRA_REASON', $extra);
+			
         $templateProcessor->saveAs($exportfilename);
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.'));
@@ -254,7 +286,23 @@ class LeaveController extends Controller
     public function actionCreate()
     {
         $model = new Leave();
+        if ($model->load(Yii::$app->request->post())) {
+			if ($model->typeObj->check == True) {
+				$left = $model->daysLeft;
+				if ($left == null) {
+					$left = $model->typeObj->limit;
+				}
+				if ($model->duration > $left) {
+					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+		  			Yii::$app->session->setFlash('danger', $str);          
+					return $this->render('create', ['model' => $model]);
+				}
+			}
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' created leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 			//Αν κάνω create από άλλο σημείο με employee_id (από καρτέλα εργαζομένου)
@@ -277,8 +325,23 @@ class LeaveController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        if ($model->load(Yii::$app->request->post())) {
+			if ($model->typeObj->check == True) {
+				$left = $model->daysLeft;
+				if ($left == null) {
+					$left = $model->typeObj->limit;
+				}
+				if ($model->duration > $left) {
+					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+		  			Yii::$app->session->setFlash('danger', $str);          
+					return $this->render('update', ['model' => $model]);
+				}
+			}
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' updated leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -300,6 +363,9 @@ class LeaveController extends Controller
         $model = $this->findModel($id);
         $model->deleted = 1;
         if ($model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' deleted leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['index']);
         } else {
             throw new ServerErrorHttpException('The requested page does not exist.');
@@ -419,7 +485,5 @@ class LeaveController extends Controller
 
         return $this->redirect(['print', 'id' => $id]);
     }
-
-
 
 }

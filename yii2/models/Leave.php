@@ -205,6 +205,64 @@ class Leave extends \yii\db\ActiveRecord
         return $IDs;
 	}
 	
+	public function getdaysLeft()
+	{	
+		$total = Yii::$app->db->createCommand(
+			' select CASE WHEN daysleft IS NULL THEN 0 ELSE daysleft END AS daysleft from ( ' . 
+			'	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+			'	from ' . 
+			'	 ( ' . 
+			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
+			'	FROM admapp_leave ' . 
+			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
+			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
+			'	AND admapp_employee.id = :id   ' . 
+			'	AND admapp_leave.deleted = :del ' . 
+			'	AND admapp_leave_type.id = :type ' .		
+			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
+			'	 ) AS A  ' . 
+			'	LEFT OUTER JOIN  ' . 
+			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
+			' 	WHERE leaveYear = :year ' .
+			'	) AS C ', 			
+			[
+				':id' => $this->employee, 
+				':del' => 0,	
+				':type' => $this->type, 
+				':year' => date("Y", strtotime($this->start_date)), 
+			])->queryScalar();
+		return $total;
+	}
+
+	public function getmydaysLeft($empid, $leavetype, $year)
+	{	
+		$total = Yii::$app->db->createCommand(
+			' select CASE WHEN daysleft IS NULL THEN leaveLimit ELSE daysleft END AS daysleft from ( ' . 
+			'	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+			'	from ' . 
+			'	 ( ' . 
+			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
+			'	FROM admapp_leave ' . 
+			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
+			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
+			'	AND admapp_employee.id = :id   ' . 
+			'	AND admapp_leave.deleted = :del ' . 
+			'	AND admapp_leave_type.id = :type ' .		
+			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
+			'	 ) AS A  ' . 
+			'	LEFT OUTER JOIN  ' . 
+			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
+			' 	WHERE leaveYear = :year ' .
+			'	) AS C ', 			
+			[
+				':id' => $empid, 
+				':del' => 0,	
+				':type' => $leavetype, 
+				':year' => $year, 
+			])->queryScalar();
+		return $total;
+	}
+
     /**
      * @inheritdoc
      * @return LeaveQuery the active query used by this AR class.
