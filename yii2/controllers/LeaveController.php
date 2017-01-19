@@ -254,7 +254,23 @@ class LeaveController extends Controller
     public function actionCreate()
     {
         $model = new Leave();
+        if ($model->load(Yii::$app->request->post())) {
+			if ($model->typeObj->check == True) {
+				$left = $model->daysLeft;
+				if ($left == null) {
+					$left = $model->typeObj->limit;
+				}
+				if ($model->duration > $left) {
+					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+		  			Yii::$app->session->setFlash('danger', $str);          
+					return $this->render('create', ['model' => $model]);
+				}
+			}
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' created leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
 			//Αν κάνω create από άλλο σημείο με employee_id (από καρτέλα εργαζομένου)
@@ -277,8 +293,23 @@ class LeaveController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        if ($model->load(Yii::$app->request->post())) {
+			if ($model->typeObj->check == True) {
+				$left = $model->daysLeft;
+				if ($left == null) {
+					$left = $model->typeObj->limit;
+				}
+				if ($model->duration > $left) {
+					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+		  			Yii::$app->session->setFlash('danger', $str);          
+					return $this->render('update', ['model' => $model]);
+				}
+			}
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' updated leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -300,6 +331,9 @@ class LeaveController extends Controller
         $model = $this->findModel($id);
         $model->deleted = 1;
         if ($model->save()) {
+			$userName = Yii::$app->user->identity->username;
+			$logStr = 'User ' . $userName . ' deleted leave with id [' . $model->id . ']';
+			Yii::info($logStr,'leave');
             return $this->redirect(['index']);
         } else {
             throw new ServerErrorHttpException('The requested page does not exist.');
@@ -419,7 +453,5 @@ class LeaveController extends Controller
 
         return $this->redirect(['print', 'id' => $id]);
     }
-
-
 
 }
