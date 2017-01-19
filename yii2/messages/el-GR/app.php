@@ -213,6 +213,7 @@ return [
     'Rank Date' => 'Ημερομηνία Βαθμού',
     'Reason (for special leaves etc.)' => 'Λόγος (για ειδικές κλπ)',
     'Reason' => 'Σκοπός',
+    'Reason Number' => 'Αρ. Έχοντας υπόψη',
     'Reimbursement' => 'Αποζημίωση',
     'Remove Selected' => 'Αφαίρεση επιλεγμένων',
     'Report' => 'Συγκ. Κατάσταση',

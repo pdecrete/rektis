@@ -31,7 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id',
             'name',
             'description:ntext',
-            'limit', 
+            'limit',
+            'reason_num', 
 			[
 				'label' => $model->getAttributeLabel('check'),
 				'value' => Yii::t('app', '{boxstate}', [							

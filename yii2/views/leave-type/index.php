@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'description:ntext',
             'limit', 
+            'reason_num', 
             'templatefilename',
 //            'create_ts',
             'update_ts',

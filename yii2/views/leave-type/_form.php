@@ -25,6 +25,7 @@ use yii\widgets\MaskedInput;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
     <?= $form->field($model, 'limit')->widget(MaskedInput::classname(), ['name' => 'limit', 'mask' => '9{1,2}']) ?>
+    <?= $form->field($model, 'reason_num')->widget(MaskedInput::classname(), ['name' => 'reason_num', 'mask' => '9{1,2}']) ?>
 	<?= $form->field($model, 'check')->checkbox($options = [], $enclosedByLabel = false ) ?>
 
     <?php
