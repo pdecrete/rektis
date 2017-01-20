@@ -160,7 +160,7 @@ return [
     'Klm' => 'Χιλιόμετρα',
     'Klm Reimb' => 'Χιλ/κή Αποζημίωση',
     'Leave' => 'Άδεια',
-    'Leave Balances' => 'Υπόλοιπα αδειών',
+    'Leave Balances' => 'Αποφάσεις Υπόλοιπων αδειών',
 	'Leave decision post' => 'Αποστολή απόφασης άδειας',    
 	'Leave file' => 'Αρχείο άδειας',
     'Leave Prints' => 'Εκτυπώσεις αδειών',   

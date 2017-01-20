@@ -289,14 +289,83 @@ class Employee extends \yii\db\ActiveRecord
 	public function getCountLeavesTotals()
 	{
 		$total = Yii::$app->db->createCommand(
-					' select count(*) ' .
+/*					' select count(*) ' .
 					' from ( select admapp_employee.id as id ' .
 							' FROM admapp_leave 	 LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,  admapp_leave_type  ' .
 							' WHERE admapp_leave.type = admapp_leave_type.id  ' .
 							' AND admapp_employee.id = :id  ' .
 							' AND admapp_leave.deleted = :del  ' .
 							' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted ) as e  ' .
-					' group by e.id ',
+					' group by e.id ', */
+		' SELECT COUNT(*) FROM ( ' .
+		' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' . 
+		'	FROM ( ( ' . 
+		'		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' . 
+		'		FROM ( ' . 
+		'			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' . 
+		'			FROM (  ' . 
+		'				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' . 
+		'				from ( ' . 
+		'					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' . 
+		'					FROM admapp_employee   ' . 
+		'					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' . 
+		'					) AS K  ' . 
+		'					LEFT OUTER JOIN  ' . 
+		'					( ' . 
+		'					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'										FROM admapp_employee, admapp_leave ' . 
+		'						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' . 
+		'										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .  
+		'					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' . 
+		'			) AS M  ' . 
+		'			LEFT OUTER JOIN  ' . 
+		'			( ' . 
+		'				SELECT employee, leave_type, year, days  ' . 
+		'				FROM admapp_leave_balance ' . 
+		'				WHERE year = YEAR(CURDATE()) - 1 ' . 
+		'			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' . 
+		'		) AS O ' . 
+		'	)  ' . 
+		'	UNION ALL  ' . 
+		'	(  ' . 
+		'	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' . 
+		'	FROM ( ' . 
+		'		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' . 
+		'		FROM ( ' . 
+		'			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' . 
+		'			FROM  ' . 
+		'			( ' . 
+		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'			FROM admapp_leave  ' . 
+		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
+		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
+		'			AND admapp_leave.deleted = :del   ' . 
+		'			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' . 
+		'			 ) AS A   ' . 
+		'			LEFT OUTER JOIN   ' . 
+		'			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' . 
+		'			UNION ALL ' . 
+		'			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' . 
+		'			FROM ' . 
+		'			 admapp_leave_balance AS C ' . 
+		'			LEFT OUTER JOIN  ( ' . 
+		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'			FROM admapp_leave  ' . 
+		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
+		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
+		'			AND admapp_leave.deleted = :del   ' . 
+		'			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' . 
+		'			 ) AS D   ' . 
+		'			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' . 
+		'		) AS E ' . 
+		'	) AS F,  ' . 
+		'	admapp_leave_type, admapp_employee  ' . 
+		'	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' . 
+		'	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' . 
+		'	)  ' . 
+		'	) AS PARTALL, admapp_leave_type ' . 
+		'	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
+		' ) AS FK ',							
 					 [':id' => $this->id, 
 					':del' => $this->leaveSumDelFlag])->queryScalar();
 		return $total;
@@ -306,8 +375,77 @@ class Employee extends \yii\db\ActiveRecord
 	public function getLeavesTotals()
 	{
 		return new SqlDataProvider([
-				
-		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+'sql' => ' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' . 
+		'	FROM ( ( ' . 
+		'		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' . 
+		'		FROM ( ' . 
+		'			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' . 
+		'			FROM (  ' . 
+		'				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' . 
+		'				from ( ' . 
+		'					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' . 
+		'					FROM admapp_employee   ' . 
+		'					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' . 
+		'					) AS K  ' . 
+		'					LEFT OUTER JOIN  ' . 
+		'					( ' . 
+		'					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'										FROM admapp_employee, admapp_leave ' . 
+		'						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' . 
+		'										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .  
+		'					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' . 
+		'			) AS M  ' . 
+		'			LEFT OUTER JOIN  ' . 
+		'			( ' . 
+		'				SELECT employee, leave_type, year, days  ' . 
+		'				FROM admapp_leave_balance ' . 
+		'				WHERE year = YEAR(CURDATE()) - 1 ' . 
+		'			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' . 
+		'		) AS O ' . 
+		'	)  ' . 
+		'	UNION ALL  ' . 
+		'	(  ' . 
+		'	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' . 
+		'	FROM ( ' . 
+		'		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' . 
+		'		FROM ( ' . 
+		'			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' . 
+		'			FROM  ' . 
+		'			( ' . 
+		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'			FROM admapp_leave  ' . 
+		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
+		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
+		'			AND admapp_leave.deleted = :del   ' . 
+		'			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' . 
+		'			 ) AS A   ' . 
+		'			LEFT OUTER JOIN   ' . 
+		'			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' . 
+		'			UNION ALL ' . 
+		'			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' . 
+		'			FROM ' . 
+		'			 admapp_leave_balance AS C ' . 
+		'			LEFT OUTER JOIN  ( ' . 
+		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
+		'			FROM admapp_leave  ' . 
+		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
+		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
+		'			AND admapp_leave.deleted = :del   ' . 
+		'			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' . 
+		'			 ) AS D   ' . 
+		'			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' . 
+		'		) AS E ' . 
+		'	) AS F,  ' . 
+		'	admapp_leave_type, admapp_employee  ' . 
+		'	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' . 
+		'	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' . 
+		'	)  ' . 
+		'	) AS PARTALL, admapp_leave_type ' . 
+		'	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' . 
+		'	ORDER BY leaveYear DESC, leaveTypeName ASC ' ,				
+
+
+/*		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
 			'	from ' . 
 			'	 ( ' . 
 			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
@@ -320,7 +458,7 @@ class Employee extends \yii\db\ActiveRecord
 			'	 ) AS A  ' . 
 			'	LEFT OUTER JOIN  ' . 
 			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
-			'	 ORDER BY leaveYear DESC, leaveTypeName ASC ' , 			
+			'	 ORDER BY leaveYear DESC, leaveTypeName ASC ' , 			/*
 /*			'sql' => ' select admapp_employee.id as employeeID, ' .
 					' admapp_leave_type.name as leaveTypeName , ' .
 					' Year(admapp_leave.start_date) as leaveYear, ' .
