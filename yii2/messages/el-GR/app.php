@@ -104,6 +104,7 @@ return [
     'Days Out' => 'Ημέρες εκτός έδρας',
     'Decision date' => 'Ημερομηνία απόφασης',
     'Decision protocol' => 'Πρωτόκολλο απόφασης',
+    'Default Leave Type' => 'Προκαθορισμένος τύπος άδειας',
     'Delete' => 'Διαγραφή',
     'Delete all' => 'Διαγραφή όλων',
     'Delete approval' => 'Διαγραφή έγκρισης',

@@ -93,7 +93,7 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted'], 'integer'],
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted', 'default_leave_type'], 'integer'],
             [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale'/*, 'service_adoption_date'*/], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['iban'], 'string', 'max' => 27],
@@ -119,6 +119,7 @@ class Employee extends \yii\db\ActiveRecord
             [['service_serve'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_serve' => 'id']],
             [['specialisation'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation' => 'id']],
             [['status'], 'exist', 'skipOnError' => true, 'targetClass' => EmployeeStatus::className(), 'targetAttribute' => ['status' => 'id']],
+            [['default_leave_type'], 'exist', 'skipOnError' => true, 'targetClass' => LeaveType::className(), 'targetAttribute' => ['default_leave_type' => 'id']],
             // use filter to avoid getting attributes marked as dirty (changed)
             [['status','specialisation','service_organic','service_serve','position','pay_scale','master_degree','doctorate_degree','work_experience'], 'filter', 'filter' => 'intval']
         ];
@@ -138,6 +139,7 @@ class Employee extends \yii\db\ActiveRecord
             'mothersname' => Yii::t('app', 'Mother\'s name'),
             'tax_identification_number' => Yii::t('app', 'TIN'),
             'email' => 'Email',
+            'default_leave_type' => Yii::t('app', 'Default Leave Type'),
             'telephone' => Yii::t('app', 'Telephone'),
             'mobile' => Yii::t('app', 'Mobile'),
             'address' => Yii::t('app', 'Address'),
@@ -200,6 +202,14 @@ class Employee extends \yii\db\ActiveRecord
     public function getStatus0()
     {
         return $this->hasOne(EmployeeStatus::className(), ['id' => 'status']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDefaultleavetype()
+    {
+        return $this->hasOne(LeaveType::className(), ['id' => 'default_leave_type']);
     }
 
     /**

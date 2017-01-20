@@ -144,6 +144,14 @@ use kartik\datecontrol\DateControl;
         ?>
         <?= $form->field($model, 'work_base')->textInput() ?>
         <?= $form->field($model, 'home_base')->textInput() ?>       
+        <?= $form->field($model, 'default_leave_type')->widget(Select2::classname(), [
+          'data' => \app\models\LeaveType::find()->select(['name', 'id'])->orderby('name')->indexBy('id')->column(),
+          'options' => ['placeholder' => Yii::t('app', 'Choose...')],
+          'pluginOptions' => [
+              'allowClear' => true
+          ],
+        ]);
+        ?>       
         <hr>
         <?= $form->field($model, 'master_degree')->textInput() ?>
         <?= $form->field($model, 'doctorate_degree')->textInput() ?>
