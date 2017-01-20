@@ -141,7 +141,7 @@ AppAsset::register($this);
                                 'url' => ['/leave-print'],
                             ],
                             [
-                                'label' => 'Υπόλοιπα αδειών',
+                                'label' => 'Αποφάσεις μεταφοράς υπολοίπων αδειών',
                                 'url' => ['/leave-balance'],
                             ],
                             
