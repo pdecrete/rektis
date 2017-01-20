@@ -129,7 +129,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     ],
                     'work_base',
-                    'home_base',                  
+                    'home_base',   
+                    [
+                        'label' => Yii::t('app', 'Default Leave Type'),
+                        'attribute' => 'defaultleavetype.name'
+                    ],                                  
                     'master_degree',
                     'doctorate_degree',
                     'work_experience',
