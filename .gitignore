@@ -29,3 +29,5 @@ phpunit.phar
 
 /yii2/config/web.php
 
+.vscode
+

@@ -97,7 +97,7 @@ class LoginForm extends Model
      * (configured @ web.php file->components->log)
      *
      */
-     public function loginLog($event)
+     public static function loginLog($event)
      {
         $userName = Yii::$app->user->identity->username;
         if ($event->name == 'afterLogin'){

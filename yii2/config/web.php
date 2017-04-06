@@ -33,10 +33,15 @@ $config = [
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+				'class' => 'Swift_SmtpTransport',
+				'host' => 'mail.sch.gr',  
+				'username' => 'pdekritisweb',
+				'password' => 'a5j@@c-h',
+				'port' => '587', 
+				'encryption' => 'tls',
+			],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -44,14 +49,42 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'logFile' => '@runtime/logs/all.log',
                 ],
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
                     'categories' => ['login'],
                     'logFile' => '@runtime/logs/login.log',
+                    'logVars' => [],
+                ],
+                [ // for now, all leave and transport actions are added to email.log
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['leave', 'leave-email', 'contact-email', 'transport-journal-email', 'transport'],
+                    'logFile' => '@runtime/logs/email.log',
+                    'logVars' => [],
+                ],                
+                // for now, log employee changes to employee.log file
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['employee'],
+                    'logFile' => '@runtime/logs/employee.log',
                     'logVars' => []
+                ],
+                // future use (or not?): log to db
+                /*
+                [
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    'categories' => ['employee'],
+                    'logTable' => 'employee_log',
+                    'logVars' => [],
+                    'db' => $db
                 ]
+                */
+				
             ],
         ],
         'db' => $db,
