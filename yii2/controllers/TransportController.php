@@ -621,7 +621,7 @@ class TransportController extends Controller
 //			echo 'TO: ' . $this->to . ' <br>';
 			
 			$S1 = $S2 = $S3 = $S4 = $S5 = $S6 = $S7 = $S8 = $S9 = $S10 = $SDA = $S719 = $S721 = $S722 = 0.00;
-			$templateProcessor->cloneRow('START', $all_count);
+			$templateProcessor->cloneRow('DATES', $all_count);
 			for ($c = 0; $c < $all_count; $c++) {
 				$i = $c + 1;
 				$currentModel = $sameDecisionModels[$c];	
@@ -637,8 +637,14 @@ class TransportController extends Controller
 					$maxTo = $currentModel->end_date;
 				}		
 				
-				$templateProcessor->setValue('START' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));		
-				$templateProcessor->setValue('END' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));		
+//				$templateProcessor->setValue('START' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));		
+//				$templateProcessor->setValue('END' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));		
+				if ($currentModel->start_date == $currentModel->end_date) {
+					$templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
+				} else {
+					$templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date) . '-' . Yii::$app->formatter->asDate($currentModel->end_date));		
+				}
+				$templateProcessor->setValue('CAUSE' . "#{$i}", $currentModel->reason);
 				$templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);		
 				$templateProcessor->setValue('KLM' . "#{$i}", number_format($currentModel->klm * 2, 1 , ',', '')); 
 				$S1 += $currentModel->klm * 2;

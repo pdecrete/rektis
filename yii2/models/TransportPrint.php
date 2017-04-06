@@ -99,7 +99,7 @@ class TransportPrint extends \yii\db\ActiveRecord
         return $this->hasMany(TransportPrintConnection::className(), ['transport_print' => 'id']);
     }
 
-    public function transportPrintID($filename)
+    public static function transportPrintID($filename)
     {
         return TransportPrint::find()
                         ->where(['filename' => $filename])

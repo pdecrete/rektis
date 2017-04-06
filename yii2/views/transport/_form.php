@@ -229,6 +229,7 @@ use yii\helpers\Url;
 					'options' => ['placeholder' => Yii::t('app', 'Choose...')],
 				]);
 			?>
+			<?= $form->field($model, 'count_flag')->checkbox($options = [], $enclosedByLabel = false ) ?>
 			<?= $form->field($model, 'decision_protocol')->textInput() ?>
 			<?=
 				$form->field($model, 'decision_protocol_date')->widget(DateControl::classname(), [
@@ -289,7 +290,6 @@ use yii\helpers\Url;
 		<!-- Money Tab -->
 		<div role="tabpanel" class="tab-pane fade" id="money">	
 			<br>			
-			<?= $form->field($model, 'count_flag')->checkbox($options = [], $enclosedByLabel = false ) ?>
 			<?= $form->field($model, 'klm')->textInput(['readonly' => true]) ?>
 			<?= $form->field($model, 'klm_reimb')->textInput(['readonly' => true]) ?>
 			<?= $form->field($model, 'days_out')->widget(MaskedInput::classname(), [
