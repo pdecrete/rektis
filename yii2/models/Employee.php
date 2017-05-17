@@ -113,7 +113,7 @@ class Employee extends \yii\db\ActiveRecord
             [['social_security_number'], 'integer'],
             [['social_security_number'], 'string', 'length' => 11],
             [['identification_number'], 'integer'],
-            [['identification_number'], 'string', 'length' => 6],
+            [['identification_number'], 'string', 'length' => 9],
             [['position'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position' => 'id']],
             [['service_organic'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_organic' => 'id']],
             [['service_serve'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_serve' => 'id']],
@@ -173,14 +173,14 @@ class Employee extends \yii\db\ActiveRecord
         ];
     }
 
-    public function ranksList()
+    public static function ranksList()
     {	// associative array ώστε και η τιμή στα select αλλά και η τιμή στη βάση να είναι το αλφαριθμητικό που βλέπω
 		// αν αποφασίσουμε να κρατάμε στη βάση κωδικούς 0..5 αντί Α..ΣΤ απλά το ξανακάνω απλό array
 		// return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
         return ['Α'=>'Α', 'Β'=>'Β', 'Γ'=>'Γ', 'Δ' =>'Δ', 'Ε' =>'Ε', 'ΣΤ' => 'ΣΤ'];
     }
 
-    public function payscaleList()
+    public static function payscaleList()
     {
         return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
     }
@@ -193,7 +193,7 @@ class Employee extends \yii\db\ActiveRecord
     public function getRank0()
     {
         if ($this->rank)
-            return $this->ranksList()[$this->rank];
+            return self::ranksList()[$this->rank];
     }
 
     /**
