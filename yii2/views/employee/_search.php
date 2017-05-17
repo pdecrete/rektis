@@ -73,7 +73,7 @@ use kartik\datecontrol\DateControl;
          
       </div>
       <div class="col-md-4">
-         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999'])
+         <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999[999]'])
          ?>
          <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
           'data' => \app\models\Service::find()->select(['name', 'name'])->indexBy('name')->orderBy('name')->column(),
