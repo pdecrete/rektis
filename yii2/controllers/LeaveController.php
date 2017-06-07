@@ -125,7 +125,7 @@ class LeaveController extends Controller
             $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->duration);
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
-            $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($currentModel->application_protocol_date, 'php:d-m-Y'));
+            $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($currentModel->application_protocol_date));
 			$rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)));
 			$templateProcessor->setValue('REM' . "#{$i}", $rem);
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
@@ -287,14 +287,20 @@ class LeaveController extends Controller
     {
         $model = new Leave();
         if ($model->load(Yii::$app->request->post())) {
-			if ($model->typeObj->check == True) {
+			if ($model->typeObj->check == true) {
 				$left = $model->daysLeft;
+
 				if ($left == null) {
-					$left = $model->typeObj->limit;
+                    $leave = new Leave;
+                    $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
+                    $days = ($days > 0) ? $days : 0;
+
+					$left = $model->typeObj->limit + $days;
 				}
+
 				if ($model->duration > $left) {
 					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
-		  			Yii::$app->session->setFlash('danger', $str);          
+		  			Yii::$app->session->setFlash('danger', $str);
 					return $this->render('create', ['model' => $model]);
 				}
 			}
