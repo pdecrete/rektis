@@ -287,14 +287,20 @@ class LeaveController extends Controller
     {
         $model = new Leave();
         if ($model->load(Yii::$app->request->post())) {
-			if ($model->typeObj->check == True) {
+			if ($model->typeObj->check == true) {
 				$left = $model->daysLeft;
+
 				if ($left == null) {
-					$left = $model->typeObj->limit;
+                    $leave = new Leave;
+                    $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
+                    $days = ($days > 0) ? $days : 0;
+
+					$left = $model->typeObj->limit + $days;
 				}
+
 				if ($model->duration > $left) {
 					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
-		  			Yii::$app->session->setFlash('danger', $str);          
+		  			Yii::$app->session->setFlash('danger', $str);
 					return $this->render('create', ['model' => $model]);
 				}
 			}
