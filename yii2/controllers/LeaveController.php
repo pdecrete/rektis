@@ -122,6 +122,7 @@ class LeaveController extends Controller
             $currentModel = $sameDecisionModels[$c];	
             $templateProcessor->setValue('SURNAME' . "#{$i}", $currentModel->employeeObj->surname);
             $templateProcessor->setValue('NAME' . "#{$i}", $currentModel->employeeObj->name);
+            $templateProcessor->setValue('FATHERSNAME' . "#{$i}", $currentModel->employeeObj->fathersname);
             $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->duration);
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
