@@ -124,7 +124,7 @@ class Employee extends \yii\db\ActiveRecord
         ];
     }
 
-    public function validateIdStringLength($attribute, $params, $validator)
+    public function validateIdStringLength($attribute)
     {
         $lengths = [6, 9];
         $param_length = mb_strlen($this->$attribute);
