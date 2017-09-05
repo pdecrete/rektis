@@ -73,7 +73,7 @@ use kartik\datecontrol\DateControl;
           ],
         ]);
         ?>
-        <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999[999]']) ?>
+        <?= $form->field($model, 'identification_number')->widget(MaskedInput::classname(),['name' => 'identification_number','mask' => '999999[999]', 'clientOptions' => ['skipOptionalPartCharacter' => '', 'clearMaskOnLostFocus' => true]]) ?>
         <?= $form->field($model, 'service_organic')->widget(Select2::classname(), [
           'data' => \app\models\Service::find()->select(['name', 'id'])->indexBy('id')->orderby('name')->column(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],

@@ -1,6 +1,4 @@
-<?php
-
-namespace app\models;
+<?php namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -61,12 +59,14 @@ use yii\data\SqlDataProvider;
  */
 class Employee extends \yii\db\ActiveRecord
 {
-	public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
-	public $transportSumDelFlag = 0; // Για τα σύνολα των μετακινήσεων αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
+
+    public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
+    public $transportSumDelFlag = 0; // Για τα σύνολα των μετακινήσεων αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
 
     /**
      * @inheritdoc
      */
+
     public static function tableName()
     {
         return '{{%employee}}';
@@ -94,7 +94,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted', 'default_leave_type'], 'integer'],
-            [['name', 'surname', 'fathersname', 'tax_identification_number', /*'social_security_number',*/ 'identification_number', /*'appointment_fek', 'appointment_date',*/ 'rank', 'pay_scale'/*, 'service_adoption_date'*/], 'required'],
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'name', 'surname', 'fathersname', 'tax_identification_number', /* 'social_security_number', */ 'identification_number', /* 'appointment_fek', 'appointment_date', */ 'rank', 'pay_scale'/* , 'service_adoption_date' */], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],
             [['iban'], 'string', 'max' => 27],
             [['tax_identification_number'], VatNumberValidator::className(), 'allowEmpty' => true],
@@ -109,11 +109,10 @@ class Employee extends \yii\db\ActiveRecord
             [['identification_number'], 'unique'],
             [['identity_number'], 'unique'],
             [['master_degree', 'doctorate_degree', 'work_experience'], 'default', 'value' => 0],
-            [['identity_number'],'default'],
+            [['identity_number'], 'default'],
             [['social_security_number'], 'integer'],
             [['social_security_number'], 'string', 'length' => 11],
-            [['identification_number'], 'integer'],
-            [['identification_number'], 'string', 'length' => 9],
+            ['identification_number', 'validateIdStringLength'],
             [['position'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position' => 'id']],
             [['service_organic'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_organic' => 'id']],
             [['service_serve'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_serve' => 'id']],
@@ -121,8 +120,17 @@ class Employee extends \yii\db\ActiveRecord
             [['status'], 'exist', 'skipOnError' => true, 'targetClass' => EmployeeStatus::className(), 'targetAttribute' => ['status' => 'id']],
             [['default_leave_type'], 'exist', 'skipOnError' => true, 'targetClass' => LeaveType::className(), 'targetAttribute' => ['default_leave_type' => 'id']],
             // use filter to avoid getting attributes marked as dirty (changed)
-            [['status','specialisation','service_organic','service_serve','position','pay_scale','master_degree','doctorate_degree','work_experience'], 'filter', 'filter' => 'intval']
+            [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience'], 'filter', 'filter' => 'intval']
         ];
+    }
+
+    public function validateIdStringLength($attribute, $params, $validator)
+    {
+        $lengths = [6, 9];
+        $param_length = mb_strlen($this->$attribute);
+        if (!in_array($param_length, $lengths)) {
+            $this->addError($attribute, "Το μέγεθος του κειμένου δεν είναι έγκυρο.");
+        }
     }
 
     /**
@@ -163,7 +171,7 @@ class Employee extends \yii\db\ActiveRecord
             'serve_decision_date' => Yii::t('app', 'Service Decision Date'),
             'serve_decision_subject' => Yii::t('app', 'Service Decision Subject'),
             'work_base' => Yii::t('app', 'Work base'),
-            'home_base' => Yii::t('app', 'Home base'),           
+            'home_base' => Yii::t('app', 'Home base'),
             'master_degree' => Yii::t('app', 'No of Master Degrees'),
             'doctorate_degree' => Yii::t('app', 'No of Doctorate Degrees'),
             'work_experience' => Yii::t('app', 'Work Experience'),
@@ -174,10 +182,10 @@ class Employee extends \yii\db\ActiveRecord
     }
 
     public static function ranksList()
-    {	// associative array ώστε και η τιμή στα select αλλά και η τιμή στη βάση να είναι το αλφαριθμητικό που βλέπω
-		// αν αποφασίσουμε να κρατάμε στη βάση κωδικούς 0..5 αντί Α..ΣΤ απλά το ξανακάνω απλό array
-		// return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
-        return ['Α'=>'Α', 'Β'=>'Β', 'Γ'=>'Γ', 'Δ' =>'Δ', 'Ε' =>'Ε', 'ΣΤ' => 'ΣΤ'];
+    { // associative array ώστε και η τιμή στα select αλλά και η τιμή στη βάση να είναι το αλφαριθμητικό που βλέπω
+        // αν αποφασίσουμε να κρατάμε στη βάση κωδικούς 0..5 αντί Α..ΣΤ απλά το ξανακάνω απλό array
+        // return ['ΣΤ', 'Ε', 'Δ', 'Γ', 'Β', 'Α'];
+        return ['Α' => 'Α', 'Β' => 'Β', 'Γ' => 'Γ', 'Δ' => 'Δ', 'Ε' => 'Ε', 'ΣΤ' => 'ΣΤ'];
     }
 
     public static function payscaleList()
@@ -275,7 +283,7 @@ class Employee extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Transport::className(), ['employee' => 'id'])->where(['deleted' => 0])->sum('days_applied');
     }
-  
+
     /**
      * @inheritdoc
      * @return EmployeeQuery the active query used by this AR class.
@@ -284,296 +292,289 @@ class Employee extends \yii\db\ActiveRecord
     {
         return new EmployeeQuery(get_called_class());
     }
+    /* return */
 
-	/*return */
-	public function getCountLeavesTotals()
-	{
-		$total = Yii::$app->db->createCommand(
-/*					' select count(*) ' .
-					' from ( select admapp_employee.id as id ' .
-							' FROM admapp_leave 	 LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,  admapp_leave_type  ' .
-							' WHERE admapp_leave.type = admapp_leave_type.id  ' .
-							' AND admapp_employee.id = :id  ' .
-							' AND admapp_leave.deleted = :del  ' .
-							' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted ) as e  ' .
-					' group by e.id ', */
-		' SELECT COUNT(*) FROM ( ' .
-		' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' . 
-		'	FROM ( ( ' . 
-		'		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' . 
-		'		FROM ( ' . 
-		'			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' . 
-		'			FROM (  ' . 
-		'				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' . 
-		'				from ( ' . 
-		'					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' . 
-		'					FROM admapp_employee   ' . 
-		'					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' . 
-		'					) AS K  ' . 
-		'					LEFT OUTER JOIN  ' . 
-		'					( ' . 
-		'					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'										FROM admapp_employee, admapp_leave ' . 
-		'						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' . 
-		'										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .  
-		'					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' . 
-		'			) AS M  ' . 
-		'			LEFT OUTER JOIN  ' . 
-		'			( ' . 
-		'				SELECT employee, leave_type, year, days  ' . 
-		'				FROM admapp_leave_balance ' . 
-		'				WHERE year = YEAR(CURDATE()) - 1 ' . 
-		'			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' . 
-		'		) AS O ' . 
-		'	)  ' . 
-		'	UNION ALL  ' . 
-		'	(  ' . 
-		'	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' . 
-		'	FROM ( ' . 
-		'		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' . 
-		'		FROM ( ' . 
-		'			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' . 
-		'			FROM  ' . 
-		'			( ' . 
-		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'			FROM admapp_leave  ' . 
-		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
-		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
-		'			AND admapp_leave.deleted = :del   ' . 
-		'			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' . 
-		'			 ) AS A   ' . 
-		'			LEFT OUTER JOIN   ' . 
-		'			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' . 
-		'			UNION ALL ' . 
-		'			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' . 
-		'			FROM ' . 
-		'			 admapp_leave_balance AS C ' . 
-		'			LEFT OUTER JOIN  ( ' . 
-		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'			FROM admapp_leave  ' . 
-		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
-		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
-		'			AND admapp_leave.deleted = :del   ' . 
-		'			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' . 
-		'			 ) AS D   ' . 
-		'			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' . 
-		'		) AS E ' . 
-		'	) AS F,  ' . 
-		'	admapp_leave_type, admapp_employee  ' . 
-		'	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' . 
-		'	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' . 
-		'	)  ' . 
-		'	) AS PARTALL, admapp_leave_type ' . 
-		'	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
-		' ) AS FK ',							
-					 [':id' => $this->id, 
-					':del' => $this->leaveSumDelFlag])->queryScalar();
-		return $total;
-	}
+    public function getCountLeavesTotals()
+    {
+        $total = Yii::$app->db->createCommand(
+                /* 					' select count(*) ' .
+                  ' from ( select admapp_employee.id as id ' .
+                  ' FROM admapp_leave 	 LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,  admapp_leave_type  ' .
+                  ' WHERE admapp_leave.type = admapp_leave_type.id  ' .
+                  ' AND admapp_employee.id = :id  ' .
+                  ' AND admapp_leave.deleted = :del  ' .
+                  ' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted ) as e  ' .
+                  ' group by e.id ', */
+                ' SELECT COUNT(*) FROM ( ' .
+                ' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' .
+                '	FROM ( ( ' .
+                '		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' .
+                '		FROM ( ' .
+                '			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' .
+                '			FROM (  ' .
+                '				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' .
+                '				from ( ' .
+                '					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' .
+                '					FROM admapp_employee   ' .
+                '					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' .
+                '					) AS K  ' .
+                '					LEFT OUTER JOIN  ' .
+                '					( ' .
+                '					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+                '										FROM admapp_employee, admapp_leave ' .
+                '						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' .
+                '										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .
+                '					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' .
+                '			) AS M  ' .
+                '			LEFT OUTER JOIN  ' .
+                '			( ' .
+                '				SELECT employee, leave_type, year, days  ' .
+                '				FROM admapp_leave_balance ' .
+                '				WHERE year = YEAR(CURDATE()) - 1 ' .
+                '			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' .
+                '		) AS O ' .
+                '	)  ' .
+                '	UNION ALL  ' .
+                '	(  ' .
+                '	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' .
+                '	FROM ( ' .
+                '		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' .
+                '		FROM ( ' .
+                '			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' .
+                '			FROM  ' .
+                '			( ' .
+                '			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+                '			FROM admapp_leave  ' .
+                '			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' .
+                '			WHERE admapp_leave.type = admapp_leave_type.id   ' .
+                '			AND admapp_leave.deleted = :del   ' .
+                '			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' .
+                '			 ) AS A   ' .
+                '			LEFT OUTER JOIN   ' .
+                '			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' .
+                '			UNION ALL ' .
+                '			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' .
+                '			FROM ' .
+                '			 admapp_leave_balance AS C ' .
+                '			LEFT OUTER JOIN  ( ' .
+                '			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+                '			FROM admapp_leave  ' .
+                '			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' .
+                '			WHERE admapp_leave.type = admapp_leave_type.id   ' .
+                '			AND admapp_leave.deleted = :del   ' .
+                '			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' .
+                '			 ) AS D   ' .
+                '			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' .
+                '		) AS E ' .
+                '	) AS F,  ' .
+                '	admapp_leave_type, admapp_employee  ' .
+                '	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' .
+                '	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' .
+                '	)  ' .
+                '	) AS PARTALL, admapp_leave_type ' .
+                '	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
+                ' ) AS FK ', [':id' => $this->id,
+                ':del' => $this->leaveSumDelFlag])->queryScalar();
+        return $total;
+    }
+    /* return DataProvider */
 
-	/*return DataProvider*/
-	public function getLeavesTotals()
-	{
-		return new SqlDataProvider([
-'sql' => ' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' . 
-		'	FROM ( ( ' . 
-		'		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' . 
-		'		FROM ( ' . 
-		'			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' . 
-		'			FROM (  ' . 
-		'				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' . 
-		'				from ( ' . 
-		'					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' . 
-		'					FROM admapp_employee   ' . 
-		'					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' . 
-		'					) AS K  ' . 
-		'					LEFT OUTER JOIN  ' . 
-		'					( ' . 
-		'					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'										FROM admapp_employee, admapp_leave ' . 
-		'						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' . 
-		'										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .  
-		'					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' . 
-		'			) AS M  ' . 
-		'			LEFT OUTER JOIN  ' . 
-		'			( ' . 
-		'				SELECT employee, leave_type, year, days  ' . 
-		'				FROM admapp_leave_balance ' . 
-		'				WHERE year = YEAR(CURDATE()) - 1 ' . 
-		'			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' . 
-		'		) AS O ' . 
-		'	)  ' . 
-		'	UNION ALL  ' . 
-		'	(  ' . 
-		'	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' . 
-		'	FROM ( ' . 
-		'		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' . 
-		'		FROM ( ' . 
-		'			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' . 
-		'			FROM  ' . 
-		'			( ' . 
-		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'			FROM admapp_leave  ' . 
-		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
-		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
-		'			AND admapp_leave.deleted = :del   ' . 
-		'			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' . 
-		'			 ) AS A   ' . 
-		'			LEFT OUTER JOIN   ' . 
-		'			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' . 
-		'			UNION ALL ' . 
-		'			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' . 
-		'			FROM ' . 
-		'			 admapp_leave_balance AS C ' . 
-		'			LEFT OUTER JOIN  ( ' . 
-		'			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' . 
-		'			FROM admapp_leave  ' . 
-		'			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' . 
-		'			WHERE admapp_leave.type = admapp_leave_type.id   ' . 
-		'			AND admapp_leave.deleted = :del   ' . 
-		'			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' . 
-		'			 ) AS D   ' . 
-		'			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' . 
-		'		) AS E ' . 
-		'	) AS F,  ' . 
-		'	admapp_leave_type, admapp_employee  ' . 
-		'	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' . 
-		'	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' . 
-		'	)  ' . 
-		'	) AS PARTALL, admapp_leave_type ' . 
-		'	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' . 
-		'	ORDER BY leaveYear DESC, leaveTypeName ASC ' ,				
+    public function getLeavesTotals()
+    {
+        return new SqlDataProvider([
+            'sql' => ' 	SELECT employeeID, leaveID, admapp_leave_type.name as leaveTypeName, leaveYear, leaveLimit, duration, daysLeft, LeftToTake  ' .
+            '	FROM ( ( ' .
+            '		SELECT employeeID, leaveID, leaveYear, leaveLimit, duration, daysLeft, (leaveLimit+daysLeft-duration) as LeftToTake  ' .
+            '		FROM ( ' .
+            '			SELECT M.employeeID, M.leaveID, M.leaveYear, M.leaveLimit, M.duration, CASE WHEN N.days IS NULL THEN 0 ELSE N.days END as daysLeft  ' .
+            '			FROM (  ' .
+            '				select K.employeeID, K.leaveID, K.leaveYear, CASE WHEN K.leaveLimit IS NULL THEN 0 ELSE K.leaveLimit END AS leaveLimit, CASE WHEN L.duration IS NULL THEN 0 ELSE L.duration END AS duration   ' .
+            '				from ( ' .
+            '					SELECT admapp_employee.id AS employeeID, admapp_employee.default_leave_type AS leaveID, YEAR(CURDATE()) AS leaveYear, admapp_leave_type.limit as leaveLimit  ' .
+            '					FROM admapp_employee   ' .
+            '					LEFT OUTER JOIN admapp_leave_type ON ( admapp_employee.default_leave_type = admapp_leave_type.id) ' .
+            '					) AS K  ' .
+            '					LEFT OUTER JOIN  ' .
+            '					( ' .
+            '					SELECT admapp_employee.id AS employeeID, admapp_leave.type AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+            '										FROM admapp_employee, admapp_leave ' .
+            '						where admapp_employee.id = admapp_leave.employee and admapp_leave.deleted = :del ' .
+            '										GROUP BY admapp_employee.id, admapp_leave.type, Year( admapp_leave.start_date )  ' .
+            '					) AS L ON (K.employeeID = L.employeeID and K.leaveID = L.leaveID and K.leaveYear = L.leaveYear) ' .
+            '			) AS M  ' .
+            '			LEFT OUTER JOIN  ' .
+            '			( ' .
+            '				SELECT employee, leave_type, year, days  ' .
+            '				FROM admapp_leave_balance ' .
+            '				WHERE year = YEAR(CURDATE()) - 1 ' .
+            '			) AS N ON (M.employeeID = N.employee and M.leaveID = N.leave_type and M.leaveYear = N.year + 1) ' .
+            '		) AS O ' .
+            '	)  ' .
+            '	UNION ALL  ' .
+            '	(  ' .
+            '	SELECT employeeID, leaveID, leaveYear, admapp_leave_type.limit as leaveLimit, duration, days as daysLeft, (admapp_leave_type.limit + days - duration) as LeftToTake ' .
+            '	FROM ( ' .
+            '		SELECT DISTINCT employeeID, leaveID, leaveYear, days, duration  ' .
+            '		FROM ( ' .
+            '			SELECT employeeID, leaveID, leaveYear, CASE WHEN days IS NULL THEN 0 ELSE days END as days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration ' .
+            '			FROM  ' .
+            '			( ' .
+            '			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+            '			FROM admapp_leave  ' .
+            '			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' .
+            '			WHERE admapp_leave.type = admapp_leave_type.id   ' .
+            '			AND admapp_leave.deleted = :del   ' .
+            '			GROUP BY admapp_employee.id, admapp_leave_type.id, Year( admapp_leave.start_date )  ' .
+            '			 ) AS A   ' .
+            '			LEFT OUTER JOIN   ' .
+            '			 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )   ' .
+            '			UNION ALL ' .
+            '			SELECT employee as empolyeeID, leave_type as leaveID, year+1 as leaveYear, days, CASE WHEN duration IS NULL THEN 0 ELSE duration END AS duration  ' .
+            '			FROM ' .
+            '			 admapp_leave_balance AS C ' .
+            '			LEFT OUTER JOIN  ( ' .
+            '			SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, Year( admapp_leave.start_date ) AS leaveYear, sum( admapp_leave.duration ) AS duration  ' .
+            '			FROM admapp_leave  ' .
+            '			LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type  ' .
+            '			WHERE admapp_leave.type = admapp_leave_type.id   ' .
+            '			AND admapp_leave.deleted = :del   ' .
+            '			GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, Year( admapp_leave.start_date )  ' .
+            '			 ) AS D   ' .
+            '			 on ( C.employee = D.employeeID AND C.leave_type = D.leaveID and C.year = D.leaveYear - 1)   ' .
+            '		) AS E ' .
+            '	) AS F,  ' .
+            '	admapp_leave_type, admapp_employee  ' .
+            '	WHERE  admapp_leave_type.id = F.leaveID and admapp_employee.id = F.employeeID and  ' .
+            '	NOT EXISTS (SELECT id, default_leave_type, YEAR(CURDATE()) FROM admapp_employee where id = F.employeeID and default_leave_type = F.leaveID and F.leaveYear = YEAR(CURDATE())) ' .
+            '	)  ' .
+            '	) AS PARTALL, admapp_leave_type ' .
+            '	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
+            '	ORDER BY leaveYear DESC, leaveTypeName ASC ',
+            /* 		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+              '	from ' .
+              '	 ( ' .
+              '	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' .
+              '	FROM admapp_leave ' .
+              '	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' .
+              '	WHERE admapp_leave.type = admapp_leave_type.id ' .
+              '	AND admapp_employee.id = :id   ' .
+              '	AND admapp_leave.deleted = :del ' .
+              '	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' .
+              '	 ) AS A  ' .
+              '	LEFT OUTER JOIN  ' .
+              '	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' .
+              '	 ORDER BY leaveYear DESC, leaveTypeName ASC ' , 			/*
+              /*			'sql' => ' select admapp_employee.id as employeeID, ' .
+              ' admapp_leave_type.name as leaveTypeName , ' .
+              ' Year(admapp_leave.start_date) as leaveYear, ' .
+              ' admapp_leave.deleted as deleted, ' .
+              ' sum(admapp_leave.duration) as duration ' .
+              ' FROM admapp_leave ' .
+              ' LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,' .
+              ' admapp_leave_type ' .
+              ' WHERE admapp_leave.type = admapp_leave_type.id ' .
+              ' AND admapp_employee.id = :id ' .
+              ' AND admapp_leave.deleted = :del ' .
+              ' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted' .
+              ' ORDER BY Year(admapp_leave.start_date) DESC, admapp_leave_type.name ASC '	,
+             */ 'params' => [
+                ':id' => $this->id,
+                ':del' => $this->leaveSumDelFlag,
+            ],
+        ]);
+    }
 
-
-/*		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
-			'	from ' . 
-			'	 ( ' . 
-			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
-			'	FROM admapp_leave ' . 
-			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
-			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
-			'	AND admapp_employee.id = :id   ' . 
-			'	AND admapp_leave.deleted = :del ' . 
-			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
-			'	 ) AS A  ' . 
-			'	LEFT OUTER JOIN  ' . 
-			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
-			'	 ORDER BY leaveYear DESC, leaveTypeName ASC ' , 			/*
-/*			'sql' => ' select admapp_employee.id as employeeID, ' .
-					' admapp_leave_type.name as leaveTypeName , ' .
-					' Year(admapp_leave.start_date) as leaveYear, ' .
-					' admapp_leave.deleted as deleted, ' .
-					' sum(admapp_leave.duration) as duration ' . 
-					' FROM admapp_leave ' .
-					' LEFT OUTER JOIN admapp_employee ON (admapp_leave.employee = admapp_employee.id) ,' .
-					' admapp_leave_type ' .
-					' WHERE admapp_leave.type = admapp_leave_type.id ' .
-					' AND admapp_employee.id = :id ' .
-					' AND admapp_leave.deleted = :del ' .
-					' GROUP BY admapp_employee.id, admapp_leave_type.name, Year(admapp_leave.start_date), admapp_leave.deleted' .
-					' ORDER BY Year(admapp_leave.start_date) DESC, admapp_leave_type.name ASC '	,
-*/				'params' => [
-					':id' => $this->id, 
-					':del' => $this->leaveSumDelFlag,	
-				],
-		]);
-	}
-
-	/**
+    /**
      * @return \yii\db\ActiveQuery
      */
- /*   public function getLeavesDurationByType($myYear, $LeaveType)
-    {  // Παράμετροι ο τύπος άδειας και η χρονιά, π.χ. $LeaveType = 10;  $myYear = date("Y"); 
-        return $this->hasMany(Leave::className(), ['employee' => 'id'])
-		->where(['deleted' => 0])
-		->andWhere(['type' => $LeaveType])
-		->andWhere(['YEAR(start_date)' =>  $myYear])
-		->sum('duration');
-    } */
-   
-   // Override beforeSave() to log employee table changes to log target
-   public function beforeSave($insert)
-   {
-      if (parent::beforeSave($insert)) {
-         if ($dirty = $this->getDirtyAttributes())
-         {
-            $out = Yii::$app->user->identity->username . ' has modified ' . $this->surname . ' ' . $this->name . ' (id: ' . $this->id . '): ';
-            foreach($dirty as $k => $v) {
-               if ($k == 'update_ts')
-                  continue;
-               $out .= $k . ' from ' .$this->getOldAttribute($k) . ' to ' . $v . ', ';
+    /*   public function getLeavesDurationByType($myYear, $LeaveType)
+      {  // Παράμετροι ο τύπος άδειας και η χρονιά, π.χ. $LeaveType = 10;  $myYear = date("Y");
+      return $this->hasMany(Leave::className(), ['employee' => 'id'])
+      ->where(['deleted' => 0])
+      ->andWhere(['type' => $LeaveType])
+      ->andWhere(['YEAR(start_date)' =>  $myYear])
+      ->sum('duration');
+      } */
+
+    // Override beforeSave() to log employee table changes to log target
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($dirty = $this->getDirtyAttributes()) {
+                $out = Yii::$app->user->identity->username . ' has modified ' . $this->surname . ' ' . $this->name . ' (id: ' . $this->id . '): ';
+                foreach ($dirty as $k => $v) {
+                    if ($k == 'update_ts')
+                        continue;
+                    $out .= $k . ' from ' . $this->getOldAttribute($k) . ' to ' . $v . ', ';
+                }
+                Yii::info($out, 'employee');
             }
-            Yii::info($out,'employee');
-         }
-         return true;
-      }
-   }
-   
-	/*return */
-	public function getCountTransportTotals()
-	{
-		$total = Yii::$app->db->createCommand(
-					' select count(*) ' .
-					' from ( select admapp_employee.id as id ' .
-							' FROM admapp_transport LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,  admapp_transport_type  ' .
-							' WHERE admapp_transport.type = admapp_transport_type.id  ' .
-							' AND admapp_employee.id = :id  ' .
-							' AND admapp_transport.deleted = :del  ' .
-							' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) as e  ' .
-					' group by e.id ',
-					 [':id' => $this->id, 
-					':del' => $this->transportSumDelFlag])->queryScalar();
-		return $total;
-	}
+            return true;
+        }
+    }
+    /* return */
 
-	/*return DataProvider*/
-	public function getTransportsTotals()
-	{
-		return new SqlDataProvider([
-				'sql' => ' select admapp_employee.id as employeeID, ' .
-					' admapp_transport_type.name as transportTypeName , ' .
-					' Year(admapp_transport.start_date) as transportYear, ' .
-					' admapp_transport.deleted as deleted, ' .
-					' sum(admapp_transport.days_applied) as duration ' . 
-					' FROM admapp_transport ' .
-					' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
-					' admapp_transport_type ' .
-					' WHERE admapp_transport.type = admapp_transport_type.id ' .
-					' AND admapp_employee.id = :id ' .
-					' AND admapp_transport.deleted = :del ' .
-					' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted' .
-					' ORDER BY Year(admapp_transport.start_date) DESC, admapp_transport_type.name ASC '	,
-				'params' => [
-					':id' => $this->id, 
-					':del' => $this->transportSumDelFlag,	
-				],
-		]);
-	}
+    public function getCountTransportTotals()
+    {
+        $total = Yii::$app->db->createCommand(
+                ' select count(*) ' .
+                ' from ( select admapp_employee.id as id ' .
+                ' FROM admapp_transport LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,  admapp_transport_type  ' .
+                ' WHERE admapp_transport.type = admapp_transport_type.id  ' .
+                ' AND admapp_employee.id = :id  ' .
+                ' AND admapp_transport.deleted = :del  ' .
+                ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) as e  ' .
+                ' group by e.id ', [':id' => $this->id,
+                ':del' => $this->transportSumDelFlag])->queryScalar();
+        return $total;
+    }
+    /* return DataProvider */
 
-	/*return */
-	public function getTransportTypeTotal($empid, $typeid, $year)
-	{
-		$total = Yii::$app->db->createCommand(
-			' select duration from ( ' .
-				' select admapp_employee.id as employeeID, ' .
-					' admapp_transport_type.name as transportTypeName , ' .
-					' Year(admapp_transport.start_date) as transportYear, ' .
-					' admapp_transport.deleted as deleted, ' .
-					' sum(admapp_transport.days_applied) as duration ' . 
-				' FROM admapp_transport ' .
-					' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
-					' admapp_transport_type ' .
-				' WHERE admapp_transport.type = admapp_transport_type.id ' .
-					' AND admapp_employee.id = :id ' .
-					' AND admapp_transport.type = :type ' .
-					' AND YEAR(admapp_transport.start_date) = :year ' .
-					' AND admapp_transport.deleted = :del ' .
-				' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l',
-					 [':id' => $empid, 
-					 ':type' => $typeid,
-					 ':year' => $year,
-					':del' => 0])->queryScalar();
-		return $total;
-	}
-   
+    public function getTransportsTotals()
+    {
+        return new SqlDataProvider([
+            'sql' => ' select admapp_employee.id as employeeID, ' .
+            ' admapp_transport_type.name as transportTypeName , ' .
+            ' Year(admapp_transport.start_date) as transportYear, ' .
+            ' admapp_transport.deleted as deleted, ' .
+            ' sum(admapp_transport.days_applied) as duration ' .
+            ' FROM admapp_transport ' .
+            ' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
+            ' admapp_transport_type ' .
+            ' WHERE admapp_transport.type = admapp_transport_type.id ' .
+            ' AND admapp_employee.id = :id ' .
+            ' AND admapp_transport.deleted = :del ' .
+            ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted' .
+            ' ORDER BY Year(admapp_transport.start_date) DESC, admapp_transport_type.name ASC ',
+            'params' => [
+                ':id' => $this->id,
+                ':del' => $this->transportSumDelFlag,
+            ],
+        ]);
+    }
+    /* return */
+
+    public function getTransportTypeTotal($empid, $typeid, $year)
+    {
+        $total = Yii::$app->db->createCommand(
+                ' select duration from ( ' .
+                ' select admapp_employee.id as employeeID, ' .
+                ' admapp_transport_type.name as transportTypeName , ' .
+                ' Year(admapp_transport.start_date) as transportYear, ' .
+                ' admapp_transport.deleted as deleted, ' .
+                ' sum(admapp_transport.days_applied) as duration ' .
+                ' FROM admapp_transport ' .
+                ' LEFT OUTER JOIN admapp_employee ON (admapp_transport.employee = admapp_employee.id) ,' .
+                ' admapp_transport_type ' .
+                ' WHERE admapp_transport.type = admapp_transport_type.id ' .
+                ' AND admapp_employee.id = :id ' .
+                ' AND admapp_transport.type = :type ' .
+                ' AND YEAR(admapp_transport.start_date) = :year ' .
+                ' AND admapp_transport.deleted = :del ' .
+                ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l', [':id' => $empid,
+                ':type' => $typeid,
+                ':year' => $year,
+                ':del' => 0])->queryScalar();
+        return $total;
+    }
 }
