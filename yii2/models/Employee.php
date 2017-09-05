@@ -110,7 +110,7 @@ class Employee extends \yii\db\ActiveRecord
             [['identity_number'], 'unique'],
             [['master_degree', 'doctorate_degree', 'work_experience'], 'default', 'value' => 0],
             [['identity_number'], 'default'],
-            [['social_security_number'], 'integer'],
+            [['social_security_number', 'identification_number'], 'integer'],
             [['social_security_number'], 'string', 'length' => 11],
             ['identification_number', 'validateIdStringLength'],
             [['position'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position' => 'id']],
