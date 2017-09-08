@@ -12,10 +12,11 @@ use yii\widgets\Pjax;
 $this->title = $model->surname . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Employees'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="employee-view">
 
-     <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -27,9 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ])
+
         ?>
-		<?= Html::a(Yii::t('app', 'Create Leave'), [ 'leave/create', 'employee' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?= Html::a(Yii::t('app', 'Create Transport'), [ 'transport/create', 'employee' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a(Yii::t('app', 'Create Leave'), [ 'leave/create', 'employee' => $model->id], ['class' => 'btn btn-primary']) ?>
+<?= Html::a(Yii::t('app', 'Create Transport'), [ 'transport/create', 'employee' => $model->id], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <ul class="nav nav-tabs" role="tablist">
@@ -60,6 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'iban',
                 ]
             ])
+
             ?>
         </div>
         <div role="tabpanel" class="tab-pane fade-in" id="service">
@@ -93,23 +96,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Service Decision Date'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDate($data['serve_decision_date']);
-                        }
-                    ],                   
+                        },
+                        'format' => 'html'
+                    ],
                     'serve_decision_subject',
-                    'appointment_fek',
+                    [
+                        'attribute' => 'appointment_fek',
+                        'format' => 'html'
+                    ],
                     [
                         'label' => Yii::t('app', 'Appointment Date'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDate($data['appointment_date']);
-                        }
+                        },
+                        'format' => 'html'
                     ],
                     'service_adoption',
                     [
                         'label' => Yii::t('app', 'Service Adoption Date'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDate($data['service_adoption_date']);
-                        }
-                    ],                   
+                        },
+                        'format' => 'html'
+                    ],
                     [
                         'label' => Yii::t('app', 'Rank'),
                         'attribute' => 'rank0'
@@ -119,73 +128,77 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Rank Date'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDate($data['rank_date']);
-                        }
+                        },
+                        'format' => 'html'
                     ],
                     'pay_scale',
                     [
                         'label' => Yii::t('app', 'Pay Scale Date'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDate($data['pay_scale_date']);
-                        }
+                        },
+                        'format' => 'html'
                     ],
                     'work_base',
-                    'home_base',   
+                    'home_base',
                     [
                         'label' => Yii::t('app', 'Default Leave Type'),
                         'attribute' => 'defaultleavetype.name'
-                    ],                                  
+                    ],
                     'master_degree',
                     'doctorate_degree',
                     'work_experience',
                     'comments',
                 ],
             ])
+
             ?>
         </div>
         <div role="tabpanel" class="tab-pane fade-in" id="leaves">
-        <h1>Σύνολα αδειών <small> Οι διεγραμμένες άδειες δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
-		<?php					
-			//Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
-			$count = $model->getCountLeavesTotals();
-			$leavesSumDataProvider = $model->getLeavesTotals();
-			$leavesSumDataProvider->totalCount = $count;
-			$leavesSumDataProvider->pagination = [
-					'pagesize' => 5, 
-					'pageParam' => 'sumPage',
-					];
-			$leavesSumDataProvider->sort =[
-					'attributes' => [
-						'leaveYear' => SORT_DESC,
-						'leaveTypeName' => SORT_ASC,
-						],
-					'sortParam' => 'sumSort',
-				];
-				
-		?>
-		<?php Pjax::begin(); ?>
-		<?=
-			GridView::widget([
-				'dataProvider' => $leavesSumDataProvider,       
-				'columns' => [
-					['class' => 'yii\grid\SerialColumn'],
-					['label' => Yii::t('app', 'Leave type'),
-						'attribute' => 'leaveTypeName'],
-					['label' => Yii::t('app', 'Year'),
-						'attribute' => 'leaveYear'],
-					['label' => Yii::t('app', 'Limit'),
-						'attribute' => 'leaveLimit'],			
-					['label' => Yii::t('app', 'Previous year left'),
-						'attribute' => 'daysLeft'],			
-					['label' => Yii::t('app', 'Duration in days'),
-						'attribute' => 'duration'],			
-					['label' => Yii::t('app', 'Left'),
-						'attribute' => 'LeftToTake'],			
-				],	
-			]);
-		?>
-		<?php Pjax::end(); ?>
-	
-			<?php
+            <h1>Σύνολα αδειών <small> Οι διεγραμμένες άδειες δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
+            <?php
+            //Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
+            $count = $model->getCountLeavesTotals();
+            $leavesSumDataProvider = $model->getLeavesTotals();
+            $leavesSumDataProvider->totalCount = $count;
+            $leavesSumDataProvider->pagination = [
+                'pagesize' => 5,
+                'pageParam' => 'sumPage',
+            ];
+            $leavesSumDataProvider->sort = [
+                'attributes' => [
+                    'leaveYear' => SORT_DESC,
+                    'leaveTypeName' => SORT_ASC,
+                ],
+                'sortParam' => 'sumSort',
+            ];
+
+            ?>
+            <?php Pjax::begin(); ?>
+            <?=
+            GridView::widget([
+                'dataProvider' => $leavesSumDataProvider,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    ['label' => Yii::t('app', 'Leave type'),
+                        'attribute' => 'leaveTypeName'],
+                    ['label' => Yii::t('app', 'Year'),
+                        'attribute' => 'leaveYear'],
+                    ['label' => Yii::t('app', 'Limit'),
+                        'attribute' => 'leaveLimit'],
+                    ['label' => Yii::t('app', 'Previous year left'),
+                        'attribute' => 'daysLeft'],
+                    ['label' => Yii::t('app', 'Duration in days'),
+                        'attribute' => 'duration'],
+                    ['label' => Yii::t('app', 'Left'),
+                        'attribute' => 'LeftToTake'],
+                ],
+            ]);
+
+            ?>
+            <?php Pjax::end(); ?>
+
+            <?php
 //            $sd = (new \yii\db\Query())
 //                    ->from('admapp_leave')
 //                    ->where(['employee' => 1, 'deleted' => 0])
@@ -210,51 +223,53 @@ $this->params['breadcrumbs'][] = $this->title;
                         'decision_protocol_date',
                         'type',
                     ],
-                    'sortParam' => 'leaveSort',	
+                    'sortParam' => 'leaveSort',
                 ]
             ]);
             echo $this->render('/leave/_employee', ['dataProvider' => $leavesDataProvider, 'employeeModel' => $model]);
+
             ?>
         </div>        
         <div role="tabpanel" class="tab-pane fade-in" id="transports">
-        <h1>Σύνολα μετακινήσεων <small> Οι διεγραμμένες μετακινήσεις δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
-		<?php					
-			//Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
+            <h1>Σύνολα μετακινήσεων <small> Οι διεγραμμένες μετακινήσεις δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
+            <?php
+            //Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
 
-			$count = $model->getCountTransportTotals();
-			$transportsSumDataProvider = $model->getTransportsTotals();
-			$transportsSumDataProvider->totalCount = $count;
-			$transportsSumDataProvider->pagination = [
-					'pagesize' => 5, 
-					'pageParam' => 'sumPage',
-					];
-			$transportsSumDataProvider->sort =[
-					'attributes' => [
-						'transportYear' => SORT_DESC,
-						'transportTypeName' => SORT_ASC,
-						],
-					'sortParam' => 'sumSort',
-				];
-				
-		?>
-		<?php Pjax::begin(); ?>
-		<?=
-			GridView::widget([
-				'dataProvider' => $transportsSumDataProvider,       
-				'columns' => [
-					['class' => 'yii\grid\SerialColumn'],
-					['label' => Yii::t('app', 'Transport type'),
-						'attribute' => 'transportTypeName'],
-					['label' => Yii::t('app', 'Year'),
-						'attribute' => 'transportYear'],
-					['label' => Yii::t('app', 'Duration in days'),
-						'attribute' => 'duration'],			
-				],	
-			]);
-		?>
-		<?php Pjax::end(); ?>
-	
-			<?php
+            $count = $model->getCountTransportTotals();
+            $transportsSumDataProvider = $model->getTransportsTotals();
+            $transportsSumDataProvider->totalCount = $count;
+            $transportsSumDataProvider->pagination = [
+                'pagesize' => 5,
+                'pageParam' => 'sumPage',
+            ];
+            $transportsSumDataProvider->sort = [
+                'attributes' => [
+                    'transportYear' => SORT_DESC,
+                    'transportTypeName' => SORT_ASC,
+                ],
+                'sortParam' => 'sumSort',
+            ];
+
+            ?>
+            <?php Pjax::begin(); ?>
+            <?=
+            GridView::widget([
+                'dataProvider' => $transportsSumDataProvider,
+                'columns' => [
+                    ['class' => 'yii\grid\SerialColumn'],
+                    ['label' => Yii::t('app', 'Transport type'),
+                        'attribute' => 'transportTypeName'],
+                    ['label' => Yii::t('app', 'Year'),
+                        'attribute' => 'transportYear'],
+                    ['label' => Yii::t('app', 'Duration in days'),
+                        'attribute' => 'duration'],
+                ],
+            ]);
+
+            ?>
+            <?php Pjax::end(); ?>
+
+            <?php
 //            $sd = (new \yii\db\Query())
 //                    ->from('admapp_leave')
 //                    ->where(['employee' => 1, 'deleted' => 0])
@@ -279,7 +294,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'decision_protocol_date',
                         'type',
                     ],
-                    'sortParam' => 'transportSort',	
+                    'sortParam' => 'transportSort',
                 ]
             ]);
             echo $this->render('/transport/_employee', ['dataProvider' => $transportsDataProvider, 'employeeModel' => $model]);
@@ -298,16 +313,19 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Created At'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDateTime($data['create_ts']);
-                        }
+                        },
+                        'format' => 'html'
                     ],
                     [
                         'label' => Yii::t('app', 'Updated At'),
                         'attribute' => function ($data) {
                             return \Yii::$app->formatter->asDateTime($data['update_ts']);
-                        }
+                        },
+                        'format' => 'html'
                     ]
                 ],
             ])
+
             ?>
         </div>
     </div>
