@@ -23,7 +23,6 @@ phpunit.phar
 /yii2/vendor/admapp/exports/
 
 /yii2/config/db.php
-/yii2/composer.lock
 
 /yii2/data/pde_employees.sql 
 
