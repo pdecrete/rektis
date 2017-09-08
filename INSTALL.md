@@ -14,9 +14,18 @@ composer install
 #Αρχικές ενέργειες εγκατάστασης
 
 ##Προσαρμογές στην εγκατάσταση
-- μετακίνηση όλων των φακέλων εκτός του web σε φάκελο με όνομα yii2
+- μετακίνηση όλων των φακέλων εκτός του web σε φάκελο με όνομα yii2 (εφόσον χρειαστεί)
+- αντιγραφή του αρχείου `web/index.php.dist` στο `web/index.php` 
 - ενημέρωση paths στο αρχείο web/index.php και web/index-test.php 
 - ρύθμιση αρχείων `.htaccess` για έλεγχο πρόσβασης
+
+_για το αρχείο web/index.php_
+
+Τροποποιείστε ανάλογα με τις απαιτήσεις σας. Για παράδειγμα, για περιβάλλον ανάπτυξης, όπου θα απαιτηθεί πρόσβαση σε αναλυτικά reports και στον code generator, θα πρέπει να ορίσετε τις παρακάτω γραμμές αντίστοιχα:
+```
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+```
 
 _για το web/.htaccess_
 ```
@@ -42,7 +51,7 @@ RewriteRule . - [F]
 ```requirements.php```
 
 ##Για την εγκατάσταση στο production site 
-Να γίνουν comment out ή να σβηστούν τελείως από το αρχείο ```index.php``` οι 
+Να γίνουν comment out ή να σβηστούν τελείως από το αρχείο ```web/index.php``` οι 
 γραμμές που ορίζουν το ```YII_DEBUG``` και το ```YII_ENV```:
 ```
 defined('YII_DEBUG') or define('YII_DEBUG', false);
