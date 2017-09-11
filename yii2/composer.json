@@ -13,6 +13,12 @@
         "source": "https://github.com/yiisoft/yii2"
     },
     "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/spapad/yii2-helpers"
+        }
+    ],
     "require": {
         "php": ">=5.4.0",
         "fxp/composer-asset-plugin": "1.1.*",
@@ -25,7 +31,8 @@
         "kartik-v/yii2-widget-datepicker": "@dev",
         "kartik-v/yii2-datecontrol": "@dev",
         "phpoffice/phpexcel": "1.8",
-        "phpoffice/phpword": "dev-master"
+        "phpoffice/phpword": "dev-master",
+        "spapad/yii2helpers": ">=1.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",

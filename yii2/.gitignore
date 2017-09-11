@@ -26,4 +26,6 @@ phpunit.phar
 # local phpunit config
 /phpunit.xml
 
+auth.json
+
 data/pde_employees.sql

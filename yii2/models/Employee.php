@@ -1,10 +1,11 @@
-<?php namespace app\models;
+<?php
+namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\ActiveRecord;
-use admapp\Validators\VatNumberValidator;
+use spapad\yii2helpers\validators\VatNumberValidator;
 use yii\data\SqlDataProvider;
 
 /**
@@ -57,7 +58,7 @@ use yii\data\SqlDataProvider;
  * @property Position $position0
  * @property Leave[] $leaves
  */
-class Employee extends \yii\db\ActiveRecord
+class Employee extends ActiveRecord
 {
 
     public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
@@ -200,8 +201,9 @@ class Employee extends \yii\db\ActiveRecord
 
     public function getRank0()
     {
-        if ($this->rank)
+        if ($this->rank) {
             return self::ranksList()[$this->rank];
+        }
     }
 
     /**
@@ -374,7 +376,8 @@ class Employee extends \yii\db\ActiveRecord
                 '	) AS PARTALL, admapp_leave_type ' .
                 '	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
                 ' ) AS FK ', [':id' => $this->id,
-                ':del' => $this->leaveSumDelFlag])->queryScalar();
+                ':del' => $this->leaveSumDelFlag]
+            )->queryScalar();
         return $total;
     }
     /* return DataProvider */
@@ -450,7 +453,7 @@ class Employee extends \yii\db\ActiveRecord
             '	) AS PARTALL, admapp_leave_type ' .
             '	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
             '	ORDER BY leaveYear DESC, leaveTypeName ASC ',
-            /* 		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
+            /* 		'sql' => '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' .
               '	from ' .
               '	 ( ' .
               '	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' .
@@ -503,8 +506,9 @@ class Employee extends \yii\db\ActiveRecord
             if ($dirty = $this->getDirtyAttributes()) {
                 $out = Yii::$app->user->identity->username . ' has modified ' . $this->surname . ' ' . $this->name . ' (id: ' . $this->id . '): ';
                 foreach ($dirty as $k => $v) {
-                    if ($k == 'update_ts')
+                    if ($k == 'update_ts') {
                         continue;
+                    }
                     $out .= $k . ' from ' . $this->getOldAttribute($k) . ' to ' . $v . ', ';
                 }
                 Yii::info($out, 'employee');
@@ -525,7 +529,8 @@ class Employee extends \yii\db\ActiveRecord
                 ' AND admapp_transport.deleted = :del  ' .
                 ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) as e  ' .
                 ' group by e.id ', [':id' => $this->id,
-                ':del' => $this->transportSumDelFlag])->queryScalar();
+                ':del' => $this->transportSumDelFlag]
+            )->queryScalar();
         return $total;
     }
     /* return DataProvider */
@@ -574,7 +579,8 @@ class Employee extends \yii\db\ActiveRecord
                 ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l', [':id' => $empid,
                 ':type' => $typeid,
                 ':year' => $year,
-                ':del' => 0])->queryScalar();
+                ':del' => 0]
+            )->queryScalar();
         return $total;
     }
 }
