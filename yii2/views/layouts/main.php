@@ -18,6 +18,8 @@ AppAsset::register($this);
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
+        <link rel="icon" href="favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" href="favicon-192x192.png" sizes="192x192" />
         <?php $this->head() ?>
     </head>
     <body>
