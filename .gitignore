@@ -16,17 +16,16 @@ composer.phar
 phpunit.phar
 # local phpunit config
 /phpunit.xml
+# Visual studio code files 
+.vscode
+
+/.php_cs.cache
 
 # vendor files on repos
 /yii2/vendor/*
 !/yii2/vendor/admapp/
 /yii2/vendor/admapp/exports/
 
+# installation specific files 
 /yii2/config/db.php
-
-/yii2/data/pde_employees.sql 
-
 /yii2/config/web.php
-
-.vscode
-
