@@ -1,8 +1,7 @@
 # Κατέβασμα κώδικα εφαρμογής 
 
-Το _προσωρινό_ αποθετήριο της εφαρμογής είναι στο bitbucket.
 Για κλωνοποίηση τοπικά εκτελέστε: 
-`git clone https://spapad@bitbucket.org/spapad/admapp.git`
+`git clone https://github.com/spapad/admapp.git`
 
 Έπειτα εκτελέστε τις παρακάτω εντολές μέσα στο φάκελο admapp 
 για να κατεβάσετε συνοδευτικά πακέτα:
