@@ -477,8 +477,16 @@ class TransportController extends Controller
 			$templateProcessor->setValue('RANK', $transportModel->employee0->rank);
 			$templateProcessor->setValue('SPEC', $transportModel->employee0->specialisation0->code); //. ' (' . $transportModel->employee0->specialisation0->name . ')');
 			$templateProcessor->setValue('BASE', $transportModel->base);
-			$templateProcessor->setValue('SERVICE_SERVE', $transportModel->employee0->serviceServe->name);
-			$templateProcessor->setValue('POSITION', $transportModel->employee0->position0->name);
+            if ($transportModel->employee0->serviceServe) {
+                $templateProcessor->setValue('SERVICE_SERVE', $transportModel->employee0->serviceServe->name);
+            } else {
+                $templateProcessor->setValue('SERVICE_SERVE', '');
+            }
+            if ($transportModel->employee0->position0) {
+                $templateProcessor->setValue('POSITION', $transportModel->employee0->position0->name);
+            } else {
+                $templateProcessor->setValue('POSITION', '');
+            }
 
 			$sameDecisionModels = $transportModel->allSameDecision();
 			$all_count = count($sameDecisionModels);
