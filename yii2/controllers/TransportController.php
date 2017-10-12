@@ -572,10 +572,10 @@ class TransportController extends Controller
 				for ($g = 0; $g < $num; $g++) {
 					$fmodel = \app\models\TransportFunds::findone($funds[$g]);
 					if ($fund_str == '') {
-						$fund_str = $fund . $fmodel->name . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
+						$fund_str = $fund . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
 						$kae_str = $fmodel->code . ' (KAE: ' . $fmodel->kae . ')';
 					} else {
-						$fund_str .= ', ' . $fmodel->name . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
+						$fund_str .= ', ' . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
 						$kae_str .= ', ' . $fmodel->code . ' (KAE: ' . $fmodel->kae . ')';
 					}
 				}	    
@@ -586,9 +586,11 @@ class TransportController extends Controller
 						$fund_str .= ' αποφάσεις ανάληψης υποχρέωσης.';
 					}
 				}
-				$templateProcessor->setValue('KAE', $kae_str);      
-				$templateProcessor->setValue('FUND1', $fund_str);      
-			}
+				$templateProcessor->setValue('KAE', $kae_str);
+				$templateProcessor->setValue('FUND1', $fund_str);
+			} else {
+				$templateProcessor->setValue('FUND1', '');
+            }
 			if (isset($transportModel->extra_reason))  {
 				if ($transportModel->extra_reason !== '') {
 					$k++;
