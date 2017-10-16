@@ -24,7 +24,7 @@
         "fxp/composer-asset-plugin": "1.1.*",
         "yiisoft/yii2": ">=2.0.12",
         "yiisoft/yii2-bootstrap": "*",
-        "yiisoft/yii2-swiftmailer": "*",
+        "yiisoft/yii2-swiftmailer": "2.0.7",
         "himiklab/yii2-recaptcha-widget": "*",
         "kartik-v/yii2-password": "@dev",
         "kartik-v/yii2-widget-select2": "@dev",
@@ -32,7 +32,7 @@
         "kartik-v/yii2-datecontrol": "@dev",
         "phpoffice/phpexcel": "1.8",
         "phpoffice/phpword": "dev-master",
-        "spapad/yii2helpers": ">=1.0.0"
+        "spapad/yii2helpers": ">=1.1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
