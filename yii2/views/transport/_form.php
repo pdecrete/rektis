@@ -36,9 +36,8 @@ use yii\helpers\Url;
 		<!-- Application Tab -->
 		<div role="tabpanel" class="tab-pane fade-in active" id="application">
 			<br>
-			<?=
-				$form->field($model, 'employee')->widget(Select2::classname(), [
-					'data' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column(),
+			<?= $form->field($model, 'employee')->widget(Select2::classname(), [
+					'data' => \app\models\Employee::find()->innerJoin('admapp_specialisation', 'admapp_specialisation.id=admapp_employee.specialisation')->select(["CONCAT(admapp_employee.surname, \" \", admapp_employee.name, \" του \", admapp_employee.fathersname,  \" (\", admapp_specialisation.code, \")\") as fname", "admapp_employee.id"])->orderBy("fname")->indexBy("id")->column(),
 					'options' => [
 						'placeholder' => Yii::t('app', 'Choose...'),
 						'onchange' => '					
