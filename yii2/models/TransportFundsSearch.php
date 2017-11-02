@@ -2,10 +2,8 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\TransportFunds;
 
 /**
  * TransportFundsSearch represents the model behind the search form about `app\models\TransportFunds`.
@@ -72,7 +70,7 @@ class TransportFundsSearch extends TransportFunds
             ->andFilterWhere(['like', 'ada', $this->ada])
             ->andFilterWhere(['like', 'code', $this->code])
             ->andFilterWhere(['like', 'kae', $this->kae])
-			->andFilterWhere(['like', 'year', $this->year]);
+            ->andFilterWhere(['like', 'year', $this->year]);
 
         return $dataProvider;
     }

@@ -13,7 +13,7 @@ use Yii;
  * @property string $create_ts
  * @property string $send_ts
  * @property string $to_emails
- * 
+ *
  * @property Leave $leave0
  */
 class LeavePrint extends \yii\db\ActiveRecord
@@ -65,9 +65,9 @@ class LeavePrint extends \yii\db\ActiveRecord
     }
 
     /**
-     * 
+     *
      * @see LeavePrint::path
-     * @return String 
+     * @return String
      */
     public function getPath()
     {
@@ -75,8 +75,8 @@ class LeavePrint extends \yii\db\ActiveRecord
     }
 
     /**
-     * 
-     * @param String $filename 
+     *
+     * @param String $filename
      * @return String The full path to the file with filename
      */
     public static function path($filename)
@@ -84,5 +84,4 @@ class LeavePrint extends \yii\db\ActiveRecord
         $fname = basename($filename);
         return Yii::getAlias("@vendor/admapp/exports/{$fname}");
     }
-
 }

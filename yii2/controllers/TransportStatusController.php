@@ -27,20 +27,20 @@ class TransportStatusController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'transport_user'],
-					],
-				],
-			],                                   
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin', 'user', 'transport_user'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -81,9 +81,9 @@ class TransportStatusController extends Controller
         $model = new TransportStatus();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' created transport status with id [' . $model->id . ']';
-			Yii::info($logStr,'transport');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' created transport status with id [' . $model->id . ']';
+            Yii::info($logStr, 'transport');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -103,9 +103,9 @@ class TransportStatusController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' updated transport status with id [' . $model->id . ']';
-			Yii::info($logStr,'transport');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' updated transport status with id [' . $model->id . ']';
+            Yii::info($logStr, 'transport');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -123,9 +123,9 @@ class TransportStatusController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-		$userName = Yii::$app->user->identity->username;
-		$logStr = 'User ' . $userName . ' deleted transport status with id [' . $id . ']';
-		Yii::info($logStr,'transport');
+        $userName = Yii::$app->user->identity->username;
+        $logStr = 'User ' . $userName . ' deleted transport status with id [' . $id . ']';
+        Yii::info($logStr, 'transport');
         return $this->redirect(['index']);
     }
 

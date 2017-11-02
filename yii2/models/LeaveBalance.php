@@ -69,7 +69,7 @@ class LeaveBalance extends \yii\db\ActiveRecord
     {
         return $this->hasOne(LeaveType::className(), ['id' => 'leave_type']);
     }
-    
+
     /**
      * @return String Leave info str
      */
@@ -79,5 +79,4 @@ class LeaveBalance extends \yii\db\ActiveRecord
                 . ' (' . ($this->leaveType ? $this->leaveType->name : Yii::t('app', 'UNKNOWN'))
                 . ' )';
     }
-    
 }

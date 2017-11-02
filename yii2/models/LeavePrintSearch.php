@@ -2,10 +2,8 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\LeavePrint;
 
 /**
  * LeavePrintSearch represents the model behind the search form about `app\models\LeavePrint`.
@@ -69,5 +67,4 @@ class LeavePrintSearch extends LeavePrint
 
         return $dataProvider;
     }
-
 }

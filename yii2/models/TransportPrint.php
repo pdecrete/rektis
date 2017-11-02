@@ -3,7 +3,6 @@
 namespace app\models;
 
 use Yii;
-use app\models\Transport;
 
 /**
  * This is the model class for table "admapp_transport_print".
@@ -18,7 +17,7 @@ use app\models\Transport;
  */
 class TransportPrint extends \yii\db\ActiveRecord
 {
-	
+
     /**
      * @inheritdoc
      */
@@ -66,14 +65,14 @@ class TransportPrint extends \yii\db\ActiveRecord
             'asum_mtpy' => Yii::t('app', 'Approved Sum MTPY'),
             'atotal' => Yii::t('app', 'Approved Total'),
             'aclean' => Yii::t('app', 'Approved Clean Amount'),
-            'paid' => Yii::t('app', 'Paid')          
+            'paid' => Yii::t('app', 'Paid')
         ];
     }
 
     /**
-     * 
+     *
      * @see TransportPrint::path
-     * @return String 
+     * @return String
      */
     public function getPath()
     {
@@ -81,8 +80,8 @@ class TransportPrint extends \yii\db\ActiveRecord
     }
 
     /**
-     * 
-     * @param String $filename 
+     *
+     * @param String $filename
      * @return String The full path to the file with filename
      */
     public static function path($filename)
@@ -90,8 +89,8 @@ class TransportPrint extends \yii\db\ActiveRecord
         $fname = basename($filename);
         return Yii::getAlias("@vendor/admapp/exports/transports/{$fname}");
     }
-       
-     /**
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getTransportPrintConnections()
@@ -104,7 +103,7 @@ class TransportPrint extends \yii\db\ActiveRecord
         return TransportPrint::find()
                         ->where(['filename' => $filename])
                         ->one();
-    } 
+    }
 
     public function transportNum($year)
     {
@@ -113,68 +112,67 @@ class TransportPrint extends \yii\db\ActiveRecord
                         ->andWhere(['doctype' => Transport::fdocument])
                         ->orderBy('report_num DESC')
                         ->one();
-    } 
-    
+    }
+
     /**
      * @return String TransportPrint info str
      */
     public function getInformation()
-    {    	
-		$transportsconnections = $this->transportPrintConnections;
-		if (count($transportsconnections) > 0 ) {
-			$transconn = $transportsconnections[0];
-			$trans = Transport::findOne($transconn->transport);
-			if (($this->doctype == Transport::fapproval) || ($this->doctype == Transport::fjournal)) {
-				return ( $trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
-						. ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
-			} else {
-				return ( ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ' (' . $this->report_num . ' - ' . $this->report_year . ')');
-			}
-		} else {
-			return Yii::t('app', 'UNKNOWN');	
-		}
-    } 
-    
+    {
+        $transportsconnections = $this->transportPrintConnections;
+        if (count($transportsconnections) > 0) {
+            $transconn = $transportsconnections[0];
+            $trans = Transport::findOne($transconn->transport);
+            if (($this->doctype == Transport::fapproval) || ($this->doctype == Transport::fjournal)) {
+                return ($trans->employee0 ? $trans->employee0->fullname : Yii::t('app', 'UNKNOWN'))
+                        . ' (' . ($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ') ';
+            } else {
+                return (($trans->type0 ? $trans->type0->name : Yii::t('app', 'UNKNOWN')) . ' (' . $this->report_num . ' - ' . $this->report_year . ')');
+            }
+        } else {
+            return Yii::t('app', 'UNKNOWN');
+        }
+    }
+
     /**
-    * @return String TransportPrint info str
-    */
+     * @return String TransportPrint info str
+     */
     public function getDocname()
-    {    	
-	//	$name = 'doctype = ' . $this->doctype;
-		switch ($this->doctype) {
-			case Transport::fapproval:
-				$name = Yii::t('app', 'Approval');
-				break;
-			case Transport::fjournal:
-				$name = Yii::t('app', 'Journal');
-				break;
-			case Transport::fdocument:
-				$name = Yii::t('app', 'Cover');
-				break;
-			case Transport::freport:
-				$name = Yii::t('app', 'Report');
-				break;
-			default:
-				$name = Yii::t('app', '	UNKNOWN');
-				break;
-		} 
-		return $name;
-    } 
+    {
+        //	$name = 'doctype = ' . $this->doctype;
+        switch ($this->doctype) {
+            case Transport::fapproval:
+                $name = Yii::t('app', 'Approval');
+                break;
+            case Transport::fjournal:
+                $name = Yii::t('app', 'Journal');
+                break;
+            case Transport::fdocument:
+                $name = Yii::t('app', 'Cover');
+                break;
+            case Transport::freport:
+                $name = Yii::t('app', 'Report');
+                break;
+            default:
+                $name = Yii::t('app', '	UNKNOWN');
+                break;
+        }
+        return $name;
+    }
 
     public function getpaidname()
-    {    	
-		switch ($this->paid) {
-			case False:
-				$name = Yii::t('app', 'No');
-				break;
-			case True:
-				$name = Yii::t('app', 'Yes');
-				break;
-			default:
-				$name = Yii::t('app', '	UNKNOWN');
-				break;
-		} 
-		return $name;
-    } 
-
+    {
+        switch ($this->paid) {
+            case false:
+                $name = Yii::t('app', 'No');
+                break;
+            case true:
+                $name = Yii::t('app', 'Yes');
+                break;
+            default:
+                $name = Yii::t('app', '	UNKNOWN');
+                break;
+        }
+        return $name;
+    }
 }

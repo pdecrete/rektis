@@ -65,5 +65,4 @@ class Specialisation extends \yii\db\ActiveRecord
     {
         return new SpecialisationQuery(get_called_class());
     }
-
 }

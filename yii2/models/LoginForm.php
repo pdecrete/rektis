@@ -11,7 +11,6 @@ use yii\db\Expression;
  */
 class LoginForm extends Model
 {
-
     public $username;
     public $password;
     public $rememberMe = true;
@@ -91,23 +90,21 @@ class LoginForm extends Model
 
         return $this->_user;
     }
-    
+
     /**
      * Log logins and logouts to log file
      * (configured @ web.php file->components->log)
      *
      */
-     public static function loginLog($event)
-     {
+    public static function loginLog($event)
+    {
         $userName = Yii::$app->user->identity->username;
-        if ($event->name == 'afterLogin'){
-           $logStr = $userName . ' has logged in.';
-           Yii::info($logStr,'login');
+        if ($event->name == 'afterLogin') {
+            $logStr = $userName . ' has logged in.';
+            Yii::info($logStr, 'login');
+        } else {
+            $logStr = $userName . ' has logged out.';
+            Yii::info($logStr, 'login');
         }
-        else {
-           $logStr = $userName . ' has logged out.';
-           Yii::info($logStr,'login');
-        }
-     }
-
+    }
 }

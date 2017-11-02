@@ -5,7 +5,6 @@ namespace app\models;
 use Yii;
 use \yii\helpers\FileHelper;
 
-
 /**
  * This is the model class for table "{{%transport_type}}".
  *
@@ -67,7 +66,7 @@ class TransportType extends \yii\db\ActiveRecord
         ];
     }
 
-	public function getAvailabletemplatefilenames()
+    public function getAvailabletemplatefilenames()
     {
         $base_template_dir = Yii::getAlias("@vendor/admapp/resources/transports/");
 

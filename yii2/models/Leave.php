@@ -32,8 +32,8 @@ use yii\db\Expression;
  *
  * @property Employee $employeeObj
  * @property LeaveType $typeObj
- * @property LeavePrint[] $leavePrints 
- * @property Leave[] $leavesSameDecision 
+ * @property LeavePrint[] $leavePrints
+ * @property Leave[] $leavesSameDecision
  */
 class Leave extends \yii\db\ActiveRecord
 {
@@ -138,7 +138,7 @@ class Leave extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery 
+     * @return \yii\db\ActiveQuery
      */
     public function getLeavePrints()
     {
@@ -158,110 +158,114 @@ class Leave extends \yii\db\ActiveRecord
                         ->all();
     }
 
-	/**
-	 * @return distinct all emails (employee, service_organic) for all employees of decision-date
-	 * deletes duplicate values
-	 * deletes empty strings
-	 **/
-	public function getDecisionEmails()
-	{	
-		$emails = [];
-		$sameDecisionModels = $this->allSameDecision();
+    /**
+     * @return distinct all emails (employee, service_organic) for all employees of decision-date
+     * deletes duplicate values
+     * deletes empty strings
+     **/
+    public function getDecisionEmails()
+    {
+        $emails = [];
+        $sameDecisionModels = $this->allSameDecision();
         $all_count = count($sameDecisionModels);
         for ($c = 0; $c < $all_count; $c++) {
-            $currentModel = $sameDecisionModels[$c];	
+            $currentModel = $sameDecisionModels[$c];
             $emails[$c*3] = $currentModel->employeeObj->email;
-			$emails[$c*3+1] = $currentModel->employeeObj->serviceOrganic->email;
-			$emails[$c*3+2] = $currentModel->employeeObj->serviceServe->email;
+            $emails[$c*3+1] = $currentModel->employeeObj->serviceOrganic->email;
+            $emails[$c*3+2] = $currentModel->employeeObj->serviceServe->email;
         }
         $num = count($emails);
         $k = 0;
         $final_emails = [];
         for ($i = 0; $i < $num; $i++) {
-			if (($emails[$i] !== '') && ($emails[$i] !== ' ')) {
-				$final_emails[$k] = $emails[$i];
-				$k++;
-			}
-		}	    
-        $dist_emails = array_unique($final_emails);      
-        $dist_emails = array_diff($dist_emails, ['']);      
+            if (($emails[$i] !== '') && ($emails[$i] !== ' ')) {
+                $final_emails[$k] = $emails[$i];
+                $k++;
+            }
+        }
+        $dist_emails = array_unique($final_emails);
+        $dist_emails = array_diff($dist_emails, ['']);
         return $dist_emails;
-	}
+    }
 
-	/**
-	 * @return connected Leave IDs for all employees of decision-date
-	 **/
-	public function getconnectedLeaveIDs()
-	{	
-		$IDs = [];
-		$k = 0; 
-		$sameDecisionModels = $this->allSameDecision();
+    /**
+     * @return connected Leave IDs for all employees of decision-date
+     **/
+    public function getconnectedLeaveIDs()
+    {
+        $IDs = [];
+        $k = 0;
+        $sameDecisionModels = $this->allSameDecision();
         $all_count = count($sameDecisionModels);
         for ($c = 0; $c < $all_count; $c++) {
-            $currentModel = $sameDecisionModels[$c];	
-			$IDs[$k] = $currentModel->id;
-			$k++;
+            $currentModel = $sameDecisionModels[$c];
+            $IDs[$k] = $currentModel->id;
+            $k++;
         }
         return $IDs;
-	}
-	
-	public function getdaysLeft()
-	{	
-		$total = Yii::$app->db->createCommand(
-			' select CASE WHEN daysleft IS NULL THEN 0 ELSE daysleft END AS daysleft from ( ' . 
-			'	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
-			'	from ' . 
-			'	 ( ' . 
-			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
-			'	FROM admapp_leave ' . 
-			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
-			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
-			'	AND admapp_employee.id = :id   ' . 
-			'	AND admapp_leave.deleted = :del ' . 
-			'	AND admapp_leave_type.id = :type ' .		
-			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
-			'	 ) AS A  ' . 
-			'	LEFT OUTER JOIN  ' . 
-			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
-			' 	WHERE leaveYear = :year ' .
-			'	) AS C ', 			
-			[
-				':id' => $this->employee, 
-				':del' => 0,	
-				':type' => $this->type, 
-				':year' => date("Y", strtotime($this->start_date)), 
-			])->queryScalar();
-		return $total;
-	}
+    }
 
-	public function getmydaysLeft($empid, $leavetype, $year)
-	{	
-		$total = Yii::$app->db->createCommand(
-			' select CASE WHEN daysleft IS NULL THEN leaveLimit ELSE daysleft END AS daysleft from ( ' . 
-			'	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' . 
-			'	from ' . 
-			'	 ( ' . 
-			'	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' . 
-			'	FROM admapp_leave ' . 
-			'	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' . 
-			'	WHERE admapp_leave.type = admapp_leave_type.id ' . 
-			'	AND admapp_employee.id = :id   ' . 
-			'	AND admapp_leave.deleted = :del ' . 
-			'	AND admapp_leave_type.id = :type ' .		
-			'	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' . 
-			'	 ) AS A  ' . 
-			'	LEFT OUTER JOIN  ' . 
-			'	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' . 
-			' 	WHERE leaveYear = :year ' .
-			'	) AS C ', 			
-			[
-				':id' => $empid, 
-				':del' => 0,	
-				':type' => $leavetype, 
-				':year' => $year, 
-			])->queryScalar();
-		return $total;
-	}
+    public function getdaysLeft()
+    {
+        $total = Yii::$app->db->createCommand(
+            ' select CASE WHEN daysleft IS NULL THEN 0 ELSE daysleft END AS daysleft from ( ' .
+            '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' .
+            '	from ' .
+            '	 ( ' .
+            '	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' .
+            '	FROM admapp_leave ' .
+            '	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' .
+            '	WHERE admapp_leave.type = admapp_leave_type.id ' .
+            '	AND admapp_employee.id = :id   ' .
+            '	AND admapp_leave.deleted = :del ' .
+            '	AND admapp_leave_type.id = :type ' .
+            '	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' .
+            '	 ) AS A  ' .
+            '	LEFT OUTER JOIN  ' .
+            '	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' .
+            ' 	WHERE leaveYear = :year ' .
+            '	) AS C ',
+            [
+                ':id' => $this->employee,
+                ':del' => 0,
+                ':type' => $this->type,
+                ':year' => date("Y", strtotime($this->start_date)),
+            ]
+
+        )->queryScalar();
+        return $total;
+    }
+
+    public function getmydaysLeft($empid, $leavetype, $year)
+    {
+        $total = Yii::$app->db->createCommand(
+            ' select CASE WHEN daysleft IS NULL THEN leaveLimit ELSE daysleft END AS daysleft from ( ' .
+            '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' .
+            '	from ' .
+            '	 ( ' .
+            '	SELECT admapp_employee.id AS employeeID, admapp_leave_type.id AS leaveID, admapp_leave_type.name AS leaveTypeName, admapp_leave_type.limit AS leaveLimit, admapp_leave_type.check AS leaveCheck, Year( admapp_leave.start_date ) AS leaveYear, admapp_leave.deleted AS deleted, sum( admapp_leave.duration ) AS duration ' .
+            '	FROM admapp_leave ' .
+            '	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' .
+            '	WHERE admapp_leave.type = admapp_leave_type.id ' .
+            '	AND admapp_employee.id = :id   ' .
+            '	AND admapp_leave.deleted = :del ' .
+            '	AND admapp_leave_type.id = :type ' .
+            '	GROUP BY admapp_employee.id, admapp_leave_type.id, admapp_leave_type.name, admapp_leave_type.limit, admapp_leave_type.check, Year( admapp_leave.start_date ), admapp_leave.deleted  ' .
+            '	 ) AS A  ' .
+            '	LEFT OUTER JOIN  ' .
+            '	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' .
+            ' 	WHERE leaveYear = :year ' .
+            '	) AS C ',
+            [
+                ':id' => $empid,
+                ':del' => 0,
+                ':type' => $leavetype,
+                ':year' => $year,
+            ]
+
+        )->queryScalar();
+        return $total;
+    }
 
     /**
      * @inheritdoc
@@ -271,5 +275,4 @@ class Leave extends \yii\db\ActiveRecord
     {
         return new LeaveQuery(get_called_class());
     }
-
 }

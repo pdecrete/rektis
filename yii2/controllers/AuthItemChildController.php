@@ -15,7 +15,6 @@ use yii\filters\AccessControl;
  */
 class AuthItemChildController extends Controller
 {
-
     public function behaviors()
     {
         return [
@@ -25,29 +24,20 @@ class AuthItemChildController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-/*            'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
                         'allow' => true,
                         'roles' => ['superadmin'],
                     ],
+                    [
+                        'actions' => ['index','view'],
+                        'allow' => true,
+                        'roles' => ['admin'],
+                    ],
                 ],
-            ],*/
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'allow' => true,
-						'roles' => ['superadmin'],
-					],
-					[
-						'actions' => ['index','view'],
-						'allow' => true,
-						'roles' => ['admin'],
-					],
-				],
-			],            
+            ],
         ];
     }
 
@@ -147,5 +137,4 @@ class AuthItemChildController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

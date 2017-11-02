@@ -111,5 +111,4 @@ class LeaveType extends \yii\db\ActiveRecord
     {
         return new LeaveTypeQuery(get_called_class());
     }
-
 }

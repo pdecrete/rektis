@@ -35,13 +35,13 @@ $config = [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,
             'transport' => [
-				'class' => 'Swift_SmtpTransport',
-				'host' => 'SMTP_HOST',  
-				'username' => 'USER',
-				'password' => 'PASSWORD',
-				'port' => '587', 
-				'encryption' => 'tls',
-			],
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'SMTP_HOST',
+                'username' => 'USER',
+                'password' => 'PASSWORD',
+                'port' => '587',
+                'encryption' => 'tls',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -64,7 +64,7 @@ $config = [
                     'categories' => ['leave', 'leave-email', 'contact-email', 'transport-journal-email', 'transport'],
                     'logFile' => '@runtime/logs/email.log',
                     'logVars' => [],
-                ],                
+                ],
                 // for now, log employee changes to employee.log file
                 [
                     'class' => 'yii\log\FileTarget',
@@ -84,7 +84,7 @@ $config = [
                     'db' => $db
                 ]
                 */
-				
+
             ],
         ],
         'db' => $db,

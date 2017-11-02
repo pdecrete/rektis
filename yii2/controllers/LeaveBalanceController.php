@@ -30,20 +30,20 @@ class LeaveBalanceController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'leave_user'],
-					],
-				],
-			],                                    
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin', 'user', 'leave_user'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -84,12 +84,12 @@ class LeaveBalanceController extends Controller
         $model = new LeaveBalance();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' created leave_balance with id [' . $model->id . ']';
-			Yii::info($logStr,'leave');
-			return $this->redirect(['view', 'id' => $model->id]);
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' created leave_balance with id [' . $model->id . ']';
+            Yii::info($logStr, 'leave');
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-			$model->year = date("Y") - 1; //last year
+            $model->year = date("Y") - 1; //last year
             return $this->render('create', [
                 'model' => $model,
             ]);
@@ -107,9 +107,9 @@ class LeaveBalanceController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' updated leave_balance with id [' . $model->id . ']';
-			Yii::info($logStr,'leave');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' updated leave_balance with id [' . $model->id . ']';
+            Yii::info($logStr, 'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -127,9 +127,9 @@ class LeaveBalanceController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-		$userName = Yii::$app->user->identity->username;
-		$logStr = 'User ' . $userName . ' deleted leave_balance with id [' . $id . ']';
-		Yii::info($logStr,'leave');
+        $userName = Yii::$app->user->identity->username;
+        $logStr = 'User ' . $userName . ' deleted leave_balance with id [' . $id . ']';
+        Yii::info($logStr, 'leave');
 
         return $this->redirect(['index']);
     }
@@ -149,28 +149,26 @@ class LeaveBalanceController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
-	public function actionLeaveleft($empid, $leavetype, $year, $days) 
-	{	
-		$days = Leave::getmydaysLeft($empid, $leavetype, $year); 
-		
-		if ($days == false) {
-			$leave = LeaveType::find()
+
+    public function actionLeaveleft($empid, $leavetype, $year, $days)
+    {
+        $days = Leave::getmydaysLeft($empid, $leavetype, $year);
+
+        if ($days == false) {
+            $leave = LeaveType::find()
                         ->where(['id' => $leavetype])
                         ->one();
-			$limit = $leave ? $leave->limit : null;	
-			if ($limit !== null) {
-				$days = $limit;
-			} else {
-				$days = 0;
-			} 
-			//$days = 0;
-		}
-		$results = [
-			'days' => $days
-		];
-		return Json::encode($results);
-	}
-    
-    
+            $limit = $leave ? $leave->limit : null;
+            if ($limit !== null) {
+                $days = $limit;
+            } else {
+                $days = 0;
+            }
+            //$days = 0;
+        }
+        $results = [
+            'days' => $days
+        ];
+        return Json::encode($results);
+    }
 }

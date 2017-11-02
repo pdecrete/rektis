@@ -36,5 +36,4 @@ class LeaveQuery extends \yii\db\ActiveQuery
     {
         return $this->andWhere(['deleted' => $deleted]);
     }
-
 }

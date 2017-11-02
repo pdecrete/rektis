@@ -27,20 +27,20 @@ class TransportPrintConnectionController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'transport_user'],
-					],
-				],
-			],                                   
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin', 'user', 'transport_user'],
+                    ],
+                ],
+            ],
         ];
     }
 

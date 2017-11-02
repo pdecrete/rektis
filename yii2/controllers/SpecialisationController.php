@@ -15,7 +15,6 @@ use yii\filters\AccessControl;
  */
 class SpecialisationController extends Controller
 {
-
     public function behaviors()
     {
         return [
@@ -25,30 +24,21 @@ class SpecialisationController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-/*            'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
+                        'actions' => ['index','view'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        // Allow all registered users to index, view
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin', 'user'],
                     ],
                 ],
-            ],*/
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index','view'],
-						'allow' => true,
-						// Allow all registered users to index, view
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user'],
-					],
-				],
-			],            
+            ],
         ];
     }
 
@@ -144,5 +134,4 @@ class SpecialisationController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }
