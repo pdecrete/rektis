@@ -16,7 +16,6 @@ use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use \PhpOffice\PhpWord\TemplateProcessor;
 use yii\filters\AccessControl;
-use yii\helpers\Html;
 use yii\data\SqlDataProvider;
 
 /**
@@ -26,7 +25,7 @@ class TransportController extends Controller
 {
     public $from;
     public $to;
-    
+
     /**
      * @inheritdoc
      */
@@ -75,7 +74,7 @@ class TransportController extends Controller
     /**
      * Lists Transport KAE sums.
      * @return
-    */
+     */
     public function actionKae()
     {
         return $this->render('kae');
@@ -92,15 +91,12 @@ class TransportController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-    
+
     public function actionCopy($id)
     {
         $oldTransport = $this->findModel($id);
         $copy = new Transport();
         $copy->attributes = $oldTransport->attributes;
-        //$copy->save();
-        //$copy = $this->findModel($id);
-        //echo $oldTransport->id; die();
         return $this->actionUpdate(null, $copy);
     }
 
@@ -242,11 +238,11 @@ class TransportController extends Controller
         if ($nights_out > $proper_nights_out) { // διόρθωση χρήστη, αλλιώς κρατώ αυτό που δίνει (μπορεί να πηγαινοέρχεται αυθημερόν;)
             $nights_out = $proper_nights_out;
         }
-        
+
         $code719 = $klm_reimb + $ticket;
         $code721 = $day_reimb;
         $code722 = $night_reimb;
-        
+
         $reimbursement = $code719 + $code721 + $code722;
         $mtpy = round(Yii::$app->params['trans_mtpy'] * $code721, 2);
         $pay_amount = round($reimbursement - $mtpy, 2);
@@ -291,8 +287,8 @@ class TransportController extends Controller
                 Yii::info($logStr, 'transport');
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
-                return (!$isCopy) ? $this->render('update', ['model' => $model,])
-                                  : $this->render('copy', ['model' => $model,]);
+                return (!$isCopy) ? $this->render('update', ['model' => $model])
+                                  : $this->render('copy', ['model' => $model]);
             }
         } else {
             Yii::$app->session->setFlash('danger', Yii::t('app', 'You can not edit this transport (locked). It is used in a transport costs post.'));
@@ -341,7 +337,7 @@ class TransportController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-    
+
     /**
      * Locate a Transport and generate / download a document for it.
      * If a document is not already generated, it is generated.
@@ -377,7 +373,7 @@ class TransportController extends Controller
             return $this->redirect(['print', 'id' => $id, 'ftype' => $ftype]);
         }
     }
-    
+
     /* Generate file
      * @return Filename
      */
@@ -418,13 +414,13 @@ class TransportController extends Controller
     }
 
     /**
-    * Creates an exported print for the provided model.
-    *
-    * @param Transport $transportModel
-    * @param smallint $which selector of file type
-    * @return String the generated file filename
-    * @throws NotFoundHttpException
-    */
+     * Creates an exported print for the provided model.
+     *
+     * @param Transport $transportModel
+     * @param smallint $which selector of file type
+     * @return String the generated file filename
+     * @throws NotFoundHttpException
+     */
     protected function generatePrintDocument($transportModel, $which)
     {
         $dts = date('YmdHis');
@@ -446,28 +442,28 @@ class TransportController extends Controller
         // ------------------------  ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
         if ($which == Transport::fapproval) {
             $templateProcessor->setValue('YEAR_LIMIT', Yii::$app->params['trans_year_limit']);
-            
+
             $empid = $transportModel->employee;
             $typeid = $transportModel->type;
             $year = date("Y", strtotime($transportModel->start_date));
             $trans_days = Employee::getTransportTypeTotal($empid, $typeid, $year);
-            
+
             $templateProcessor->setValue('TRANS_DAYS', $trans_days);
             $remaining = Yii::$app->params['trans_year_limit'] - $trans_days;
             $templateProcessor->setValue('REMAINING', $remaining);
-        
+
             $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($transportModel->decision_protocol_date));
             $templateProcessor->setValue('DEC_PROT', $transportModel->decision_protocol);
             $templateProcessor->setValue('TRANS_PERSON', Yii::$app->params['transportPerson']);
             $templateProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
             $templateProcessor->setValue('TRANS_FAX', Yii::$app->params['transportFax']);
-                    
+
             $templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
             $templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);
             //Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
             //$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
             //$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);
-            
+
             if ($transportModel->application_protocol !== null) {
                 if ($transportModel->application_date !== null) {
                     $prot = $transportModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($transportModel->application_date);
@@ -519,13 +515,13 @@ class TransportController extends Controller
                 $templateProcessor->setValue('TRANS_APP', 'τη μετακίνηση');
                 $templateProcessor->setValue('TRANS_NUM', 'Η παραπάνω μετακίνηση');
             }
-            
+
             // Fund ids της απόφασης ώστε να τα εμφανίσω μόνο μία φορά...
             $funds = [];
             $fnum = 0;
-            
+
             $S8 = $S9 = $S10 = $S719 = $S721 = $S722 = 0.00;
-            
+
             $templateProcessor->cloneRow('DATES', $all_count);
             for ($c = 0; $c < $all_count; $c++) {
                 $i = $c + 1;
@@ -546,12 +542,12 @@ class TransportController extends Controller
                 if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
                     $maxTo = $currentModel->end_date;
                 }
-                
+
                 $templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);
                 $templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
                 $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
                 $templateProcessor->setValue('CAUSE' . "#{$i}", $currentModel->reason);
-                
+
                 $S719 += $currentModel->code719;
                 $S721 += $currentModel->code721;
                 $S722 += $currentModel->code722;
@@ -622,7 +618,7 @@ class TransportController extends Controller
         }
         // ------------------------ end ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
 
-        
+
         // ------------------------  ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
         if ($which == Transport::fjournal) {
             $templateProcessor->setValue('EMP_NAME', $transportModel->employee0->name . ' ' . $transportModel->employee0->surname);
@@ -640,20 +636,20 @@ class TransportController extends Controller
             // ΔΙΑΣΤΗΜΑΤΑ ΑΠΟ ΜΕΧΡΙ
             $templateProcessor->setValue('D_STA', Yii::$app->formatter->asDate($this->from));
             $templateProcessor->setValue('D_END', Yii::$app->formatter->asDate($this->to));
-                    
+
             $sameDecisionModels = $transportModel->selectForPayment($this->from, $this->to);
             $all_count = count($sameDecisionModels);
-            
+
             //			echo 'ALL_COUNT: ' . $all_count . ' <br>';
             //			echo 'FROM: ' . $this->from . ' <br>';
             //			echo 'TO: ' . $this->to . ' <br>';
-            
+
             $S1 = $S2 = $S3 = $S4 = $S5 = $S6 = $S7 = $S8 = $S9 = $S10 = $SDA = $S719 = $S721 = $S722 = 0.00;
             $templateProcessor->cloneRow('DATES', $all_count);
             for ($c = 0; $c < $all_count; $c++) {
                 $i = $c + 1;
                 $currentModel = $sameDecisionModels[$c];
-                
+
                 if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
                     $minFrom = $currentModel->start_date;
                     $maxTo = $currentModel->end_date;
@@ -664,7 +660,7 @@ class TransportController extends Controller
                 if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
                     $maxTo = $currentModel->end_date;
                 }
-                
+
                 //				$templateProcessor->setValue('START' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
                 //				$templateProcessor->setValue('END' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
                 if ($currentModel->start_date == $currentModel->end_date) {
@@ -721,7 +717,7 @@ class TransportController extends Controller
             $templateProcessor->setValue('S10', number_format($S10, 2, ',', ''));
         }
         // ------------------------ end ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
-        
+
         $templateProcessor->saveAs($exportfilename);
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested transport was not generated.'));
@@ -741,10 +737,10 @@ class TransportController extends Controller
         $results[6] = $S10; // clean amount
         $results[7] = $minFrom; // minDate
         $results[8] = $maxTo; // maxDate
-        
+
         return $results;
     }
-    
+
     protected function setPrintDocument($transportModel, $results, $which)
     {
         $filename = $results[0];
@@ -826,7 +822,7 @@ class TransportController extends Controller
             return $this->actionReprint($id, $ftype);
         }
     }
-    
+
 
     public function actionDownload($id, $printid)
     {
@@ -835,7 +831,7 @@ class TransportController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
         if (($prints = $model->transportPrints) != null) {
-//            $filename = $prints[0]->filename;
+            //            $filename = $prints[0]->filename;
             $printmodel = TransportPrint::findOne($printid);
             $filename = $printmodel->filename;
         } else { // generate - set document if it does not exist
@@ -890,7 +886,7 @@ class TransportController extends Controller
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
-        
+
         if ($ftype == Transport::fdocument) {
             $deltype = 'fdocument & freport';
             $delsuccess1 = $this->deleteAllPrints($model, Transport::freport);
@@ -907,7 +903,7 @@ class TransportController extends Controller
             $deltype = $ftype;
             $delsuccess = $this->deleteAllPrints($model, $ftype);
         }
-        
+
         if ($delsuccess == true) {
             $userName = Yii::$app->user->identity->username;
             $logStr = 'User ' . $userName . ' deleted transport files for transport id [' . $model->id . '] and filetype = [' . $deltype .']';
@@ -933,7 +929,7 @@ class TransportController extends Controller
                     unlink($unlink_filename);
                 }
                 $printid = $printConnection->transportPrint0->id;
-                
+
                 //σβήνω κι όλα τα φιλαράκια...
                 $samePrintIdConnections = TransportPrintConnection::samePrintId($printid);
                 $all_count = count($samePrintIdConnections);
@@ -959,7 +955,7 @@ class TransportController extends Controller
                             unlink($unlink_filename);
                         }
                         $printid = $printConnection->transportPrint0->id;
-                                
+
                         //σβήνω κι όλα τα φιλαράκια...
                         $samePrintIdConnections = TransportPrintConnection::samePrintId($printid);
                         $all_count = count($samePrintIdConnections);
@@ -976,7 +972,7 @@ class TransportController extends Controller
                                 $success = false;
                             }
                         }
-                        
+
                         $printConnection->transportPrint0->delete();
                     } else {
                         $success = false;
@@ -985,7 +981,7 @@ class TransportController extends Controller
                 }
             }
         }
-        
+
         return $success;
     }
 
@@ -1018,7 +1014,7 @@ class TransportController extends Controller
             }
             Yii::info($logStr, 'transport-journal-email');
         }
-        
+
         return  $num;//num of messages successfully sent
     }
 
@@ -1063,7 +1059,7 @@ class TransportController extends Controller
         $simple_emails = implode(',', array_filter($emails, function ($v) {
             return $v !== null;
         }));
-        
+
         if (isset($sendNum) && ($sendNum > 0)) {
             $numUpd = $this->updateEmailSent($emails, $printid);
             $logStr = 'User ' . $userName . ' sent [transport_print_id = ' . $printid . ' ] of transport_id [' . $model->id . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Transport_prints updated: [' . $numUpd . ']. Filename: [' . $filename . '].';
@@ -1092,7 +1088,7 @@ class TransportController extends Controller
         }
         return $upd;
     }
- 
+
     /*return countTotal*/
     public function getCountFundsTotals()
     {
