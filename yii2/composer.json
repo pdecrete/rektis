@@ -32,7 +32,8 @@
         "kartik-v/yii2-datecontrol": "@dev",
         "phpoffice/phpexcel": "1.8",
         "phpoffice/phpword": "dev-master",
-        "spapad/yii2helpers": ">=1.1.1"
+        "spapad/yii2helpers": ">=1.1.1",
+        "2amigos/yii2-file-upload-widget": "~1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
