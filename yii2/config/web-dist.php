@@ -12,6 +12,7 @@ $config = [
     'id' => 'adm',
     'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
     'language' => 'el-GR',
+    'timeZone' => 'Europe/Athens',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
@@ -25,8 +26,8 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
-            'on '.\yii\web\User::EVENT_AFTER_LOGIN => ['app\models\LoginForm', 'loginLog'],
-            'on '.\yii\web\User::EVENT_BEFORE_LOGOUT => ['app\models\LoginForm', 'loginLog']
+            'on ' . \yii\web\User::EVENT_AFTER_LOGIN => ['app\models\LoginForm', 'loginLog'],
+            'on ' . \yii\web\User::EVENT_BEFORE_LOGOUT => ['app\models\LoginForm', 'loginLog']
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -58,7 +59,7 @@ $config = [
                     'logFile' => '@runtime/logs/login.log',
                     'logVars' => [],
                 ],
-                [ // for now, all leave and transport actions are added to email.log
+                [// for now, all leave and transport actions are added to email.log
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
                     'categories' => ['leave', 'leave-email', 'contact-email', 'transport-journal-email', 'transport'],
@@ -73,24 +74,24 @@ $config = [
                     'logFile' => '@runtime/logs/employee.log',
                     'logVars' => []
                 ],
-                // future use (or not?): log to db
-                /*
-                [
-                    'class' => 'yii\log\DbTarget',
-                    'levels' => ['info'],
-                    'categories' => ['employee'],
-                    'logTable' => 'employee_log',
-                    'logVars' => [],
-                    'db' => $db
-                ]
-                */
-
+            // future use (or not?): log to db
+            /*
+              [
+              'class' => 'yii\log\DbTarget',
+              'levels' => ['info'],
+              'categories' => ['employee'],
+              'logTable' => 'employee_log',
+              'logVars' => [],
+              'db' => $db
+              ]
+             */
             ],
         ],
         'db' => $db,
         'authManager' => $authmanager,
         'formatter' => [
             'class' => 'yii\i18n\Formatter',
+            'timeZone' => 'Europe/Athens',
             'dateFormat' => 'dd/MM/yyyy',
             'datetimeFormat' => 'dd/MM/yyyy, hh:mm',
             'decimalSeparator' => ',',

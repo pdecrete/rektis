@@ -10,6 +10,7 @@ use yii\grid\GridView;
 $this->title = Yii::t('app', 'Transports');
 $subtitle = Yii::t('app', 'Not deleted transports');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="transport-index">
 
@@ -19,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('app', 'Create Transport'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-	<?=
+    <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -73,22 +74,23 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'deleted',
             [
                 'class' => 'yii\grid\ActionColumn',
-                
                 'template' => '{view}{update}{printButton}{delete}',
-                'buttons' => ['printButton' => function ($url, $model, $key) {
-                    return Html::a(yii\bootstrap\Html::icon('copy'), ['copy', 'id' => $model->id]);
-                }
-                    ],
-                'visibleButtons' => [
-                     'update' => function ($model, $key, $index) {
-                         return $model->locked === 1 ? false : true;
-                     },
-                     'delete' => function ($model, $key, $index) {
-                         return $model->locked === 1 ? false : true;
-                     }
+                'buttons' => [
+                    'printButton' => function ($url, $model, $key) {
+                        return Html::a(yii\bootstrap\Html::icon('copy'), ['copy', 'id' => $model->id], ['title' => 'Νέα μετακίνημη με αντιγραφή']);
+                    }
                 ],
-                
+                'visibleButtons' => [
+                    'update' => function ($model, $key, $index) {
+                        return $model->locked === 1 ? false : true;
+                    },
+                    'delete' => function ($model, $key, $index) {
+                        return $model->locked === 1 ? false : true;
+                    }
+                ],
             ]
         ],
-    ]); ?>
+    ]);
+
+    ?>
 </div>
