@@ -36,8 +36,14 @@ class TransportModeController extends Controller
                         'roles' => ['@'],
                     ],
                     [
+                        'actions' => ['create', 'update'],
                         'allow' => true,
                         'roles' => ['admin', 'user', 'transport_user'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['admin'],
                     ],
                 ],
             ],

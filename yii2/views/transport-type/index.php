@@ -33,7 +33,12 @@ $this->params['breadcrumbs'][] = $this->title;
             //'create_ts',
             'update_ts',
             // 'deleted',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'visibleButtons' => [
+                    'delete' => \Yii::$app->user->can('admin'),
+                ],
+            ],
         ],
     ]); ?>
 </div>
