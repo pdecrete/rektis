@@ -2,10 +2,8 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Service;
 
 /**
  * ServiceSearch represents the model behind the search form about `app\models\Service`.
@@ -20,7 +18,7 @@ class ServiceSearch extends Service
     {
         return [
             [['id'], 'integer'],
-            [['name', 'information'], 'safe'],
+            [['name', 'information', 'email'], 'safe'],
         ];
     }
 
@@ -61,9 +59,9 @@ class ServiceSearch extends Service
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
+                ->andFilterWhere(['like', 'email', $this->email])
                 ->andFilterWhere(['like', 'information', $this->information]);
 
         return $dataProvider;
     }
-
 }

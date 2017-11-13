@@ -2,10 +2,8 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\TransportPrint;
 
 /**
  * TransportPrintSearch represents the model behind the search form about `app\models\TransportPrint`.
@@ -20,7 +18,7 @@ class TransportPrintSearch extends TransportPrint
         return [
             [['id'], 'integer'],
             [['filename', 'doctype', 'create_ts', 'send_ts', 'to_emails', 'from', 'to', 'sum719', 'sum721', 'sum722', 'sum_mtpy', 'paid', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'safe'],
-			[['sum719', 'sum721', 'sum722', 'sum_mtpy', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'number'],
+            [['sum719', 'sum721', 'sum722', 'sum_mtpy', 'total', 'clean', 'asum719', 'asum721', 'asum722', 'asum_mtpy', 'atotal', 'aclean'], 'number'],
         ];
     }
 
@@ -43,7 +41,7 @@ class TransportPrintSearch extends TransportPrint
     public function search($params)
     {
         $query = TransportPrint::find();
-		$query->orderby(' create_ts DESC '); 
+        $query->orderby(' create_ts DESC ');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -65,27 +63,27 @@ class TransportPrintSearch extends TransportPrint
             'create_ts' => $this->create_ts,
             'send_ts' => $this->send_ts,
             'doctype' => $this->doctype,
-            'sum719' => $this->sum719, 
-            'sum721' => $this->sum721, 
-            'sum722' => $this->sum722, 
-            'sum_mtpy' => $this->sum_mtpy, 
-            'total' => $this->total, 
-            'clean' => $this->clean, 
-            'asum719' => $this->asum719, 
-            'asum721' => $this->asum721, 
-            'asum722' => $this->asum722, 
-            'asum_mtpy' => $this->asum_mtpy, 
-            'atotal' => $this->atotal, 
+            'sum719' => $this->sum719,
+            'sum721' => $this->sum721,
+            'sum722' => $this->sum722,
+            'sum_mtpy' => $this->sum_mtpy,
+            'total' => $this->total,
+            'clean' => $this->clean,
+            'asum719' => $this->asum719,
+            'asum721' => $this->asum721,
+            'asum722' => $this->asum722,
+            'asum_mtpy' => $this->asum_mtpy,
+            'atotal' => $this->atotal,
             'aclean' => $this->aclean,
             'from' => $this->from,
             'to' => $this->to,
             'paid' => $this->paid,
-            
+
         ]);
 
         $query->andFilterWhere(['like', 'filename', $this->filename])
             ->andFilterWhere(['like', 'to_emails', $this->to_emails]);
 
         return $dataProvider;
-    }   
+    }
 }

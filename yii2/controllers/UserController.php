@@ -16,7 +16,6 @@ use yii\filters\AccessControl;
  */
 class UserController extends Controller
 {
-
     public function behaviors()
     {
         return [
@@ -221,5 +220,4 @@ class UserController extends Controller
             throw new NotFoundHttpException('Το αντικείμενο χρήστη που ζητήθηκε δεν υπάρχει.');
         }
     }
-
 }

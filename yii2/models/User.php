@@ -12,7 +12,7 @@ use yii\web\IdentityInterface;
 /**
  * User model
  *
- * Derived from base User model of Yii framework. 
+ * Derived from base User model of Yii framework.
  *
  * @author Stavros Papadakis <spapad@gmail.com>
  *
@@ -29,13 +29,12 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
- * 
+ *
  * @property ActiveRecord authassignments
  * @property string[] roles
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-
     const SCENARIO_UPDATE = 'update';
     const SCENARIO_ACTIVATION = 'activation';
     const STATUS_DELETED = 0;
@@ -206,7 +205,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * This is a relation to auth assignments used to filter data
-     * 
+     *
      * @return ActiveQuery
      */
     public function getAuthassignments()
@@ -355,10 +354,10 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * 
+     *
      * {@inheritdoc}
      * Also, if new password is set, update password.
-     * 
+     *
      * @return boolean
      */
     public function beforeSave($insert)
@@ -376,5 +375,4 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
     }
-
 }

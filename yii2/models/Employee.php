@@ -60,7 +60,6 @@ use yii\data\SqlDataProvider;
  */
 class Employee extends ActiveRecord
 {
-
     public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
     public $transportSumDelFlag = 0; // Για τα σύνολα των μετακινήσεων αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
 
@@ -129,7 +128,7 @@ class Employee extends ActiveRecord
     {
         $lengths = [6, 9];
         $param_length = mb_strlen($this->$attribute);
-        if (!in_array($param_length, $lengths)) {
+        if (!in_array($param_length, $lengths, true)) {
             $this->addError($attribute, "Το μέγεθος του κειμένου δεν είναι έγκυρο.");
         }
     }
@@ -375,7 +374,8 @@ class Employee extends ActiveRecord
                 '	)  ' .
                 '	) AS PARTALL, admapp_leave_type ' .
                 '	WHERE PARTALL.leaveID = admapp_leave_type.id AND PARTALL.employeeID = :id   ' .
-                ' ) AS FK ', [':id' => $this->id,
+                ' ) AS FK ',
+            [':id' => $this->id,
                 ':del' => $this->leaveSumDelFlag]
             )->queryScalar();
         return $total;
@@ -528,7 +528,8 @@ class Employee extends ActiveRecord
                 ' AND admapp_employee.id = :id  ' .
                 ' AND admapp_transport.deleted = :del  ' .
                 ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) as e  ' .
-                ' group by e.id ', [':id' => $this->id,
+                ' group by e.id ',
+            [':id' => $this->id,
                 ':del' => $this->transportSumDelFlag]
             )->queryScalar();
         return $total;
@@ -576,7 +577,8 @@ class Employee extends ActiveRecord
                 ' AND admapp_transport.type = :type ' .
                 ' AND YEAR(admapp_transport.start_date) = :year ' .
                 ' AND admapp_transport.deleted = :del ' .
-                ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l', [':id' => $empid,
+                ' GROUP BY admapp_employee.id, admapp_transport_type.name, Year(admapp_transport.start_date), admapp_transport.deleted ) l',
+            [':id' => $empid,
                 ':type' => $typeid,
                 ':year' => $year,
                 ':del' => 0]

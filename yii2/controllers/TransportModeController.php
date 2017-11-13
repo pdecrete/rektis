@@ -27,20 +27,26 @@ class TransportModeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'transport_user'],
-					],
-				],
-			],                                   
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['create', 'update'],
+                        'allow' => true,
+                        'roles' => ['admin', 'user', 'transport_user'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['admin'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -81,9 +87,9 @@ class TransportModeController extends Controller
         $model = new TransportMode();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' created transport mode with id [' . $model->id . ']';
-			Yii::info($logStr,'transport');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' created transport mode with id [' . $model->id . ']';
+            Yii::info($logStr, 'transport');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -103,9 +109,9 @@ class TransportModeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' updated transport mode with id [' . $model->id . ']';
-			Yii::info($logStr,'transport');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' updated transport mode with id [' . $model->id . ']';
+            Yii::info($logStr, 'transport');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -123,9 +129,9 @@ class TransportModeController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-		$userName = Yii::$app->user->identity->username;
-		$logStr = 'User ' . $userName . ' deleted transport mode with id [' . $id . ']';
-		Yii::info($logStr,'transport');
+        $userName = Yii::$app->user->identity->username;
+        $logStr = 'User ' . $userName . ' deleted transport mode with id [' . $id . ']';
+        Yii::info($logStr, 'transport');
         return $this->redirect(['index']);
     }
 

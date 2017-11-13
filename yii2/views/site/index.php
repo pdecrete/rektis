@@ -5,6 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 
 $this->title = Yii::$app->name;
+
 ?>
 <div class="site-index">
     <div class="page-header">
@@ -17,16 +18,16 @@ $this->title = Yii::$app->name;
             <div class="col-lg-4">
                 <h2>Ο λογαριασμός μου</h2>
                 <?php if (!Yii::$app->user->isGuest) : ?>
-                <p><i class="glyphicon glyphicon-credit-card"></i> <?= Yii::$app->user->identity->fullname ?></p>
-                <p><i class="glyphicon glyphicon-user"></i> <?= Yii::$app->user->identity->username ?></p>
-                <p><i class="glyphicon glyphicon-envelope"></i> <?= Yii::$app->user->identity->email ?></p>
+                    <p><i class="glyphicon glyphicon-credit-card"></i> <?= Yii::$app->user->identity->fullname ?></p>
+                    <p><i class="glyphicon glyphicon-user"></i> <?= Yii::$app->user->identity->username ?></p>
+                    <p><i class="glyphicon glyphicon-envelope"></i> <?= Yii::$app->user->identity->email ?></p>
                 <?php endif; ?>
                 <p><?= Html::a('<i class="glyphicon glyphicon-user"></i> Τα στοιχεία μου', ['/user/account'], ['class' => 'btn btn-primary btn-block']) ?></p>
-                <p><?= Html::a('<i class="glyphicon glyphicon-log-out"></i> Αποσύνδεση', ['/site/logout'], ['data-method' => 'post', 'class' => 'btn btn-danger btn-block']) ?></p>
+                <p><?= Html::a('<i class="glyphicon glyphicon-log-out"></i> Αποσύνδεση', ['/site/logout'], ['data-method' => 'post', 'class' => 'btn btn-danger btn-block sweetalert', 'data-confirm' => 'Είστε βέβαιοι για την αποσύνδεση;']) ?></p>
             </div>
             <div class="col-lg-8">
-                <?php if (!Yii::$app->user->isGuest && defined(YII_ENV) && YII_ENV === 'dev' ) : ?>
-                <h2>DEBUG</h2>
+                <?php if (!Yii::$app->user->isGuest && defined(YII_ENV) && YII_ENV === 'dev') : ?>
+                    <h2>DEBUG</h2>
                     <div class="well" style="white-space: pre-line;">
                         <p>DEMO and SAMPLE calls; to be removed on production</p>
                         <p>YII_ENV = [<?= YII_ENV ?>]</p>
@@ -37,15 +38,16 @@ $this->title = Yii::$app->name;
                         <?php
                         $pass = admapp\Util\Core::generateToken(10);
                         echo $pass, ' = ', Yii::$app->security->generatePasswordHash($pass);
+
                         ?> <br/>
                         <?= admapp\Util\Core::generateToken(20); ?> <br/>
                     </div>
-				<?php else: ?>
+                <?php else: ?>
                     <div class="well" style="white-space: pre-line;">
                         <h2> <?= Yii::t('app', 'Welcome!') ?> </h2>
-					</div>
+                    </div>
                 <?php endif; ?>
-                
+
             </div>
         </div>
 

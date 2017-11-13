@@ -15,33 +15,23 @@ use yii\filters\AccessControl;
  */
 class LeavePrintController extends Controller
 {
-
     public function behaviors()
     {
         return [
-/*            'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                     [
                         'allow' => true,
                         'roles' => ['admin', 'user', 'leave_user'],
                     ],
                 ],
-            ],*/
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'leave_user'],
-					],
-				],
-			],                        
+            ],
         ];
     }
 
@@ -75,5 +65,4 @@ class LeavePrintController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

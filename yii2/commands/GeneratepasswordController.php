@@ -16,8 +16,8 @@ class GeneratepasswordController extends Controller
 {
 
     /**
-     * Generate password for string provided. 
-     * 
+     * Generate password for string provided.
+     *
      * @param string $password the text password to be hashed.
      */
     public function actionIndex($password)
@@ -28,5 +28,4 @@ class GeneratepasswordController extends Controller
         echo "\n";
         return Controller::EXIT_CODE_NORMAL;
     }
-
 }

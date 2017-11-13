@@ -24,40 +24,26 @@ class EmployeeController extends Controller
                     'delete' => ['post'],
                 ],
             ],
-/*            'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    [
+                        'actions' => ['index','view'],
+                        'allow' => true,
+                        // Allow all registered users to index, view
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['update', 'create'],
+                        'allow' => true,
+                        'roles' => ['leave_user'],
+                    ],
                     [
                         'allow' => true,
                         'roles' => ['admin', 'user'],
                     ],
-                    [
-                        'allow' => true,
-                        'actions' => ['view', 'index'],
-                        'roles' => ['@'],
-                    ],
                 ],
-            ],*/
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index','view'],
-						'allow' => true,
-						// Allow all registered users to index, view
-						'roles' => ['@'],
-					],
-					[
-						'actions' => ['update', 'create'],
-						'allow' => true,
-						'roles' => ['leave_user'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user'],
-					],
-				],
-			],                        
+            ],
         ];
     }
 

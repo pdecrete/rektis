@@ -24,7 +24,3 @@ phpunit.phar
 # vendor files on repos
 /yii2/vendor/*
 !/yii2/vendor/admapp/
-
-# installation specific files 
-/yii2/config/db.php
-/yii2/config/web.php

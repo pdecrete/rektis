@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property string $name
  * @property string $information
+ * @property string $email
  *
  * @property Employee[] $employees
  * @property Employee[] $employees0

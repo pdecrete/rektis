@@ -32,30 +32,21 @@ class LeaveController extends Controller
 //                    'print' => ['POST'],
                 ],
             ],
-/*            'access' => [
+            'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'download'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                     [
                         'allow' => true,
                         'roles' => ['admin', 'user', 'leave_user'],
                     ],
                 ],
-            ],*/
-			'access' => [
-				'class' => AccessControl::className(),
-				'rules' => [
-					[
-						'actions' => ['index', 'view', 'download'],
-						'allow' => true,
-						'roles' => ['@'],
-					],
-					[
-						'allow' => true,
-						'roles' => ['admin', 'user', 'leave_user'],
-					],
-				],
-			],                        
-		];
+            ],
+        ];
     }
 
     /**
@@ -75,8 +66,8 @@ class LeaveController extends Controller
     }
 
     /**
-     * Creates an exported print for the provided model. 
-     * 
+     * Creates an exported print for the provided model.
+     *
      * @param Leave $leaveModel
      * @return String the generated file filename
      * @throws NotFoundHttpException
@@ -95,31 +86,31 @@ class LeaveController extends Controller
         $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($leaveModel->decision_protocol_date));
         $templateProcessor->setValue('DECISION_PROTOCOL', $leaveModel->decision_protocol);
 
-		$templateProcessor->setValue('LEAVE_PERSON', Yii::$app->params['leavePerson']);
-		$templateProcessor->setValue('LEAVE_PHONE', Yii::$app->params['leavePhone']);
-		$templateProcessor->setValue('LEAVE_FAX', Yii::$app->params['leaveFax']);
-				
-		$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
-		$templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);      
-		//Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
-		//$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
-		//$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);      
+        $templateProcessor->setValue('LEAVE_PERSON', Yii::$app->params['leavePerson']);
+        $templateProcessor->setValue('LEAVE_PHONE', Yii::$app->params['leavePhone']);
+        $templateProcessor->setValue('LEAVE_FAX', Yii::$app->params['leaveFax']);
 
-		$extra = '';
-		$reason_num = $leaveModel->typeObj ? $leaveModel->typeObj->reason_num : null;
-		if ($reason_num !== null) {
-			$k = $reason_num;
-		} else {
-			$k = 7; // τα έχοντας υπόψη της κανονικής άδειας
-		}
-		
+        $templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
+        $templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);
+        //Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
+        //$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
+        //$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);
+
+        $extra = '';
+        $reason_num = $leaveModel->typeObj ? $leaveModel->typeObj->reason_num : null;
+        if ($reason_num !== null) {
+            $k = $reason_num;
+        } else {
+            $k = 7; // τα έχοντας υπόψη της κανονικής άδειας
+        }
+
         $sameDecisionModels = $leaveModel->allSameDecision();
         $all_count = count($sameDecisionModels);
 
         $templateProcessor->cloneRow('SURNAME', $all_count);
         for ($c = 0; $c < $all_count; $c++) {
             $i = $c + 1;
-            $currentModel = $sameDecisionModels[$c];	
+            $currentModel = $sameDecisionModels[$c];
             $templateProcessor->setValue('SURNAME' . "#{$i}", $currentModel->employeeObj->surname);
             $templateProcessor->setValue('NAME' . "#{$i}", $currentModel->employeeObj->name);
             $templateProcessor->setValue('FATHERSNAME' . "#{$i}", $currentModel->employeeObj->fathersname);
@@ -127,27 +118,27 @@ class LeaveController extends Controller
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
             $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . '/' . Yii::$app->formatter->asDate($currentModel->application_protocol_date, 'php:d-m-Y'));
-			$rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)));
-			$templateProcessor->setValue('REM' . "#{$i}", $rem);
+            $rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)));
+            $templateProcessor->setValue('REM' . "#{$i}", $rem);
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
             $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
             $templateProcessor->setValue('POSITION' . "#{$i}", $currentModel->employeeObj->position0->name);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
             if (($currentModel->extra_reason1 !== '') && ($currentModel->extra_reason1 !== null)) {
-				$k++;
-				$extra .= $k . '. ' . $currentModel->extra_reason1 . '<w:br/>';
-			}
+                $k++;
+                $extra .= $k . '. ' . $currentModel->extra_reason1 . '<w:br/>';
+            }
             if (($currentModel->extra_reason2 !== '') && ($currentModel->extra_reason2 !== null)) {
-				$k++;
-				$extra .= $k . '. ' . $currentModel->extra_reason2 . '<w:br/>';
-			}
+                $k++;
+                $extra .= $k . '. ' . $currentModel->extra_reason2 . '<w:br/>';
+            }
             if (($currentModel->extra_reason3 !== '') && ($currentModel->extra_reason3 !== null)) {
-				$k++;
-				$extra .= $k . '. ' . $currentModel->extra_reason3 . '<w:br/>';
-			}
+                $k++;
+                $extra .= $k . '. ' . $currentModel->extra_reason3 . '<w:br/>';
+            }
         }
-		$templateProcessor->setValue('EXTRA_REASON', $extra);
-			
+        $templateProcessor->setValue('EXTRA_REASON', $extra);
+
         $templateProcessor->saveAs($exportfilename);
         if (!is_readable($exportfilename)) {
             throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.'));
@@ -162,13 +153,13 @@ class LeaveController extends Controller
         $new_print->filename = basename($filename);
         $new_print->leave = $leaveModel->id;
         $ins = $new_print->insert();
-		
+
         return $ins;
     }
 
-	protected function deleteAllPrints($leaveModel)
-	{
-		//        LeavePrint::deleteAll(['leave' => $model->id]);
+    protected function deleteAllPrints($leaveModel)
+    {
+        //        LeavePrint::deleteAll(['leave' => $model->id]);
         foreach ($leaveModel->leavePrints as $print) {
             $unlink_filename = $print->path;
             if (file_exists($unlink_filename)) {
@@ -176,30 +167,30 @@ class LeaveController extends Controller
             }
             $print->delete();
         }
-	}
-	
-	/* Generate file
-	 * Set filename to all leave_prints if same decision 
-	 * @return Filename	 
-	 */
-	protected function fixPrintDocument($model)
-	{
-		$filename = $this->generatePrintDocument($model);
-        
+    }
+
+    /* Generate file
+     * Set filename to all leave_prints if same decision
+     * @return Filename
+     */
+    protected function fixPrintDocument($model)
+    {
+        $filename = $this->generatePrintDocument($model);
+
         $sameDecisionModels = $model->allSameDecision();
-        $all_count = count($sameDecisionModels);	
-        
+        $all_count = count($sameDecisionModels);
+
         for ($c = 0; $c < $all_count; $c++) {
-            $currentModel = $sameDecisionModels[$c];	
+            $currentModel = $sameDecisionModels[$c];
             $this->deleteAllPrints($currentModel); // Σβήνει όλες τις σχετικές με την άδεια εκτυπώσεις...
-			$set = $this->setPrintDocument($currentModel, $filename);
-			if (!$set) {
-				throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.') . $currentModel->id);
-			}
-		}
-		return $filename;
-	}
-	
+            $set = $this->setPrintDocument($currentModel, $filename);
+            if (!$set) {
+                throw new NotFoundHttpException(Yii::t('app', 'The print document for the requested leave was not generated.') . $currentModel->id);
+            }
+        }
+        return $filename;
+    }
+
     public function actionDownload($id)
     {
         $model = $this->findModel($id);
@@ -211,7 +202,7 @@ class LeaveController extends Controller
             $filename = $prints[0]->filename;
         } else { // generate - set document if it does not exist
             $filename = $this->fixPrintDocument($model);
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
         }
 
         // if file is STILL not generated, redirect to page
@@ -219,20 +210,20 @@ class LeaveController extends Controller
             return $this->redirect(['print', 'id' => $model->id]);
         }
 
-        // all well, send file 
+        // all well, send file
         Yii::$app->response->sendFile(LeavePrint::path($filename));
     }
 
     /**
-     * Locate a Leave and generate / download a document for it. 
-     * If a document is not already generated, it is generated. 
-     * A link to download the document is provided in the view. 
-     * 
+     * Locate a Leave and generate / download a document for it.
+     * If a document is not already generated, it is generated.
+     * A link to download the document is provided in the view.
+     *
      * @param integer $id
      * @throws NotFoundHttpException
      */
     public function actionPrint($id)
-    {	
+    {
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
@@ -242,24 +233,23 @@ class LeaveController extends Controller
             return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename
-			]);
-        } else {          
+            ]);
+        } else {
             $filename = $this->fixPrintDocument($model);
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
-			return $this->redirect(['print', 'id' => $id]);
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
+            return $this->redirect(['print', 'id' => $id]);
         }
-
     }
 
-	public function actionReprint($id)
-    {	
+    public function actionReprint($id)
+    {
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave is deleted.'));
         }
-        
+
         $filename = $this->fixPrintDocument($model);
-        Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));          
+        Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
         return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename
@@ -288,35 +278,34 @@ class LeaveController extends Controller
     {
         $model = new Leave();
         if ($model->load(Yii::$app->request->post())) {
-			if ($model->typeObj->check == true) {
-				$left = $model->daysLeft;
+            if ($model->typeObj->check == true) {
+                $left = $model->daysLeft;
 
-				if ($left == null) {
+                if ($left == null) {
                     $leave = new Leave;
                     $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
                     $days = ($days > 0) ? $days : 0;
 
-					$left = $model->typeObj->limit + $days;
-				}
+                    $left = $model->typeObj->limit + $days;
+                }
 
-				if ($model->duration > $left) {
-					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
-		  			Yii::$app->session->setFlash('danger', $str);
-					return $this->render('create', ['model' => $model]);
-				}
-			}
-		}
+                if ($model->duration > $left) {
+                    $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+                    Yii::$app->session->setFlash('danger', $str);
+                    return $this->render('create', ['model' => $model]);
+                }
+            }
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' created leave with id [' . $model->id . ']';
-			Yii::info($logStr,'leave');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' created leave with id [' . $model->id . ']';
+            Yii::info($logStr, 'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-			//Αν κάνω create από άλλο σημείο με employee_id (από καρτέλα εργαζομένου)
-			if ((Yii::$app->request->isGet) && (Yii::$app->request->get('employee') !== NULL) ) 
-			{
-				$model->employee = Yii::$app->request->get('employee');
-			};
+            //Αν κάνω create από άλλο σημείο με employee_id (από καρτέλα εργαζομένου)
+            if ((Yii::$app->request->isGet) && (Yii::$app->request->get('employee') !== null)) {
+                $model->employee = Yii::$app->request->get('employee');
+            };
             return $this->render('create', [
                         'model' => $model,
             ]);
@@ -333,27 +322,27 @@ class LeaveController extends Controller
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
-			if ($model->typeObj->check == True) {
-				$left = $model->daysLeft;
-				if ($left == null) {
-//					$left = $model->typeObj->limit;
+            if ($model->typeObj->check == true) {
+                $left = $model->daysLeft;
+                if ($left == null) {
+                    //					$left = $model->typeObj->limit;
                     $leave = new Leave;
                     $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
                     $days = ($days > 0) ? $days : 0;
 
-					$left = $model->typeObj->limit + $days;
-				}
-				if ($model->duration > $left) {
-					$str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
-		  			Yii::$app->session->setFlash('danger', $str);          
-					return $this->render('update', ['model' => $model]);
-				}
-			}
-		}
+                    $left = $model->typeObj->limit + $days;
+                }
+                if ($model->duration > $left) {
+                    $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+                    Yii::$app->session->setFlash('danger', $str);
+                    return $this->render('update', ['model' => $model]);
+                }
+            }
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' updated leave with id [' . $model->id . ']';
-			Yii::info($logStr,'leave');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' updated leave with id [' . $model->id . ']';
+            Yii::info($logStr, 'leave');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -375,9 +364,9 @@ class LeaveController extends Controller
         $model = $this->findModel($id);
         $model->deleted = 1;
         if ($model->save()) {
-			$userName = Yii::$app->user->identity->username;
-			$logStr = 'User ' . $userName . ' deleted leave with id [' . $model->id . ']';
-			Yii::info($logStr,'leave');
+            $userName = Yii::$app->user->identity->username;
+            $logStr = 'User ' . $userName . ' deleted leave with id [' . $model->id . ']';
+            Yii::info($logStr, 'leave');
             return $this->redirect(['index']);
         } else {
             throw new ServerErrorHttpException('The requested page does not exist.');
@@ -400,64 +389,66 @@ class LeaveController extends Controller
         }
     }
 
-	/* Send multiple emails to $emails with $filename attached 
-	 * @return Integer = number of emails successfully sent 
-	 */  
-	protected function sendEmail($filename, $emails)
-    { 
-		$subject = Yii::t('app', 'Leave decision post');
-		$txtBody = Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email');
-		$htmlBody = '<b>' . Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email') .'</b>';
-		$messages = [];
-		foreach ($emails as $email) {
-			$messages[] = Yii::$app->mailer->compose()
+    /* Send multiple emails to $emails with $filename attached
+     * @return Integer = number of emails successfully sent
+     */
+    protected function sendEmail($filename, $emails)
+    {
+        $subject = Yii::t('app', 'Leave decision post');
+        $txtBody = Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email');
+        $htmlBody = '<b>' . Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email') .'</b>';
+        $messages = [];
+        foreach ($emails as $email) {
+            $messages[] = Yii::$app->mailer->compose()
                 ->setFrom(Yii::$app->params['adminEmail'])
                 ->setSubject($subject)
                 ->setTextBody($txtBody)
                 ->setHtmlBody($htmlBody)
                 ->attach($filename)
-				->setTo($email);
-		}
-		$num = -1;
-		try {
-			$num = Yii::$app->mailer->sendMultiple($messages);
-		} catch (\Swift_TransportException $e) { // exception 'Swift_TransportException'
-			$logStr = 'Swift_TransportException in leave-email-sending: ';
-			$pos = strpos($e, 'Stack trace:');
-			if ($pos>0) {
-				$logStr .= substr($e,0, $pos);	
-			}
-			Yii::info($logStr,'leave-email');
-		}
-		
-		return  $num;//num of messages successfully sent
+                ->setTo($email);
+        }
+        $num = -1;
+        try {
+            $num = Yii::$app->mailer->sendMultiple($messages);
+        } catch (\Swift_TransportException $e) { // exception 'Swift_TransportException'
+            $logStr = 'Swift_TransportException in leave-email-sending: ';
+            $pos = strpos($e, 'Stack trace:');
+            if ($pos>0) {
+                $logStr .= substr($e, 0, $pos);
+            }
+            Yii::info($logStr, 'leave-email');
+        }
+
+        return  $num;//num of messages successfully sent
     }
-    
+
     protected function updateEmailSent($emails, $model)
     {
-		$ids = [];
-		$k = 0;
+        $ids = [];
+        $k = 0;
         $sameDecisionModels = $model->allSameDecision();
         $all_count = count($sameDecisionModels);
 
         for ($c = 0; $c < $all_count; $c++) {
-            $currentModel = $sameDecisionModels[$c];	
+            $currentModel = $sameDecisionModels[$c];
             $prints = $currentModel->leavePrints;
-            if ($prints !== NULL) {
-				if (count($emails) > 0) {
-					$prints[0]->to_emails = implode(',', array_filter($emails, function($v){ return $v !== null; }));
-				}
-				
-				$prints[0]->send_ts = date("Y-m-d H:i:s");
-				$upd = $prints[0]->save();
-				if ($upd) {
-					$ids[$k] = $prints[0]->id;
-					$k++;
-				}
-			}
-		}		
-		return $ids;
-	}
+            if ($prints !== null) {
+                if (count($emails) > 0) {
+                    $prints[0]->to_emails = implode(',', array_filter($emails, function ($v) {
+                        return $v !== null;
+                    }));
+                }
+
+                $prints[0]->send_ts = date("Y-m-d H:i:s");
+                $upd = $prints[0]->save();
+                if ($upd) {
+                    $ids[$k] = $prints[0]->id;
+                    $k++;
+                }
+            }
+        }
+        return $ids;
+    }
 
     public function actionEmail($id)
     {
@@ -469,33 +460,38 @@ class LeaveController extends Controller
             $filename = $prints[0]->filename;
         } else {
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave was not found.'));
-		}
+        }
         if (!is_readable(LeavePrint::path($filename))) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested leave was not found.') . LeavePrint::path($filename));
         }
 
-		$emails = $model->getDecisionEmails(); 
-		$leaveIDs = $model->getconnectedLeaveIDs();
-		$simpleLeaveIDs = implode(',', array_filter($leaveIDs, function($v){ return $v !== null; }));
-		$sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
- 
-		$userName = Yii::$app->user->identity->username;
-		$simple_emails = implode(',', array_filter($emails, function($v){ return $v !== null; }));
-		
-        if ( isset($sendNum) && ($sendNum > 0)) {
-			$updated = $this->updateEmailSent($emails, $model);
-			$numUpd = count($updated);
-			$idsUpd = implode(',', array_filter($updated, function($v){ return $v !== null; }));
-			$logStr = 'User ' . $userName . ' sent leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [' . $numUpd . ']. Leave_prints IDs: [' . $idsUpd . ']. Filename: [' . $filename . '].';
-			Yii::info($logStr,'leave-email');
-			Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully emailed file on {date} to {num} recepients.', ['date' => date('d/m/Y'), 'num' => $sendNum]));
-		} else {
-			$logStr = 'User ' . $userName . ' tried to send leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [None]. Filename: [' . $filename . '].';	
-			Yii::info($logStr,'leave-email');
-			Yii::$app->session->setFlash('danger', Yii::t('app', 'The file was not emailed.'));		
-		}
+        $emails = $model->getDecisionEmails();
+        $leaveIDs = $model->getconnectedLeaveIDs();
+        $simpleLeaveIDs = implode(',', array_filter($leaveIDs, function ($v) {
+            return $v !== null;
+        }));
+        $sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
+
+        $userName = Yii::$app->user->identity->username;
+        $simple_emails = implode(',', array_filter($emails, function ($v) {
+            return $v !== null;
+        }));
+
+        if (isset($sendNum) && ($sendNum > 0)) {
+            $updated = $this->updateEmailSent($emails, $model);
+            $numUpd = count($updated);
+            $idsUpd = implode(',', array_filter($updated, function ($v) {
+                return $v !== null;
+            }));
+            $logStr = 'User ' . $userName . ' sent leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [' . $numUpd . ']. Leave_prints IDs: [' . $idsUpd . ']. Filename: [' . $filename . '].';
+            Yii::info($logStr, 'leave-email');
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully emailed file on {date} to {num} recepients.', ['date' => date('d/m/Y'), 'num' => $sendNum]));
+        } else {
+            $logStr = 'User ' . $userName . ' tried to send leave_id [' . $model->id . ']. ConnectedLeaveIDs: [' . $simpleLeaveIDs . ']. To: [' . $simple_emails . ']. Emails sent: [' . $sendNum . ']. Leave_prints updated: [None]. Filename: [' . $filename . '].';
+            Yii::info($logStr, 'leave-email');
+            Yii::$app->session->setFlash('danger', Yii::t('app', 'The file was not emailed.'));
+        }
 
         return $this->redirect(['print', 'id' => $id]);
     }
-
 }

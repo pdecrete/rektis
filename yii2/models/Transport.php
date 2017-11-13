@@ -65,16 +65,16 @@ define ('freport', '4'); // τύπος αρχείου για εκτύπωση: �
 
 class Transport extends \yii\db\ActiveRecord
 {
-	public $from; //date('d/m/Y')
-	public $to;
+    public $from; //date('d/m/Y')
+    public $to;
 
-	const fall = 0; 	// τύπος αρχείου για εκτύπωση: ΟΛΑ
-	const fapproval = 1;// τύπος αρχείου για εκτύπωση: ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
-	const fjournal = 2;	// τύπος αρχείου για εκτύπωση: ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
-	const fdocument = 3;// τύπος αρχείου για εκτύπωση: ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
-	const freport = 4;	// τύπος αρχείου για εκτύπωση: ΣΥΓΚΕΝΤΡΩΤΙΚΗ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
+    const fall = 0;    // τύπος αρχείου για εκτύπωση: ΟΛΑ
+    const fapproval = 1;// τύπος αρχείου για εκτύπωση: ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
+    const fjournal = 2;    // τύπος αρχείου για εκτύπωση: ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
+    const fdocument = 3;// τύπος αρχείου για εκτύπωση: ΔΙΑΒΙΒΑΣΤΙΚΟ ΜΕΤΑΚΙΝΗΣΗΣ
+    const freport = 4;    // τύπος αρχείου για εκτύπωση: ΣΥΓΚΕΝΤΡΩΤΙΚΗ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
 
-	/**
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -92,7 +92,7 @@ class Transport extends \yii\db\ActiveRecord
             [[ 'employee', 'start_date', 'end_date', 'reason', 'from_to', 'mode', 'days_applied', 'ticket_value'], 'required'],
             [['from', 'to', 'decision_protocol_date', 'application_protocol_date', 'application_date', 'start_date', 'end_date', 'create_ts', 'update_ts'], 'safe'],
             [['ticket_value', 'klm_reimb', 'day_reimb', 'night_reimb', 'klm', 'reimbursement', 'mtpy', 'pay_amount', 'code719', 'code721', 'code722'], 'number'],
-            [['comment'], 'string'],           
+            [['comment'], 'string'],
             [['count_flag'], 'boolean'],
             [['accompanying_document', 'base'], 'string', 'max' => 100],
             [['reason', 'extra_reason'], 'string', 'max' => 200],
@@ -135,7 +135,7 @@ class Transport extends \yii\db\ActiveRecord
             'klm_reimb' => Yii::t('app', 'Klm Reimb'),
             'night_reimb' => Yii::t('app', 'Night Reimb'),
             'days_out' => Yii::t('app', 'Days Out'),
-			'nights_out' => Yii::t('app', 'Nights Out'),
+            'nights_out' => Yii::t('app', 'Nights Out'),
             'day_reimb' => Yii::t('app', 'Day Reimb'),
             'reimbursement' => Yii::t('app', 'Reimbursement'),
             'mtpy' => Yii::t('app', 'Mtpy'),
@@ -196,7 +196,7 @@ class Transport extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TransportFunds::className(), ['id' => 'fund1']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -204,7 +204,7 @@ class Transport extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TransportFunds::className(), ['id' => 'fund2']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -220,7 +220,7 @@ class Transport extends \yii\db\ActiveRecord
                             'decision_protocol' => $this->decision_protocol,
                             'decision_protocol_date' => $this->decision_protocol_date,
                             'type' => $this->type,
-                            'employee' => $this->employee, 
+                            'employee' => $this->employee,
                             'deleted' => 0
                         ])
                         ->orderBy('id')
@@ -264,14 +264,14 @@ class Transport extends \yii\db\ActiveRecord
     public function getTransportPrintConnections()
     {
         return $this->hasMany(TransportPrintConnection::className(), ['transport' => 'id']);
-    }  
-    
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTransportPrints()
     {
         return $this->hasMany(TransportPrint::className(), ['id' => 'transport_print'])
-					->viaTable('admapp_transport_print_connection', ['transport' => 'id']);
-    }   
+                    ->viaTable('admapp_transport_print_connection', ['transport' => 'id']);
+    }
 }
