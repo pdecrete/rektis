@@ -36,6 +36,7 @@ $this->title = Yii::$app->name;
                             <div class="panel-body">
                                 <?= $announcement->body ?>
                             </div>
+                            <div class="panel-footer"><span class="glyphicon glyphicon-time"></span> <?= \Yii::$app->formatter->asDate($announcement->updated_at, 'php:d-m-Y H:i') ?></div>
                         </div>
                     <?php endforeach; ?>
                 <?php else : ?>
