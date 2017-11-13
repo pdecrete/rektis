@@ -26,6 +26,21 @@ $this->title = Yii::$app->name;
                 <p><?= Html::a('<i class="glyphicon glyphicon-log-out"></i> Αποσύνδεση', ['/site/logout'], ['data-method' => 'post', 'class' => 'btn btn-danger btn-block sweetalert', 'data-confirm' => 'Είστε βέβαιοι για την αποσύνδεση;']) ?></p>
             </div>
             <div class="col-lg-8">
+                <h2>Ανακοινώσεις</h2>
+                <?php if (!empty($announcements)) : ?>
+                    <?php foreach ($announcements as $announcement) : ?>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><?= $announcement->title ?></h3>
+                            </div>
+                            <div class="panel-body">
+                                <?= $announcement->body ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="alert alert-info" role="alert"><?= Yii::t('app', 'No announcements.') ?></div>
+                <?php endif; ?>
                 <?php if (!Yii::$app->user->isGuest && defined(YII_ENV) && YII_ENV === 'dev') : ?>
                     <h2>DEBUG</h2>
                     <div class="well" style="white-space: pre-line;">
@@ -42,12 +57,7 @@ $this->title = Yii::$app->name;
                         ?> <br/>
                         <?= admapp\Util\Core::generateToken(20); ?> <br/>
                     </div>
-                <?php else: ?>
-                    <div class="well" style="white-space: pre-line;">
-                        <h2> <?= Yii::t('app', 'Welcome!') ?> </h2>
-                    </div>
                 <?php endif; ?>
-
             </div>
         </div>
 

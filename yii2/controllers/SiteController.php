@@ -59,10 +59,12 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
-        if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+        return $this->render('index', [
+            'announcements' => \app\models\Announcement::find()->active()->reverse()->all()
+        ]);
+//        if (!\Yii::$app->user->isGuest) {
+//            return $this->goHome();
+//        }
     }
 
     public function actionLogin()
