@@ -17,7 +17,7 @@ class m171113_104629_announcements extends Migration
             'id' => $this->primaryKey(),
             'title' => $this->string(500)->notNull(),
             'body' => $this->text()->notNull(),
-            'created_at' => $this->timestamp()->notNull()->defaultValue(new yii\db\Expression('NOW()')),
+            'created_at' => $this->timestamp()->notNull()->defaultValue(0),
             'updated_at' => $this->timestamp()->notNull()->defaultValue(new yii\db\Expression('NOW()')),
             'deleted' => $this->boolean()->notNull()->defaultValue(false)
             ], $tableOptions);
