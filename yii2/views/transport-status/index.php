@@ -26,7 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'name',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'visibleButtons' => [
+                    'delete' => \Yii::$app->user->can('admin'),
+                ],
+            ],
         ],
     ]); ?>
 </div>

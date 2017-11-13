@@ -33,8 +33,14 @@ class EmployeeStatusController extends Controller
                         'roles' => ['@'],
                     ],
                     [
+                        'actions' => ['create', 'update'],
                         'allow' => true,
                         'roles' => ['admin', 'user'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
