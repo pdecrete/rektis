@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LeaveSearch */
@@ -11,11 +12,12 @@ use yii\widgets\Pjax;
 $this->title = Yii::t('app', 'Leaves');
 $subtitle = Yii::t('app', 'Not deleted leaves');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="leave-index">
 
     <h1><?= Html::encode($this->title) ?> <small><?= Html::encode($subtitle) ?></small></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]);  ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);   ?>
 
     <p>
         <?= Html::a(Yii::t('app', 'Create Leave'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -37,17 +39,58 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'typeObj.name',
                 'filter' => \app\models\LeaveType::find()->select(['name', 'id'])->indexBy('id')->column()
             ],
-            'duration',
-            'start_date:date',
-//            [
-//                'attribute' => 'start_date',
-//                'value' => function ($model) {
-//                    return \Yii::$app->formatter->asDate($model->start_date);
-//                },
-//            ],
-            'end_date:date',
-            'decision_protocol',
-            'decision_protocol_date:date',
+            [
+                'attribute' => 'duration',
+                'label' => \Yii::t('app', 'Days.SHORT')
+            ],
+            [
+                'attribute' => 'start_date',
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->start_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'start_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
+            [
+                'attribute' => 'end_date',
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->end_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'end_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
+            [
+                'attribute' => 'decision_protocol',
+                'label' => \Yii::t('app', 'decision_protocol.SHORT')
+            ],
+            [
+                'attribute' => 'decision_protocol_date',
+//                'format' => 'date',
+                'label' => \Yii::t('app', 'decision_protocol_date.SHORT'),
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->decision_protocol_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'decision_protocol_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
             // 'application_protocol',
             // 'application_protocol_date',
             // 'application_date',
@@ -62,17 +105,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buttons' => [
                     'download' => function ($url, $model, $key) {
                         return Html::a(
-                                        '<span class="glyphicon glyphicon-download"></span>', $url, [
-                                    'title' => Yii::t('app', 'Download'),
-                                    'data-confirm' => Yii::t('app', 'Are you sure you want to download this leave?'),
-                                    'data-method' => 'post',
+                                '<span class="glyphicon glyphicon-download"></span>', $url, [
+                                'title' => Yii::t('app', 'Download'),
+                                'data-confirm' => Yii::t('app', 'Are you sure you want to download this leave?'),
+                                'data-method' => 'post',
 //                                    'data-pjax' => '0',
-                                        ]
+                                ]
                         );
                     }
-                        ]
-                    ],
                 ],
-            ]);
-            ?>
-            <?php Pjax::end(); ?></div>
+                'contentOptions' => [
+                    'class' => 'text-nowrap'
+                ]
+            ],
+        ],
+    ]);
+
+    ?>
+    <?php Pjax::end(); ?></div>

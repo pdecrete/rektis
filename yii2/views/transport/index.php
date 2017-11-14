@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TransportSearch */
@@ -39,10 +40,49 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => \app\models\TransportMode::find()->select(['name', 'id'])->indexBy('id')->column()
             ],
             // 'type',
-            'start_date:date',
-            'end_date:date',
+            [
+                'attribute' => 'start_date',
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->start_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'start_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
+            [
+                'attribute' => 'end_date',
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->end_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'end_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
             'decision_protocol',
-            'decision_protocol_date:date',
+            [
+                'attribute' => 'decision_protocol_date',
+                'value' => function ($v) {
+                    return \Yii::$app->formatter->asDate($v->decision_protocol_date);
+                },
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'decision_protocol_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
             // 'application_protocol',
             // 'application_protocol_date',
             // 'application_date',
@@ -74,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'deleted',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}{update}{printButton}{delete}',
+                'template' => '{view} {update} {printButton} {delete}',
                 'buttons' => [
                     'printButton' => function ($url, $model, $key) {
                         return Html::a(yii\bootstrap\Html::icon('copy'), ['copy', 'id' => $model->id], ['title' => 'Νέα μετακίνημη με αντιγραφή']);
@@ -88,6 +128,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         return $model->locked === 1 ? false : true;
                     }
                 ],
+                'contentOptions' => [
+                    'class' => 'text-nowrap'
+                ]
             ]
         ],
     ]);
