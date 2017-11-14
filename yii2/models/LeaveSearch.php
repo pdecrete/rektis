@@ -47,6 +47,9 @@ class LeaveSearch extends Leave
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['start_date' => SORT_DESC]
+            ]
         ]);
 
         $this->load($params);
