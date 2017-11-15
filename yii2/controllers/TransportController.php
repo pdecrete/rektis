@@ -446,7 +446,13 @@ class TransportController extends Controller
             $empid = $transportModel->employee;
             $typeid = $transportModel->type;
             $year = date("Y", strtotime($transportModel->start_date));
-            $trans_days = Employee::getTransportTypeTotal($empid, $typeid, $year);
+            
+            $trans_days = 0;
+            if($typeid == 1 || $typeid == 2) //ΑΝ Η ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ "ΜΕ ΔΑΠΑΝΗ ΤΗΣ ΥΠΗΡΕΣΙΑΣ" Ή "ΜΕ ΔΑΠΑΝΗ ΑΛΛΗΣ ΥΠΗΡΕΣΙΑΣ"
+            {                                //ΤΟΤΕ ΤΟ ΣΥΝΟΛΟ ΤΩΝ ΗΜΕΡΩΝ ΕΙΝΑΙ ΤΟ ΑΘΡΟΙΣΜΑ ΤΟΥΣ
+                $trans_days += Employee::getTransportTypeTotal($empid, 1, $year);
+                $trans_days += Employee::getTransportTypeTotal($empid, 2, $year);
+            }
 
             $templateProcessor->setValue('TRANS_DAYS', $trans_days);
             $remaining = Yii::$app->params['trans_year_limit'] - $trans_days;

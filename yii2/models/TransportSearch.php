@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use yii\base\Model;
@@ -10,6 +9,7 @@ use yii\data\ActiveDataProvider;
  */
 class TransportSearch extends Transport
 {
+
     /**
      * @inheritdoc
      */
@@ -46,6 +46,9 @@ class TransportSearch extends Transport
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['start_date' => SORT_DESC]
+            ]
         ]);
 
         $this->load($params);

@@ -136,10 +136,23 @@ AppAsset::register($this);
                             ],
                         ],
                     ],
-
+                    
                     [
-                        'label' => 'Εργαζόμενοι',
-                        'visible' => !Yii::$app->user->isGuest,
+                        'label' => Yii::t('app', 'Announcements'),
+                    	'visible' => Yii::$app->user->can('admin'),
+                        'items' => [
+                            [
+                                'label' => Yii::t('app', 'All announcements'), // 'Όλες οι ανακοινώσεις', 
+								'url' => ['/announcement/index']
+							],
+                            [	'label' => Yii::t('app', 'Create Announcement'),
+								'url' => ['/announcement/create']
+							],
+                        ],
+                    ],
+
+                    [ 	'label' => 'Εργαζόμενοι',
+						'visible' => !Yii::$app->user->isGuest,
                         'items' => [
                             [    'label' => 'Όλοι οι εργαζόμενοι',
                                 'url' => ['/employee/index']
