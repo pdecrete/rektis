@@ -11,7 +11,7 @@ class PlainFile extends Model
 {
 
     public $name;
-    public $image;
+    public $uploadfile;
 
     /**
      * @return array the validation rules.
@@ -19,7 +19,7 @@ class PlainFile extends Model
     public function rules()
     {
         return [
-            [['name', 'image'], 'required'],
+            [['name', 'uploadfile'], 'required'],
         ];
     }
 
@@ -30,7 +30,7 @@ class PlainFile extends Model
     {
         return [
             'name' => Yii::t('app', 'Filename'),
-            'image' => Yii::t('app', 'Image File'),
+            'uploadfile' => Yii::t('app', 'Upload File'),
         ];
     }
 

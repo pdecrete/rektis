@@ -2,6 +2,9 @@
 
 use yii\helpers\Html;
 use dosamigos\fileupload\FileUploadUI;
+use app\modules\SubstituteTeacher\assets\ModuleAsset;
+
+$bundle = ModuleAsset::register($this);
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LeaveSearch */
@@ -18,26 +21,28 @@ $this->params['breadcrumbs'][] = $this->title;
     <?=
     FileUploadUI::widget([
         'model' => $model,
-        'attribute' => 'image',
+        'attribute' => 'uploadfile',
         'url' => [
-            'SubstrituteTeacher/file/image-upload',
-            'id' => 1, // $id
+            'file/file-upload',
+            'id' => 'test-please', // $id
         ],
         'gallery' => false,
-        'fieldOptions' => [
-            'accept' => 'image/*'
-        ],
+//        'fieldOptions' => [
+//            'accept' => 'image/*',
+//        ],
         'clientOptions' => [
+            'type' => 'POST',
             'maxFileSize' => 2000000
         ],
         'clientEvents' => [
             'fileuploaddone' => 'function(e, data) {
-                console.log(e);
-                console.log(data);
+                substitute_teacher_module.alert_fileuploaddone();
             }',
             'fileuploadfail' => 'function(e, data) {
-                console.log(e);
-                console.log(data);
+                substitute_teacher_module.alert_fileuploadfail();
+            }',
+            'fileuploadprocessfail' => 'function(e, data) {
+                substitute_teacher_module.alert_fileuploadfail();
             }',
         ],
     ]);

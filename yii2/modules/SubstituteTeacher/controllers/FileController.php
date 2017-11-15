@@ -4,6 +4,11 @@ namespace app\modules\SubstituteTeacher\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use app\modules\SubstituteTeacher\models\PlainFile;
+use yii\web\UploadedFile;
+use yii\helpers\FileHelper;
+use yii\helpers\Json;
 
 /**
  * 
@@ -17,12 +22,14 @@ class FileController extends Controller
     public function behaviors()
     {
         return [
-//            'verbs' => [
-//                'class' => VerbFilter::className(),
-//                'actions' => [
-//                    'delete' => ['POST'],
-//                ],
-//            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                    'file-upload' => ['POST'],
+                    'file-delete' => ['POST'],
+                ],
+            ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
@@ -32,7 +39,7 @@ class FileController extends Controller
 //                        'roles' => ['@'],
 //                    ],
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'file-upload', 'file-delete', 'file-download'],
                         'allow' => true,
                         'roles' => ['admin'],
                     ],
@@ -53,37 +60,38 @@ class FileController extends Controller
 //        $exportfilename = Yii::getAlias("@vendor/admapp/exports/{$dts}_{$templatefilename}");
 
         return $this->render('index', [
-                'model' => new \app\modules\SubstituteTeacher\models\PlainFile()
+                'model' => new PlainFile()
 //                'searchModel' => $searchModel,
 //                'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionImageUpload()
+    public function actionFileUpload()
     {
-        $model = new WhateverYourModel();
+        $model = new PlainFile();
 
-        $imageFile = UploadedFile::getInstance($model, 'image');
+        $uploadedFile = UploadedFile::getInstance($model, 'uploadfile');
 
-        $directory = Yii::getAlias('@frontend/web/img/temp') . DIRECTORY_SEPARATOR . Yii::$app->session->id . DIRECTORY_SEPARATOR;
+        $directory = Yii::getAlias('@upload') . DIRECTORY_SEPARATOR . Yii::$app->session->id . DIRECTORY_SEPARATOR;
         if (!is_dir($directory)) {
             FileHelper::createDirectory($directory);
         }
 
-        if ($imageFile) {
+        if ($uploadedFile) {
             $uid = uniqid(time(), true);
-            $fileName = $uid . '.' . $imageFile->extension;
+            $fileName = $uid . '.' . $uploadedFile->extension;
             $filePath = $directory . $fileName;
-            if ($imageFile->saveAs($filePath)) {
-                $path = '/img/temp/' . Yii::$app->session->id . DIRECTORY_SEPARATOR . $fileName;
+            if ($uploadedFile->saveAs($filePath)) {
+                $path = \yii\helpers\Url::to(['file-download', 'file' => $fileName]);
+//                    '/img/temp/' . Yii::$app->session->id . DIRECTORY_SEPARATOR . $fileName;
                 return Json::encode([
                         'files' => [
                             [
                                 'name' => $fileName,
-                                'size' => $imageFile->size,
+                                'size' => $uploadedFile->size,
                                 'url' => $path,
-                                'thumbnailUrl' => $path,
-                                'deleteUrl' => 'image-delete?name=' . $fileName,
+                                'thumbnailUrl' => null, // $path,
+                                'deleteUrl' => 'file-delete?name=' . $fileName,
                                 'deleteType' => 'POST',
                             ],
                         ],
@@ -94,9 +102,9 @@ class FileController extends Controller
         return '';
     }
 
-    public function actionImageDelete($name)
+    public function actionFileDelete($name)
     {
-        $directory = Yii::getAlias('@frontend/web/img/temp') . DIRECTORY_SEPARATOR . Yii::$app->session->id;
+        $directory = Yii::getAlias('@upload') . DIRECTORY_SEPARATOR . Yii::$app->session->id;
         if (is_file($directory . DIRECTORY_SEPARATOR . $name)) {
             unlink($directory . DIRECTORY_SEPARATOR . $name);
         }
@@ -105,7 +113,8 @@ class FileController extends Controller
         $output = [];
         foreach ($files as $file) {
             $fileName = basename($file);
-            $path = '/img/temp/' . Yii::$app->session->id . DIRECTORY_SEPARATOR . $fileName;
+            $path = \yii\helpers\Url::to(['file-download', 'file' => $fileName]);
+//            $path = '/img/temp/' . Yii::$app->session->id . DIRECTORY_SEPARATOR . $fileName;
             $output['files'][] = [
                 'name' => $fileName,
                 'size' => filesize($file),
@@ -119,7 +128,7 @@ class FileController extends Controller
     }
 
 //        $exportfilename = Yii::getAlias("@vendor/admapp/exports/{$dts}_{$templatefilename}");
-    public function actionDownload($id)
+    public function actionFileDownload($id)
     {
         $model = $this->findModel($id);
         if ($model->deleted) {
@@ -130,7 +139,8 @@ class FileController extends Controller
             $filename = $prints[0]->filename;
         } else { // generate - set document if it does not exist
             $filename = $this->fixPrintDocument($model);
-            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated fi'
+                . 'le on {date}.', ['date' => date('d/m/Y')]));
         }
 
         // if file is STILL not generated, redirect to page
