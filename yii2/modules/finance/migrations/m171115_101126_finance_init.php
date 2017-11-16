@@ -30,8 +30,8 @@ class m171115_101126_finance_init extends Migration
             'table_kaecredit' => $this->db->tablePrefix . 'finance_kaecredit',
             'table_kaewithdrawal' => $this->db->tablePrefix . 'finance_kaewithdrawal',
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
-            'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
             'table_state' => $this->db->tablePrefix . 'finance_state',
@@ -104,35 +104,34 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n5. *** Creating table " . $dbFinTables['table_supplier'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
+
+        /* CREATE TABLE addmap_finance_expenditure */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditure'] .
+                          "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
+                            `exp_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
+                            `exp_date` INTEGER NOT NULL,
+                            `exp_lock` VARCHAR(255) NOT NULL,
+                            `kaewithdr_id` INTEGER,
+                             PRIMARY KEY (`exp_id`),
+                             FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                           ) " . $tableOptions;
+        Console::stdout("\n7. *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
         
         /* CREATE TABLE addmap_finance_invoice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `inv_number` VARCHAR(255) NOT NULL,
-                            `inv_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
+                            `inv_number` VARCHAR(255) NOT NULL, 
                             `inv_date` INTEGER NOT NULL,
                             `inv_order` VARCHAR(255) NOT NULL,
                             `suppl_id` INTEGER,
+                            `exp_id` INTEGER,
                              PRIMARY KEY (`inv_id`),
-                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n6. *** Creating table " . $dbFinTables['table_invoice'] . ". *** \n");
-        Console::stdout("SQL Command: " . $create_command . "\n");
-        Yii::$app->db->createCommand($create_command)->execute();
-        
-        /* CREATE TABLE addmap_finance_expenditure */
-        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditure'] .
-                          "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `exp_amount` " . $moneyDatatype . " UNSIGNED    NOT NULL,
-                            `exp_date` INTEGER NOT NULL,
-                            `exp_lock` VARCHAR(255) NOT NULL,
-                            `inv_id` INTEGER,
-                            `kaewithdr_id` INTEGER,
-                             PRIMARY KEY (`exp_id`),
-                             FOREIGN KEY (`inv_id`) REFERENCES " . $dbFinTables['table_invoice'] . "(`inv_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                             FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
-                           ) " . $tableOptions;
-        Console::stdout("\n7. *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
 
@@ -195,8 +194,8 @@ class m171115_101126_finance_init extends Migration
             'table_kaecredit' => $this->db->tablePrefix . 'finance_kaecredit',
             'table_kaewithdrawal' => $this->db->tablePrefix . 'finance_kaewithdrawal',
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
-            'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
             'table_state' => $this->db->tablePrefix . 'finance_state',
