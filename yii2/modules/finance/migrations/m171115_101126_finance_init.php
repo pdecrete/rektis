@@ -40,7 +40,7 @@ class m171115_101126_finance_init extends Migration
         
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_year'] .
                           " (`year` INTEGER NOT NULL,
-                             `year_credit` " . $moneyDatatype . " NOT NULL,
+                             `year_credit` " . $moneyDatatype . " UNSIGNED NOT NULL,
                              `year_lock` BOOLEAN NOT NULL DEFAULT 0,
                               PRIMARY KEY (`year`)
                             ) " . $tableOptions;
@@ -62,12 +62,12 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE addmap_finance_kaecredit */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecredit'] .
                           "(`kaecredit_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `kaecredit_amount` " . $moneyDatatype . " NOT NULL,
+                            `kaecredit_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `kaecredit_date` DATETIME NOT NULL,
                             `year` INTEGER,
                             `kae_id` INTEGER,
-                             FOREIGN KEY (`year`) REFERENCES " . $dbFinTables['table_year'] . "(`year`)" . ",
-                             FOREIGN KEY (`kae_id`) REFERENCES " . $dbFinTables['table_kae'] . "(`kae_id`)" . ",
+                             FOREIGN KEY (`year`) REFERENCES " . $dbFinTables['table_year'] . "(`year`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`kae_id`) REFERENCES " . $dbFinTables['table_kae'] . "(`kae_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              PRIMARY KEY (`kaecredit_id`)
                            ) " . $tableOptions;
         Console::stdout("\n3. *** Creating table " . $dbFinTables['table_kaecredit'] . ". *** \n");
@@ -77,11 +77,11 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE addmap_finance_kaewithdrawal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaewithdrawal'] .
                           "(`kaewithdr_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `kaewithdr_amount` " . $moneyDatatype . " NOT NULL,
+                            `kaewithdr_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `kaewithdr_decision` VARCHAR(255) NOT NULL,
                             `kaewithdr_date` DATETIME NOT NULL,
                             `kaecredit_id` INTEGER,
-                             FOREIGN KEY (`kaecredit_id`) REFERENCES " . $dbFinTables['table_kaecredit'] . "(`kaecredit_id`)" . ",
+                             FOREIGN KEY (`kaecredit_id`) REFERENCES " . $dbFinTables['table_kaecredit'] . "(`kaecredit_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              PRIMARY KEY (`kaewithdr_id`)
                            ) " . $tableOptions;
         Console::stdout("\n4. *** Creating table " . $dbFinTables['table_kaewithdrawal'] . ". *** \n");
@@ -109,11 +109,12 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `inv_number` VARCHAR(255) NOT NULL,
+                            `inv_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `inv_date` INTEGER NOT NULL,
                             `inv_order` VARCHAR(255) NOT NULL,
                             `suppl_id` INTEGER,
                              PRIMARY KEY (`inv_id`),
-                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`)" . "
+                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n6. *** Creating table " . $dbFinTables['table_invoice'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -122,14 +123,14 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE addmap_finance_expenditure */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditure'] .
                           "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `exp_amount` VARCHAR(255) NOT NULL,
+                            `exp_amount` " . $moneyDatatype . " UNSIGNED    NOT NULL,
                             `exp_date` INTEGER NOT NULL,
                             `exp_lock` VARCHAR(255) NOT NULL,
                             `inv_id` INTEGER,
                             `kaewithdr_id` INTEGER,
                              PRIMARY KEY (`exp_id`),
-                             FOREIGN KEY (`inv_id`) REFERENCES " . $dbFinTables['table_invoice'] . "(`inv_id`)" . ",
-                             FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`)" . "
+                             FOREIGN KEY (`inv_id`) REFERENCES " . $dbFinTables['table_invoice'] . "(`inv_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n7. *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -154,8 +155,8 @@ class m171115_101126_finance_init extends Migration
                           "(`exp_id` INTEGER,
                             `deduct_id` INTEGER,
                              PRIMARY KEY (`exp_id`, `deduct_id`),
-                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`)" . ",
-                             FOREIGN KEY (`deduct_id`) REFERENCES " . $dbFinTables['table_deduction'] . "(`deduct_id`)" . "
+                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`deduct_id`) REFERENCES " . $dbFinTables['table_deduction'] . "(`deduct_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n9. *** Creating table " . $dbFinTables['table_expenddeduction'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -178,8 +179,8 @@ class m171115_101126_finance_init extends Migration
                             `expstate_date` DATETIME NOT NULL,
                             `expstate_comment` VARCHAR(200),
                              PRIMARY KEY (`exp_id`, `state_id`),
-                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`)" . ",
-                             FOREIGN KEY (`state_id`) REFERENCES " . $dbFinTables['table_state'] . "(`state_id`)" . "
+                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`state_id`) REFERENCES " . $dbFinTables['table_state'] . "(`state_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n11. *** Creating table " . $dbFinTables['table_expenditurestate'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
