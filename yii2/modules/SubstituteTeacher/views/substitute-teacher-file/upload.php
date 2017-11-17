@@ -10,7 +10,8 @@ $bundle = ModuleAsset::register($this);
 /* @var $searchModel app\models\LeaveSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Files');
+$this->title = Yii::t('substituteteacher', 'Substitute Teacher Files Upload');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Substitute Teacher Files'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -23,8 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attribute' => 'uploadfile',
         'url' => [
-            'file/file-upload',
-            'id' => 'test-please', // $id
+            'substitute-teacher-file/file-upload',
         ],
         'gallery' => false,
 //        'fieldOptions' => [

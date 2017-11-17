@@ -130,9 +130,25 @@ AppAsset::register($this);
                         'label' => 'Αναπληρωτές',
                         'visible' => Yii::$app->user->can('admin'), // TODO change when role is applicable
                         'items' => [
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-file"></i> Αρχεία δεδομένων</li>',
                             [
-                                'label' => 'Αρχεία δεδομένων',
-                                'url' => [ '/SubstituteTeacher/file/index' ]
+                                'label' => 'Διαθέσιμα αρχεία',
+                                'url' => [ '/SubstituteTeacher/substitute-teacher-file/index' ]
+                            ],
+                            [
+                                'label' => 'Μεταφόρτωση αρχείων',
+                                'url' => [ '/SubstituteTeacher/substitute-teacher-file/upload' ]
+                            ],
+
+                            '<li class="divider"></li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
+                            [
+                                'label' => 'Αναπληρωτές',
+                                'url' => [ '#' ]
+                            ],
+                            [
+                                'label' => 'Κενά',
+                                'url' => [ '#' ]
                             ],
                         ],
                     ],
