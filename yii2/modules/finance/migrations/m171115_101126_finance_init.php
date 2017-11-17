@@ -112,7 +112,9 @@ class m171115_101126_finance_init extends Migration
                             `exp_date` INTEGER NOT NULL,
                             `exp_lock` VARCHAR(255) NOT NULL,
                             `kaewithdr_id` INTEGER,
+                            `suppl_id` INTEGER,
                              PRIMARY KEY (`exp_id`),
+                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n7. *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
