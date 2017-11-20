@@ -113,6 +113,9 @@ $config = [
     'aliases' => $aliases,
     // 'catchAll' => ['site/offline'],
     'modules' => [
+        'SubstituteTeacher' => [
+            'class' => 'app\modules\SubstituteTeacher\SubstituteTeacherModule',
+        ],
         'datecontrol' => [
             'class' => 'kartik\datecontrol\Module',
             // format settings for displaying each date attribute (ICU format example)
