@@ -5,12 +5,12 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\KAE;
+use app\modules\finance\models\FinanceSupplier;
 
 /**
- * KAESearch represents the model behind the search form about `app\modules\finance\models\KAE`.
+ * FinanceSupplierSearch represents the model behind the search form about `app\modules\finance\models\FinanceSupplier`.
  */
-class KAESearch extends KAE
+class FinanceSupplierSearch extends FinanceSupplier
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class KAESearch extends KAE
     public function rules()
     {
         return [
-            [['kae_id'], 'integer'],
-            [['kae_title', 'kae_description'], 'safe'],
+            [['suppl_id', 'suppl_vat', 'suppl_phone', 'suppl_fax', 'taxoffice_id'], 'integer'],
+            [['suppl_name', 'suppl_address', 'suppl_iban', 'suppl_employerid'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class KAESearch extends KAE
      */
     public function search($params)
     {
-        $query = KAE::find();
+        $query = FinanceSupplier::find();
 
         // add conditions that should always apply here
 
@@ -59,11 +59,17 @@ class KAESearch extends KAE
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'kae_id' => $this->kae_id,
+            'suppl_id' => $this->suppl_id,
+            'suppl_vat' => $this->suppl_vat,
+            'suppl_phone' => $this->suppl_phone,
+            'suppl_fax' => $this->suppl_fax,
+            'taxoffice_id' => $this->taxoffice_id,
         ]);
 
-        $query->andFilterWhere(['like', 'kae_title', $this->kae_title])
-            ->andFilterWhere(['like', 'kae_description', $this->kae_description]);
+        $query->andFilterWhere(['like', 'suppl_name', $this->suppl_name])
+            ->andFilterWhere(['like', 'suppl_address', $this->suppl_address])
+            ->andFilterWhere(['like', 'suppl_iban', $this->suppl_iban])
+            ->andFilterWhere(['like', 'suppl_employerid', $this->suppl_employerid]);
 
         return $dataProvider;
     }

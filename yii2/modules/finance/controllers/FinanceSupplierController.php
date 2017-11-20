@@ -3,16 +3,16 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
-use app\modules\finance\models\KAE;
-use app\modules\finance\models\KAESearch;
+use app\modules\finance\models\FinanceSupplier;
+use app\modules\finance\models\FinanceSupplierSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * KAEController implements the CRUD actions for KAE model.
+ * FinanceSupplierController implements the CRUD actions for FinanceSupplier model.
  */
-class KAEController extends Controller
+class FinanceSupplierController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,12 +30,12 @@ class KAEController extends Controller
     }
 
     /**
-     * Lists all KAE models.
+     * Lists all FinanceSupplier models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new KAESearch();
+        $searchModel = new FinanceSupplierSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class KAEController extends Controller
     }
 
     /**
-     * Displays a single KAE model.
+     * Displays a single FinanceSupplier model.
      * @param integer $id
      * @return mixed
      */
@@ -57,16 +57,16 @@ class KAEController extends Controller
     }
 
     /**
-     * Creates a new KAE model.
+     * Creates a new FinanceSupplier model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new KAE();
+        $model = new FinanceSupplier();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kae_id]);
+            return $this->redirect(['view', 'id' => $model->suppl_id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -75,7 +75,7 @@ class KAEController extends Controller
     }
 
     /**
-     * Updates an existing KAE model.
+     * Updates an existing FinanceSupplier model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -85,7 +85,7 @@ class KAEController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kae_id]);
+            return $this->redirect(['view', 'id' => $model->suppl_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -94,7 +94,7 @@ class KAEController extends Controller
     }
 
     /**
-     * Deletes an existing KAE model.
+     * Deletes an existing FinanceSupplier model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -107,15 +107,15 @@ class KAEController extends Controller
     }
 
     /**
-     * Finds the KAE model based on its primary key value.
+     * Finds the FinanceSupplier model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return KAE the loaded model
+     * @return FinanceSupplier the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = KAE::findOne($id)) !== null) {
+        if (($model = FinanceSupplier::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

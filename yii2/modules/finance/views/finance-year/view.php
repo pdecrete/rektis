@@ -4,19 +4,19 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\modules\finance\models\KAE */
+/* @var $model app\modules\finance\models\FinanceYear */
 
-$this->title = $model->kae_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kaes'), 'url' => ['index']];
+$this->title = $model->year;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Years'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="kae-view">
+<div class="finance-year-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->kae_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->kae_id], [
+        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->year], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->year], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
@@ -28,9 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'kae_id',
-            'kae_title',
-            'kae_description',
+            'year',
+            'year_credit',
+            'year_lock',
         ],
     ]) ?>
 

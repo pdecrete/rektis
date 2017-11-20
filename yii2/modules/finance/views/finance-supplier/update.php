@@ -3,16 +3,16 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\modules\finance\models\Supplier */
-
+/* @var $model app\modules\finance\models\FinanceSupplier */
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Supplier',
+    'modelClass' => 'Finance Supplier',
 ]) . $model->suppl_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Suppliers'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Suppliers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->suppl_id, 'url' => ['view', 'id' => $model->suppl_id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
-<div class="supplier-update">
+<div class="finance-supplier-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

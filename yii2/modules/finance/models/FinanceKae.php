@@ -13,7 +13,7 @@ use Yii;
  *
  * @property FinanceKaecredit[] $financeKaecredits
  */
-class KAE extends \yii\db\ActiveRecord
+class FinanceKae extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -57,10 +57,10 @@ class KAE extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return KAEQuery the active query used by this AR class.
+     * @return FinanceKaeQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new KAEQuery(get_called_class());
+        return new FinanceKaeQuery(get_called_class());
     }
 }

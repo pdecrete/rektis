@@ -3,11 +3,11 @@
 namespace app\modules\finance\models;
 
 /**
- * This is the ActiveQuery class for [[KAE]].
+ * This is the ActiveQuery class for [[FinanceKae]].
  *
- * @see KAE
+ * @see FinanceKae
  */
-class KAEQuery extends \yii\db\ActiveQuery
+class FinanceKaeQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class KAEQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return KAE[]|array
+     * @return FinanceKae[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class KAEQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return KAE|array|null
+     * @return FinanceKae|array|null
      */
     public function one($db = null)
     {

@@ -3,16 +3,16 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
-use app\modules\finance\models\Supplier;
-use app\modules\finance\models\SupplierQuery;
+use app\modules\finance\models\FinanceYear;
+use app\modules\finance\models\FinanceYearSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * SupplierController implements the CRUD actions for Supplier model.
+ * FinanceYearController implements the CRUD actions for FinanceYear model.
  */
-class SupplierController extends Controller
+class FinanceYearController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,21 +30,22 @@ class SupplierController extends Controller
     }
 
     /**
-     * Lists all Supplier models.
+     * Lists all FinanceYear models.
      * @return mixed
      */
     public function actionIndex()
     {
-        //echo "hallo"; die();
-        
-        $searchModel = new SupplierQuery();
-        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new FinanceYearSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index');
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
-     * Displays a single Supplier model.
+     * Displays a single FinanceYear model.
      * @param integer $id
      * @return mixed
      */
@@ -56,16 +57,16 @@ class SupplierController extends Controller
     }
 
     /**
-     * Creates a new Supplier model.
+     * Creates a new FinanceYear model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Supplier();
+        $model = new FinanceYear();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->suppl_id]);
+            return $this->redirect(['view', 'id' => $model->year]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -74,7 +75,7 @@ class SupplierController extends Controller
     }
 
     /**
-     * Updates an existing Supplier model.
+     * Updates an existing FinanceYear model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -84,7 +85,7 @@ class SupplierController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->suppl_id]);
+            return $this->redirect(['view', 'id' => $model->year]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -93,7 +94,7 @@ class SupplierController extends Controller
     }
 
     /**
-     * Deletes an existing Supplier model.
+     * Deletes an existing FinanceYear model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -106,15 +107,15 @@ class SupplierController extends Controller
     }
 
     /**
-     * Finds the Supplier model based on its primary key value.
+     * Finds the FinanceYear model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Supplier the loaded model
+     * @return FinanceYear the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Supplier::findOne($id)) !== null) {
+        if (($model = FinanceYear::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -4,13 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\modules\finance\models\Supplier */
-
+/* @var $model app\modules\finance\models\FinanceSupplier */
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->title = $model->suppl_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Suppliers'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Suppliers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="supplier-view">
+<div class="finance-supplier-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'suppl_fax',
             'suppl_iban',
             'suppl_employerid',
-            'suppl_taxoffice',
+            'taxoffice_id',
         ],
     ]) ?>
 

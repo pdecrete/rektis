@@ -5,12 +5,12 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\Supplier;
+use app\modules\finance\models\FinanceKae;
 
 /**
- * SupplierQuery represents the model behind the search form about `app\modules\finance\models\Supplier`.
+ * FinanceKaeSearch represents the model behind the search form about `app\modules\finance\models\FinanceKae`.
  */
-class SupplierQuery extends Supplier
+class FinanceKaeSearch extends FinanceKae
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class SupplierQuery extends Supplier
     public function rules()
     {
         return [
-            [['suppl_id', 'suppl_vat', 'suppl_phone', 'suppl_fax', 'suppl_taxoffice'], 'integer'],
-            [['suppl_name', 'suppl_address', 'suppl_iban', 'suppl_employerid'], 'safe'],
+            [['kae_id'], 'integer'],
+            [['kae_title', 'kae_description'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class SupplierQuery extends Supplier
      */
     public function search($params)
     {
-        $query = Supplier::find();
+        $query = FinanceKae::find();
 
         // add conditions that should always apply here
 
@@ -59,17 +59,11 @@ class SupplierQuery extends Supplier
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'suppl_id' => $this->suppl_id,
-            'suppl_vat' => $this->suppl_vat,
-            'suppl_phone' => $this->suppl_phone,
-            'suppl_fax' => $this->suppl_fax,
-            'suppl_taxoffice' => $this->suppl_taxoffice,
+            'kae_id' => $this->kae_id,
         ]);
 
-        $query->andFilterWhere(['like', 'suppl_name', $this->suppl_name])
-            ->andFilterWhere(['like', 'suppl_address', $this->suppl_address])
-            ->andFilterWhere(['like', 'suppl_iban', $this->suppl_iban])
-            ->andFilterWhere(['like', 'suppl_employerid', $this->suppl_employerid]);
+        $query->andFilterWhere(['like', 'kae_title', $this->kae_title])
+            ->andFilterWhere(['like', 'kae_description', $this->kae_description]);
 
         return $dataProvider;
     }

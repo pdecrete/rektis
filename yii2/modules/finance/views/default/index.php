@@ -18,10 +18,12 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-lg-4">
             <h3>Διαχείριση Οικονομικού Έτους</h3>
             <p>Λειτουργίες διαχείρισης οικονομικού έτους (νέο έτος, κατανομή πιστώσεων κτλ.)</p>
+            <p><?= Html::a('Προβολή επιλογών', Url::to(['/finance/finance-year']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
         <div class="col-lg-4">
             <h3>Προμηθευτές</h3>
             <p>Διαχείριση μητρώου προμηθευτών (δημιουργία νέου προμηθευτή, ενημέρωση στοιχείων κτλ.)</p>
+            <p><?= Html::a('Προβολή', Url::to(['/finance/finance-supplier']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
         <div class="col-lg-4">
             <h3>Κρατήσεις</h3>
