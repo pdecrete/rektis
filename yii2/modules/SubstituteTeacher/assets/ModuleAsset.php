@@ -4,7 +4,7 @@ namespace app\modules\SubstituteTeacher\assets;
 class ModuleAsset extends \yii\web\AssetBundle
 {
 
-    public $sourcePath = __DIR__ . '/files';
+    public $sourcePath = '';
     public $css = [
     ];
     public $js = [
@@ -16,4 +16,9 @@ class ModuleAsset extends \yii\web\AssetBundle
         'app\assets\SweetAlertAsset', // TODO: break app dependency!
     ];
 
+    public function init()
+    {
+        parent::init();
+        $this->sourcePath = __DIR__ . '/files';
+    }
 }
