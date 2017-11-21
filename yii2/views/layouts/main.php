@@ -141,6 +141,18 @@ AppAsset::register($this);
                             ],
 
                             '<li class="divider"></li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
+                            [
+                                'label' => 'Πράξεις',
+                                'url' => [ '/SubstituteTeacher/operation/index' ]
+                            ],
+                            [
+                                'label' => 'Σχέσεις πράξεων - ειδικοτήτων',
+                                'url' => [ '/SubstituteTeacher/operation-specialisation/index' ],
+                                'visible' => Yii::$app->user->can('admin'),
+                            ],
+
+                            '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
                             [
                                 'label' => 'Αναπληρωτές',
