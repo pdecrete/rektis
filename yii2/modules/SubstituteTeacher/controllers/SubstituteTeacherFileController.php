@@ -43,7 +43,7 @@ class SubstituteTeacherFileController extends Controller
                     [
                         'actions' => ['index', 'upload', 'file-upload', 'file-delete', 'file-download'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'spedu_user'],
                     ],
                     [
                         'allow' => true,

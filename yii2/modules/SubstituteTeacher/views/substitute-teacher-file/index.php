@@ -1,6 +1,6 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
