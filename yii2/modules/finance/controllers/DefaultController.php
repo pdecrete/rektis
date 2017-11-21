@@ -19,4 +19,14 @@ class DefaultController extends Controller
     {
         return $this->render('index');
     }
+    
+    public function actionAdministeryear()
+    {
+        return $this->render('administeryear');
+    }
+    
+    public function actionParameterize()
+    {
+        return $this->render('parameterize');
+    }
 }

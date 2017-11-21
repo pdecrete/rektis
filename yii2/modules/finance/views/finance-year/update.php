@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceYear */
-
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Finance Year',
 ]) . $model->year;

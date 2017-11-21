@@ -2,8 +2,6 @@
 
 namespace app\modules\finance;
 
-use Yii;
-
 /**
  * finance module definition class
  */
