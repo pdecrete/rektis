@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $year
  * @property string $year_credit
+ * @property integer $year_iscurrent
  * @property integer $year_lock
  *
  * @property FinanceKaecredit[] $financeKaecredits
@@ -30,8 +31,7 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return [
             [['year', 'year_credit'], 'required'],
-            [['year', 'year_lock'], 'integer'],
-            [['year_credit'], 'number'],
+            [['year', 'year_credit', 'year_iscurrent', 'year_lock'], 'integer'],
         ];
     }
 
@@ -43,6 +43,7 @@ class FinanceYear extends \yii\db\ActiveRecord
         return [
             'year' => Yii::t('app', 'Year'),
             'year_credit' => Yii::t('app', 'Year Credit'),
+            'year_iscurrent' => Yii::t('app', 'Year Iscurrent'),
             'year_lock' => Yii::t('app', 'Year Lock'),
         ];
     }

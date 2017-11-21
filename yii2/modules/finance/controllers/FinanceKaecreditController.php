@@ -44,6 +44,11 @@ class FinanceKaecreditController extends Controller
         ]);
     }
 
+ /*   public function actionSetKaeCredits()
+    {
+        
+    }*/
+    
     /**
      * Displays a single FinanceKaecredit model.
      * @param integer $id

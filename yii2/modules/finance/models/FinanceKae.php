@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "{{%finance_kae}}".
  *
  * @property integer $kae_id
+ * @property integer $kae_code
  * @property string $kae_title
  * @property string $kae_description
  *
@@ -29,7 +30,8 @@ class FinanceKae extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kae_title'], 'required'],
+            [['kae_code', 'kae_title'], 'required'],
+            [['kae_code'], 'integer'],
             [['kae_title'], 'string', 'max' => 255],
             [['kae_description'], 'string', 'max' => 1024],
         ];
@@ -42,6 +44,7 @@ class FinanceKae extends \yii\db\ActiveRecord
     {
         return [
             'kae_id' => Yii::t('app', 'Kae ID'),
+            'kae_code' => Yii::t('app', 'Kae Code'),
             'kae_title' => Yii::t('app', 'Kae Title'),
             'kae_description' => Yii::t('app', 'Kae Description'),
         ];

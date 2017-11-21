@@ -42,6 +42,7 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_year'] .
                           " (`year` INTEGER NOT NULL,
                              `year_credit` " . $moneyDatatype . " UNSIGNED NOT NULL,
+                             `year_iscurrent` BOOLEAN NOT NULL DEFAULT 0,
                              `year_lock` BOOLEAN NOT NULL DEFAULT 0,
                               PRIMARY KEY (`year`)
                             ) " . $tableOptions;
@@ -52,6 +53,7 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE addmap_finance_kae */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kae'] .
                            " (`kae_id` INTEGER NOT NULL AUTO_INCREMENT,
+                              `kae_code` SMALLINT NOT NULL,
                               `kae_title` VARCHAR(255) NOT NULL,
                               `kae_description` VARCHAR(1024),
                                PRIMARY KEY (`kae_id`)

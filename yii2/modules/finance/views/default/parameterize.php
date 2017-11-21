@@ -15,6 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="body-content">
 
     <div class="row">
+    	<div class="col-lg-4">
+            <h3>Τρέχον έτος</h3>
+            <p>Καθορισμός τρέχοντος έτους</p>
+            <p><?= Html::a('Αλλαγή Έτους', Url::to(['/finance/finance-kae']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+        </div>
 		<div class="col-lg-4">
             <h3>Διαχείριση ΚΑΕ</h3>
             <p>Δημιουργία νέου ΚΑΕ, επεξεργασία, διαγραφή</p>

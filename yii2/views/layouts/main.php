@@ -179,33 +179,28 @@ AppAsset::register($this);
                         'visible' => !Yii::$app->user->isGuest,
                         'items' => [
                             [	'label' => 'Διαχείριση Οικονομικού Έτους',
-                                'url' => ['/employee/index']
-                            ],
-                            '<li class="divider"></li>',
-                            [	'label' => 'Προμηθευτές',
-                                'url' => ['/finance/finance-supplier']
-                            ],
-                            [
-                                'label' => 'Κρατήσεις',
-                                'url' => ['/leave-print'],
-                            ],
-                            '<li class="divider"></li>',
-                            [	'label' => 'KAE',
-                                'url' => ['/finance/finance-kae']
+                                'url' => ['/finance/default/administeryear']
                             ],
                             '<li class="divider"></li>',
                             [
                                 'label' => 'Δαπάνες',
-                                'url' => ['/leave-balance'],
+                                'url' => ['/finance/default'],
                             ],
                             [
                                 'label' => 'Τιμολόγια',
-                                'url' => ['/leave-balance'],
+                                'url' => ['/finance/default'],
+                            ],
+                            [	'label' => 'Προμηθευτές',
+                                'url' => ['/finance/finance-supplier']
+                            ],
+                            [	'label' => 'Αναφορές',
+                                'url' => ['/finance/default']
                             ],
                             '<li class="divider"></li>',
-                            [	'label' => 'Αναφορές',
-                                'url' => ['/leave']
+                            [	'label' => 'Παραμετροποίηση',
+                                'url' => ['/finance/default/parameterize']
                             ],
+
                         ],
                     ],
                     [ 	'label' => 'Σχετικά',

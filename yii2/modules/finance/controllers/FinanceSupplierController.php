@@ -28,7 +28,7 @@ class FinanceSupplierController extends Controller
             ],
         ];
     }
-
+    
     /**
      * Lists all FinanceSupplier models.
      * @return mixed

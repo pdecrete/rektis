@@ -18,8 +18,7 @@ class FinanceKaecreditSearch extends FinanceKaecredit
     public function rules()
     {
         return [
-            [['kaecredit_id', 'year', 'kae_id'], 'integer'],
-            [['kaecredit_amount'], 'number'],
+            [['kaecredit_id', 'kaecredit_amount', 'year', 'kae_id'], 'integer'],
             [['kaecredit_date'], 'safe'],
         ];
     }
