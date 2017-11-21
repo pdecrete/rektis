@@ -32,9 +32,9 @@ class OperationController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update'],
+                        'actions' => ['index', 'view', 'create', 'update'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'spedu_user'],
                     ],
                     [
                         'allow' => true,
