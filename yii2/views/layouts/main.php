@@ -183,11 +183,15 @@ AppAsset::register($this);
                             ],
                             '<li class="divider"></li>',
                             [	'label' => 'Προμηθευτές',
-                                'url' => ['/leave']
+                                'url' => ['/finance/finance-supplier']
                             ],
                             [
                                 'label' => 'Κρατήσεις',
                                 'url' => ['/leave-print'],
+                            ],
+                            '<li class="divider"></li>',
+                            [	'label' => 'KAE',
+                                'url' => ['/finance/finance-kae']
                             ],
                             '<li class="divider"></li>',
                             [
