@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-lg-4">
             <h3>Πιστώσεις ΚΑΕ</h3>
             <p>Απόδοση Πιστώσεων στους ΚΑΕ του τρέχοντος έτους</p>
-            <p><?= Html::a('Καθορισμός Πιστώσεων', Url::to(['/finance/finance-supplier']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p><?= Html::a('Καθορισμός Πιστώσεων', Url::to(['/finance/finance-kaecredit']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
         <div class="col-lg-4">
             <h3>Κρατήσεις</h3>

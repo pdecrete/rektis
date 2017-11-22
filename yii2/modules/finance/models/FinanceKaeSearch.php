@@ -18,7 +18,7 @@ class FinanceKaeSearch extends FinanceKae
     public function rules()
     {
         return [
-            [['kae_id', 'kae_code'], 'integer'],
+            [['kae_id'], 'integer'],
             [['kae_title', 'kae_description'], 'safe'],
         ];
     }
@@ -60,7 +60,6 @@ class FinanceKaeSearch extends FinanceKae
         // grid filtering conditions
         $query->andFilterWhere([
             'kae_id' => $this->kae_id,
-            'kae_code' => $this->kae_code,
         ]);
 
         $query->andFilterWhere(['like', 'kae_title', $this->kae_title])

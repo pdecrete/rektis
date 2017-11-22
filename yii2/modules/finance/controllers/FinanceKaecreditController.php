@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceKaecreditSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\modules\finance\models\FinanceKae;
 
 /**
  * FinanceKaecreditController implements the CRUD actions for FinanceKaecredit model.
@@ -68,7 +69,23 @@ class FinanceKaecreditController extends Controller
      */
     public function actionCreate()
     {
-        $model = new FinanceKaecredit();
+        $allkaes = FinanceKae::find()->asArray()->all();
+        
+        $kaecredit = array();
+        $i = 0;
+        foreach ($allkaes as $kae)
+        {
+            $kaecredit[$i] = new FinanceKaecredit();
+            $kaecredit[$i]->kae_id = $kae['kae_id'];
+            $kaecredit[$i]->kaecredit_amount = 0;
+            $kaecredit[$i]->kaecredit_date = date("d-m-Y H:i:s");
+            $kaecredit[$i++]->year = Yii::$app->session["working_year"];
+        }
+        //echo "<pre>"; print_r($kaecredit); echo "</pre>";
+        //die();
+        return $this->render('create', [
+            'model' => $kaecredit,
+        ]);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->kaecredit_id]);
@@ -85,11 +102,14 @@ class FinanceKaecreditController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    public function actionUpdate()
+    {//echo "Hallo"; die();
+        //$model = $this->findModel($id);
+        $model = FinanceKae::find()->asArray()->all();
+        //foreach ()
+        if ($model->load(Yii::$app->request->post())) {
+            foreach($model as $kaecredit)
+                //FinanceKaecredit::loa
             return $this->redirect(['view', 'id' => $model->kaecredit_id]);
         } else {
             return $this->render('update', [

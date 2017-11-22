@@ -53,8 +53,7 @@ class m171115_101126_finance_init extends Migration
             
         /* CREATE TABLE addmap_finance_kae */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kae'] .
-                           " (`kae_id` INTEGER NOT NULL AUTO_INCREMENT,
-                              `kae_code` SMALLINT NOT NULL,
+                           " (`kae_id` INTEGER NOT NULL,                              
                               `kae_title` VARCHAR(255) NOT NULL,
                               `kae_description` VARCHAR(1024),
                                PRIMARY KEY (`kae_id`)
@@ -62,7 +61,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kae'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbFinTables['table_kae'] . "(kae_code, kae_title) VALUES ";
+        $insert_command = "INSERT INTO " . $dbFinTables['table_kae'] . "(kae_id, kae_title) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(0516, 'Υπερωριακή αποζημίωση εκπαιδευτικών (μονίμων και αναπλητωτών)')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0719, 'Λοιπά έξοδα μετακίνησης')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0721, 'Ημερήσια αποζημίωση')")->execute();
