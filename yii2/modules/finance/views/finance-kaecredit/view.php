@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'kaecredit_id',
             'kaecredit_amount',
             'kaecredit_date',
+            'kaecredit_updated',
             'year',
             'kae_id',
         ],

@@ -19,6 +19,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'year_credit') ?>
 
+    <?= $form->field($model, 'year_iscurrent') ?>
+
     <?= $form->field($model, 'year_lock') ?>
 
     <div class="form-group">

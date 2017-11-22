@@ -18,8 +18,7 @@ class FinanceYearSearch extends FinanceYear
     public function rules()
     {
         return [
-            [['year', 'year_lock'], 'integer'],
-            [['year_credit'], 'number'],
+            [['year', 'year_credit', 'year_iscurrent', 'year_lock'], 'integer'],
         ];
     }
 
@@ -61,6 +60,7 @@ class FinanceYearSearch extends FinanceYear
         $query->andFilterWhere([
             'year' => $this->year,
             'year_credit' => $this->year_credit,
+            'year_iscurrent' => $this->year_iscurrent,
             'year_lock' => $this->year_lock,
         ]);
 

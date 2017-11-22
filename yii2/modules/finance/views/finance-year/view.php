@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'year',
             'year_credit',
             'year_lock',
+            'year_iscurrent'
         ],
     ]) ?>
 

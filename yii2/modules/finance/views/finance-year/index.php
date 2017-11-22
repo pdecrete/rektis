@@ -26,7 +26,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'year',
             'year_credit',
+            'year_iscurrent',
             'year_lock',
+            
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -21,9 +21,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'kaecredit_date') ?>
 
+    <?= $form->field($model, 'kaecredit_updated') ?>
+
     <?= $form->field($model, 'year') ?>
 
-    <?= $form->field($model, 'kae_id') ?>
+    <?php // echo $form->field($model, 'kae_id') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

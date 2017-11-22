@@ -19,7 +19,7 @@ class FinanceKaecreditSearch extends FinanceKaecredit
     {
         return [
             [['kaecredit_id', 'kaecredit_amount', 'year', 'kae_id'], 'integer'],
-            [['kaecredit_date'], 'safe'],
+            [['kaecredit_date', 'kaecredit_updated'], 'safe'],
         ];
     }
 
@@ -62,6 +62,7 @@ class FinanceKaecreditSearch extends FinanceKaecredit
             'kaecredit_id' => $this->kaecredit_id,
             'kaecredit_amount' => $this->kaecredit_amount,
             'kaecredit_date' => $this->kaecredit_date,
+            'kaecredit_updated' => $this->kaecredit_updated,
             'year' => $this->year,
             'kae_id' => $this->kae_id,
         ]);
