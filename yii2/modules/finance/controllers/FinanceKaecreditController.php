@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKae;
+use yii\base\Model;
+use yii\base\Exception;
 
 /**
  * FinanceKaecreditController implements the CRUD actions for FinanceKaecredit model.
@@ -71,27 +73,40 @@ class FinanceKaecreditController extends Controller
     {
         $allkaes = FinanceKae::find()->asArray()->all();
         
-        $kaecredit = array();
+        $kaecredits = array();
+        $kaetitles = array();
         $i = 0;
         foreach ($allkaes as $kae)
         {
-            $kaecredit[$i] = new FinanceKaecredit();
-            $kaecredit[$i]->kae_id = $kae['kae_id'];
-            $kaecredit[$i]->kaecredit_amount = 0;
-            $kaecredit[$i]->kaecredit_date = date("d-m-Y H:i:s");
-            $kaecredit[$i++]->year = Yii::$app->session["working_year"];
+            $kaetitles[$i] = $kae['kae_title'];
+            $kaecredits[$i] = new FinanceKaecredit();
+            $kaecredits[$i]->kae_id = $kae['kae_id'];
+            $kaecredits[$i]->kaecredit_amount = 0;
+            $kaecredits[$i]->kaecredit_date = date("Y-m-d H:i:s");
+            $kaecredits[$i++]->year = Yii::$app->session["working_year"];
+            if($i == 2) break;
         }
-        //echo "<pre>"; print_r($kaecredit); echo "</pre>";
-        //die();
-        return $this->render('create', [
-            'model' => $kaecredit,
-        ]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kaecredit_id]);
+        
+        if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
+           //echo "<pre>"; print_r(Yii::$app->request->post()); echo "</pre>"; die();
+            //Model::loadMultiple($kaecredits, $data);
+            //echo "<pre>"; print_r($kaecredits); echo "</pre>"; die();
+            
+            if(Model::loadMultiple($kaecredits, $userdata) && Model::validateMultiple($kaecredits))
+                foreach ($kaecredits as $kaecredit)
+                {   
+                    $kaecredits->kaecredit_amount = bcdiv($kaecredits->kaecredit_amount*100, 1, 2);
+                    echo $kaecredits->kaecredit_amount; die();
+                    $kaecredit->save();
+                }
+            else throw new Exception("Data validation failure.");
+            
+            return $this->redirect(['/finance/finance-kaecredit']);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                'model' => $kaecredits,
+                'kaetitles' => $kaetitles
             ]);
         }
     }

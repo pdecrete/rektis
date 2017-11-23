@@ -98,8 +98,8 @@ class m171115_101126_finance_init extends Migration
                             `kaecredit_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `kaecredit_date` DATETIME NOT NULL,
                             `kaecredit_updated` DATETIME,
-                            `year` INTEGER,
-                            `kae_id` INTEGER,
+                            `year` INTEGER NOT NULL,
+                            `kae_id` INTEGER NOT NULL,
                              FOREIGN KEY (`year`) REFERENCES " . $dbFinTables['table_year'] . "(`year`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`kae_id`) REFERENCES " . $dbFinTables['table_kae'] . "(`kae_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              PRIMARY KEY (`kaecredit_id`)
@@ -114,7 +114,7 @@ class m171115_101126_finance_init extends Migration
                             `kaewithdr_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `kaewithdr_decision` VARCHAR(255) NOT NULL,
                             `kaewithdr_date` DATETIME NOT NULL,
-                            `kaecredit_id` INTEGER,
+                            `kaecredit_id` INTEGER NOT NULL,
                              FOREIGN KEY (`kaecredit_id`) REFERENCES " . $dbFinTables['table_kaecredit'] . "(`kaecredit_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              PRIMARY KEY (`kaewithdr_id`)
                            ) " . $tableOptions;
@@ -158,8 +158,8 @@ class m171115_101126_finance_init extends Migration
                             `exp_date` INTEGER NOT NULL,
                             `exp_lock` VARCHAR(255) NOT NULL,
                             `exp_deleted` BOOLEAN NOT NULL DEFAULT 0,
-                            `kaewithdr_id` INTEGER,
-                            `suppl_id` INTEGER,
+                            `kaewithdr_id` INTEGER NOT NULL,
+                            `suppl_id` INTEGER NOT NULL,
                              PRIMARY KEY (`exp_id`),
                              FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
@@ -178,8 +178,8 @@ class m171115_101126_finance_init extends Migration
                             `inv_dedections` TEXT,
                             `inv_roundings` SMALLINT,
                             `inv_deleted` BOOLEAN NOT NULL DEFAULT 0,
-                            `suppl_id` INTEGER,
-                            `exp_id` INTEGER,
+                            `suppl_id` INTEGER NOT NULL,
+                            `exp_id` INTEGER NOT NULL,
                              PRIMARY KEY (`inv_id`),
                              FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
@@ -226,8 +226,8 @@ class m171115_101126_finance_init extends Migration
         
         /* CREATE TABLE addmap_finance_expenditurestate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditurestate'] .
-                          "(`exp_id` INTEGER,
-                            `state_id` INTEGER,
+                          "(`exp_id` INTEGER NOT NULL,
+                            `state_id` INTEGER NOT NULL,
                             `expstate_date` DATETIME NOT NULL,
                             `expstate_comment` VARCHAR(200),
                              PRIMARY KEY (`exp_id`, `state_id`),
