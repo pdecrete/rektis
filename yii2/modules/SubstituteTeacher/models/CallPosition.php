@@ -48,13 +48,13 @@ class CallPosition extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'call_id' => Yii::t('app', 'Call ID'),
-            'position_id' => Yii::t('app', 'Position ID'),
-            'teachers_count' => Yii::t('app', 'Teachers Count'),
-            'hours_count' => Yii::t('app', 'Hours Count'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'call_id' => Yii::t('substituteteacher', 'Call ID'),
+            'position_id' => Yii::t('substituteteacher', 'Position ID'),
+            'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
+            'hours_count' => Yii::t('substituteteacher', 'Hours Count'),
+            'created_at' => Yii::t('substituteteacher', 'Created At'),
+            'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
     }
 

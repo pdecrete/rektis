@@ -58,18 +58,18 @@ class Position extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'title' => Yii::t('app', 'Title'),
-            'operation_id' => Yii::t('app', 'Operation ID'),
-            'specialisation_id' => Yii::t('app', 'Specialisation ID'),
-            'prefecture_id' => Yii::t('app', 'Prefecture ID'),
-            'teachers_count' => Yii::t('app', 'Teachers Count'),
-            'hours_count' => Yii::t('app', 'Hours Count'),
-            'whole_teacher_hours' => Yii::t('app', 'Whole Teacher Hours'),
-            'covered_teachers_count' => Yii::t('app', 'Covered Teachers Count'),
-            'covered_hours_count' => Yii::t('app', 'Covered Hours Count'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'title' => Yii::t('substituteteacher', 'Title'),
+            'operation_id' => Yii::t('substituteteacher', 'Operation ID'),
+            'specialisation_id' => Yii::t('substituteteacher', 'Specialisation ID'),
+            'prefecture_id' => Yii::t('substituteteacher', 'Prefecture ID'),
+            'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
+            'hours_count' => Yii::t('substituteteacher', 'Hours Count'),
+            'whole_teacher_hours' => Yii::t('substituteteacher', 'Whole Teacher Hours'),
+            'covered_teachers_count' => Yii::t('substituteteacher', 'Covered Teachers Count'),
+            'covered_hours_count' => Yii::t('substituteteacher', 'Covered Hours Count'),
+            'created_at' => Yii::t('substituteteacher', 'Created At'),
+            'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
     }
 

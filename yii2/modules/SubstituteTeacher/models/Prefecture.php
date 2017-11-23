@@ -41,9 +41,9 @@ class Prefecture extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'region' => Yii::t('app', 'Region'),
-            'prefecture' => Yii::t('app', 'Prefecture'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'region' => Yii::t('substituteteacher', 'Region'),
+            'prefecture' => Yii::t('substituteteacher', 'Prefecture'),
         ];
     }
 

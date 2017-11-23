@@ -46,13 +46,13 @@ class Call extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'title' => Yii::t('app', 'Title'),
-            'description' => Yii::t('app', 'Description'),
-            'application_start' => Yii::t('app', 'Application Start'),
-            'application_end' => Yii::t('app', 'Application End'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'title' => Yii::t('substituteteacher', 'Title'),
+            'description' => Yii::t('substituteteacher', 'Description'),
+            'application_start' => Yii::t('substituteteacher', 'Application Start'),
+            'application_end' => Yii::t('substituteteacher', 'Application End'),
+            'created_at' => Yii::t('substituteteacher', 'Created At'),
+            'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
     }
 
