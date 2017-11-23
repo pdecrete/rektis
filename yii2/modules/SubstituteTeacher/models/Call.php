@@ -3,6 +3,8 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%stcall}}".
@@ -37,6 +39,21 @@ class Call extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['application_start', 'application_end', 'created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 500],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()')
+            ]
         ];
     }
 

@@ -53,6 +53,7 @@ class m171122_082039_positions extends Migration
         // create junction table to associate operations to specialisations
         $this->createTable('{{%stcall_position}}', [
             'id' => $this->primaryKey(),
+            'group' => $this->integer()->unsigned()->defaultValue(0),
             'call_id' => $this->integer()->defaultValue(null),
             'position_id' => $this->integer()->defaultValue(null),
             'teachers_count' => $this->smallInteger()->unsigned()->notNull()
@@ -64,6 +65,7 @@ class m171122_082039_positions extends Migration
             ], $tableOptions);
         $this->createIndex('call_idx', '{{%stcall_position}}', 'call_id');
         $this->createIndex('operation_idx', '{{%stcall_position}}', 'position_id');
+        $this->createIndex('group_idx', '{{%stcall_position}}', ['call_id', 'group']);
         $this->addForeignKey('fk_stcall_position_call', '{{%stcall_position}}', 'call_id', '{{%stcall}}', 'id', 'RESTRICT', 'CASCADE');
         $this->addForeignKey('fk_stcall_position_position', '{{%stcall_position}}', 'position_id', '{{%stposition}}', 'id', 'RESTRICT', 'CASCADE');
     }

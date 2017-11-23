@@ -3,11 +3,14 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%stcall_position}}".
  *
  * @property integer $id
+ * @property integer $group
  * @property integer $call_id
  * @property integer $position_id
  * @property integer $teachers_count
@@ -34,11 +37,26 @@ class CallPosition extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['call_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
-            [['teachers_count', 'hours_count'], 'required'],
+            [['group', 'call_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
+            [['group', 'teachers_count', 'hours_count'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()')
+            ]
         ];
     }
 
@@ -49,6 +67,7 @@ class CallPosition extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
+            'group' => Yii::t('substituteteacher', 'Positions Group'),
             'call_id' => Yii::t('substituteteacher', 'Call ID'),
             'position_id' => Yii::t('substituteteacher', 'Position ID'),
             'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
