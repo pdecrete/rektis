@@ -38,11 +38,20 @@ class FinanceKaecreditController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new FinanceKaecreditSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        //$searchModel = new FinanceKaecreditSearch();
+        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        //$dataProvider = FinanceKaecredit::find()->select('admapp_finance_kaecredit.*')->innerJoin('admapp_finance_kae', 'admapp_finance_kae.kae_id = admapp_finance_kaecredit.kae_id')->where(['year' => Yii::$app->session["working_year"]])->all();
+        $dataProvider = (new \yii\db\Query())
+                        ->select(['tblcredit.kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated'])
+                        ->from(['admapp_finance_kae tblkae' , 'admapp_finance_kaecredit tblcredit'])
+                        ->where('tblcredit.kae_id = tblkae.kae_id')
+                        ->andWhere(['year' => Yii::$app->session["working_year"]])                        
+                        ->all();
+        //echo "<pre>"; print_r($dataProvider); echo "</pre>";die();
+        
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            //'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -71,39 +80,29 @@ class FinanceKaecreditController extends Controller
      */
     public function actionCreate()
     {
+        $isYearKAEsSet = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->count("kae_id"); 
+        if($isYearKAEsSet)
+            return $this->redirect(['/finance/finance-kaecredit/update']);
+        
         $allkaes = FinanceKae::find()->asArray()->all();
         
         $kaecredits = array();
         $kaetitles = array();
         $i = 0;
-        foreach ($allkaes as $kae)
-        {
+        foreach ($allkaes as $kae){
             $kaetitles[$i] = $kae['kae_title'];
             $kaecredits[$i] = new FinanceKaecredit();
             $kaecredits[$i]->kae_id = $kae['kae_id'];
             $kaecredits[$i]->kaecredit_amount = 0;
             $kaecredits[$i]->kaecredit_date = date("Y-m-d H:i:s");
             $kaecredits[$i++]->year = Yii::$app->session["working_year"];
-            if($i == 2) break;
         }
-
-        
+    
         if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
-           //echo "<pre>"; print_r(Yii::$app->request->post()); echo "</pre>"; die();
-            //Model::loadMultiple($kaecredits, $data);
-            //echo "<pre>"; print_r($kaecredits); echo "</pre>"; die();
-            
-            if(Model::loadMultiple($kaecredits, $userdata) && Model::validateMultiple($kaecredits))
-                foreach ($kaecredits as $kaecredit)
-                {   
-                    $kaecredits->kaecredit_amount = bcdiv($kaecredits->kaecredit_amount*100, 1, 2);
-                    echo $kaecredits->kaecredit_amount; die();
-                    $kaecredit->save();
-                }
-            else throw new Exception("Data validation failure.");
-            
+            $this->saveModels($kaecredits);            
             return $this->redirect(['/finance/finance-kaecredit']);
-        } else {
+        } 
+        else {
             return $this->render('create', [
                 'model' => $kaecredits,
                 'kaetitles' => $kaetitles
@@ -111,6 +110,32 @@ class FinanceKaecreditController extends Controller
         }
     }
 
+    
+    private function saveModels($kaecredits)
+    {
+        foreach($kaecredits as $kaecredit)
+            $kaecredit->kaecredit_amount = intval($kaecredit->kaecredit_amount*100);
+            
+            if(Model::validateMultiple($kaecredits)){
+                $transaction = Yii::$app->db->beginTransaction();
+                try{
+                    foreach ($kaecredits as $kaecredit)
+                        $kaecredit->save();
+                        $transaction->commit();
+                        Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
+                        return $this->redirect(['/finance/finance-kaecredit']);
+                        
+                }
+                catch(Exception $e){
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('danger', "Οι ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.");
+                    return $this->redirect(['/finance/finance-kaecredit']);
+                }
+            }
+            else
+                throw new Exception("Data validation failure.");
+    }
+    
     /**
      * Updates an existing FinanceKaecredit model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -118,17 +143,21 @@ class FinanceKaecreditController extends Controller
      * @return mixed
      */
     public function actionUpdate()
-    {//echo "Hallo"; die();
-        //$model = $this->findModel($id);
-        $model = FinanceKae::find()->asArray()->all();
-        //foreach ()
-        if ($model->load(Yii::$app->request->post())) {
-            foreach($model as $kaecredit)
-                //FinanceKaecredit::loa
-            return $this->redirect(['view', 'id' => $model->kaecredit_id]);
+    {
+        $allkaes = FinanceKae::find()->asArray()->all();
+        foreach($allkaes as $index => $kae)
+            $kaes[$index] = $kae['kae_title'];
+        //echo "<pre>"; print_r($kaes); echo "</pre>";die();
+        //$kaes = FinanceKae::find()->all();
+        $kaecredits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
+        
+        if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
+            $this->saveModels($kaecredits);
+            return $this->redirect(['/finance/finance-kaecredit']);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                'model' => $kaecredits,
+                'kaetitles' => $kaes
             ]);
         }
     }

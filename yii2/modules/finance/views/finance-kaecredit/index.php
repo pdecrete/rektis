@@ -2,13 +2,22 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\data\ArrayDataProvider;
+use yii\grid\ActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaecreditSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->title = Yii::t('app', 'Finance Kaecredits');
 $this->params['breadcrumbs'][] = $this->title;
+
+$provider = new ArrayDataProvider([
+    'allModels' => $dataProvider,
+    'pagination' => false,
+    'sort' => ['attributes' => ['kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated']],
+]);
 ?>
 <div class="finance-kaecredit-index">
 
@@ -16,21 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Edit All Credits'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Set RCN Credits'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'kaecredit_id',
-            'kaecredit_amount',
-            'kaecredit_date',
-            'year',
-            'kae_id',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+	<?= GridView::widget(   [  'dataProvider' => $provider,
+	                           'columns' => [  
+                                                'kae_id',
+                                                'kae_title',
+                                                'kaecredit_amount',
+                                                'kaecredit_date',
+	                                            'kaecredit_updated',
+	                                           ]]);
+    ?>
 </div>

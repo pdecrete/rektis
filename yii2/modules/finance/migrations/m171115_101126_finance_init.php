@@ -39,7 +39,7 @@ class m171115_101126_finance_init extends Migration
             'table_expenditurestate' => $this->db->tablePrefix . 'finance_expenditurestate'
         ];
         $i = 1;
-        /* CREATE TABLE addmap_finance_year */
+        /* CREATE TABLE admapp_finance_year */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_year'] .
                           " (`year` INTEGER NOT NULL,
                              `year_credit` " . $moneyDatatype . " UNSIGNED NOT NULL,
@@ -51,7 +51,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
             
-        /* CREATE TABLE addmap_finance_kae */
+        /* CREATE TABLE admapp_finance_kae */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kae'] .
                            " (`kae_id` INTEGER NOT NULL,                              
                               `kae_title` VARCHAR(255) NOT NULL,
@@ -92,7 +92,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(9831, 'Δαπάνες Ύδρευσης και Άδρευσης')")->execute();
         Yii::$app->db->createCommand($insert_command . "(9832, 'Δαπάνες Ηλεκτρικής Ενέργειας')")->execute();
 
-        /* CREATE TABLE addmap_finance_kaecredit */
+        /* CREATE TABLE admapp_finance_kaecredit */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecredit'] .
                           "(`kaecredit_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `kaecredit_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
@@ -102,13 +102,14 @@ class m171115_101126_finance_init extends Migration
                             `kae_id` INTEGER NOT NULL,
                              FOREIGN KEY (`year`) REFERENCES " . $dbFinTables['table_year'] . "(`year`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`kae_id`) REFERENCES " . $dbFinTables['table_kae'] . "(`kae_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                             PRIMARY KEY (`kaecredit_id`)
+                             PRIMARY KEY (`kaecredit_id`),
+                             UNIQUE KEY (`year`, `kae_id`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kaecredit'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_kaewithdrawal */
+        /* CREATE TABLE admapp_finance_kaewithdrawal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaewithdrawal'] .
                           "(`kaewithdr_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `kaewithdr_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
@@ -122,7 +123,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_taxoffice */
+        /* CREATE TABLE admapp_finance_taxoffice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_taxoffice'] . "
                             (`taxoffice_id` INTEGER NOT NULL,
                              `taxoffice_name` VARCHAR(100) NOT NULL,
@@ -133,7 +134,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();        
         
-        /* CREATE TABLE addmap_finance_supplier */
+        /* CREATE TABLE admapp_finance_supplier */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_supplier'] .
                           "(`suppl_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `suppl_name` VARCHAR(255) NOT NULL,
@@ -145,13 +146,14 @@ class m171115_101126_finance_init extends Migration
                             `suppl_employerid` VARCHAR(100) NOT NULL,
                             `taxoffice_id` INTEGER NOT NULL,
                              FOREIGN KEY (`taxoffice_id`) REFERENCES " . $dbFinTables['table_taxoffice'] . "(`taxoffice_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                             PRIMARY KEY (`suppl_id`)
+                             PRIMARY KEY (`suppl_id`),
+                             UNIQUE KEY (`suppl_vat`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_supplier'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
 
-        /* CREATE TABLE addmap_finance_expenditure */
+        /* CREATE TABLE admapp_finance_expenditure */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditure'] .
                           "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `exp_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
@@ -168,7 +170,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_invoice */
+        /* CREATE TABLE admapp_finance_invoice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `inv_number` VARCHAR(255) NOT NULL, 
@@ -182,13 +184,14 @@ class m171115_101126_finance_init extends Migration
                             `exp_id` INTEGER NOT NULL,
                              PRIMARY KEY (`inv_id`),
                              FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                             FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             UNIQUE KEY (`exp_id`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_invoice'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
 
-        /* CREATE TABLE addmap_finance_deduction */
+        /* CREATE TABLE admapp_finance_deduction */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_deduction'] .
                           "(`deduct_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `deduct_name` VARCHAR(100) NOT NULL,
@@ -202,7 +205,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_expenddeduction */
+        /* CREATE TABLE admapp_finance_expenddeduction */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenddeduction'] .
                           "(`exp_id` INTEGER,
                             `deduct_id` INTEGER,
@@ -214,7 +217,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_state */
+        /* CREATE TABLE admapp_finance_state */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_state'] .
                           "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `state_name` VARCHAR(100),
@@ -224,7 +227,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
-        /* CREATE TABLE addmap_finance_expenditurestate */
+        /* CREATE TABLE admapp_finance_expenditurestate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditurestate'] .
                           "(`exp_id` INTEGER NOT NULL,
                             `state_id` INTEGER NOT NULL,
