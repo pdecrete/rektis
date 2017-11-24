@@ -163,11 +163,11 @@ AppAsset::register($this);
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
                             [
-                                'label' => 'Αναπληρωτές',
-                                'url' => [ '#' ]
+                                'label' => 'Λειτουργικά κενά',
+                                'url' => [ '/SubstituteTeacher/position/index' ]
                             ],
                             [
-                                'label' => 'Κενά',
+                                'label' => 'Αναπληρωτές',
                                 'url' => [ '#' ]
                             ],
                         ],

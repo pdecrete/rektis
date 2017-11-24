@@ -1,8 +1,8 @@
 <?php
-
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%stprefecture}}".
@@ -15,6 +15,9 @@ use Yii;
  */
 class Prefecture extends \yii\db\ActiveRecord
 {
+
+    public $label;
+
     /**
      * @inheritdoc
      */
@@ -53,6 +56,29 @@ class Prefecture extends \yii\db\ActiveRecord
     public function getPositions()
     {
         return $this->hasMany(Position::className(), ['prefecture_id' => 'id']);
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->label = "{$this->prefecture}, {$this->region}";
+    }
+
+    /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * 
+     * @param null|string $region if provided, filters by region
+     */
+    public static function selectables($region = null)
+    {
+        $choices_aq = new PrefectureQuery(get_called_class());
+        if ($region !== null) {
+            $choices_aq->where(['region' => $region]);
+        }
+        $choices_aq->orderBy(['region' => SORT_ASC]);
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'prefecture', 'region');
     }
 
     /**

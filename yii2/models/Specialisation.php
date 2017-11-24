@@ -1,8 +1,8 @@
 <?php
-
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%specialisation}}".
@@ -15,6 +15,8 @@ use Yii;
  */
 class Specialisation extends \yii\db\ActiveRecord
 {
+
+    public $label;
 
     /**
      * @inheritdoc
@@ -55,6 +57,24 @@ class Specialisation extends \yii\db\ActiveRecord
     public function getEmployees()
     {
         return $this->hasMany(Employee::className(), ['specialisation' => 'id']);
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->label = "{$this->code} {$this->name}";
+    }
+
+    /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * 
+     */
+    public static function selectables()
+    {
+        $choices_aq = new SpecialisationQuery(get_called_class());
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'label');
     }
 
     /**
