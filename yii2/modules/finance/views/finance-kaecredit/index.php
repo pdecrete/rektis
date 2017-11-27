@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ArrayDataProvider;
 use yii\grid\ActionColumn;
+use yii\grid\CheckboxColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaecreditSearch */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $provider = new ArrayDataProvider([
     'allModels' => $dataProvider,
     'pagination' => false,
-    'sort' => ['attributes' => ['kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated']],
+    'sort' => ['attributes' => ['kae_id', 'kae_title', 'credit', 'kaecredit_date', 'kaecredit_updated']],
 ]);
 ?>
 <div class="finance-kaecredit-index">
@@ -24,16 +25,18 @@ $provider = new ArrayDataProvider([
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
+    <p class="text-right">
         <?= Html::a(Yii::t('app', 'Set RCN Credits'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 	<?= GridView::widget(   [  'dataProvider' => $provider,
 	                           'columns' => [  
                                                 'kae_id',
                                                 'kae_title',
-                                                'kaecredit_amount',
+                                                'credit',
                                                 'kaecredit_date',
 	                                            'kaecredit_updated',
-	                                           ]]);
+	                                           ]
+	                        ]);
     ?>
 </div>
+

@@ -4,13 +4,13 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\models\FinanceKaecredit;
-use app\modules\finance\models\FinanceKaecreditSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKae;
 use yii\base\Model;
 use yii\base\Exception;
+use app\modules\finance\components\Money;
 
 /**
  * FinanceKaecreditController implements the CRUD actions for FinanceKaecredit model.
@@ -41,14 +41,12 @@ class FinanceKaecreditController extends Controller
         //$searchModel = new FinanceKaecreditSearch();
         //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
-        //$dataProvider = FinanceKaecredit::find()->select('admapp_finance_kaecredit.*')->innerJoin('admapp_finance_kae', 'admapp_finance_kae.kae_id = admapp_finance_kaecredit.kae_id')->where(['year' => Yii::$app->session["working_year"]])->all();
         $dataProvider = (new \yii\db\Query())
-                        ->select(['tblcredit.kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated'])
+                        ->select(['tblcredit.kae_id', 'kae_title', '(TRUNCATE(kaecredit_amount/100, 2)) as credit', 'kaecredit_date', 'kaecredit_updated'])
                         ->from(['admapp_finance_kae tblkae' , 'admapp_finance_kaecredit tblcredit'])
                         ->where('tblcredit.kae_id = tblkae.kae_id')
                         ->andWhere(['year' => Yii::$app->session["working_year"]])                        
                         ->all();
-        //echo "<pre>"; print_r($dataProvider); echo "</pre>";die();
         
         return $this->render('index', [
             //'searchModel' => $searchModel,
@@ -112,28 +110,32 @@ class FinanceKaecreditController extends Controller
 
     
     private function saveModels($kaecredits)
-    {
-        foreach($kaecredits as $kaecredit)
-            $kaecredit->kaecredit_amount = intval($kaecredit->kaecredit_amount*100);
-            
-            if(Model::validateMultiple($kaecredits)){
-                $transaction = Yii::$app->db->beginTransaction();
-                try{
-                    foreach ($kaecredits as $kaecredit)
-                        $kaecredit->save();
-                        $transaction->commit();
-                        Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
-                        return $this->redirect(['/finance/finance-kaecredit']);
-                        
-                }
-                catch(Exception $e){
-                    $transaction->rollBack();
-                    Yii::$app->session->setFlash('danger', "Οι ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.");
-                    return $this->redirect(['/finance/finance-kaecredit']);
-                }
+    {   
+        foreach ($kaecredits as $kaecredit){
+            $kaecredit->kaecredit_amount = Money::toCents($kaecredit->kaecredit_amount);
+            $old_credit = FinanceKaecredit::find()->where(["kaecredit_id" => $kaecredit->kaecredit_id])->one();
+            if(!($old_credit->kaecredit_amount == $kaecredit->kaecredit_amount))
+                $kaecredit->kaecredit_updated = date("Y-m-d H:i:s");
+        }
+
+        if(Model::validateMultiple($kaecredits)){
+            $transaction = Yii::$app->db->beginTransaction();
+            try{
+                foreach($kaecredits as $kaecredit)
+                    
+                    if(!$kaecredit->save()) throw new Exception();
+                    $transaction->commit();
+                    Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
+                    return $this->redirect(['/finance/finance-kaecredit']);                  
             }
-            else
-                throw new Exception("Data validation failure.");
+            catch(Exception $e){
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', "Οι ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.");
+                return $this->redirect(['/finance/finance-kaecredit']);
+            }
+        }
+        else
+            throw new Exception("Data validation failure.");
     }
     
     /**

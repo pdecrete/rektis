@@ -25,9 +25,5 @@ $this->params['breadcrumbs'][] = $this->title;
             <p>Απόδοση Πιστώσεων στους ΚΑΕ του τρέχοντος έτους</p>
             <p><?= Html::a('Καθορισμός Πιστώσεων', Url::to(['/finance/finance-kaecredit']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
-        <div class="col-lg-4">
-            <h3>Κρατήσεις</h3>
-            <p>Διαχείριση κρατήσεων (δημιουργία νέας κράτησης, ενημέρωση, διαγραφή)</p>
-        </div> 
     </div>
 </div>

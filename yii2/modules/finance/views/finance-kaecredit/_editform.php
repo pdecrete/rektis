@@ -11,7 +11,8 @@ use yii\bootstrap\ActiveForm;
 ?>
 
 <?php   $form = ActiveForm::begin(['id' => 'kaes-form', 'layout' => 'horizontal']); ?>
-        	<table class="table table-striped">
+
+        	<table class="table table-striped" style="margin: 10px;">
         		<tr>
         			<th class="text-center">ΚΑΕ</th>
         			<th class="text-center">Τίτλος ΚΑΕ</th>
@@ -32,8 +33,9 @@ use yii\bootstrap\ActiveForm;
 				    </td>									
 				</tr>
 <?php           endforeach;?>
-				<tr>
-					<td colspan="3"  class="text-right"><?= Html::submitButton('Αποθήκευση Πιστώσεων', ['class' => 'btn btn-success btn-lg pull-right']) ?></td>
-				</tr>
         	</table>
+        	<div class="col-lg-12 text-right">
+				<?= Html::submitButton(Yii::t('app', 'Save RCN credits'), ['class' => 'btn btn-success btn-lg pull-right'])?>
+			</div>
 <?php   ActiveForm::end(); ?>
+

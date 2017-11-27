@@ -133,6 +133,11 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_taxoffice'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();        
+        $insert_command = "INSERT INTO " . $dbFinTables['table_taxoffice'] . "(taxoffice_id, taxoffice_name, taxoffice_prefecture) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "(8110, 'Ηρακλείου', 'Ηρακλείου')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8431, 'Χανίων', 'Χανίων')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8221, 'Αγίου Νικολάου', 'Λασιθίου')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8341, 'Ρεθύμνου', 'Ρεθύμνου')")->execute();
         
         /* CREATE TABLE admapp_finance_supplier */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_supplier'] .

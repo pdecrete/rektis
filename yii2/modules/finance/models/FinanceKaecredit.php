@@ -76,11 +76,11 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getFinanceKaewithdrawals()
+/*    public function getFinanceKaewithdrawals()
     {
         return $this->hasMany(FinanceKaewithdrawal::className(), ['kaecredit_id' => 'kaecredit_id']);
     }
-
+*/
     /**
      * @inheritdoc
      * @return FinanceKaecreditQuery the active query used by this AR class.

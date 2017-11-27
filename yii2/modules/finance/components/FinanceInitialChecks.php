@@ -3,7 +3,6 @@ namespace app\modules\finance\components;
 use Yii;
 use yii\base\ActionFilter;
 use app\modules\finance\models\FinanceYear;
-use yii\base\ErrorException;
 
 
 class FinanceInitialChecks extends ActionFilter
@@ -18,12 +17,19 @@ class FinanceInitialChecks extends ActionFilter
 
         $workingyear = FinanceYear::find()->where(['year_iscurrent'=>1])->asArray()->all();
         
-        if(count($workingyear) != 1)
+        if(count($workingyear) == 0)
         {              
             if(!(Yii::$app->controller->id == 'finance-year'))    
                 Yii::$app->response->redirect(['/finance/finance-year']);
              
             Yii::$app->session->setFlash('info', "Δεν έχει οριστεί το οικονομικό έτος στο οποίο εργάζεστε. Παρακαλώ ορίστε ένα έτος ως \"Τρέχον\".");
+        }
+        else if(count($workingyear) > 1)
+        {
+            if(!(Yii::$app->controller->id == 'finance-year'))
+                Yii::$app->response->redirect(['/finance/finance-year']);
+                
+                Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Παρακαλώ ορίστε ένα έτος ως \"Τρέχον\" ή επικοινωνήστε με το διαχειριστή.");
         }
         else
         {
