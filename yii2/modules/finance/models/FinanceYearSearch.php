@@ -18,7 +18,8 @@ class FinanceYearSearch extends FinanceYear
     public function rules()
     {
         return [
-            [['year', 'year_credit', 'year_iscurrent', 'year_lock'], 'integer'],
+            [['year', 'year_iscurrent', 'year_lock'], 'integer'],
+            [['year_credit'], 'number'],
         ];
     }
 

@@ -15,6 +15,8 @@ class FinanceInitialChecks extends ActionFilter
             return false;
         }
 
+        //Integrity::creditsIntegrity(2017);
+        
         $workingyear = FinanceYear::find()->where(['year_iscurrent'=>1])->asArray()->all();
         
         if(count($workingyear) == 0)

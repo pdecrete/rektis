@@ -31,7 +31,8 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return [
             [['year', 'year_credit'], 'required'],
-            [['year', 'year_credit', 'year_iscurrent', 'year_lock'], 'integer'],
+            [['year', 'year_iscurrent', 'year_lock'], 'integer'],
+            [['year_credit'], 'number']
         ];
     }
 

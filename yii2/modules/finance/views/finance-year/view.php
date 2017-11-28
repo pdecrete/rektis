@@ -10,6 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Admin
 $this->title = $model->year;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Years'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="finance-year-view">
 
@@ -31,8 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'year',
             'year_credit',
-            'year_lock',
-            'year_iscurrent'
+            [   'attribute' => 'year_lock',
+                'format' => 'html',
+                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? Yii::t('app', 'Yes') : Yii::t('app', 'No');}
+            ],
+            [   'attribute' => 'year_iscurrent',
+                'format' => 'html',
+                'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? Yii::t('app', 'Yes') : Yii::t('app', 'No');}
+            ]
         ],
     ]) ?>
 

@@ -114,7 +114,8 @@ class FinanceKaecreditController extends Controller
         foreach ($kaecredits as $kaecredit){
             $kaecredit->kaecredit_amount = Money::toCents($kaecredit->kaecredit_amount);
             $old_credit = FinanceKaecredit::find()->where(["kaecredit_id" => $kaecredit->kaecredit_id])->one();
-            if(!($old_credit->kaecredit_amount == $kaecredit->kaecredit_amount))
+            
+            if(!is_null($old_credit) && !($old_credit->kaecredit_amount == $kaecredit->kaecredit_amount))
                 $kaecredit->kaecredit_updated = date("Y-m-d H:i:s");
         }
 

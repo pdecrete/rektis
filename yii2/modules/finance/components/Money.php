@@ -8,6 +8,6 @@ class Money
     }
     
     public static function toCurrency($amount){
-        ;
+        return round($amount/100, 2);
     }
 }
