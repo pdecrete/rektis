@@ -187,7 +187,7 @@ class FinanceYearController extends Controller
             return $this->redirect(['index']);
         }
         catch(Exception $exc){
-            Yii::$app->session->addFlash('danger', "Αποτυχία διαγραφής του οικομομικού έτους " . $id . ".");
+            Yii::$app->session->addFlash('danger', "Αποτυχία διαγραφής του οικομομικού έτους " . $id . ". Η αποτυχία μπορεί να οφείλεται στην ύπαρξη στοιχείων σχετιζόμενα με το οικονομικό έτος (π.χ. πιστώσεις, δαπάνες κτλ.)");
             return $this->redirect(['/finance/finance-year']);
         }
     }

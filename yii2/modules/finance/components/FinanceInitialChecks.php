@@ -2,7 +2,7 @@
 namespace app\modules\finance\components;
 use Yii;
 use yii\base\ActionFilter;
-use app\modules\finance\models\FinanceYear;
+//use app\modules\finance\models\FinanceYear;
 
 
 class FinanceInitialChecks extends ActionFilter
@@ -14,28 +14,17 @@ class FinanceInitialChecks extends ActionFilter
         if (!$parentBeforeAction) {
             return false;
         }
-
-        //Integrity::creditsIntegrity(2017);
         
-        $workingyear = FinanceYear::find()->where(['year_iscurrent'=>1])->asArray()->all();
-        
-        if(count($workingyear) == 0)
-        {              
-            if(!(Yii::$app->controller->id == 'finance-year'))    
-                Yii::$app->response->redirect(['/finance/finance-year']);
-             
-            Yii::$app->session->setFlash('info', "Δεν έχει οριστεί το οικονομικό έτος στο οποίο εργάζεστε. Παρακαλώ ορίστε ένα έτος ως \"Τρέχον\".");
-        }
-        else if(count($workingyear) > 1)
-        {
+        if(!($workingYear = Integrity::uniqueCurrentYear()))
+        {   
             if(!(Yii::$app->controller->id == 'finance-year'))
                 Yii::$app->response->redirect(['/finance/finance-year']);
                 
-                Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Παρακαλώ ορίστε ένα έτος ως \"Τρέχον\" ή επικοινωνήστε με το διαχειριστή.");
+            Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Παρακαλώ επικοινωνήστε με το διαχειριστή.");
         }
         else
         {
-            Yii::$app->session["working_year"] = $workingyear[0]['year'];
+            Yii::$app->session["working_year"] = $workingYear;
             //Yii::$app->controller->renderPartial('/default/infopanel');
         }
         

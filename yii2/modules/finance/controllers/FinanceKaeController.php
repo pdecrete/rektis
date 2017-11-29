@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\modules\finance\models\FinanceKaecredit;
 
 /**
  * FinanceKaeController implements the CRUD actions for FinanceKae model.
@@ -65,8 +66,29 @@ class FinanceKaeController extends Controller
     {
         $model = new FinanceKae();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kae_id]);
+        if ($model->load(Yii::$app->request->post())){ 
+            try{
+                $transaction = Yii::$app->db->beginTransaction();
+                if(!$model->save()) throw new \Exception();
+                $financeYearCredits = FinanceKaecredit::find()->select('year')->distinct()->all();
+                foreach ($financeYearCredits as $financeYear)
+                {                    
+                    $newKAEcredit = new FinanceKaecredit();
+                    $newKAEcredit->kae_id = $model->kae_id;
+                    $newKAEcredit->kaecredit_amount = 0;
+                    $newKAEcredit->kaecredit_date = date("Y-m-d H:i:s");
+                    $newKAEcredit->year = $financeYear->year;
+                    if(!$newKAEcredit->save()) throw new \Exception();
+                }
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', "Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Στα οικονομικά έτη που έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ, έχει προστεθεί και ο νέος ΚΑΕ με μηδενική πίστωση.");
+                return $this->redirect(['view', 'id' => $model->kae_id]);
+            }
+            catch(\Exception $exc){
+                $transaction->rollBack();
+                Yii::$app->session->addFlash('danger', "Αποτυχία δημιουργίας του νέου ΚΑΕ.");
+                return $this->redirect(['index']);
+            }
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -93,18 +115,6 @@ class FinanceKaeController extends Controller
         }
     }
 
-    /**
-     * Deletes an existing FinanceKae model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
 
     /**
      * Finds the FinanceKae model based on its primary key value.

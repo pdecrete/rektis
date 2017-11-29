@@ -39,11 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-lg-4">
             <h3>Αναφορές</h3>
             <p>Αναφορές δαπανών, τιμολογίων, πιστώσεων κτλ.</p>
-        </div>
-		<div class="col-lg-4">
-            <h3>Παραμετροποίηση</h3>
-            <p>Αλλαγή παραμέτρων συστήματος (ΚΑΕ, Κρατήσεις, ΔΟΥ)</p>
-            <p><?= Html::a('Προβολή επιλογών', Url::to(['/finance/default/parameterize']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
-        </div>        
+        </div>     
     </div>
 </div>

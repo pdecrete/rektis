@@ -28,7 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'kae_title',
             'kae_description',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',
+             'template' => '{view}&nbsp;{update}'
+            ],
         ],
     ]); ?>
 </div>

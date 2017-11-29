@@ -47,6 +47,7 @@ class FinanceKaeSearch extends FinanceKae
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => false,
         ]);
 
         $this->load($params);
