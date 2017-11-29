@@ -41,7 +41,7 @@ class SubstituteTeacherFileController extends Controller
 //                        'roles' => ['@'],
 //                    ],
                     [
-                        'actions' => ['index', 'upload', 'file-upload', 'file-delete', 'file-download'],
+                        'actions' => ['index', 'upload', 'file-upload', 'file-delete', 'file-download', 'import'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -69,6 +69,28 @@ class SubstituteTeacherFileController extends Controller
         return $this->render('index', [
                 'searchModel' => $searchModel,
                 'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all SubstituteTeacherFile models to select one to import
+     * 
+     * @param string $route The route to forward after selection; route will also receive a parameter "file_id"
+     * @return mixed
+     */
+    public function actionImport($route, $type)
+    {
+        $searchModel = new SubstituteTeacherFileSearch();
+        $dataProvider = $searchModel->search(
+            \yii\helpers\ArrayHelper::merge(Yii::$app->request->queryParams, [
+                'SubstituteTeacherFileSearch' => ['deleted' => SubstituteTeacherFile::FILE_ACTIVE]
+        ]));
+
+        return $this->render('import', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'route' => $route,
+                'type' => $type
         ]);
     }
 

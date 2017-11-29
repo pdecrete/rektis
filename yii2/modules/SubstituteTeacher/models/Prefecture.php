@@ -47,6 +47,7 @@ class Prefecture extends \yii\db\ActiveRecord
             'id' => Yii::t('substituteteacher', 'ID'),
             'region' => Yii::t('substituteteacher', 'Region'),
             'prefecture' => Yii::t('substituteteacher', 'Prefecture'),
+            'label' => Yii::t('substituteteacher', 'Prefecture label'),
         ];
     }
 

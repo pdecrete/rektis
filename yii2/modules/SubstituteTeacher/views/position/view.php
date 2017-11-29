@@ -35,9 +35,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'title',
-            'operation_id',
-            'specialisation_id',
-            'prefecture_id',
+            [
+                'attribute' => 'operation.title',
+                'label' => $model->getAttributeLabel('operation_id')
+            ],
+            'specialisation.label',
+            'prefecture.label',
             [
                 'attribute' => 'position_has_type',
                 'value' => $model->position_has_type_label

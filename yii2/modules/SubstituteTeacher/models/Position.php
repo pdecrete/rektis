@@ -5,7 +5,7 @@ use Yii;
 use app\models\Specialisation;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;
+//use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;
 
 /**
  * This is the model class for table "{{%stposition}}".
@@ -31,6 +31,9 @@ use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;
 class Position extends \yii\db\ActiveRecord
 {
 
+    const POSITION_TYPE_TEACHER = 1;
+    const POSITION_TYPE_HOURS = 0;
+
     public $position_has_type, $position_has_type_label; // use to select teachers or hours count
 
     /**
@@ -48,7 +51,7 @@ class Position extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'whole_teacher_hours'], 'required'],
+            [['operation_id', 'title', 'whole_teacher_hours'], 'required'],
             [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count'], 'default', 'value' => 0],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
 //                'if' => '0', 'replace' => true, 'otherAttributeValue' => 0, 'otherAttribute' => 'teachers_count'],
@@ -61,7 +64,7 @@ class Position extends \yii\db\ActiveRecord
                     return 0;
                 },
                 'when' => function($model) {
-                    return $model->position_has_type == 0;
+                    return $model->position_has_type == Position::POSITION_TYPE_HOURS;
                 }
             ],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
@@ -74,17 +77,17 @@ class Position extends \yii\db\ActiveRecord
                     return 0;
                 },
                 'when' => function($model) {
-                    return $model->position_has_type == 1;
+                    return $model->position_has_type == Position::POSITION_TYPE_TEACHER;
                 }
             ],
             [['teachers_count', 'covered_teachers_count'], 'required',
                 'when' => function($model) {
-                    return $model->position_has_type == 1;
+                    return $model->position_has_type == Position::POSITION_TYPE_TEACHER;
                 }
             ],
             [['hours_count', 'covered_hours_count'], 'required',
                 'when' => function($model) {
-                    return $model->position_has_type == 0;
+                    return $model->position_has_type == Position::POSITION_TYPE_HOURS;
                 }
             ],
             [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count'], 'integer', 'min' => 0],
@@ -173,8 +176,8 @@ class Position extends \yii\db\ActiveRecord
     public function afterFind()
     {
         parent::afterFind();
-        $this->position_has_type = ($this->teachers_count > 0) ? '1' : '0';
-        $this->position_has_type_label = ($this->position_has_type == '1') 
+        $this->position_has_type = ($this->teachers_count > 0) ? Position::POSITION_TYPE_TEACHER : Position::POSITION_TYPE_HOURS;
+        $this->position_has_type_label = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) 
             ? \Yii::t('substituteteacher', 'Teachers')
             : \Yii::t('substituteteacher', 'Hours');
     }

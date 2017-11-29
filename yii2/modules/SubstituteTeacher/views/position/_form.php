@@ -70,9 +70,16 @@ use yii\web\View;
             $covered_hours_count_id = Html::getInputId($model, 'covered_hours_count');
             $teachers_count_id = Html::getInputId($model, 'teachers_count');
             $covered_teachers_count_id = Html::getInputId($model, 'covered_teachers_count');
+            if ($model->position_has_type == \app\modules\SubstituteTeacher\models\Position::POSITION_TYPE_TEACHER) {
+                $initial_off_property1 = $hours_count_id;
+                $initial_off_property2 = $covered_hours_count_id;
+            } else {
+                $initial_off_property1 = $teachers_count_id;
+                $initial_off_property2 = $covered_teachers_count_id;
+            }
             $switch_js = <<<JS
-$("#{$teachers_count_id}").prop("disabled", true);
-$("#{$covered_teachers_count_id}").prop("disabled", true);
+$("#{$initial_off_property1}").prop("disabled", true);
+$("#{$initial_off_property2}").prop("disabled", true);
 $('#{$checkbox_id}').on('switchChange.bootstrapSwitch', function(event, state) {
     if (true === state) {
         $("#{$hours_count_id}").prop("disabled", true);

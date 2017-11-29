@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\select2\Select2;
 
+$bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PositionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -18,6 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Create Position'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('substituteteacher', 'Import Positions'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'position'], ['class' => 'btn btn-info']) ?>
+        <?= Html::a(Yii::t('substituteteacher', 'Download import sample'), "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΚΕΝΩΝ.xls", ['class' => 'btn btn-default']) ?>
     </p>
     <?=
     GridView::widget([

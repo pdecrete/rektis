@@ -48,6 +48,7 @@ class Specialisation extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'code' => Yii::t('app', 'Code'),
             'name' => Yii::t('app', 'SpecName'),
+            'label' => Yii::t('app', 'Specialisation label'),
         ];
     }
 
