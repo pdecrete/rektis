@@ -123,11 +123,10 @@ class FinanceKaecreditController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try{
                 foreach($kaecredits as $kaecredit)
-                    
                     if(!$kaecredit->save()) throw new Exception();
-                    $transaction->commit();
-                    Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
-                    return $this->redirect(['/finance/finance-kaecredit']);                  
+                $transaction->commit();
+                Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
+                return $this->redirect(['/finance/finance-kaecredit']);                  
             }
             catch(Exception $e){
                 $transaction->rollBack();

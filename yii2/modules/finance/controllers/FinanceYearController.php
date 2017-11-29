@@ -113,6 +113,13 @@ class FinanceYearController extends Controller
         return $this->render('update', ['model' => $model,]);
     }
 
+    /**
+     * Locks a financial year.
+     * According to whether the lock is succesful or not, the browser will be redirected to the 'index' page
+     * showing an appropriate message.
+     * @param integer $id
+     * @return mixed
+     */
     public function actionLock($id)
     {
         $model = $this->findModel($id);      
@@ -126,6 +133,45 @@ class FinanceYearController extends Controller
         Yii::$app->session->addFlash('success', "Το κλείδωμα του οικονομικό έτος " . $id . " ολοκληρώθηκε επιτυχώς.");
         return $this->redirect(['/finance/finance-year']);
     }
+    
+    /**
+     * Make as working year the year passed as argument.
+     * Both the database and the session for the working year is updated  
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionCurrentYear($id){
+        try{
+            $transaction = Yii::$app->db->beginTransaction();
+            $model = $this->findModel($id);
+            
+            if(is_null($model) || $model->year_iscurrent == 1) 
+                throw new Exception("The financial year you are trying to set as currently working does not exist or is already the currently working year.");
+            else            
+                $model->year_iscurrent = 1;   
+            
+            if(!$model->save()) throw new Exception();
+                        
+            $otherYears = FinanceYear::find()->where(['!=', 'year', $id])->all();
+            
+            //echo "<pre>"; print_r($otherYears); echo "</pre>";
+            foreach ($otherYears as $otherYear){
+                $otherYear->year_iscurrent = 0;
+                if(!$otherYear->save()) throw new Exception();
+            }
+            $transaction->commit();            
+        }
+        catch(Exception $e){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', "Αποτυχία ορισμού του οικομομικού έτους " . $id . " ως τρέχον έτος εργασίας.");
+            return $this->redirect(['/finance/finance-year']);
+        }
+        
+        Yii::$app->session["working_year"] = $id;
+        Yii::$app->session->addFlash('success', "To τρέχον έτος εργασίας άλλαξε επιτυχώς στο " . $id . ".");
+        return $this->redirect(['/finance/finance-year']);
+    }
+    
     
     /**
      * Deletes an existing FinanceYear model.

@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider); echo"</pre>";
 //die();
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-year-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -60,12 +60,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                                         'title' => Yii::t('app', 'lead-lock'),
                                                         'data'=>['confirm'=>"Είστε σίγουροι για τη διαγραφή του αντικειμένου;",
                                                         'method' => "post"]]);
-                                    },
+                                },
                                 'currentyear' => function ($url, $dataProvider) {
                                     if($dataProvider->year_iscurrent == 0)
                                         return Html::a('<span class="glyphicon glyphicon-pushpin"></span>', $url, [
-                                                        'title' => Yii::t('app', 'lead-currentyear'), 
-                                ]);
+                                                        'title' => Yii::t('app', 'lead-currentyear'),
+                                                        'data'=>['confirm'=>"Είστε σίγουροι για τη διαγραφή του αντικειμένου;",
+                                                        'method' => "post"]]);
                                 }
                     
                     ],
@@ -87,7 +88,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
                                     return $url;
                                     
-                                }  
+                                }
+                                if ($action === 'currentyear') {
+                                    $url = ['/finance/finance-year/current-year', 'id'=> $dataProvider->year];
+                                    return $url;
+                                    
+                                } 
                     }
             ],
         ],
