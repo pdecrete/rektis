@@ -48,28 +48,23 @@ class Integrity
     }
     
     
-    
-    /**
-     * Returns the number of RCNs stored in the database.
-     * @return number|string
-     */
-    public static function kaesCount()
-    {
-        return FinanceKae::find()->count();
-    }
-    
     /**
      * Returns the number of RCNs that have been set for the currently, working year. 
      * If the working year has not been set then -1 is returned.
      * @return number
      */
-    public static function currentYearKaesCount()
-    {
+    private static function currentYearKaesCount(){
         if(is_null(Yii::$app->session["working_year"]) || Yii::$app->session["working_year"] == "") 
             return -1;
         else 
             return FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->count();
     }
+    
+//    private
+    
+//    private static function kaesCredits($year){
+                
+//    }
     
     /** TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO  
      * Checks whether the initial credit for the year equals to the sum
@@ -79,7 +74,11 @@ class Integrity
      */
     
     public static function creditsIntegrity(){
+        $isConsistentState = true;
+        if(FinanceKae::find()->count() != Integrity::currentYearKaesCount())
+            $isConsistentState = false;
         
+        return $isConsistentState;
         try {            
             echo $yearKaesCount; die();
             $_year = intval($year);

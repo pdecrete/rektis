@@ -196,11 +196,6 @@ AppAsset::register($this);
                             [	'label' => 'Αναφορές',
                                 'url' => ['/finance/default']
                             ],
-                            '<li class="divider"></li>',
-                            [	'label' => 'Παραμετροποίηση',
-                                'url' => ['/finance/default/parameterize']
-                            ],
-
                         ],
                     ],
                     [ 	'label' => 'Σχετικά',
