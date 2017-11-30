@@ -13,9 +13,7 @@ class m171115_101126_finance_init extends Migration
     {
         /*
          * Money datatype
-         * https://opendata.stackexchange.com/questions/10346/what-specifications-are-out-there-for-the-precision-required-to-store-money
-         * https://rietta.com/blog/2012/03/03/best-data-types-for-currencymoney-in/
-         * https://stackoverflow.com/questions/13030368/best-data-type-to-store-money-values-in-mysql
+         * Used BIGINT for easier operations on money values + for adaptable currency
          */
         $moneyDatatype = "BIGINT";
         $tableOptions = null;
@@ -268,7 +266,7 @@ class m171115_101126_finance_init extends Migration
             'table_year' => $this->db->tablePrefix . 'finance_year',
             'table_kae' => $this->db->tablePrefix . 'finance_kae',
             'table_kaecredit' => $this->db->tablePrefix . 'finance_kaecredit',
-            //'table_kaecreditpercentage' => $this->db->tablePrefix . 'finance_kaecreditpercentage',
+            'table_kaecreditpercentage' => $this->db->tablePrefix . 'finance_kaecreditpercentage',
             'table_kaewithdrawal' => $this->db->tablePrefix . 'finance_kaewithdrawal',
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
