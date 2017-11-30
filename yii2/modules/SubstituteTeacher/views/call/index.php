@@ -7,32 +7,45 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\SubstituteTeacher\models\CallSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Calls');
+$this->title = Yii::t('substituteteacher', 'Calls');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="call-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Call'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('substituteteacher', 'Create Call'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
+            // 'id',
             'title',
             'description:ntext',
-            'application_start',
-            'application_end',
+            [
+                'attribute' => 'application_start',
+                'value' => function ($m) {
+                    return \Yii::$app->formatter->asDate($m->application_start);
+                },
+                'filter' => false
+            ],
+            [
+                'attribute' => 'application_end',
+                'value' => function ($m) {
+                    return \Yii::$app->formatter->asDate($m->application_end);
+                },
+                'filter' => false
+            ],
             // 'created_at',
             // 'updated_at',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]);
+
+    ?>
 </div>

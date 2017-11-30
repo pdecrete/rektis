@@ -167,8 +167,11 @@ AppAsset::register($this);
                                 'url' => [ '/SubstituteTeacher/position/index' ]
                             ],
                             [
+                                'label' => 'Προσκλήσεις προσλήψεων',
+                                'url' => [ '/SubstituteTeacher/call/index' ]
+                            ],
+                            [
                                 'label' => 'Αναπληρωτές',
-                                'url' => [ '#' ]
                             ],
                         ],
                     ],
