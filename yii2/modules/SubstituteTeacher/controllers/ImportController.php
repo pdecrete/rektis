@@ -10,7 +10,6 @@ use yii\filters\AccessControl;
 use app\modules\SubstituteTeacher\models\SubstituteTeacherFile;
 use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Position;
-use app\modules\SubstituteTeacher\models\Operation;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\models\Specialisation;
 
@@ -228,7 +227,10 @@ class ImportController extends Controller
         if (empty($errors)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                // TODO clear old data 
+                // clear old data; it was checked earlier 
+                $deletions = Position::deleteAll(['operation_id' => $operation]);
+
+                // add all new positions
                 foreach ($positions as $position) {
                     if (!$position->save()) {
                         throw new Exception(Yii::t('substituteteacher', 'An error occured while saving a position.'));
@@ -308,6 +310,15 @@ class ImportController extends Controller
         }
         if (($diff = count($specialisations) - $located_count_specialisations) > 0) {
             $errors[] = Yii::t('substituteteacher', '<strong>Could not locate {n,plural,=1{1 specialisation} other{# specialisations}}</strong> out of {m} total.', ['n' => $diff, 'm' => $located_count_specialisations]);
+        }
+
+        // also check for used information so as to clear old data only if it has not been already used
+        $positions_used = Position::find()
+            ->joinWith(['callPositions'], true, 'INNER JOIN')
+            ->andWhere([Position::tableName() . '.operation_id' => $operation])
+            ->count();
+        if ($positions_used > 0) {
+            $errors[] = Yii::t('substituteteacher', 'There {n,plural,=1{is 1 position} other{are # positions}} of this operation already involved in a call.', ['n' => $positions_used]);
         }
 
         if (empty($errors)) {
