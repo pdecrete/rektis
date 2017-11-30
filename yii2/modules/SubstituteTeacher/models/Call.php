@@ -92,20 +92,6 @@ class Call extends \yii\db\ActiveRecord
         return $this->hasMany(CallPosition::className(), ['call_id' => 'id']);
     }
 
-    /**
-     * Get a list of available choices in the form of
-     * ID => LABEL suitable for select lists.
-     * 
-     * @param int $year
-     */
-    public static function selectables()
-    {
-        $choices_aq = (new CallQuery(get_called_class()))
-            ->orderBy(['application_start' => SORT_DESC]);
-
-        return ArrayHelper::map($choices_aq->all(), 'id', 'label');
-    }
-
     public function afterFind()
     {
         parent::afterFind();
@@ -118,6 +104,20 @@ class Call extends \yii\db\ActiveRecord
         $this->label = $this->title . ', '
             . date('d/m/Y', $this->application_start_ts) . '-'
             . date('d/m/Y', $this->application_end_ts);
+    }
+
+    /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * 
+     * @param int $year
+     */
+    public static function selectables()
+    {
+        $choices_aq = (new CallQuery(get_called_class()))
+            ->orderBy(['application_start' => SORT_DESC]);
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'label');
     }
 
     /**
