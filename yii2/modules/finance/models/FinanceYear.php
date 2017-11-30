@@ -65,4 +65,14 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return new FinanceYearQuery(get_called_class());
     }
+
+    /**
+     * Returns the amount credited for the year $year.
+     * @param integer $year
+     * @return string
+     */
+    public static function getYearCredit($year)
+    {
+        return FinanceYear::find()->select(['year_credit'])->where(['year' => $year])->one()->year_credit;
+    }
 }

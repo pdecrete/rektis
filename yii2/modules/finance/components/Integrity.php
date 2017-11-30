@@ -53,11 +53,8 @@ class Integrity
      * If the working year has not been set then -1 is returned.
      * @return number
      */
-    private static function currentYearKaesCount(){
-        if(is_null(Yii::$app->session["working_year"]) || Yii::$app->session["working_year"] == "") 
-            return -1;
-        else 
-            return FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->count();
+    private static function yearKaesCount($year){
+        return FinanceKaecredit::find()->where(['year' => $year])->count();
     }
     
 //    private
@@ -66,41 +63,27 @@ class Integrity
                 
 //    }
     
+    
     /** TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO  
      * Checks whether the initial credit for the year equals to the sum
      * of the credits of all the RCNs (KAEs) of the year.
      * @param integer $year
      * @throws \Exception
-     */
-    
-    public static function creditsIntegrity(){
-        $isConsistentState = true;
-        if(FinanceKae::find()->count() != Integrity::currentYearKaesCount())
-            $isConsistentState = false;
+     */  
+   
+    public static function creditsIntegrity($year){
+        if(Integrity::yearKaesCount($year) == 0) 
+            return true;
         
-        return $isConsistentState;
-        try {            
-            echo $yearKaesCount; die();
-            $_year = intval($year);
-            if(!is_int($_year)) throw new \Exception();
-            $queryYearCredit = (new \yii\db\Query())->select('year_credit')
-                                                    ->from('admapp_finance_year')
-                                                    ->where(['year'=>$year])->all();
-            $yearCredit = $queryYearCredit[0]['year_credit'];
-//            $yearCredit = $queryKaes->sum('kaecredit_amount');
-            $queryKaes = (new \yii\db\Query())->select('kaecredit_amount')
-                                              ->from('admapp_finance_kaecredit');
-            $creditsSum = $queryKaes->sum('kaecredit_amount');
-            echo "<pre>"; print_r($queryKaes); echo "</pre>";
-//            echo $creditsSum;
-            die();
-        }
-        catch(\Exception $exc){
-            Yii::$app->session->setFlash('danger', "Σφάλμα κατά τον έλεγχο ακεραιότητας της βάσης δεδομένων.");
-            echo "Exception";
-            die();
-            Yii::$app->response->redirect(['/finance']);
-            
-        }
+        if(FinanceKae::find()->count() != Integrity::yearKaesCount($year)) 
+            return false;
+        
+        $yearCredit = FinanceYear::getYearCredit($year);        
+        $creditsSum = FinanceKaecredit::getSumKaeCredits($year);
+        
+        if($yearCredit != $creditsSum) 
+            return false;
+
+        return true;        
     }
 }

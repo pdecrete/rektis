@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKae;
+use app\modules\finance\models\FinanceYear;
 use yii\base\Model;
 use yii\base\Exception;
 use app\modules\finance\components\Money;
@@ -40,10 +41,10 @@ class FinanceKaecreditController extends Controller
     {
         //$searchModel = new FinanceKaecreditSearch();
         //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
+        $prefix = Yii::$app->db->tablePrefix;
         $dataProvider = (new \yii\db\Query())
                         ->select(['tblcredit.kae_id', 'kae_title', '(TRUNCATE(kaecredit_amount/100, 2)) as credit', 'kaecredit_date', 'kaecredit_updated'])
-                        ->from(['admapp_finance_kae tblkae' , 'admapp_finance_kaecredit tblcredit'])
+                        ->from([$prefix . 'finance_kae tblkae' , $prefix . 'finance_kaecredit tblcredit'])
                         ->where('tblcredit.kae_id = tblkae.kae_id')
                         ->andWhere(['year' => Yii::$app->session["working_year"]])                        
                         ->all();
@@ -125,17 +126,27 @@ class FinanceKaecreditController extends Controller
                 foreach($kaecredits as $kaecredit)
                     if(!$kaecredit->save()) throw new Exception();
                 $transaction->commit();
-                Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
-                return $this->redirect(['/finance/finance-kaecredit']);                  
             }
             catch(Exception $e){
                 $transaction->rollBack();
-                Yii::$app->session->setFlash('danger', "Οι ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.");
+                Yii::$app->session->setFlash('danger', "H ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.");
                 return $this->redirect(['/finance/finance-kaecredit']);
             }
         }
         else
             throw new Exception("Data validation failure.");
+        
+        $year = Yii::$app->session["working_year"];
+        if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year))
+        {
+            Yii::$app->session->setFlash('info', "Το άθροισμα των πιστώσεων των ΚΑΕ δεν συμφωνεί με την πίστωση για το έτος " . $year . ". Παρακαλώ διορθώστε για να προχωρήσετε.");
+            return $this->redirect(['/finance/finance-kaecredit']);
+        }
+        else{
+            Yii::$app->session->setFlash('info', "Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.");
+            return $this->redirect(['/finance/finance-kaecredit']);
+            
+        }
     }
     
     /**

@@ -23,9 +23,15 @@ class FinanceInitialChecks extends ActionFilter
             Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Παρακαλώ επικοινωνήστε με το διαχειριστή.");
         }
         else
-        {
             Yii::$app->session["working_year"] = $workingYear;
-            //Yii::$app->controller->renderPartial('/default/infopanel');
+        
+        if(!Integrity::creditsIntegrity(Yii::$app->session["working_year"]))
+        {
+            Yii::$app->session->setFlash('info', "Το άθροισμα των πιστώσεων των ΚΑΕ δεν συμφωνεί με την πίστωση για το έτος " . Yii::$app->session["working_year"] . ". Παρακαλώ διορθώστε για να προχωρήσετε.");
+            
+            if(!(Yii::$app->controller->id == 'finance-kaecredit')){
+                return Yii::$app->response->redirect(['/finance/finance-kaecredit']);
+            }
         }
         
         return true;

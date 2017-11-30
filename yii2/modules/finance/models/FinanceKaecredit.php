@@ -89,4 +89,10 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     {
         return new FinanceKaecreditQuery(get_called_class());
     }
+    
+    
+    public static function getSumKaeCredits($year)
+    {
+        return FinanceKaecredit::find()->where(['year' => $year])->sum('kaecredit_amount');
+    }
 }
