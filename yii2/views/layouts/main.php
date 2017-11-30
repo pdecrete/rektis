@@ -48,7 +48,7 @@ AppAsset::register($this);
                         'items' => [
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Εφαρμογής</li>',
                             [    'label' => 'Ειδικότητες',
-                                'url' => ['/specialisation']
+                                'url' => ['/specialisation/index']
                             ],
                             [    'label' => 'Υπηρεσίες',
                                 'url' => ['/service']
@@ -151,15 +151,23 @@ AppAsset::register($this);
                                 'url' => [ '/SubstituteTeacher/operation-specialisation/index' ],
                                 'visible' => Yii::$app->user->can('admin'),
                             ],
+                            [
+                                'label' => 'Περιφερειακές Ενότητες',
+                                'url' => [ '/SubstituteTeacher/prefecture/index' ]
+                            ],
+                            [
+                                'label' => 'Ειδικότητες',
+                                'url' => [ '/specialisation/index' ]
+                            ],
 
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
                             [
-                                'label' => 'Αναπληρωτές',
-                                'url' => [ '#' ]
+                                'label' => 'Λειτουργικά κενά',
+                                'url' => [ '/SubstituteTeacher/position/index' ]
                             ],
                             [
-                                'label' => 'Κενά',
+                                'label' => 'Αναπληρωτές',
                                 'url' => [ '#' ]
                             ],
                         ],
