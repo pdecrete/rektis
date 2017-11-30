@@ -5,6 +5,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\models\Specialisation;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%stperation}}".
@@ -124,6 +125,23 @@ class Operation extends \yii\db\ActiveRecord
                     return $m->code . ' ' . $m->name;
                 }, $this->specialisations));
         }
+    }
+
+    /**
+     * Provided a year, get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * If year provided is "invalid" all choices are retured.
+     * 
+     * @param int $year
+     */
+    public static function selectables($year = null)
+    {
+        $choices_aq = new OperationQuery(get_called_class());
+        if (in_array($year, self::getYearChoices())) {
+            $choices_aq->where(['year' => $year]);
+        }
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'title', 'year');
     }
 
     /**
