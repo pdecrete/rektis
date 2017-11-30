@@ -82,7 +82,12 @@ class FinanceKaecreditController extends Controller
         $isYearKAEsSet = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->count("kae_id"); 
         if($isYearKAEsSet)
             return $this->redirect(['/finance/finance-kaecredit/update']);
-        
+    
+        if(FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])){
+            Yii::$app->session->setFlash('info', "Οι επιλογές σας δεν μπορούν να πραγματοποιηθούν επειδή το έτος είναι κλειδωμένο.");
+            return $this->redirect(['/finance/finance-kaecredit/']);
+        }
+    
         $allkaes = FinanceKae::find()->asArray()->all();
         
         $kaecredits = array();
@@ -157,11 +162,14 @@ class FinanceKaecreditController extends Controller
      */
     public function actionUpdate()
     {
+        if(FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])){
+            Yii::$app->session->setFlash('info', "Οι επιλογές σας δεν μπορούν να πραγματοποιηθούν επειδή το έτος είναι κλειδωμένο.");
+            return $this->redirect(['/finance/finance-kaecredit/']);
+        }
         $allkaes = FinanceKae::find()->asArray()->all();
         foreach($allkaes as $index => $kae)
             $kaes[$index] = $kae['kae_title'];
-        //echo "<pre>"; print_r($kaes); echo "</pre>";die();
-        //$kaes = FinanceKae::find()->all();
+
         $kaecredits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
         
         if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){

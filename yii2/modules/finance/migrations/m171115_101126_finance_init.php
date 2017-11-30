@@ -28,6 +28,7 @@ class m171115_101126_finance_init extends Migration
             'table_year' => $this->db->tablePrefix . 'finance_year',
             'table_kae' => $this->db->tablePrefix . 'finance_kae',
             'table_kaecredit' => $this->db->tablePrefix . 'finance_kaecredit',
+            'table_kaecreditpercentage' => $this->db->tablePrefix . 'finance_kaecreditpercentage',
             'table_kaewithdrawal' => $this->db->tablePrefix . 'finance_kaewithdrawal',
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
@@ -108,7 +109,21 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kaecredit'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
+        /* CREATE TABLE admapp_finance_kaecreditpercentage */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecreditpercentage'] .
+                          "(`kaeperc_id` INTEGER NOT NULL AUTO_INCREMENT,
+                            `kaeperc_percentage` TINYINT UNSIGNED NOT NULL CHECK (kaeperc_percentage >= 0.00 AND kaeperc_percentage <= 100.00),
+                            `kaeperc_date` DATETIME NOT NULL,
+                            `kaeperc_decision` VARCHAR(255),
+                            `kaecredit_id` INTEGER NOT NULL,
+                             FOREIGN KEY (`kaecredit_id`) REFERENCES " . $dbFinTables['table_kaecredit'] . "(`kaecredit_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             PRIMARY KEY (`kaeperc_id`)
+                           ) " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kaecreditpercentage'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+                
         /* CREATE TABLE admapp_finance_kaewithdrawal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaewithdrawal'] .
                           "(`kaewithdr_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -253,6 +268,7 @@ class m171115_101126_finance_init extends Migration
             'table_year' => $this->db->tablePrefix . 'finance_year',
             'table_kae' => $this->db->tablePrefix . 'finance_kae',
             'table_kaecredit' => $this->db->tablePrefix . 'finance_kaecredit',
+            //'table_kaecreditpercentage' => $this->db->tablePrefix . 'finance_kaecreditpercentage',
             'table_kaewithdrawal' => $this->db->tablePrefix . 'finance_kaewithdrawal',
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',

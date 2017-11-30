@@ -75,4 +75,26 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return FinanceYear::find()->select(['year_credit'])->where(['year' => $year])->one()->year_credit;
     }
+    
+    /**
+     * Returns true if $year is the currently working year, otherwise returns false.
+     * @param integer $year
+     * @return boolean
+     */
+    public static function isCurrent($year)
+    {
+        $model = FinanceYear::find()->where(['year' => $year])->one();
+        return ($model->year_iscurrent == 1);
+    }
+
+    /**
+     * Returns true if $year is locked, otherwise returns false.
+     * @param integer $year
+     * @return boolean
+     */
+    public static function isLocked($year)
+    {
+        $model = FinanceYear::find()->where(['year' => $year])->one();
+        return ($model->year_lock == 1);
+    }
 }

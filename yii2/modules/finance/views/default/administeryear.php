@@ -16,19 +16,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
 		<div class="col-lg-4">
-            <h3>Αρχικοποίηση Έτους</h3>
-            <p>Εκκίνηση νέου έτους με απόδοση πίστωσης σε αυτό.</p>
-            <p><?= Html::a('Αρχικοποίηση Έτους', Url::to(['/finance/finance-year']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            <h3>Ρυθμίσεις Έτους</h3>
+            <p>Δημιουργία/Επεξεργασία/Διαγραφή/Κλείδωμα/Ορισμός ως τρέχον</p>
+            <p><?= Html::a('Ρυθμίσεις Έτους', Url::to(['/finance/finance-year']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
         <div class="col-lg-4">
             <h3>Πιστώσεις ΚΑΕ</h3>
-            <p>Απόδοση Πιστώσεων στους ΚΑΕ του τρέχοντος έτους</p>
+            <p>Καθορισμός πιστώσεων στους ΚΑΕ του <strong>τρέχοντος</strong> έτους</p>
             <p><?= Html::a('Καθορισμός Πιστώσεων', Url::to(['/finance/finance-kaecredit']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
 		<div class="col-lg-4">
             <h3>Διαχείριση ΚΑΕ</h3>
-            <p>Δημιουργία νέου ΚΑΕ, επεξεργασία, διαγραφή</p>
-            <p><?= Html::a('Προβολή KAE', Url::to(['/finance/finance-kae']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p>Δημιουργία/Επεξεργασία/Διαγραφή ΚΑΕ</p>
+            <p><?= Html::a('Ρυθμίσεις KAE', Url::to(['/finance/finance-kae']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
     </div>
 </div>

@@ -51,14 +51,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'delete' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                                                         'title' => Yii::t('app', 'lead-delete'),
-                                                        'data'=>['confirm'=>"Είστε σίγουροι για τη διαγραφή του αντικειμένου;",
+                                                        'data'=>['confirm'=>"Η διαγραφή του έτους είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι για τη διαγραφή;",
                                                         'method' => "post"]]);
                                 },
                                 'lock' => function ($url, $dataProvider) {
                                     if($dataProvider->year_lock == 0)
                                         return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
                                                         'title' => Yii::t('app', 'lead-lock'),
-                                                        'data'=>['confirm'=>"Είστε σίγουροι για τη διαγραφή του αντικειμένου;",
+                                                        'data'=>['confirm'=>"Το κλείδωμα του έτους είναι μη αναστρέψιμη ενέργεια και έπειτα από αυτή καμία αλλαγή στο συγκεκριμένο έτος δεν θα είναι εφικτή. Είστε σίγουροι ότι θέλετε να κλειδώσετε το έτος;",
                                                         'method' => "post"]]);
                                 },
                                 'currentyear' => function ($url, $dataProvider) {

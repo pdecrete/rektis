@@ -182,12 +182,15 @@ class FinanceYearController extends Controller
     public function actionDelete($id)
     {
         try{
-            $this->findModel($id)->delete();
+            $model = $this->findModel($id);
+            if($model->year_iscurrent || $model->year_lock)
+                throw new \Exception();
+            $model->delete();
             Yii::$app->session->addFlash('success', "To οικομομικό έτος " . $id . " διαγράφηκε επιτυχώς.");
             return $this->redirect(['index']);
         }
-        catch(Exception $exc){
-            Yii::$app->session->addFlash('danger', "Αποτυχία διαγραφής του οικομομικού έτους " . $id . ". Η αποτυχία μπορεί να οφείλεται στην ύπαρξη στοιχείων σχετιζόμενα με το οικονομικό έτος (π.χ. πιστώσεις, δαπάνες κτλ.)");
+        catch(\Exception $exc){
+            Yii::$app->session->addFlash('danger', "Αποτυχία διαγραφής του οικομομικού έτους " . $id . ". Η αποτυχία μπορεί να οφείλεται στην ύπαρξη στοιχείων σχετιζόμενα με το οικονομικό έτος (π.χ. πιστώσεις, δαπάνες κτλ) είτε στην κατάστασή του (κλειδωμένο ή τρέχον).");
             return $this->redirect(['/finance/finance-year']);
         }
     }

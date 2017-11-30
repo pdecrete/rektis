@@ -57,13 +57,7 @@ class Integrity
         return FinanceKaecredit::find()->where(['year' => $year])->count();
     }
     
-//    private
-    
-//    private static function kaesCredits($year){
-                
-//    }
-    
-    
+
     /** TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO  
      * Checks whether the initial credit for the year equals to the sum
      * of the credits of all the RCNs (KAEs) of the year.
