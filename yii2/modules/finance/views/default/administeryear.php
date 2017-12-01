@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-lg-4">
             <h3>Ποσοστά διάθεσης πιστώσεων ΚΑΕ</h3>
             <p>Καθορισμός ποσοστών διάθεσης των πιστώσεων των ΚΑΕ του τρέχοντος έτους.</p>
-            <p><?= Html::a('Ρυθμίσεις KAE', Url::to(['/finance/finance-kae']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p><?= Html::a('Ρυθμίσεις KAE', Url::to(['/finance/finance-kaecreditpercentage']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
     </div>
 	<div class="row">

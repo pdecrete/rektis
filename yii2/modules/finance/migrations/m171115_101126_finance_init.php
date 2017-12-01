@@ -111,7 +111,7 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE admapp_finance_kaecreditpercentage */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecreditpercentage'] .
                           "(`kaeperc_id` INTEGER NOT NULL AUTO_INCREMENT,
-                            `kaeperc_percentage` TINYINT UNSIGNED NOT NULL CHECK (kaeperc_percentage >= 0.00 AND kaeperc_percentage <= 100.00),
+                            `kaeperc_percentage` SMALLINT UNSIGNED NOT NULL CHECK (kaeperc_percentage >= 0 AND kaeperc_percentage <= 10000),
                             `kaeperc_date` DATETIME NOT NULL,
                             `kaeperc_decision` VARCHAR(255),
                             `kaecredit_id` INTEGER NOT NULL,
@@ -213,7 +213,7 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_deduction'] .
                           "(`deduct_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `deduct_name` VARCHAR(100) NOT NULL,
-                            `deduct_percentage` DECIMAL(3, 2) NOT NULL CHECK (deduct_percentage >= 0.00 AND deduct_percentage <= 100.00),
+                            `deduct_percentage` SMALLINT UNSIGNED NOT NULL CHECK (deduct_percentage >= 0 AND deduct_percentage <= 10000),
                             `deduct_description` VARCHAR(1000),
                             `deduct_date` DATETIME NOT NULL,
                             `detuct_obsolete` BOOLEAN NOT NULL DEFAULT 0,

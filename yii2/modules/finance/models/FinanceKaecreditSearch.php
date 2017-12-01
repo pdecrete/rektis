@@ -43,7 +43,7 @@ class FinanceKaecreditSearch extends FinanceKaecredit
     public function search($params)
     {
         $query = FinanceKaecredit::find();
-
+                   
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

@@ -17,10 +17,9 @@ class FinanceInitialChecks extends ActionFilter
         
         if(!($workingYear = Integrity::uniqueCurrentYear()))
         {   
+            Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Ελέγξτε αν έχετε ορίσει έτος στο οποίο εργάζεστε ή επικοινωνήστε με το διαχειριστή.");
             if(!(Yii::$app->controller->id == 'finance-year'))
-                Yii::$app->response->redirect(['/finance/finance-year']);
-                
-            Yii::$app->session->setFlash('info', "Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Παρακαλώ επικοινωνήστε με το διαχειριστή.");
+                return Yii::$app->response->redirect(['/finance/finance-year']);
         }
         else
             Yii::$app->session["working_year"] = $workingYear;

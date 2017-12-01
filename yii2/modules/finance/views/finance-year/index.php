@@ -62,10 +62,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                                         'method' => "post"]]);
                                 },
                                 'currentyear' => function ($url, $dataProvider) {
-                                    if($dataProvider->year_iscurrent == 0)
+                                    if($dataProvider->year_iscurrent == 0) 
                                         return Html::a('<span class="glyphicon glyphicon-pushpin"></span>', $url, [
                                                         'title' => Yii::t('app', 'lead-currentyear'),
-                                                        'data'=>['confirm'=>"Είστε σίγουροι για τη διαγραφή του αντικειμένου;",
+                                                        'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ορίσετε ώς έτος εργασίας το έτος " . $dataProvider->year . ";",
                                                         'method' => "post"]]);
                                 }
                     
