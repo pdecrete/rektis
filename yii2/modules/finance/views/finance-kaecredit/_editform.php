@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaecredit */
@@ -28,7 +29,7 @@ use yii\bootstrap\ActiveForm;
                                                                 					    'min' => "0.00" , 
                                                                 					    'step' => '0.01', 
                                                                 					    'style' => 'text-align: right', 
-                                                                					    'value' => intval($model[$index]->kaecredit_amount)/100])->label(false); 
+                                                                					    'value' => Money::toCurrency($model[$index]->kaecredit_amount)])->label(false); 
                         ?>
 				    </td>									
 				</tr>

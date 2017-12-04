@@ -32,7 +32,7 @@ class FinanceKaecreditpercentage extends \yii\db\ActiveRecord
     {
         return [
             [['kaeperc_percentage', 'kaeperc_date', 'kaecredit_id'], 'required'],
-            [['kaeperc_percentage'], 'number'],
+            //[['kaeperc_percentage'], 'number'],
             [['kaeperc_date'], 'safe'],
             [['kaecredit_id'], 'integer'],
             [['kaeperc_decision'], 'string', 'max' => 255],
@@ -75,5 +75,10 @@ class FinanceKaecreditpercentage extends \yii\db\ActiveRecord
     public static function find()
     {
         return new FinanceKaecreditpercentageQuery(get_called_class());
+    }
+    
+    public static function getKaeCreditSumPercentage($kaecredit)
+    {
+        return FinanceKaecreditpercentage::find()->where(['kaecredit_id' => $kaecredit])->sum("kaeperc_percentage");
     }
 }

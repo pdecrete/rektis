@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceKaecreditpercentageSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\modules\finance\components\Money;
 
 /**
  * FinanceKaecreditpercentageController implements the CRUD actions for FinanceKaecreditpercentage model.
@@ -84,12 +85,31 @@ class FinanceKaecreditpercentageController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $kae = $model->getKae()->one();
+        $kaecredit = $model->getKaecredit()->one();
+        
+        if ($model->load(Yii::$app->request->post())){
+            try{                
+                $oldmodelcredit = $this->findModel($id)->getKaecredit()->one();                
+                $currentPercentSum = FinanceKaecreditpercentage::getKaeCreditSumPercentage($model->kaecredit_id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kaeperc_id]);
+                $model->kaeperc_percentage = Money::toDbPercentage($model->kaeperc_percentage);
+                echo (int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit); die();
+                if($model->kaeperc_percentage > 10000 || $model->kaeperc_percentage < 0 || 
+                    ((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit) > 10000) throw new \Exception();
+                if(!$model->save()) throw new \Exception();
+                Yii::$app->session->addFlash('success', "Οι αλλαγές σας αποθηκεύτηκαν επιτυχώς.");
+                return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
+            }
+            catch(\Exception $exc){
+                Yii::$app->session->addFlash('danger', "Αποτυχία αποθήκευσης των αλλαγών σας. Ελέγξτε την εγκυρότητα των στοιχείων που εισάγατε (π.χ. ποσοστό > 100%) ή επικοινωνήστε με το διαχειριστή.");
+                return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
+            }
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'kae' => $kae,
+                'kaecredit' => $kaecredit
             ]);
         }
     }

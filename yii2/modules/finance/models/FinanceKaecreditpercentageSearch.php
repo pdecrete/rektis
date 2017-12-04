@@ -43,15 +43,6 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
     public function search($params)
     {
         $prefix = Yii::$app->db->tablePrefix;
-
-        /*$query = FinanceKaecreditpercentage::findBySql("SELECT kcp.* , kc.kaecredit_amount, kc.kaecredit_date, 
-                                                        kc.kaecredit_updated, kc.year, k.* 
-                                                        FROM " . $prefix . "finance_kaecreditpercentage AS kcp,  
-                                                        " . $prefix . "finance_kaecredit AS kc,  
-                                                        " . $prefix . "finance_kae AS k 
-                                                        WHERE kcp.kaecredit_id=kc.kaecredit_id 
-                                                        AND kc.kae_id=k.kae_id")->all();*/
-        //$query = FinanceKaecreditpercentage::find()->innerJoinWith(['admapp_finance_kaecredit'])->all();
         $prc = $prefix . "finance_kaecreditpercentage";
         $cred = $prefix . "finance_kaecredit";
         $kae = $prefix . "finance_kae";
@@ -70,6 +61,8 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['attributes' => ['kae_id', 'kae_title', 
+                        'kaecredit_amount', 'kaeperc_percentage', 'kaeperc_date', 'kaeperc_decision']],
         ]);
 
         $this->load($params);
