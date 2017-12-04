@@ -5,6 +5,8 @@ use Yii;
 use app\models\Specialisation;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
+
 //use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;
 
 /**
@@ -35,11 +37,11 @@ class Position extends \yii\db\ActiveRecord
     const POSITION_TYPE_HOURS = 0;
 
     public $position_has_type, $position_has_type_label; // use to select teachers or hours count
+    public $covered, $remaining;
 
     /**
      * @inheritdoc
      */
-
     public static function tableName()
     {
         return '{{%stposition}}';
@@ -134,6 +136,8 @@ class Position extends \yii\db\ActiveRecord
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
             'position_has_type' => Yii::t('substituteteacher', 'Position has...'),
+            'covered' => Yii::t('substituteteacher', 'Covered'),
+            'remaining' => Yii::t('substituteteacher', 'Remaining'),
         ];
     }
 
@@ -170,6 +174,20 @@ class Position extends \yii\db\ActiveRecord
     }
 
     /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * 
+     * @param int $year
+     */
+    public static function selectables()
+    {
+        $choices_aq = (new PositionQuery(get_called_class()))
+            ->orderBy(['title' => SORT_DESC]);
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'title');
+    }
+
+    /**
      * @inheritdoc
      * 
      */
@@ -177,9 +195,9 @@ class Position extends \yii\db\ActiveRecord
     {
         parent::afterFind();
         $this->position_has_type = ($this->teachers_count > 0) ? Position::POSITION_TYPE_TEACHER : Position::POSITION_TYPE_HOURS;
-        $this->position_has_type_label = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) 
-            ? \Yii::t('substituteteacher', 'Teachers')
-            : \Yii::t('substituteteacher', 'Hours');
+        $this->position_has_type_label = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? \Yii::t('substituteteacher', 'Teachers') : \Yii::t('substituteteacher', 'Hours');
+        $this->covered = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? $this->covered_teachers_count : $this->covered_hours_count;
+        $this->remaining = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? $this->teachers_count - $this->covered_teachers_count : $this->hours_count - $this->covered_hours_count;
     }
 
     /**
