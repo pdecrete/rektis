@@ -92,20 +92,6 @@ class Call extends \yii\db\ActiveRecord
         return $this->hasMany(CallPosition::className(), ['call_id' => 'id']);
     }
 
-    public function afterFind()
-    {
-        parent::afterFind();
-
-        $this->application_start_ts = strtotime($this->application_start);
-        $this->application_start = date('Y-m-d', $this->application_start_ts);
-        $this->application_end_ts = strtotime($this->application_end);
-        $this->application_end = date('Y-m-d', $this->application_end_ts);
-
-        $this->label = $this->title . ', '
-            . date('d/m/Y', $this->application_start_ts) . '-'
-            . date('d/m/Y', $this->application_end_ts);
-    }
-
     /**
      * Get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
@@ -118,6 +104,20 @@ class Call extends \yii\db\ActiveRecord
             ->orderBy(['application_start' => SORT_DESC]);
 
         return ArrayHelper::map($choices_aq->all(), 'id', 'label');
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->application_start_ts = strtotime($this->application_start);
+        $this->application_start = date('Y-m-d', $this->application_start_ts);
+        $this->application_end_ts = strtotime($this->application_end);
+        $this->application_end = date('Y-m-d', $this->application_end_ts);
+
+        $this->label = $this->title . ', '
+            . date('d/m/Y', $this->application_start_ts) . '-'
+            . date('d/m/Y', $this->application_end_ts);
     }
 
     /**
