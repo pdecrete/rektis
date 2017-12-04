@@ -39,7 +39,7 @@ class PositionSearch extends Position
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $pagesize = null)
     {
         $query = Position::find();
 
@@ -48,6 +48,10 @@ class PositionSearch extends Position
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+        if ($pagesize !== null) {
+            $dataProvider->pagination->pagesize = $pagesize;
+//            $dataProvider->pagination = new Pagination(['pagesize' => 10]);
+        }
 
         $this->load($params);
 

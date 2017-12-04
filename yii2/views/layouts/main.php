@@ -171,7 +171,17 @@ AppAsset::register($this);
                                 'url' => [ '/SubstituteTeacher/call/index' ]
                             ],
                             [
+                                'label' => 'Κατανομές ΠΥΣΕΕΠ',
+                                'url' => [ '/SubstituteTeacher/call-position/index' ]
+                            ],
+                            [
                                 'label' => 'Αναπληρωτές',
+                            ],
+                            [
+                                'label' => 'Διαχείριση αιτήσεων',
+                            ],
+                            [
+                                'label' => 'Κατανομή',
                             ],
                         ],
                     ],

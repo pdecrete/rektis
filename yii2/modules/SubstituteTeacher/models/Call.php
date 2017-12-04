@@ -4,7 +4,7 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use kartik\datecontrol\DateControl;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%stcall}}".
@@ -23,6 +23,7 @@ class Call extends \yii\db\ActiveRecord
 {
 
     public $application_start_ts, $application_end_ts;
+    public $label;
 
     /**
      * @inheritdoc
@@ -91,6 +92,20 @@ class Call extends \yii\db\ActiveRecord
         return $this->hasMany(CallPosition::className(), ['call_id' => 'id']);
     }
 
+    /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     * 
+     * @param int $year
+     */
+    public static function selectables()
+    {
+        $choices_aq = (new CallQuery(get_called_class()))
+            ->orderBy(['application_start' => SORT_DESC]);
+
+        return ArrayHelper::map($choices_aq->all(), 'id', 'label');
+    }
+
     public function afterFind()
     {
         parent::afterFind();
@@ -99,6 +114,10 @@ class Call extends \yii\db\ActiveRecord
         $this->application_start = date('Y-m-d', $this->application_start_ts);
         $this->application_end_ts = strtotime($this->application_end);
         $this->application_end = date('Y-m-d', $this->application_end_ts);
+
+        $this->label = $this->title . ', '
+            . date('d/m/Y', $this->application_start_ts) . '-'
+            . date('d/m/Y', $this->application_end_ts);
     }
 
     /**

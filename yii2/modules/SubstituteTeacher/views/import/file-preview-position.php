@@ -102,7 +102,7 @@ $form = ActiveForm::begin([
             <?= Yii::t('substituteteacher', 'Operations') ?>
         </div>
         <div class="col-sm-8">
-            <?= Html::dropDownList('operation', null, \app\modules\SubstituteTeacher\models\Operation::selectables()) ?>
+            <?= Html::dropDownList('operation', null, \app\modules\SubstituteTeacher\models\Operation::selectables(), ['class' => 'form-control']) ?>
             <?= Html::hiddenInput('action', 'import') ?>
         </div>
     </div>
