@@ -7,6 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\finance\models\FinanceKaeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->title = Yii::t('app', 'Finance Kaes');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -29,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'kae_description',
 
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view}&nbsp;{update}'
+             'template' => '{update}'
             ],
         ],
     ]); ?>
