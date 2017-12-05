@@ -8,6 +8,12 @@ use app\modules\finance\models\FinanceKaecredit;
 
 class Integrity
 {
+    /*
+    public static function isLegalSumCreditsPercentages($credit_id)
+    {
+        
+    }*/
+    
     /**
      * Returns the currently working year if there is only one financial year set as currently working, 
      * otherwise if there are more than one years set as currently working, it returns false.

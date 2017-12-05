@@ -71,6 +71,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(0832, 'Φωτισμός και κίνηση (με ηλεκτρισμό ή φωταέριο)')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0841, 'Διαφημίσεις και Δημοσιεύσεις γενικά')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0843, 'Εκδόσεις - εκτυπώσεις - βιβλιοδεσία (περιλαμβάνεται και η βοήθεια χάρτου)')")->execute();
+//10
         Yii::$app->db->createCommand($insert_command . "(0845, 'Κάθε είδους δαπάνες δημοσίων σχέσεων')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0851, 'Αμοιβές για συντήρηση και επισκευή κτιρίων γενικά, εγκαταστάσεων στρατωνισμού, ελλιμενισμού')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0875, 'Αμοιβές για δαπάνες καθαριότητας')")->execute();
@@ -81,6 +82,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(1512, 'Προμήθεια καυσίμων θέρμανσης και δαπάνες κοινοχρήστων')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1699, 'Διάφορες λοιπές δαπάνες')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1711, 'Προμήθεια επίπλων')")->execute();
+//20
         Yii::$app->db->createCommand($insert_command . "(1712, 'Προμήθεια συσκευών θέρμανσης και κλιματισμού')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1713, 'Προμήθεια γραφομηχανών,μηχανημάτων φωτοαντιγραφής κλπ. μηχανών γραφείου')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1723, 'Προμήθεια ηλεκτρονικών υπολογιστών, προγραμμάτων και λοιπών υλικών')")->execute();
@@ -90,7 +92,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(9821, 'Υποχρεώσεις από παροχή τηλ/κων υπηρεσιών')")->execute();
         Yii::$app->db->createCommand($insert_command . "(9831, 'Δαπάνες Ύδρευσης και Άδρευσης')")->execute();
         Yii::$app->db->createCommand($insert_command . "(9832, 'Δαπάνες Ηλεκτρικής Ενέργειας')")->execute();
-
+//29
         /* CREATE TABLE admapp_finance_kaecredit */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecredit'] .
                           "(`kaecredit_id` INTEGER NOT NULL AUTO_INCREMENT,

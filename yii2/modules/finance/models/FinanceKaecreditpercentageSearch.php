@@ -62,7 +62,9 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['attributes' => ['kae_id', 'kae_title', 
-                        'kaecredit_amount', 'kaeperc_percentage', 'kaeperc_date', 'kaeperc_decision']],
+                        'kaecredit_amount', 'kaeperc_percentage', 'kaeperc_date', 'kaeperc_decision'],
+                        'defaultOrder' => ['kae_id'=>SORT_ASC]
+                        ],
         ]);
 
         $this->load($params);

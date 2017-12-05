@@ -10,6 +10,7 @@ use app\modules\finance\components\Money;
 //echo "<pre>"; print_r($kae); echo "</pre>"; die();
 $kaecredit->kaecredit_amount = Money::toCurrency($kaecredit->kaecredit_amount);
 $model->kaeperc_percentage = Money::toPercentage($model->kaeperc_percentage);
+$model->kaeperc_date = date("Y-m-d H:i:s");
 ?>
 
 <div class="finance-kaecreditpercentage-form">
@@ -22,7 +23,7 @@ $model->kaeperc_percentage = Money::toPercentage($model->kaeperc_percentage);
 	
     <?= $form->field($model, 'kaeperc_percentage')->textInput((['maxlength' => true,] )) ?>
 
-    <?= $form->field($model, 'kaeperc_date')->textInput() ?>
+    <?= $form->field($model, 'kaeperc_date')->textInput(['readonly' => true]) ?>
 
     <?= $form->field($model, 'kaeperc_decision')->textInput(['maxlength' => true]) ?>
 

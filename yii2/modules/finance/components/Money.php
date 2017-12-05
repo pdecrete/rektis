@@ -28,7 +28,7 @@ class Money
     }
     
     public static function toDbPercentage($percentage)
-    {
-        return intval(str_replace(',', '.', str_replace('%', '', $percentage))*100);
+    {   
+        return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));; 
     }
 }
