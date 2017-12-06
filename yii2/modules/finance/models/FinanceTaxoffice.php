@@ -41,9 +41,9 @@ class FinanceTaxoffice extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'taxoffice_id' => Yii::t('app', 'Taxoffice ID'),
-            'taxoffice_name' => Yii::t('app', 'Taxoffice Name'),
-            'taxoffice_prefecture' => Yii::t('app', 'Taxoffice Prefecture'),
+            'taxoffice_id' => Yii::t('app', 'Tax Office ID'),
+            'taxoffice_name' => Yii::t('app', 'Tax Office Name'),
+            'taxoffice_prefecture' => Yii::t('app', 'Tax Office Prefecture'),
         ];
     }
 

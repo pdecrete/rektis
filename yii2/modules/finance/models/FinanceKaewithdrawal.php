@@ -46,11 +46,11 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaewithdr_id' => Yii::t('app', 'Kaewithdr ID'),
-            'kaewithdr_amount' => Yii::t('app', 'Kaewithdr Amount'),
-            'kaewithdr_decision' => Yii::t('app', 'Kaewithdr Decision'),
-            'kaewithdr_date' => Yii::t('app', 'Kaewithdr Date'),
-            'kaecredit_id' => Yii::t('app', 'Kaecredit ID'),
+            'kaewithdr_id' => Yii::t('app', 'RCN Withdrawal ID'),
+            'kaewithdr_amount' => Yii::t('app', 'RCN Withdrawal Amount'),
+            'kaewithdr_decision' => Yii::t('app', 'RCN Withdrawal Decision'),
+            'kaewithdr_date' => Yii::t('app', 'RCN Withdrawal Created Date'),
+            'kaecredit_id' => Yii::t('app', 'RCN Credit ID'),
         ];
     }
 

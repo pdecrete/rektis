@@ -1,11 +1,12 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 
-$this->title = 'Διαχείριση Δαπανών';
+$this->title = Module::t('modules/finance/app', 'Expenditures Management');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

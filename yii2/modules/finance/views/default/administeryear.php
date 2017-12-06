@@ -2,9 +2,10 @@
 
 use yii\bootstrap\Html;
 use yii\helpers\Url;
+use app\modules\finance\Module;
 
 /* @var $this yii\web\View */
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' =>  Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->title = 'Διαχείριση Οικονομικού Έτους';
 $this->params['breadcrumbs'][] = $this->title;
 

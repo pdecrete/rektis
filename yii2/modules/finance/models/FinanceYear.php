@@ -43,9 +43,9 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return [
             'year' => Yii::t('app', 'Year'),
-            'year_credit' => Yii::t('app', 'Year Credit'),
-            'year_iscurrent' => Yii::t('app', 'Year Iscurrent'),
-            'year_lock' => Yii::t('app', 'Year Lock'),
+            'year_credit' => Yii::t('app', 'Year Credit Amount'),
+            'year_iscurrent' => Yii::t('app', 'Working Year'),
+            'year_lock' => Yii::t('app', 'Locked Year'),
         ];
     }
 

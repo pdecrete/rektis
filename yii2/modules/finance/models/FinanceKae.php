@@ -43,9 +43,9 @@ class FinanceKae extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kae_id' => Yii::t('app', 'Kae ID'),
-            'kae_title' => Yii::t('app', 'Kae Title'),
-            'kae_description' => Yii::t('app', 'Kae Description'),
+            'kae_id' => Yii::t('app', 'RCN'),
+            'kae_title' => Yii::t('app', 'RCN Title'),
+            'kae_description' => Yii::t('app', 'RCN Description'),
         ];
     }
 

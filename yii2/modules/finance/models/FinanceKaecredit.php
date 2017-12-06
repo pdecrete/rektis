@@ -48,10 +48,10 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaecredit_id' => Yii::t('app', 'Kaecredit ID'),
-            'kaecredit_amount' => Yii::t('app', 'Kaecredit Amount'),
-            'kaecredit_date' => Yii::t('app', 'Kaecredit Date'),
-            'kaecredit_updated' => Yii::t('app', 'Kaecredit Updated'),
+            'kaecredit_id' => Yii::t('app', 'RCN Credit ID'),
+            'kaecredit_amount' => Yii::t('app', 'RCN Credit Amount'),
+            'kaecredit_date' => Yii::t('app', 'RCN Credit Created Date'),
+            'kaecredit_updated' => Yii::t('app', 'RCN Credit Updated Date'),
             'year' => Yii::t('app', 'Year'),
             'kae_id' => Yii::t('app', 'Kae ID'),
         ];
