@@ -1,19 +1,16 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaecredit */
 
-$this->title = Yii::t('app', 'Update RCΝ credits');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Kaecredits'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
-
-//echo "<pre>"; print_r($kaes); echo "</pre>";
-//echo "<pre>"; print_r($kaeCredits); echo "</pre>";
-//die();
+$this->title = Module::t('modules/finance/app', 'Update RCΝ credits');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'RCN Credits'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
 
 ?>
 <div class="finance-kaecredit-update">

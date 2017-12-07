@@ -11,10 +11,10 @@
  */
 return [
     'sourcePath' => '@app/modules/finance/',
-    'languages' => ['en-US', 'el-GR'],
-    'translator' => 'Yii::t',
+    'languages' => ['el-GR'],
+    'translator' => 'Module::t',
     'sort' => false,
-    'removeUnused' => false,
+    'removeUnused' => true,
     'only' => ['*.php',],
     'except' => [
         '.svn',

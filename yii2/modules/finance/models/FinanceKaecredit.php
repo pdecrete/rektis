@@ -3,6 +3,7 @@
 namespace app\modules\finance\models;
 
 use Yii;
+use app\modules\finance\Module;
 
 /**
  * This is the model class for table "{{%finance_kaecredit}}".
@@ -48,12 +49,12 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaecredit_id' => Yii::t('app', 'RCN Credit ID'),
-            'kaecredit_amount' => Yii::t('app', 'RCN Credit Amount'),
-            'kaecredit_date' => Yii::t('app', 'RCN Credit Created Date'),
-            'kaecredit_updated' => Yii::t('app', 'RCN Credit Updated Date'),
-            'year' => Yii::t('app', 'Year'),
-            'kae_id' => Yii::t('app', 'Kae ID'),
+            'kaecredit_id' => Module::t('modules/finance/app', 'RCN Credit ID'),
+            'kaecredit_amount' => Module::t('modules/finance/app', 'RCN Credit Amount'),
+            'kaecredit_date' => Module::t('modules/finance/app', 'RCN Credit Created Date'),
+            'kaecredit_updated' => Module::t('modules/finance/app', 'RCN Credit Updated Date'),
+            'year' => Module::t('modules/finance/app', 'Year'),
+            'kae_id' => Module::t('modules/finance/app', 'RCN'),
         ];
     }
 

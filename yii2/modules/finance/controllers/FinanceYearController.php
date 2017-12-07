@@ -3,6 +3,7 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
+use app\modules\finance\Module;
 use app\modules\finance\models\FinanceYear;
 use app\modules\finance\models\FinanceYearSearch;
 use yii\web\Controller;
@@ -37,15 +38,7 @@ class FinanceYearController extends Controller
      * @return mixed
      */
     public function actionIndex()
-    {
-        //$searchModel = new FinanceYearSearch();
-        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        //echo "<pre>"; print_r($dataProvider); echo "</pre>"; die();
-        //return $this->render('index', [
-        //     'searchModel' => $searchModel,
-        //      'dataProvider' => $dataProvider,
-        //]);
-      
+    { 
         $allModels = FinanceYear::find()->all();
         foreach($allModels as $yearItem)
             $yearItem->year_credit = Money::toCurrency($yearItem->year_credit);
@@ -126,14 +119,28 @@ class FinanceYearController extends Controller
         $model->year_lock = 1;
         if(!$model->save())
         {
-            Yii::$app->session->addFlash('danger', "Αποτυχία κλειδώματος του οικομομικού έτους " . $id);
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed locking financial year" . " " . $id));
             return $this->redirect(['/finance/finance-year']);
         }
         
-        Yii::$app->session->addFlash('success', "Το κλείδωμα του οικονομικό έτος " . $id . " ολοκληρώθηκε επιτυχώς.");
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year {id} was locked succesfully.", ['id' => $id]));
         return $this->redirect(['/finance/finance-year']);
     }
     
+    public function actionUnlock($id)
+    {
+        $model = $this->findModel($id);
+        $model->year_lock = 0;
+        if(!$model->save())
+        {
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed unlocking financial year" . " " . $id));
+            return $this->redirect(['/finance/finance-year']);
+        }
+        
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year {id} was unlocked succesfully.", ['id' => $id]));
+        return $this->redirect(['/finance/finance-year']);
+    }
+        
     /**
      * Make as working year the year passed as argument.
      * Both the database and the session for the working year is updated  

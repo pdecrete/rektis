@@ -44,7 +44,7 @@ class Module extends \yii\base\Module
             'sourceLanguage' => 'en-US',            
             'basePath' => '@app/modules/finance/messages',
             'fileMap' => [
-                'modules/finance/app' => 'app.php'                
+                'modules/finance/app' => 'modules/finance/app.php'                
             ],
         ];
         
@@ -52,6 +52,8 @@ class Module extends \yii\base\Module
     
     public static function t($category, $message, $params = [], $language = null)
     {
-        return Yii::t($category, $message, $params, $language);
+        //echo "<pre>"; print_r(Yii::$app->i18n->getMessageSource($category)); echo "</pre>"; die();
+        //echo Yii::$app->i18n->getMessageSource($category)
+        return Yii::t($category, $message, $params, 'el-GR');
     }
 }

@@ -9,8 +9,8 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\finance\models\FinanceYearSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->title = Yii::t('app', 'Finance Years');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->title = Module::t('modules/finance/app', 'Finance Years');
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider); echo"</pre>";
 //die();
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Finance Year'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Finance Year'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -35,37 +35,42 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock"></span>' : ' ';}
+                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-ok"></span>' : ' ';}
             ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{view}&nbsp;{update}&nbsp;{delete}&nbsp;{lock}&nbsp;{currentyear}',
              'buttons' => [
                                 'view' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
-                                    'title' => Yii::t('app', 'lead-view'),]);
+                                        'title' => Module::t('modules/finance/app', 'View'),]);
                                 },
                     
                                 'update' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
-                                    'title' => Yii::t('app', 'lead-update'),]);
+                                        'title' => Module::t('modules/finance/app', 'Update'),]);
                                 },
                                 'delete' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
-                                                        'title' => Yii::t('app', 'lead-delete'),
+                                        'title' => Module::t('modules/finance/app', 'Delete'),
                                                         'data'=>['confirm'=>"Η διαγραφή του έτους είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι για τη διαγραφή;",
                                                         'method' => "post"]]);
                                 },
                                 'lock' => function ($url, $dataProvider) {
                                     if($dataProvider->year_lock == 0)
-                                        return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
-                                                        'title' => Yii::t('app', 'lead-lock'),
-                                                        'data'=>['confirm'=>"Το κλείδωμα του έτους είναι μη αναστρέψιμη ενέργεια και έπειτα από αυτή καμία αλλαγή στο συγκεκριμένο έτος δεν θα είναι εφικτή. Είστε σίγουροι ότι θέλετε να κλειδώσετε το έτος;",
+                                        return Html::a('<span class="glyphicon glyphicon-lock" style="color:red"></span>', $url, [
+                                            'title' => Module::t('modules/finance/app', 'Lock'),
+                                                        'data'=>['confirm'=>"Κλειδώνοντας το έτος καμία αλλαγή δεν θα είναι εφικτή σε αυτό. Είστε σίγουροι ότι θέλετε να κλειδώσετε το έτος;",
                                                         'method' => "post"]]);
+                                        else
+                                            return Html::a('<span class="glyphicon glyphicon-lock" style="color:green"></span>', $url, [
+                                                'title' => Module::t('modules/finance/app', 'Unlock'),
+                                                'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ξεκλειδώσετε το έτος;",
+                                                    'method' => "post"]]);
                                 },
                                 'currentyear' => function ($url, $dataProvider) {
                                     if($dataProvider->year_iscurrent == 0) 
                                         return Html::a('<span class="glyphicon glyphicon-pushpin"></span>', $url, [
-                                                        'title' => Yii::t('app', 'lead-currentyear'),
+                                            'title' => Module::t('modules/finance/app', 'Set as currently working'),
                                                         'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ορίσετε ώς έτος εργασίας το έτος " . $dataProvider->year . ";",
                                                         'method' => "post"]]);
                                 }
@@ -86,8 +91,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $url;
                                 }
                                 if ($action === 'lock') {
-                                    $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
-                                    return $url;
+                                    if($dataProvider->year_lock == 0){
+                                        $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
+                                        return $url;
+                                    }
+                                    else{
+                                        $url = ['/finance/finance-year/unlock', 'id'=> $dataProvider->year];
+                                        return $url;
+                                    }
                                     
                                 }
                                 if ($action === 'currentyear') {

@@ -1,5 +1,7 @@
 <?php
 
+use app\modules\finance\Module;
+use app\modules\finance\components\Money;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ArrayDataProvider;
@@ -9,15 +11,15 @@ use yii\grid\CheckboxColumn;
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaecreditSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->title = Yii::t('app', 'Finance Kaecredits');
+$this->title = Module::t('modules/finance/app', 'RCN Credits');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $provider = new ArrayDataProvider([
     'allModels' => $dataProvider,
     'pagination' => false,
-    'sort' => ['attributes' => ['kae_id', 'kae_title', 'credit', 'kaecredit_date', 'kaecredit_updated']],
+    'sort' => ['attributes' => ['kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated']],
 ]);
 ?>
 <div class="finance-kaecredit-index">
@@ -26,16 +28,19 @@ $provider = new ArrayDataProvider([
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
-        <?= Html::a(Yii::t('app', 'Set RCN Credits'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Set RCN Credits'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 	<?= GridView::widget(   [  'dataProvider' => $provider,
 	                           'columns' => [  
                                                 'kae_id',
                                                 'kae_title',
-                                                'credit',
                                                 'kaecredit_date',
 	                                            'kaecredit_updated',
-	                                           ]
+                                                ['attribute' => 'kaecredit_amount',
+            	                                 'format' => 'html',
+            	                                 'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
+                                                ],
+                                            ]
 	                        ]);
     ?>
 </div>

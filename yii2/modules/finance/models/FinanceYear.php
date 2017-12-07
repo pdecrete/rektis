@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -42,10 +43,10 @@ class FinanceYear extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'year' => Yii::t('app', 'Year'),
-            'year_credit' => Yii::t('app', 'Year Credit Amount'),
-            'year_iscurrent' => Yii::t('app', 'Working Year'),
-            'year_lock' => Yii::t('app', 'Locked Year'),
+            'year' => Module::t('modules/finance/app', 'Year'),
+            'year_credit' => Module::t('modules/finance/app', 'Credit Amount'),
+            'year_iscurrent' => Module::t('modules/finance/app', 'Currently Working Year'),
+            'year_lock' => Module::t('modules/finance/app', 'Locked Year'),
         ];
     }
 
