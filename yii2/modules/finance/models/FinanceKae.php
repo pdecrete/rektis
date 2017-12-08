@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -43,9 +44,9 @@ class FinanceKae extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kae_id' => Yii::t('app', 'RCN'),
-            'kae_title' => Yii::t('app', 'RCN Title'),
-            'kae_description' => Yii::t('app', 'RCN Description'),
+            'kae_id' => Module::t('modules/finance/app', 'RCN'),
+            'kae_title' => Module::t('modules/finance/app',  'RCN Title'),
+            'kae_description' => Module::t('modules/finance/app', 'RCN Description'),
         ];
     }
 

@@ -54,11 +54,6 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
                     ->from([$prc, $cred, $kae])
                     ->where($prc . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
         
-        //echo "<pre>"; var_dump($query->all()); echo "</pre>"; die();
-        //$query = FinanceKaecreditpercentage::find();
-
-        // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['attributes' => ['kae_id', 'kae_title', 

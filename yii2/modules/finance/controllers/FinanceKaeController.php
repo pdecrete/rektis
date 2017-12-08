@@ -3,6 +3,7 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
+use app\modules\finance\Module;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
@@ -56,7 +57,19 @@ class FinanceKaeController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-
+    
+    /*
+    public function actionDelete($id)
+    {
+        if(!$this->findModel($id)->delete()){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The deletion of RCN {id} failed.", ['id' => $id]));
+            return $this->redirect(['index']);
+        }
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN {id} was deleted succesfully.", ['id' => $id]));
+        return $this->redirect(['index']);
+    }
+    */
+    
     /**
      * Creates a new FinanceKae model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -81,12 +94,12 @@ class FinanceKaeController extends Controller
                     if(!$newKAEcredit->save()) throw new \Exception();
                 }
                 $transaction->commit();
-                Yii::$app->session->addFlash('success', "Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Στα οικονομικά έτη που έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ, έχει προστεθεί και ο νέος ΚΑΕ με μηδενική πίστωση.");
-                return $this->redirect(['view', 'id' => $model->kae_id]);
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs."));
+                return $this->redirect(['index', 'id' => $model->kae_id]);
             }
             catch(\Exception $exc){
                 $transaction->rollBack();
-                Yii::$app->session->addFlash('danger', "Αποτυχία δημιουργίας του νέου ΚΑΕ.");
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create new RCN"));
                 return $this->redirect(['index']);
             }
         } else {
@@ -106,8 +119,13 @@ class FinanceKaeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->kae_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if(!$model->save()){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to update the RCN {id}", ['id' => $id]));
+                return $this->redirect(['index', 'id' => $model->kae_id]);
+            }
+            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The RCN {id} was updated successfully", ['id' => $id]));
+            return $this->redirect(['index', 'id' => $model->kae_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -128,7 +146,7 @@ class FinanceKaeController extends Controller
         if (($model = FinanceKae::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Module::t('modules/finance/app', 'The requested page does not exist.'));
         }
     }
 }

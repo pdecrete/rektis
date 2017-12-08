@@ -2,21 +2,21 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaecreditpercentageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Finance Kaecreditpercentages');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->title = Module::t('modules/finance/app', 'RCN Credits Percentages');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $columnsNum = 3;
 $kaesCount = count($kaes);
 $kaesSubListCount = ceil($kaesCount/$columnsNum);
-//echo $kaesSubListCount; die();
 $kaesListDivide = array();
 
 for($i = 0; $i < $columnsNum; $i++)
@@ -34,7 +34,7 @@ for($i = 0; $i < $columnsNum; $i++)
 
     <p>
         <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#kaesList">
-        	<?php echo Yii::t('app', 'Create Finance Kaecreditpercentage')?>
+        	<?php echo Module::t('modules/finance/app', 'Attribute percentage to RCN credit')?>
         </button>
 
     </p>
@@ -77,12 +77,12 @@ for($i = 0; $i < $columnsNum; $i++)
              'template' => '{update}&nbsp;{delete}',
              'buttons' =>   [   'update' => function ($url, $model) {
                                                 return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, 
-                                                                ['title' => Yii::t('app', 'lead-update'),]);
+                                                    ['title' => Module::t('modules/finance/app', 'Update'),]);
                                                 },
                                 'delete' => function ($url, $model) {
                                                 return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, 
-                                                    ['title' => Yii::t('app', 'lead-delete'),
-                                                    'data'=>['confirm'=>"Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι για τη διαγραφή;",
+                                                    ['title' => Module::t('modules/finance/app', 'Delete'),
+                                                        'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the percentage attribution of a RCN credit is irreversible action. Are you sure you want to delete this item?"),
                                                         'method' => "post"]]);
                                                 },
                             ],

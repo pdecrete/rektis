@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -46,11 +47,11 @@ class FinanceKaecreditpercentage extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaeperc_id' => Yii::t('app', 'RCN Attribution Percentage ID'),
-            'kaeperc_percentage' => Yii::t('app', 'RCN Attribution  Percentage'),
-            'kaeperc_date' => Yii::t('app', 'RCN Attribution Created Date'),
-            'kaeperc_decision' => Yii::t('app', 'RCN Attribution Decision'),
-            'kaecredit_id' => Yii::t('app', 'Kaecredit ID'),
+            'kaeperc_id' => Module::t('modules/finance/app', 'RCN Attribution Percentage ID'),
+            'kaeperc_percentage' => Module::t('modules/finance/app', 'RCN Percentage Attribution'),
+            'kaeperc_date' => Module::t('modules/finance/app', 'RCN Percentage Attribution Date'),
+            'kaeperc_decision' => Module::t('modules/finance/app', 'RCN Percentage Attribution Decision'),
+            'kaecredit_id' => Module::t('modules/finance/app', 'Kaecredit ID'),
         ];
     }
 

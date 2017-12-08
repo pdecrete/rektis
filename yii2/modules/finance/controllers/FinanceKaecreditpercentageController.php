@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\controllers;
 
+use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaecreditpercentage;
@@ -72,7 +73,7 @@ class FinanceKaecreditpercentageController extends Controller
     {
         if(!isset($id) || !is_numeric($id))
         {
-            Yii::$app->session->addFlash('danger', "Αποτυχία δημιουργίας καθορισμού ποσοστού διάθεσης επί πίστωσης.");
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The attribution of percentage to RCN credit failed."));
             return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
         }
             
@@ -89,11 +90,11 @@ class FinanceKaecreditpercentageController extends Controller
                 $currentPercentSum = FinanceKaecreditpercentage::getKaeCreditSumPercentage($kaecredit->kaecredit_id);
                 if(($currentPercentSum +  $newPercentage) > 10000 || $newPercentage <= 0)  throw new \Exception();
                 if(!$model->save()) throw new \Exception();
-                Yii::$app->session->addFlash('success', "Οι αλλαγές σας αποθηκεύτηκαν επιτυχώς.");
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
             catch(\Exception $exc){
-                Yii::$app->session->addFlash('danger', "Αποτυχία αποθήκευσης των αλλαγών σας. Ελέγξτε την εγκυρότητα των στοιχείων που εισάγατε (π.χ. ποσοστό ή σύνολο ποσοστών ΚΑΕ < 100%) ή επικοινωνήστε με το διαχειριστή.");
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving changes. Please check the validity of the input data (e.g. percentage or percentages sum <= 100%) or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
         } else {
@@ -128,11 +129,11 @@ class FinanceKaecreditpercentageController extends Controller
                 if($model->kaeperc_percentage > 10000 || $model->kaeperc_percentage <= 0 || 
                     ((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit) > 10000) throw new \Exception();
                 if(!$model->save()) throw new \Exception();
-                Yii::$app->session->addFlash('success', "Οι αλλαγές σας αποθηκεύτηκαν επιτυχώς.");
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
             catch(\Exception $exc){
-                Yii::$app->session->addFlash('danger', "Αποτυχία αποθήκευσης των αλλαγών σας. Ελέγξτε την εγκυρότητα των στοιχείων που εισάγατε (π.χ. ποσοστό ή σύνολο ποσοστών ΚΑΕ < 100%) ή επικοινωνήστε με το διαχειριστή.");
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving changes. Please check the validity of the input data (e.g. percentage or percentages sum <= 100%) or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
         } else {
@@ -153,7 +154,7 @@ class FinanceKaecreditpercentageController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        Yii::$app->session->addFlash('success', "Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης ολοκληρώθηκε επιτυχώς.");
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης ολοκληρώθηκε επιτυχώς."));
         return $this->redirect(['index']);
     }
 
@@ -169,7 +170,7 @@ class FinanceKaecreditpercentageController extends Controller
         if (($model = FinanceKaecreditpercentage::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Module::t('modules/finance/app', 'The requested page does not exist.'));
         }
     }
 }
