@@ -59,7 +59,7 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
      */
     public function getFinanceExpenditures()
     {
-        return $this->hasMany(FinanceExpenditure::className(), ['kaewithdr_id' => 'kaewithdr_id']);
+        //return $this->hasMany(FinanceExpenditure::className(), ['kaewithdr_id' => 'kaewithdr_id']);
     }
 
     /**

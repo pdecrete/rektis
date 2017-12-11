@@ -17,6 +17,20 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'RCN Withdrawal' => 'Ανάληψη από ΚΑΕ',
+    'Failure in currying out the RCN withdrawal. Please try again or contact with the administrator.' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
+    'The RCN for which the process was requested cound not be found.' => 'Ο ΚΑΕ για τον οποίο ζητάτε να εφαρμοστεί η ενέργεια που επιλέξατε δεν βρέθηκε.',
+    'Withdrawals from RCN Credits' => 'Αναλήψεις από πιστώσεις ΚΑΕ',
+    'New Withdrawal' => 'Νέα Ανάληψη',
+    'Withdrawal Date' => 'Ημερομηνία Ανάληψης',
+    'Withdrawal Decision' => 'Απόφαση Ανάληψης',
+    'Withdrawal Amount' => 'Ποσό Ανάληψης',
+    'Spending Rate' => 'Ποσοστό Εκτέλεσης',
+    'Decision' => 'Απόφαση',
+    'Date' => 'Ημερομηνία',
+    'Withdrawals' => 'Αναλήψεις',
+    'Percentage' => 'Ποσοστό',
+    'Percentages' => 'Ποσοστά',
     'Failure in saving changes. Please check the validity of the input data (e.g. percentage or percentages sum <= 100%) or contact with the administrator.' => 'Αποτυχία αποθήκευσης των αλλαγών σας. Ελέγξτε την εγκυρότητα των στοιχείων που εισάγατε (π.χ. ποσοστό ή σύνολο ποσοστών ΚΑΕ < 100%) ή επικοινωνήστε με το διαχειριστή.',    
     'Your changes were saved succesfully.' => 'Οι αλλαγές σας αποθηκεύτηκαν επιτυχώς.',
     'The attribution of percentage to RCN credit failed.' => 'Αποτυχία δημιουργίας καθορισμού ποσοστού διάθεσης επί πίστωσης.',
@@ -66,6 +80,7 @@ return [
     'RCN Title' => 'Τίτλος ΚΑΕ',
     'RCN Description' => 'Περιγραφή ΚΑΕ',
     'RCN' => 'ΚΑΕ',
+    'Credit Amount' => 'Ποσό πίστωσης',
     'RCN Credit Amount' => 'Ποσό πίστωσης ΚΑΕ',
     'RCN Credit Created Date' => 'Ημερομηνία πίστωσης ΚΑΕ',
     'RCN Credit ID' => 'ID πίστωσης ΚΑΕ',

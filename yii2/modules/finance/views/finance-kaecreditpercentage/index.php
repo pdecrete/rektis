@@ -13,66 +13,36 @@ $this->title = Module::t('modules/finance/app', 'RCN Credits Percentages');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = $this->title;
-
-$columnsNum = 3;
-$kaesCount = count($kaes);
-$kaesSubListCount = ceil($kaesCount/$columnsNum);
-$kaesListDivide = array();
-
-for($i = 0; $i < $columnsNum; $i++)
-    for($j = 0; $j < $kaesSubListCount; $j++)
-    {//echo strval(($kaesSubListCount*$i + $j)) . " " . $kaesCount . " "  . strval($kaesSubListCount*$i + $j) . "<br />";
-        if(($kaesSubListCount*$i + $j) >= $kaesCount)
-            break;
-        $kaesListDivide[$i][$j] = $kaes[$kaesSubListCount*$i + $j]; 
-    }
 ?>
 <div class="finance-kaecreditpercentage-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#kaesList">
-        	<?php echo Module::t('modules/finance/app', 'Attribute percentage to RCN credit')?>
-        </button>
-
-    </p>
-	<div id="kaesList" class="collapse">
-        <div class="container-fluid well">
-      		<div class="row">
-      			<?php foreach ($kaesListDivide as $kaeList) : ?>
-      						<div class="col-lg-<?php echo 12/$columnsNum; ?>">
-      							<?php foreach ($kaeList as $kaeListItem): ?> 
-                                        <p><a href='/index.php/finance/finance-kaecreditpercentage/create?id=<?php echo $kaeListItem->kae_id; ?>'><span class="label label-primary"><?= $kaeListItem->kae_id; ?></span>
-                                        <?php echo $kaeListItem->kae_title;?></a>
-                                        </p>
-                                <?php endforeach;?>
-      						</div>		
-      			<?php endforeach;?>
-      			
-      			
-    		</div>
-    	</div>
-	</div>
+    
+    <?= $this->render('/default/kaeslist', [
+        'kaes' => $kaes,
+        'btnLiteral' => Module::t('modules/finance/app', 'Attribute percentage to RCN credit'),
+        'actionUrl' => '/index.php/finance/finance-kaecreditpercentage/create'
+    ]) ?>
 	
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'kae_id',
-            'kae_title',
-            [   'attribute' => 'kaecredit_amount',
-                'format' => 'html',
-                'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
+            ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
+            ['attribute' => 'kaecredit_amount',
+             'label' => Module::t('modules/finance/app', 'Credit Amount'),
+             'format' => 'html',
+             'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
             ],
-            [   'attribute' => 'kaeperc_percentage',
-                'format' => 'html',
-                'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);}
+            ['attribute' => 'kaeperc_percentage',
+             'label' => Module::t('modules/finance/app', 'Percentage'),
+             'format' => 'html',
+             'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);}
             ],
-            'kaeperc_date',
-            'kaeperc_decision',
+            ['attribute' => 'kaeperc_date', 'label' => Module::t('modules/finance/app', 'Date')],
+            ['attribute' => 'kaeperc_decision', 'label' => Module::t('modules/finance/app', 'Decision')],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',
              'buttons' =>   [   'update' => function ($url, $model) {

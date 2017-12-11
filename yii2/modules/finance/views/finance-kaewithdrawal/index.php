@@ -1,9 +1,72 @@
 <?php
-/* @var $this yii\web\View */
-?>
-<h1>finance-kaewithdrawal/index</h1>
 
-<p>
-    You may change the content of this page by modifying
-    the file <code><?= __FILE__; ?></code>.
-</p>
+use app\modules\finance\Module;
+use app\modules\finance\components\Money;
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+/* @var $this yii\web\View */
+/* @var $searchModel app\modules\finance\models\FinanceKaewithdrawalSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+$this->title = Module::t('modules/finance/app', 'Withdrawals from RCN Credits');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="finance-kaewithdrawal-index">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+   
+	<?= 
+        $this->render('/default/kaeslist', [
+        'kaes' => $kaes,
+        'btnLiteral' => Module::t('modules/finance/app', 'New Withdrawal'),
+        'actionUrl' => '/index.php/finance/finance-kaewithdrawal/create']) 
+	?>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        //'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+            ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
+            ['attribute' => 'kaecredit_amount', 
+             'label' => Module::t('modules/finance/app', 'Credit Amount'),
+             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaecredit_amount']);}
+            ],
+            ['attribute' => 'percentages', 
+             'label' => Module::t('modules/finance/app', 'Spending Rate'),
+             'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);}
+            ],
+            ['attribute' => 'kaewithdr_amount', 'label' => Module::t('modules/finance/app', 'Withdrawal Amount')],
+            ['attribute' => 'kaewithdr_decision', 'label' => Module::t('modules/finance/app', 'Withdrawal Decision')],
+            ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date')],
+            ['class' => 'yii\grid\ActionColumn',
+                'template' => '{update}&nbsp;{delete}',
+                'buttons' =>   [   'update' => function ($url, $model) {
+                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+                    ['title' => Module::t('modules/finance/app', 'Update'),]);
+                },
+                'delete' => function ($url, $model) {
+                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+                    ['title' => Module::t('modules/finance/app', 'Delete'),
+                        'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the percentage attribution of a RCN credit is irreversible action. Are you sure you want to delete this item?"),
+                            'method' => "post"]]);
+                },
+                ],
+                'urlCreator' => function ($action, $model) {
+                if ($action === 'update') {
+                    $url ='/finance/finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
+                    return $url;
+                }
+                if ($action === 'delete') {
+                    $url = '/finance/finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
+                    return $url;
+                }
+                }
+           ],
+        ],
+    ]); ?>
+</div>

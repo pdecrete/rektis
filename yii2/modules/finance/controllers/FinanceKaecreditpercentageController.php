@@ -52,18 +52,6 @@ class FinanceKaecreditpercentageController extends Controller
     }
 
     /**
-     * Displays a single FinanceKaecreditpercentage model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new FinanceKaecreditpercentage model for the RCN with code $id.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
@@ -73,7 +61,7 @@ class FinanceKaecreditpercentageController extends Controller
     {
         if(!isset($id) || !is_numeric($id))
         {
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The attribution of percentage to RCN credit failed."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The RCN for which the process was requested cound not be found."));
             return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
         }
             
@@ -81,7 +69,6 @@ class FinanceKaecreditpercentageController extends Controller
         $kae = FinanceKae::findOne(['kae_id' => $id]);
         $kaecredit = FinanceKaecredit::findOne(['kae_id' => $id]);
         $model->kaecredit_id = $kaecredit->kaecredit_id;
-        //echo "<pre>"; print_r($kaecredit); echo "</pre>"; die();
 
         if ($model->load(Yii::$app->request->post())){
             try{

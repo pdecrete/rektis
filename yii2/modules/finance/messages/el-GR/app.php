@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Percentages' => 'Ποσοστά',
     'Create Finance Year' => 'Δημιουργία Οικονομικού Έτους',
     'Credit Amount' => '',
     'Currently Working Year' => '',
