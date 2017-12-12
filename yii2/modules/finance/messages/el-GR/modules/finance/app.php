@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?' => 'Η διαγραφή της ανάληψης είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στοιχείο;',
     'The update of the withdrawal completed successfully.' => 'Η ενημέρωση της ανάληψης ολοκληρώθηκε επιτυχώς.',
     'The withdrawal completed successfully.' => 'Η ανάληψη ολοκληρώθηκε επιτυχώς.',
     'The RCN Withdraw was deleted successfylly.' => 'Η Ανάληψη από τον ΚΑΕ διαγράφηκε επιτυχώς.',

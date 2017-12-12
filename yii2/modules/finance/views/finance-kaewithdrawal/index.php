@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'delete' => function ($url, $model) {
                 return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
                     ['title' => Module::t('modules/finance/app', 'Delete'),
-                        'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the percentage attribution of a RCN credit is irreversible action. Are you sure you want to delete this item?"),
+                        'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?"),
                             'method' => "post"]]);
                 },
                 ],
