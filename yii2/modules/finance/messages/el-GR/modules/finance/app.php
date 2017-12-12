@@ -17,8 +17,13 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The update of the withdrawal completed successfully.' => 'Η ενημέρωση της ανάληψης ολοκληρώθηκε επιτυχώς.',
+    'The withdrawal completed successfully.' => 'Η ανάληψη ολοκληρώθηκε επιτυχώς.',
+    'The RCN Withdraw was deleted successfylly.' => 'Η Ανάληψη από τον ΚΑΕ διαγράφηκε επιτυχώς.',
+    'Failure in deleting the RCN withdrawal. Please try again or contact with the administrator' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
+    'RCN {kae_id} - Quick Info' => 'ΚΑΕ {kae_id} - Πληροφορίες',
     'RCN Withdrawal' => 'Ανάληψη από ΚΑΕ',
-    'Failure in currying out the RCN withdrawal. Please try again or contact with the administrator.' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
+    'Failure in currying out the RCN withdrawal. Please check the declared the validity of the withdraw amount or contact with the administrator.' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ ελέγξτε την εγκυρότητα του δηλωθέντος ποσού ανάληψης ή επικοινωνήστε με το διαχειριστή.',
     'The RCN for which the process was requested cound not be found.' => 'Ο ΚΑΕ για τον οποίο ζητάτε να εφαρμοστεί η ενέργεια που επιλέξατε δεν βρέθηκε.',
     'Withdrawals from RCN Credits' => 'Αναλήψεις από πιστώσεις ΚΑΕ',
     'New Withdrawal' => 'Νέα Ανάληψη',

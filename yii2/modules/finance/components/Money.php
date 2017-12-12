@@ -23,8 +23,10 @@ class Money
         //return Yii::$app->formatter->asCurrency(round($amount/100));
     }
     
-    public static function toPercentage($dbPercentage)
+    public static function toPercentage($dbPercentage, $formatted = true)
     {
+        if($formatted == false)
+            return round($dbPercentage/10000, 4);
         return Yii::$app->formatter->asPercent(round($dbPercentage/10000, 4), 2);
     }
     

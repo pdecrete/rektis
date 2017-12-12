@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -8,6 +9,16 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<?= 
+    $this->render('/default/kaeinfo', [
+        'model' => $model,
+        'kae' => $kae,
+        'kaeCredit' => $kaeCredit,
+        'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
+        'kaeWithdrwals' => $kaeWithdrwals
+    ]) 
+?>
+    
 <div class="finance-kaewithdrawal-form">
 
     <?php $form = ActiveForm::begin(); ?>
@@ -16,12 +27,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'kaewithdr_date')->textInput() ?>
-
-    <?= $form->field($model, 'kaecredit_id')->textInput() ?>
+    <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

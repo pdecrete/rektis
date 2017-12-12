@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -46,11 +47,11 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaewithdr_id' => Yii::t('app', 'RCN Withdrawal ID'),
-            'kaewithdr_amount' => Yii::t('app', 'RCN Withdrawal Amount'),
-            'kaewithdr_decision' => Yii::t('app', 'RCN Withdrawal Decision'),
-            'kaewithdr_date' => Yii::t('app', 'RCN Withdrawal Created Date'),
-            'kaecredit_id' => Yii::t('app', 'RCN Credit ID'),
+            'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal ID'),
+            'kaewithdr_amount' => Module::t('modules/finance/app', 'Withdrawal Amount'),
+            'kaewithdr_decision' => Module::t('modules/finance/app', 'Withdrawal Decision'),
+            'kaewithdr_date' => Module::t('modules/finance/app', 'Created Date'),
+            'kaecredit_id' => Module::t('modules/finance/app', 'Credit ID'),
         ];
     }
 
@@ -77,5 +78,19 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     public static function find()
     {
         return new FinanceKaewithdrawalQuery(get_called_class());
+    }
+    
+    /**
+     * Returns the total sum of withdraws carried out for the RCN credit with id $kaecredit_id (corresponds to an 
+     * RCN for a specific year)    
+     * @param integer $kaecredit_id
+     * @return integer
+     */
+    public static function getWithdrawsSum($kaecredit_id){
+        $sum = 0;
+        $kaeWithdrwals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
+        foreach ($kaeWithdrwals as $kaeWithdrwal)
+            $sum += $kaeWithdrwal->kaewithdr_amount;
+        return $sum;
     }
 }

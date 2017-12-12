@@ -40,7 +40,10 @@ $this->params['breadcrumbs'][] = $this->title;
              'label' => Module::t('modules/finance/app', 'Spending Rate'),
              'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);}
             ],
-            ['attribute' => 'kaewithdr_amount', 'label' => Module::t('modules/finance/app', 'Withdrawal Amount')],
+            ['attribute' => 'kaewithdr_amount', 
+             'label' => Module::t('modules/finance/app', 'Withdrawal Amount'),
+             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaewithdr_amount']);},
+            ],
             ['attribute' => 'kaewithdr_decision', 'label' => Module::t('modules/finance/app', 'Withdrawal Decision')],
             ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date')],
             ['class' => 'yii\grid\ActionColumn',

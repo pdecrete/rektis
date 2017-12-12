@@ -10,7 +10,7 @@ use yii\helpers\Html;
 $this->title = Module::t('modules/finance/app', 'New Withdrawal');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'RCN Withdrawal'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Withdrawals from RCN Credits'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-kaewithdrawal-create">
@@ -19,6 +19,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'kae' => $kae,
+        'kaeCredit' => $kaeCredit,
+        'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
+        'kaeWithdrwals' => $kaeWithdrwals
     ]) ?>
 
 </div>

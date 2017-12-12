@@ -1,16 +1,16 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaewithdrawal */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Finance Kaewithdrawal',
-]) . $model->kaewithdr_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Kaewithdrawals'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->kaewithdr_id, 'url' => ['view', 'id' => $model->kaewithdr_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->title = Module::t('modules/finance/app', 'Update Withdrawal');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Withdrawals from RCN Credits'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-kaewithdrawal-update">
 
@@ -18,6 +18,10 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'kae' => $kae,
+        'kaeCredit' => $kaeCredit,
+        'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
+        'kaeWithdrwals' => $kaeWithdrwals
     ]) ?>
 
 </div>
