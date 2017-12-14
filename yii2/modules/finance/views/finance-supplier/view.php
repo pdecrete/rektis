@@ -10,6 +10,7 @@ $this->title = $model->suppl_id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Suppliers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-supplier-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->title = Module::t('modules/finance/app', 'RCN', ['plural' => 1]);
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kae-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

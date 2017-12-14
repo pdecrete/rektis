@@ -7,11 +7,13 @@ use app\modules\finance\Module;
 use app\modules\finance\models\FinanceKaecredit;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceYear;
 use yii\base\Model;
 use yii\base\Exception;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 
 /**
@@ -25,6 +27,26 @@ class FinanceKaecreditController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [   'actions' => ['create', 'update'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                                                return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                            },
+                        'denyCallback' => function ($rule, $action) {
+                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
+                                                return $this->redirect(['index']);
+                                            }
+                        ],
+                        [   'actions' =>['index', 'create', 'update'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ]
+                    ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -55,20 +77,7 @@ class FinanceKaecreditController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-
     
-    /**
-     * Displays a single FinanceKaecredit model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
     /**
      * Creates a new FinanceKaecredit model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -186,12 +195,13 @@ class FinanceKaecreditController extends Controller
      * @param integer $id
      * @return mixed
      */
+    /*
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
+    }*/
 
     /**
      * Finds the FinanceKaecredit model based on its primary key value.

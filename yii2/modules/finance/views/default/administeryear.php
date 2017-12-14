@@ -10,7 +10,7 @@ $this->title = 'Διαχείριση Οικονομικού Έτους';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <h1><?= Module::t('modules/finance/app', 'Administer Financial Year');?></h1>
 
 <div class="body-content">

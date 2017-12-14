@@ -13,6 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'R
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
 
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaecredit-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

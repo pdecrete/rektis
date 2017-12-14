@@ -10,7 +10,7 @@ $this->title = Module::t('modules/finance/app', 'Expenditures Management');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <h1>Διαχείριση Δαπανών</h1>
 
 <div class="body-content">

@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'RCN Credits Percentages'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaecreditpercentage-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

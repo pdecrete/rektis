@@ -8,10 +8,13 @@ use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaecreditpercentage;
 use app\modules\finance\models\FinanceKaecreditpercentageSearch;
 use Yii;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use app\modules\finance\models\FinanceKaecredit;
+use app\modules\finance\models\FinanceKaewithdrawal;
+use app\modules\finance\components\Integrity;
 
 /**
  * FinanceKaecreditpercentageController implements the CRUD actions for FinanceKaecreditpercentage model.
@@ -24,13 +27,34 @@ class FinanceKaecreditpercentageController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+                'access' => [
+                    'class' => AccessControl::className(),
+                    
+                    'rules' => [
+                                [   'actions' => ['create', 'update', 'delete'],
+                                    'allow' => false,
+                                    'roles' => ['@'],
+                                    'matchCallback' => function ($rule, $action) {                                    
+                                                            return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                                        },
+                                    'denyCallback' => function ($rule, $action) {
+                                                            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
+                                                            return $this->redirect(['index']);
+                                                        }
+                                ],
+                                [   'actions' =>['index', 'create', 'update', 'delete'], 
+                                    'allow' => true,
+                                    'roles' => ['@'],
+                                ]
+                               ]
                 ],
-            ],
-        ];
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
+                    ],
+                ],
+            ];
     }
 
     /**
@@ -140,8 +164,25 @@ class FinanceKaecreditpercentageController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης ολοκληρώθηκε επιτυχώς."));
+        $percentgeModel = $this->findModel($id);
+        $oldSumPercentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($percentgeModel->kaecredit_id);
+        $newSumPercentage = $oldSumPercentage - $percentgeModel->kaeperc_percentage;
+        $kaeCredit = FinanceKaecredit::findOne(['kaecredit_id' => $percentgeModel->kaecredit_id]);
+        $sumWithdrawals = FinanceKaewithdrawal::getWithdrawsSum($percentgeModel->kaecredit_id);
+        //echo $sumWithdrawals . "<br />";
+        //echo $kaeCredit->kaecredit_amount*Money::toPercentage($newSumPercentage, false);
+        //die();
+        if($sumWithdrawals > $kaeCredit->kaecredit_amount*Money::toPercentage($newSumPercentage, false)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The percentage attributed to the RCN cannot be deleted. The deletion would cause the withdrawals to exceed the total attributed amount to the RCN."));
+            return $this->redirect(['index']);
+        }
+        
+        if(!$percentgeModel->delete()){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the percentage attributed to the RCN Credit. Please try again or contact with the administrator."));
+            return $this->redirect(['index']);
+        }
+        
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deletion of the percentage attributed to the RCN credit was completed successfully"));
         return $this->redirect(['index']);
     }
 

@@ -12,6 +12,7 @@ $this->title = Module::t('modules/finance/app', 'Create Finance Year');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Years'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-year-create">
 
     <h1><?= Html::encode($this->title) ?></h1>

@@ -16,9 +16,9 @@ $withdrawalsSum = 0;
   		<div class="row">
         <table class="table table-hover">
             <thead><tr><th class="text-center" colspan="2"><?php echo "ΚΑΕ " . $kae->kae_id . " - " . $kae->kae_title  ?></th></tr></thead>
-            <tr class="info"><td>Αρχική Πίστωση:</td><td class="text-right"><?= Money::toCurrency($kaeCredit->kaecredit_amount) ?></td></tr>
-            <tr class="info"><td>Συνολικό Ποσοστό Εκτέλεσης:</td><td class="text-right"><?= Money::toPercentage($kaeCreditSumPercentage) ?></td></tr>
-            <tr class="info"><td>Αρχικό Ποσό Εκτέλεσης:</td><td class="text-right"><?= $balance ?></td></tr>
+            <tr class="info"><td><?= Module::t('modules/finance/app', 'Αρχική Πίστωση') ?>:</td><td class="text-right"><?= Money::toCurrency($kaeCredit->kaecredit_amount) ?></td></tr>
+            <tr class="info"><td><?= Module::t('modules/finance/app', 'Συνολικό Ποσοστό Διάθεσης') ?>:</td><td class="text-right"><?= Money::toPercentage($kaeCreditSumPercentage) ?></td></tr>
+            <tr class="info"><td><?= Module::t('modules/finance/app', 'Διαθέσιμο ποσό') ?>:</td><td class="text-right"><?= $balance ?></td></tr>
             <?php foreach ($kaeWithdrwals as $withdrawal) :
             		$withdrawalsSum += $withdrawal->kaewithdr_amount; ?>
             		<tr class="danger"><td>Ανάληψη (<?= $withdrawal->kaewithdr_date ?>):</td><td class="text-right"><?= Money::toCurrency($withdrawal->kaewithdr_amount) ?></td></tr>

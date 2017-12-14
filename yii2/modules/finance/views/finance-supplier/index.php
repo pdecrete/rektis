@@ -11,6 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->title = Yii::t('app', 'Finance Suppliers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-supplier-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

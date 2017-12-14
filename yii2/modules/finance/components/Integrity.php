@@ -34,10 +34,7 @@ class Integrity
      */
     public static function isCurrent($year){
         $model = FinanceYear::find()->where(['year' => $year])->one();
-        if(is_null($model) || $model->year_iscurrent == 0)
-            return false;
-        else
-            return true;
+        return !(is_null($model) || $model->year_iscurrent == 0);
     }
 
     /**
@@ -46,11 +43,9 @@ class Integrity
      * @return boolean
      */
     public static function isLocked($year){
+            
         $model = FinanceYear::find()->where(['year' => $year])->one();
-        if(is_null($model) || $model->year_lock == 0)
-            return false;
-        else
-            return true;
+        return !(is_null($model) || $model->year_lock == 0);
     }
     
     

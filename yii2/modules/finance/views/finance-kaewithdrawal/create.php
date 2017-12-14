@@ -13,6 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Withdrawals from RCN Credits'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaewithdrawal-create">
 
     <h1><?= Html::encode($this->title) ?></h1>

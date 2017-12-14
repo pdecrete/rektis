@@ -9,10 +9,12 @@ use app\modules\finance\models\FinanceKaewithdrawal;
 use app\modules\finance\models\FinanceKaewithdrawalSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKaecredit;
 use app\modules\finance\models\FinanceKaecreditpercentage;
 use yii\base\Exception;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 
 /**
@@ -26,6 +28,26 @@ class FinanceKaewithdrawalController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [   'actions' => ['create', 'update', 'delete'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                                                return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                            },
+                        'denyCallback' => function ($rule, $action) {
+                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
+                                                return $this->redirect(['index']);
+                                            }
+                        ],
+                        [   'actions' =>['index', 'create', 'update', 'delete'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ]
+                    ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

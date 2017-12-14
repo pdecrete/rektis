@@ -14,6 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaewithdrawal-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

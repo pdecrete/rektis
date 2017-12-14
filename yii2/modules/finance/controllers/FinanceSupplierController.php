@@ -18,7 +18,7 @@ class FinanceSupplierController extends Controller
      * @inheritdoc
      */
     public function behaviors()
-    {
+    {        
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),

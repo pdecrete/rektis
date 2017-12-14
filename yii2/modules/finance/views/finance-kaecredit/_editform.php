@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
@@ -36,7 +37,7 @@ use app\modules\finance\components\Money;
 <?php           endforeach;?>
         	</table>
         	<div class="col-lg-12 text-right">
-				<?= Html::submitButton(Yii::t('app', 'Save RCN credits'), ['class' => 'btn btn-success btn-lg pull-right'])?>
+				<?= Html::submitButton(Module::t('modules/finance/app', 'Save Credits'), ['class' => 'btn btn-success btn-lg pull-right'])?>
 			</div>
 <?php   ActiveForm::end(); ?>
 

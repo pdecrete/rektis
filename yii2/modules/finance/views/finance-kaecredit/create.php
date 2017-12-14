@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -7,13 +8,13 @@ use yii\bootstrap\ActiveForm;
 /* @var $model app\modules\finance\models\FinanceKaecredit */
 
 $this->title = Yii::t('app', 'Create Finance Kaecredit');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Kaecredits'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Kaecredits'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($model); echo "</pre>";die();
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaecredit-create">
 
     <h1><?= Html::encode($this->title) ?></h1>

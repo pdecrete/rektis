@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->params['breadcrumbs'][] = ['label' => $model->year, 'url' => ['view', 'id' => $model->year]];
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-year-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

@@ -9,7 +9,9 @@ use app\modules\finance\models\FinanceYearSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 use yii\base\Exception;
 
@@ -24,6 +26,26 @@ class FinanceYearController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [   'actions' => ['update', 'delete'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                                                return Integrity::isLocked(Yii::$app->request->get('id'));
+                                            },
+                        'denyCallback' => function ($rule, $action) {
+                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
+                                                return $this->redirect(['index']);
+                                            }
+                        ],
+                        [   'actions' =>['index', 'view', 'create', 'update', 'lock', 'unlock', 'current-year', 'delete'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ]
+                        ]
+                    ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

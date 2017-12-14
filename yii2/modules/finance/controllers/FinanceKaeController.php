@@ -4,10 +4,12 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKaecredit;
 
@@ -22,6 +24,26 @@ class FinanceKaeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),               
+                'rules' => [
+                    [   'actions' => ['create', 'update'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                                               return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                           },
+                        'denyCallback' => function ($rule, $action) {
+                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
+                                                return $this->redirect(['index']);
+                                            }
+                        ],
+                        [   'actions' =>['index', 'create', 'update'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ]
+                    ]
+                ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -51,12 +73,12 @@ class FinanceKaeController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    /*public function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
+    }*/
     
     /*
     public function actionDelete($id)
@@ -124,7 +146,7 @@ class FinanceKaeController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to update the RCN {id}", ['id' => $id]));
                 return $this->redirect(['index', 'id' => $model->kae_id]);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The RCN {id} was updated successfully", ['id' => $id]));
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN {id} was updated successfully", ['id' => $id]));
             return $this->redirect(['index', 'id' => $model->kae_id]);
         } else {
             return $this->render('update', [

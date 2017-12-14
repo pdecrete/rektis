@@ -11,6 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'R
 //$this->params['breadcrumbs'][] = ['label' => $model->kae_id, 'url' => ['view', 'id' => $model->kae_id]];
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kae-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

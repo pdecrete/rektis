@@ -22,6 +22,7 @@ $provider = new ArrayDataProvider([
     'sort' => ['attributes' => ['kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated']],
 ]);
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaecredit-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

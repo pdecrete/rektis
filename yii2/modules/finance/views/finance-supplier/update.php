@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Suppliers'),
 $this->params['breadcrumbs'][] = ['label' => $model->suppl_id, 'url' => ['view', 'id' => $model->suppl_id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-supplier-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

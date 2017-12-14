@@ -17,6 +17,15 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The action is not permitted! The year is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος είναι κλειδωμένο.',
+    'The action is not permitted! The year you are working on is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος στο οποίο εργάζεστε είναι κλειδωμένο.',
+    'Total Attributed Percentage' => 'Συνολικό Ποσοστό Διάθεσης',
+    'Available amount' => 'Διαθέσιμο ποσό',
+    'Initial Credit' => 'Αρχική Πίστωση',
+    'The percentage attributed to the RCN cannot be deleted. The deletion would cause the withdrawals to exceed the total attributed amount to the RCN.' => 'Η διαγραφή του ποσοστού διάθεσης δεν μπορεί να ολοκληρωθεί. Αν διαγραφεί, οι αναλήψεις θα υπερβαίνουν το συνολικό διαθέσιμο της ΚΑΕ.',
+    'Failure in deleting the percentage attributed to the RCN Credit. Please try again or contact with the administrator.' => 'Η διαγραφή του ποσοστού διάθεσης της ΚΑΕ απέτυχε. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
+    'The deletion of the percentage attributed to the RCN credit was completed successfully' => 'Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης ολοκληρώθηκε επιτυχώς.',
+    'Save Credits' => 'Αποθήκευση Πιστώσεων',
     'The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?' => 'Η διαγραφή της ανάληψης είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το στοιχείο;',
     'The update of the withdrawal completed successfully.' => 'Η ενημέρωση της ανάληψης ολοκληρώθηκε επιτυχώς.',
     'The withdrawal completed successfully.' => 'Η ανάληψη ολοκληρώθηκε επιτυχώς.',
