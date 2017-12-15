@@ -27,17 +27,6 @@ class FinanceKaeController extends Controller
             'access' => [
                 'class' => AccessControl::className(),               
                 'rules' => [
-                    [   'actions' => ['create', 'update'],
-                        'allow' => false,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                                               return Integrity::isLocked(Yii::$app->session["working_year"]);
-                                           },
-                        'denyCallback' => function ($rule, $action) {
-                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
-                                                return $this->redirect(['index']);
-                                            }
-                        ],
                         [   'actions' =>['index', 'create', 'update'],
                             'allow' => true,
                             'roles' => ['@'],

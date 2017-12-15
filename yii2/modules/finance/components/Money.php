@@ -18,9 +18,10 @@ class Money
         return intval(round($amount*100));
     }
     
-    public static function toCurrency($amount){
-        return $amount/100;
-        //return Yii::$app->formatter->asCurrency(round($amount/100));
+    public static function toCurrency($amount, $formatted = false){
+        if($formatted) 
+            return Yii::$app->formatter->asCurrency(round($amount/100));        
+        return $amount/100;        
     }
     
     public static function toPercentage($dbPercentage, $formatted = true)
