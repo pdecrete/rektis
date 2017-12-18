@@ -101,11 +101,16 @@ class FinanceYearController extends Controller
 
         if ($model->load(Yii::$app->request->post())){
             $model->year_credit = Money::toCents($model->year_credit);
-            if($model->save())
-                return $this->redirect(['view', 'id' => $model->year]);
-        } 
-
-        return $this->render('create', ['model' => $model]);
+            if(!Integrity::uniqueCurrentYear()) $model->year_iscurrent = 1;
+            if(!$model->save()){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating financial year."));
+                return $this->redirect(['index']);
+            }
+            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The financial year was created successfully."));
+            return $this->redirect(['index']);
+        }
+        else
+            return $this->render('create', ['model' => $model]);
     }
 
     /**
@@ -121,11 +126,15 @@ class FinanceYearController extends Controller
         
         if ($model->load(Yii::$app->request->post())){
             $model->year_credit = Money::toCents($model->year_credit);
-            if($model->save())
-                return $this->redirect(['view', 'id' => $model->year]);
-        } 
-        
-        return $this->render('update', ['model' => $model,]);
+            if(!$model->save()){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating financial year."));
+                return $this->redirect(['index']);
+            }
+            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The financial year was updated successfully."));
+            return $this->redirect(['index']);
+        }
+        else
+            return $this->render('update', ['model' => $model,]);
     }
 
     /**

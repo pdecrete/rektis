@@ -22,6 +22,7 @@ class Integrity
      */
     public static function uniqueCurrentYear(){
         $currentYearsNum = FinanceYear::find()->where(['year_iscurrent' => 1]);
+        
         if(!($currentYearsNum->count() == 1))
             return false;
         return $currentYearsNum->one()->year;
@@ -54,7 +55,7 @@ class Integrity
      * If the working year has not been set then -1 is returned.
      * @return number
      */
-    private static function yearKaesCount($year){
+    public static function yearKaesCount($year){
         return FinanceKaecredit::find()->where(['year' => $year])->count();
     }
     
@@ -68,7 +69,7 @@ class Integrity
    
     public static function creditsIntegrity($year){
         if(Integrity::yearKaesCount($year) == 0) 
-            return true;
+            return false;
         
         if(FinanceKae::find()->count() != Integrity::yearKaesCount($year)) 
             return false;

@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */

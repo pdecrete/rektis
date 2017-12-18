@@ -3,6 +3,7 @@
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 
 /* @var $this yii\web\View */
 $this->params['breadcrumbs'][] = ['label' =>  Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
@@ -10,16 +11,16 @@ $this->title = 'Διαχείριση Οικονομικού Έτους';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?= $this->render('/default/infopanel'); ?>
+<?= $this->render('/default/infopanel');?>
 <h1><?= Module::t('modules/finance/app', 'Administer Financial Year');?></h1>
 
 <div class="body-content">
 
     <div class="row">
 		<div class="col-lg-4">
-            <h3><?= Module::t('modules/finance/app', 'Year Settings')?></h3>
+            <h3><?= Module::t('modules/finance/app', 'Financial Years')?></h3>
             <p><?= Module::t('modules/finance/app', 'Create/Update/Delete/Lock/Set Currently Working Year');?></p>
-            <p><?= Html::a(Module::t('modules/finance/app', 'Year Settings'), Url::to(['/finance/finance-year']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            <p><?= Html::a(Module::t('modules/finance/app', 'Financial Years'), Url::to(['/finance/finance-year']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Administer RCN'); ?></h3>

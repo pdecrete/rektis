@@ -31,7 +31,6 @@ class FinanceTaxoffice extends \yii\db\ActiveRecord
         return [
             [['taxoffice_id', 'taxoffice_name'], 'required'],
             [['taxoffice_id'], 'integer'],
-            [['taxoffice_name', 'taxoffice_prefecture'], 'string', 'max' => 100],
         ];
     }
 
@@ -43,7 +42,6 @@ class FinanceTaxoffice extends \yii\db\ActiveRecord
         return [
             'taxoffice_id' => Yii::t('app', 'Tax Office ID'),
             'taxoffice_name' => Yii::t('app', 'Tax Office Name'),
-            'taxoffice_prefecture' => Yii::t('app', 'Tax Office Prefecture'),
         ];
     }
 

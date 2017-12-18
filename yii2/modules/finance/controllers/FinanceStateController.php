@@ -3,23 +3,22 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
-use app\modules\finance\Module;
-use app\modules\finance\models\FinanceSupplier;
-use app\modules\finance\models\FinanceSupplierSearch;
+use app\modules\finance\models\FinanceState;
+use app\modules\finance\models\FinanceStateSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * FinanceSupplierController implements the CRUD actions for FinanceSupplier model.
+ * FinanceStateController implements the CRUD actions for FinanceState model.
  */
-class FinanceSupplierController extends Controller
+class FinanceStateController extends Controller
 {
     /**
      * @inheritdoc
      */
     public function behaviors()
-    {        
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -29,14 +28,14 @@ class FinanceSupplierController extends Controller
             ],
         ];
     }
-    
+
     /**
-     * Lists all FinanceSupplier models.
+     * Lists all FinanceState models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FinanceSupplierSearch();
+        $searchModel = new FinanceStateSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -46,7 +45,7 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Displays a single FinanceSupplier model.
+     * Displays a single FinanceState model.
      * @param integer $id
      * @return mixed
      */
@@ -58,21 +57,16 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Creates a new FinanceSupplier model.
+     * Creates a new FinanceState model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FinanceSupplier();
+        $model = new FinanceState();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new supplier. Please try again."));
-                return $this->redirect(['index']);
-            }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The new supplier was created successfully."));
-            return $this->redirect(['index']);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->state_id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -81,7 +75,7 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Updates an existing FinanceSupplier model.
+     * Updates an existing FinanceState model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -90,13 +84,8 @@ class FinanceSupplierController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
-                return $this->redirect(['index']);
-            }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was updated successfully."));
-            return $this->redirect(['index']);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->state_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -105,32 +94,28 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Deletes an existing FinanceSupplier model.
+     * Deletes an existing FinanceState model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete()){
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the supplier. Please try again."));
-            return $this->redirect(['index', 'id' => $model->suppl_id]);
-        }
-        
-        Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was deleted successfully."));
+        $this->findModel($id)->delete();
+
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the FinanceSupplier model based on its primary key value.
+     * Finds the FinanceState model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FinanceSupplier the loaded model
+     * @return FinanceState the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FinanceSupplier::findOne($id)) !== null) {
+        if (($model = FinanceState::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

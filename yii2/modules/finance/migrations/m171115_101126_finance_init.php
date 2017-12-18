@@ -141,18 +141,17 @@ class m171115_101126_finance_init extends Migration
         /* CREATE TABLE admapp_finance_taxoffice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_taxoffice'] . "
                             (`taxoffice_id` INTEGER NOT NULL,
-                             `taxoffice_name` VARCHAR(100) NOT NULL,
-                             `taxoffice_prefecture` VARCHAR(100),
+                             `taxoffice_name` VARCHAR(100) NOT NULL,                             
                               PRIMARY KEY (`taxoffice_id`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_taxoffice'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();        
-        $insert_command = "INSERT INTO " . $dbFinTables['table_taxoffice'] . "(taxoffice_id, taxoffice_name, taxoffice_prefecture) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "(8110, 'Ηρακλείου', 'Ηρακλείου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(8431, 'Χανίων', 'Χανίων')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(8221, 'Αγίου Νικολάου', 'Λασιθίου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(8341, 'Ρεθύμνου', 'Ρεθύμνου')")->execute();
+        $insert_command = "INSERT INTO " . $dbFinTables['table_taxoffice'] . "(taxoffice_id, taxoffice_name) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "(8110, 'Ηρακλείου')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8431, 'Χανίων')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8221, 'Αγίου Νικολάου')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8341, 'Ρεθύμνου')")->execute();
         
         /* CREATE TABLE admapp_finance_supplier */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_supplier'] .
@@ -196,9 +195,6 @@ class m171115_101126_finance_init extends Migration
                             `inv_number` VARCHAR(255) NOT NULL, 
                             `inv_date` INTEGER NOT NULL,
                             `inv_order` VARCHAR(255) NOT NULL,
-                            `inv_amount`  " . $moneyDatatype . ",
-                            `inv_dedections` TEXT,
-                            `inv_roundings` SMALLINT,
                             `inv_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,
                             `exp_id` INTEGER NOT NULL,
@@ -246,6 +242,11 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_state'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbFinTables['table_state'] . "(state_name) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('ΑΡΧΙΚΟΠΟΙΗΘΗΚΕ')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ΑΠΑΙΤΗΘΗΚΕ')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ΕΝΤΑΛΜΑΤΟΠΟΙΗΘΗΚΕ')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ΟΛΟΚΛΗΡΩΘΗΚΕ')")->execute();
         
         /* CREATE TABLE admapp_finance_expenditurestate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditurestate'] .

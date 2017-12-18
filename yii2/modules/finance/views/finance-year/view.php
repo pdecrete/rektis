@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -13,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<?= $this->render('/default/infopanel'); ?>
+<?php $this->render('/default/infopanel'); ?>
 <div class="finance-year-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

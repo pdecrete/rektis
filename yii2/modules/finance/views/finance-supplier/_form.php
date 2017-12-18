@@ -16,15 +16,19 @@ use app\modules\finance\models\FinanceTaxoffice;
 
     <?= $form->field($model, 'suppl_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'suppl_vat')->textInput() ?>
+    <?= $form->field($model, 'suppl_vat')->textInput()->widget(\yii\widgets\MaskedInput::className(), 
+                                                    ['mask' => '999999999'])?>
 
     <?= $form->field($model, 'suppl_address')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'suppl_phone')->textInput() ?>
+    <?= $form->field($model, 'suppl_phone')->widget(\yii\widgets\MaskedInput::className(), 
+                                                    ['mask' => '9999999999'])?>
 
-    <?= $form->field($model, 'suppl_fax')->textInput() ?>
+    <?= $form->field($model, 'suppl_fax')->widget(\yii\widgets\MaskedInput::className(), 
+                                                    ['mask' => '9999999999'])?>
 
-    <?= $form->field($model, 'suppl_iban')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'suppl_iban')->widget(\yii\widgets\MaskedInput::className(), 
+                                                    ['mask' => 'GR9999999999999999999999999'])?>
 
     <?= $form->field($model, 'suppl_employerid')->textInput(['maxlength' => true]) ?>
 

@@ -84,7 +84,7 @@ return [
     'Percentages of initial RCNs credits' => 'Ποσοστά διάθεσης πιστώσεων ΚΑΕ',
     'Administer Financial Year' => 'Διαχείριση Οικονομικού Έτους',
     'Set RCN credits for the <strong>currently, working</strong> year' => 'Καθορισμός πιστώσεων στους ΚΑΕ του <strong>τρέχοντος</strong> έτους',
-    'Year Settings' => 'Ρυθμίσεις Έτους',
+    'Financial Years' => 'Οικονομικά Έτη',
     'Create/Update/Delete/Lock/Set Currently Working Year' => 'Δημιουργία/Επεξεργασία/Διαγραφή/Κλείδωμα/Ορισμός ως τρέχον',
     'Update RCΝ credits' => 'Ενημέρωση πιστώσεων ΚΑΕ',
     'RCN Credits' => 'Πιστώσεις ΚΑΕ',

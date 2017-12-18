@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -14,13 +15,12 @@ $this->title = Module::t('modules/finance/app', 'Finance Years');
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider); echo"</pre>";
 //die();
+
 ?>
 <?= $this->render('/default/infopanel'); ?>
 <div class="finance-year-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
     <p style="text-align: right;">
         <?= Html::a(Module::t('modules/finance/app', 'Create Finance Year'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
@@ -109,5 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
             ],
         ],
-    ]); ?>
+    ]); 
+    
+    ?>
 </div>

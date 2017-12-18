@@ -4,22 +4,22 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\Module;
-use app\modules\finance\models\FinanceSupplier;
-use app\modules\finance\models\FinanceSupplierSearch;
+use app\modules\finance\models\FinanceTaxoffice;
+use app\modules\finance\models\FinanceTaxofficeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * FinanceSupplierController implements the CRUD actions for FinanceSupplier model.
+ * FinanceTaxofficeController implements the CRUD actions for FinanceTaxoffice model.
  */
-class FinanceSupplierController extends Controller
+class FinanceTaxofficeController extends Controller
 {
     /**
      * @inheritdoc
      */
     public function behaviors()
-    {        
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -29,14 +29,14 @@ class FinanceSupplierController extends Controller
             ],
         ];
     }
-    
+
     /**
-     * Lists all FinanceSupplier models.
+     * Lists all FinanceTaxoffice models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FinanceSupplierSearch();
+        $searchModel = new FinanceTaxofficeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -46,32 +46,20 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Displays a single FinanceSupplier model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new FinanceSupplier model.
+     * Creates a new FinanceTaxoffice model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FinanceSupplier();
+        $model = new FinanceTaxoffice();
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())){
             if(!$model->save()) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new supplier. Please try again."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new Tax Office. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The new supplier was created successfully."));
+            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The changes were saved successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('create', [
@@ -81,7 +69,7 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Updates an existing FinanceSupplier model.
+     * Updates an existing FinanceTaxoffice model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -90,12 +78,12 @@ class FinanceSupplierController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())){
             if(!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was updated successfully."));
+            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The changes were saved successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('update', [
@@ -105,7 +93,7 @@ class FinanceSupplierController extends Controller
     }
 
     /**
-     * Deletes an existing FinanceSupplier model.
+     * Deletes an existing FinanceTaxoffice model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -113,24 +101,23 @@ class FinanceSupplierController extends Controller
     public function actionDelete($id)
     {
         if(!$this->findModel($id)->delete()){
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the supplier. Please try again."));
-            return $this->redirect(['index', 'id' => $model->suppl_id]);
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the item. Please try again."));
+            return $this->redirect(['index']);
         }
-        
-        Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was deleted successfully."));
+        Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The item was deleted successfully."));
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the FinanceSupplier model based on its primary key value.
+     * Finds the FinanceTaxoffice model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FinanceSupplier the loaded model
+     * @return FinanceTaxoffice the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FinanceSupplier::findOne($id)) !== null) {
+        if (($model = FinanceTaxoffice::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
