@@ -3,6 +3,7 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
+use app\modules\finance\Module;
 use app\modules\finance\models\FinanceState;
 use app\modules\finance\models\FinanceStateSearch;
 use yii\web\Controller;
@@ -45,18 +46,6 @@ class FinanceStateController extends Controller
     }
 
     /**
-     * Displays a single FinanceState model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new FinanceState model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -66,7 +55,8 @@ class FinanceStateController extends Controller
         $model = new FinanceState();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->state_id]);
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was created successfully."));
+            return $this->redirect(['index', 'id' => $model->state_id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -85,7 +75,8 @@ class FinanceStateController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->state_id]);
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was created successfully."));
+            return $this->redirect(['index', 'id' => $model->state_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -101,8 +92,11 @@ class FinanceStateController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        if(!$this->findModel($id)->delete()){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the expenditure state."));
+            return $this->redirect(['index', 'id' => $model->state_id]);
+        }
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was deleted succesfully."));      
         return $this->redirect(['index']);
     }
 

@@ -28,15 +28,14 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure State')?></h3>
-            <p><?= Module::t('modules/finance/app', 'Set RCN credits for the <strong>currently, working</strong> year')?></p>
-            <p><?= Html::a(Module::t('modules/finance/app', 'Set RCN Credits'), Url::to(['/finance/finance-kaecredit']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p><?= Module::t('modules/finance/app', 'Administer expenditure states')?></p>
+            <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure States'), Url::to(['/finance/finance-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>        
     </div>
 	<div class="row">
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure Deduction'); ?></h3>
-            <p><?= Module::t('modules/finance/app', 'Attribute percentages of initial RCNs credits of the currently working year'); ?></p>
-            <p><?= Html::a(Module::t('modules/finance/app', 'Percentages'), Url::to(['/finance/finance-kaecreditpercentage']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p><?= Module::t('modules/finance/app', 'Administer available deductions to be assigned to expenditures.'); ?></p>
         </div>        
 	</div>
 </div>

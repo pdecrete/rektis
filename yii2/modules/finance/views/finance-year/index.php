@@ -13,11 +13,11 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->title = Module::t('modules/finance/app', 'Finance Years');
 $this->params['breadcrumbs'][] = $this->title;
-//echo "<pre>"; print_r($dataProvider); echo"</pre>";
-//die();
+
+$this->render('/default/infopanel'); 
 
 ?>
-<?= $this->render('/default/infopanel'); ?>
+
 <div class="finance-year-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

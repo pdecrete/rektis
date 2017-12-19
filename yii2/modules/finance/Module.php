@@ -23,7 +23,7 @@ class Module extends \yii\base\Module
         return [
             [
                 'class' => FinanceInitialChecks::className(),
-                'except' => ['/finance/finance-year']
+                'except' => ['/finance/finance-year/*']
             ],
         ];
     }
@@ -31,9 +31,7 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
-        
         $this->registerTranslations();
-        //\Yii::configure($this, require __DIR__ . '/config/i18n.php');
     }
     
     public function registerTranslations()

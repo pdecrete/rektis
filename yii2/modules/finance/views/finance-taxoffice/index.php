@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Yii::t('app', 'Finance Taxoffices');
+$this->title = Module::t('modules/finance/app', 'Finance Taxoffices');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-taxoffice-index">
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p style="text-align: right;">
-        <?= Html::a(Yii::t('app', 'Create Finance Taxoffice'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Finance Taxoffice'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

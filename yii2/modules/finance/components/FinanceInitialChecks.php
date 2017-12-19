@@ -19,8 +19,12 @@ class FinanceInitialChecks extends ActionFilter
         if(!($workingYear = Integrity::uniqueCurrentYear()))
         {
             Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Error in defining the financial year as currently working. Check if currently working year is correctly defined or contact with the administrator."));
+
             if(!(Yii::$app->controller->id == 'finance-year'))
-                return Yii::$app->response->redirect(['/finance/finance-year/']);
+            {
+                return Yii::$app->response->redirect(['/finance/finance-year']);
+            }
+            return true;
         }
         else
             Yii::$app->session["working_year"] = $workingYear;
@@ -32,8 +36,7 @@ class FinanceInitialChecks extends ActionFilter
             if(!(Yii::$app->controller->id == 'finance-kaecredit')){
                 return Yii::$app->response->redirect(['/finance/finance-kaecredit']);
             }
-        }
-        
+        }      
         return true;
     }
 }
