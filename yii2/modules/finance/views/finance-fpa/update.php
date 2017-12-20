@@ -1,0 +1,22 @@
+<?php
+
+use app\modules\finance\Module;
+use yii\helpers\Html;
+
+/* @var $this yii\web\View */
+/* @var $model app\modules\finance\models\FinanceFpa */
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
+$this->title = Module::t('modules/finance/app', 'Update VAT option');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'VAT options'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
+?>
+<div class="finance-fpa-update">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <?= $this->render('_form', [
+        'model' => $model,
+    ]) ?>
+
+</div>

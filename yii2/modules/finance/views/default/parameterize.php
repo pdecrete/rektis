@@ -27,12 +27,18 @@ $this->params['breadcrumbs'][] = $this->title;
             <p><?= Html::a(Module::t('modules/finance/app', 'Administer Tax Offices'), Url::to(['/finance/finance-taxoffice']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
         <div class="col-lg-4">
+            <h3><?= Module::t('modules/finance/app', 'VAT')?></h3>
+            <p><?= Module::t('modules/finance/app', 'Administer VAT options')?></p>
+            <p><?= Html::a(Module::t('modules/finance/app', 'Vat options'), Url::to(['/finance/finance-fpa']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure State')?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer expenditure states')?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure States'), Url::to(['/finance/finance-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
-        </div>        
-    </div>
-	<div class="row">
+        </div>    
+	
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure Deduction'); ?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer available deductions to be assigned to expenditures.'); ?></p>

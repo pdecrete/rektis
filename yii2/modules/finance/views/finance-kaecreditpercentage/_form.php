@@ -11,6 +11,7 @@ use app\modules\finance\components\Money;
 //echo "<pre>"; print_r($kae); echo "</pre>"; die();
 $kaecredit->kaecredit_amount = Money::toCurrency($kaecredit->kaecredit_amount);
 $model->kaeperc_percentage = Money::toPercentage($model->kaeperc_percentage);
+
 $model->kaeperc_date = date("Y-m-d H:i:s");
 ?>
 

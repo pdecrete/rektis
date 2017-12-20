@@ -35,7 +35,8 @@ class m171115_101126_finance_init extends Migration
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
             'table_state' => $this->db->tablePrefix . 'finance_state',
-            'table_expenditurestate' => $this->db->tablePrefix . 'finance_expenditurestate'
+            'table_expenditurestate' => $this->db->tablePrefix . 'finance_expenditurestate',
+            'table_fpa' => $this->db->tablePrefix . 'finance_fpa'
         ];
         $i = 1;
         /* CREATE TABLE admapp_finance_year */
@@ -181,6 +182,7 @@ class m171115_101126_finance_init extends Migration
                             `exp_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `kaewithdr_id` INTEGER NOT NULL,
                             `suppl_id` INTEGER NOT NULL,
+                            `fpa_value` SMALLINT UNSIGNED NOT NULL CHECK (fpa_value >= 0 AND fpa_value <= 10000), 
                              PRIMARY KEY (`exp_id`),
                              FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
@@ -261,6 +263,20 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expenditurestate'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
+        
+        
+        /* CREATE TABLE admapp_finance_expenditurestate */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_fpa'] .
+                          "(`fpa_value` SMALLINT UNSIGNED NOT NULL CHECK (fpa_value >= 0 AND fpa_value <= 10000),
+                            PRIMARY KEY (`fpa_value`)
+                           ) " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_fpa'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbFinTables['table_fpa'] . "(fpa_value) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "(1300)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(2400)")->execute();
+        
     }
 
     public function safeDown()
@@ -278,7 +294,8 @@ class m171115_101126_finance_init extends Migration
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
             'table_state' => $this->db->tablePrefix . 'finance_state',
-            'table_expenditurestate' => $this->db->tablePrefix . 'finance_expenditurestate'
+            'table_expenditurestate' => $this->db->tablePrefix . 'finance_expenditurestate',
+            'table_fpa' => $this->db->tablePrefix . 'finance_fpa'
         ];
         $dbFinTables = array_reverse($dbFinTables);
         $i = 0;
