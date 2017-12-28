@@ -123,6 +123,7 @@ class LeaveController extends Controller
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
             $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
             $templateProcessor->setValue('POSITION' . "#{$i}", $currentModel->employeeObj->position0->name);
+            $templateProcessor->setValue('LEAVE_REASON' . "#{$i}", $currentModel->reason);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
             if (($currentModel->extra_reason1 !== '') && ($currentModel->extra_reason1 !== null)) {
                 $k++;

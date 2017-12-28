@@ -1,7 +1,7 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\Html;
+use yii\bootstrap\ActiveForm;
 use admapp\Util\Html as admappHtml;
 use kartik\select2\Select2;
 use yii\widgets\MaskedInput;
@@ -17,7 +17,7 @@ use kartik\datecontrol\DateControl;
     $form = ActiveForm::begin([
                 'options' => ['class' => 'form-horizontal'],
                 'fieldConfig' => [
-                    'template' => "{label}\n<div class=\"col-sm-6\">{input}</div>\n<div class=\"col-sm-4\">{error}</div>",
+                    'template' => "{label}\n<div class=\"col-sm-6\">{input}{hint}</div>\n<div class=\"col-sm-4\">{error}</div>",
                     'labelOptions' => ['class' => 'col-sm-2 control-label'],
                 ],
     ]);
@@ -34,6 +34,7 @@ use kartik\datecontrol\DateControl;
         'options' => ['placeholder' => 'Επιλέξτε...'],
     ]);
     ?>
+    <?= $form->field($model, 'reason')->textInput(['maxlength' => true])->hint(Yii::t('app', 'Reason.hint')) ?>
 
     <?= $form->field($model, 'decision_protocol')->textInput() ?>
     <?=
@@ -81,7 +82,6 @@ use kartik\datecontrol\DateControl;
             <?= admappHtml::displayCopyFieldValueButton($model, 'start_date', 'end_date', 'Αντιγραφή από ' . $model->getAttributeLabel('start_date'), null, '-disp'); ?>
         </div>
     </div>
-    <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'extra_reason1')->textarea(['rows' => 4, 'maxlength' => true]) ?>
     <?= $form->field($model, 'extra_reason2')->textarea(['rows' => 4, 'maxlength' => true]) ?>
     <?= $form->field($model, 'extra_reason3')->textarea(['rows' => 4, 'maxlength' => true]) ?>
