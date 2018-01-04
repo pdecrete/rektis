@@ -42,6 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure Deduction'); ?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer available deductions to be assigned to expenditures.'); ?></p>
+            <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure Deductions'), Url::to(['/finance/finance-deduction']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>        
 	</div>
 </div>

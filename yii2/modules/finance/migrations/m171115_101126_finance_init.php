@@ -213,15 +213,22 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_deduction'] .
                           "(`deduct_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `deduct_name` VARCHAR(100) NOT NULL,
-                            `deduct_percentage` SMALLINT UNSIGNED NOT NULL CHECK (deduct_percentage >= 0 AND deduct_percentage <= 10000),
                             `deduct_description` VARCHAR(1000),
                             `deduct_date` DATETIME NOT NULL,
-                            `detuct_obsolete` BOOLEAN NOT NULL DEFAULT 0,
+                            `deduct_percentage` SMALLINT UNSIGNED NOT NULL CHECK (deduct_percentage >= 0 AND deduct_percentage <= 10000),
+                            `deduct_downlimit` " . $moneyDatatype . " UNSIGNED NOT NULL DEFAULT 0,
+                            `deduct_uplimit` " . $moneyDatatype . " UNSIGNED DEFAULT NULL,
+                            `deduct_obsolete` BOOLEAN NOT NULL DEFAULT 0,
                              PRIMARY KEY (`deduct_id`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_deduction'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbFinTables['table_deduction'] . 
+                          "(deduct_id, deduct_name, deduct_date, deduct_percentage, deduct_downlimit) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "(1, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 400, 15000)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(2, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 800, 15000)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(3, 'Δαπάνη καθαριότητας', NOW(), 10, 0)")->execute();
         
         /* CREATE TABLE admapp_finance_expenddeduction */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenddeduction'] .
