@@ -96,7 +96,7 @@ class FinanceKaewithdrawalController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try{
-                $available = ($kaeCredit->kaecredit_amount)*Money::toPercentage($kaeCreditSumPercentage, false);
+                $available = ($kaeCredit->kaecredit_amount)*(Money::toPercentage($kaeCreditSumPercentage, false)/100);
                 $balance = $available - FinanceKaewithdrawal::getWithdrawsSum($kaeCredit->kaecredit_id);
                 /*echo "Demanded: " . Money::toCents($model->kaewithdr_amount); 
                 echo "<br />";

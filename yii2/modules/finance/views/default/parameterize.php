@@ -37,12 +37,16 @@ $this->params['breadcrumbs'][] = $this->title;
             <h3><?= Module::t('modules/finance/app', 'Expenditure State')?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer expenditure states')?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure States'), Url::to(['/finance/finance-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
-        </div>    
-	
+        </div>    	
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditure Deduction'); ?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer available deductions to be assigned to expenditures.'); ?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure Deductions'), Url::to(['/finance/finance-deduction']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
-        </div>        
+        </div>
+		<div class="col-lg-4">
+            <h3><?= Module::t('modules/finance/app', 'Invoice Types'); ?></h3>
+            <p><?= Module::t('modules/finance/app', 'Administer available types of .'); ?></p>
+            <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure Deductions'), Url::to(['/finance/finance-deduction']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>            
 	</div>
 </div>

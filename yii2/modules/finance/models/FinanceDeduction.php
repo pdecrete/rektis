@@ -14,7 +14,7 @@ use Yii;
  * @property integer $deduct_percentage
  * @property string $deduct_downlimit
  * @property string $deduct_uplimit
- * @property integer $detuct_obsolete
+ * @property integer $deduct_obsolete
  *
  * @property FinanceExpenddeduction[] $financeExpenddeductions
  * @property FinanceExpenditure[] $exps
@@ -37,7 +37,7 @@ class FinanceDeduction extends \yii\db\ActiveRecord
         return [
             [['deduct_name', 'deduct_date', 'deduct_percentage'], 'required'],
             [['deduct_date'], 'safe'],
-            [['deduct_percentage', 'deduct_downlimit', 'deduct_uplimit', 'detuct_obsolete'], 'integer'],
+            [['deduct_downlimit', 'deduct_uplimit', 'deduct_obsolete'], 'integer'],
             [['deduct_name'], 'string', 'max' => 100],
             [['deduct_description'], 'string', 'max' => 1000],
         ];
@@ -56,7 +56,7 @@ class FinanceDeduction extends \yii\db\ActiveRecord
             'deduct_percentage' => Yii::t('app', 'Deduct Percentage'),
             'deduct_downlimit' => Yii::t('app', 'Deduct Downlimit'),
             'deduct_uplimit' => Yii::t('app', 'Deduct Uplimit'),
-            'detuct_obsolete' => Yii::t('app', 'Detuct Obsolete'),
+            'deduct_obsolete' => Yii::t('app', 'Deduct Obsolete'),
         ];
     }
 

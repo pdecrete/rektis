@@ -8,8 +8,8 @@ use yii\helpers\Html;
 /* @var $model app\modules\finance\models\FinanceDeduction */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Yii::t('app', 'Create Finance Deduction');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Deductions'), 'url' => ['index']];
+$this->title = Module::t('modules/finance/app', 'Create Finance Deduction');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Deductions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-deduction-create">

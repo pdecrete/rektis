@@ -31,6 +31,7 @@ class m171115_101126_finance_init extends Migration
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_invoicetype' => $this->db->tablePrefix . 'finance_invoicetype',
             'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
@@ -190,6 +191,24 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
+
+        /* CREATE TABLE admapp_finance_invoicetype */
+        $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoicetype'] .
+                           " (`invtype_id` INTEGER NOT NULL AUTO_INCREMENT,
+                              `invtype_title` VARCHAR(255) NOT NULL,
+                               PRIMARY KEY (`invtype_id`)
+                             )  " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_invoicetype'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbFinTables['table_invoicetype'] . "(invtype_title) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('Τιμολόγιο Παροχής Υπηρεσιών')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Απόδειξη Παροχής Υπηρεσιών')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τιμολόγιο Δελτίου Αποστολής')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Απόδειξη Δελτίου Αποστολής')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τιμολόγιο Πώλησης - Δελτίο Αποστολής')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Κατάσταση Πληρωμής')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λογαριασμός ΔΕΗ/Τηλεπικοινωνιών κτλ.')")->execute();
         
         /* CREATE TABLE admapp_finance_invoice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
@@ -200,9 +219,11 @@ class m171115_101126_finance_init extends Migration
                             `inv_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,
                             `exp_id` INTEGER NOT NULL,
+                            `invtype_id` INTEGER NOT NULL,
                              PRIMARY KEY (`inv_id`),
                              FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`invtype_id`) REFERENCES " . $dbFinTables['table_invoicetype'] . "(`invtype_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              UNIQUE KEY (`exp_id`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_invoice'] . ". *** \n");
@@ -297,6 +318,7 @@ class m171115_101126_finance_init extends Migration
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_invoicetype' => $this->db->tablePrefix . 'finance_invoicetype',
             'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
             'table_expenddeduction' => $this->db->tablePrefix . 'finance_expenddeduction',
