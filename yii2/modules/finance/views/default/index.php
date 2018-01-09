@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Expenditures');?></h3>
             <p><?= Module::t('modules/finance/app', 'Expenditures administration features (create, update, delete expenditure)');?></p>
+			<p><?= Html::a(Module::t('modules/finance/app', 'Expenditures'), Url::to(['/finance/finance-expenditure']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
         <div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Invoices');?></h3>

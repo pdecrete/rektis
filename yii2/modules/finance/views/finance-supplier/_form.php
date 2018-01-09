@@ -35,7 +35,8 @@ use app\modules\finance\models\FinanceTaxoffice;
     
     <?= $form->field($model, 'taxoffice_id')->dropDownList(
         ArrayHelper::map(FinanceTaxoffice::find()->all(),'taxoffice_id', 'taxoffice_name'),
-            ['prompt'=>'ΔΟΥ Προμηθευτή'])?>
+            ['prompt'=>'ΔΟΥ Προμηθευτή'])
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

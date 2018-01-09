@@ -1,15 +1,15 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceInvoicetype */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Finance Invoicetype',
-]) . $model->invtype_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Invoicetypes'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->invtype_id, 'url' => ['view', 'id' => $model->invtype_id]];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
+$this->title = Module::t('modules/finance/app', 'Update Voucher Type');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Invoicetypes'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="finance-invoicetype-update">

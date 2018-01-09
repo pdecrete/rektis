@@ -3,18 +3,21 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
-use app\modules\finance\models\FinanceInvoicetype;
-use app\modules\finance\models\FinanceInvoicetypeSearch;
+use app\modules\finance\Module;
+use app\modules\finance\models\FinanceExpenditure;
+use app\modules\finance\models\FinanceExpenditureSearch;
+use app\modules\finance\models\FinanceKae;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use app\modules\finance\Module;
+use app\modules\finance\models\FinanceFpa;
+use app\modules\finance\components\Money;
 use yii\base\Exception;
 
 /**
- * FinanceInvoicetypeController implements the CRUD actions for FinanceInvoicetype model.
+ * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
  */
-class FinanceInvoicetypeController extends Controller
+class FinanceExpenditureController extends Controller
 {
     /**
      * @inheritdoc
@@ -32,50 +35,60 @@ class FinanceInvoicetypeController extends Controller
     }
 
     /**
-     * Lists all FinanceInvoicetype models.
+     * Lists all FinanceExpenditure models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FinanceInvoicetypeSearch();
+        $searchModel = new FinanceExpenditureSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $kaesListModel = FinanceKae::find()->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'kaes' => $kaesListModel,
         ]);
     }
 
+
     /**
-     * Creates a new FinanceInvoicetype model.
+     * Creates a new FinanceExpenditure model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FinanceInvoicetype();
+        $model = new FinanceExpenditure();
+        $vat_levels = FinanceFpa::find()->all();
 
-        if ($model->load(Yii::$app->request->post())) {
+        foreach ($vat_levels as $vat_level)
+            $vat_level->fpa_value = Money::toPercentage($vat_level->fpa_value);
+        
+        if ($model->load(Yii::$app->request->post())){
             try{
-                if(!$model->save())
-                    throw new Exception();
-                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was updated successfully."));
+                $model->fpa_value = Money::toDbPercentage($model->fpa_value);
+                $model->exp_date = date("Y-m-d H:i:s");
+                $model->exp_deleted = 0;
+                $model->exp_lock = 0;
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
                 return $this->redirect(['index']);
             }
             catch(Exception $e){
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating voucher type."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create expenditure."));
                 return $this->redirect(['index']);
             }
-        } 
-        else {
+        } else {
             return $this->render('create', [
                 'model' => $model,
+                'vat_levels' => $vat_levels,
             ]);
         }
     }
 
     /**
-     * Updates an existing FinanceInvoicetype model.
+     * Updates an existing FinanceExpenditure model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -84,17 +97,8 @@ class FinanceInvoicetypeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            try{
-                if(!$model->save())
-                    throw new Exception();
-                    Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was updated successfully."));
-                    return $this->redirect(['index']);
-            }
-            catch(Exception $e){
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating voucher type."));
-                return $this->redirect(['index']);
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -103,30 +107,28 @@ class FinanceInvoicetypeController extends Controller
     }
 
     /**
-     * Deletes an existing FinanceInvoicetype model.
+     * Deletes an existing FinanceExpenditure model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete())
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting voucher type."));
-        else
-            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was deleted succesfully."));
+        $this->findModel($id)->delete();
+
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the FinanceInvoicetype model based on its primary key value.
+     * Finds the FinanceExpenditure model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FinanceInvoicetype the loaded model
+     * @return FinanceExpenditure the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FinanceInvoicetype::findOne($id)) !== null) {
+        if (($model = FinanceExpenditure::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

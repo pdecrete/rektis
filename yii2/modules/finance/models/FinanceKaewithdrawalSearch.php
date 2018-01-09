@@ -48,7 +48,7 @@ class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
         $kae = $prefix . "finance_kae";
         
         $sum_percents = "(SELECT SUM(kaeperc_percentage) FROM " . $prc .
-                        " WHERE admapp_finance_kaecreditpercentage.kaecredit_id = admapp_finance_kaecredit.kaecredit_id)";
+                        " WHERE " . $prc . ".kaecredit_id = " . $cred . ".kaecredit_id)";
 
         $query = (new \yii\db\Query())
             ->select([$wthdr . ".*", $cred . ".kaecredit_amount",

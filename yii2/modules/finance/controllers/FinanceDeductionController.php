@@ -4,12 +4,12 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\Module;
+use yii\base\Exception;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceDeductionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\base\Exception;
 use app\modules\finance\components\Money;
 
 /**
@@ -97,6 +97,7 @@ class FinanceDeductionController extends Controller
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);
 
                 if(!$model->save())
+                    throw new Exception();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was updated successfully."));
                 return $this->redirect(['index']);
             }
