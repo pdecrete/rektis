@@ -58,8 +58,13 @@ class FinanceExpenditureController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
+        if(!isset($id) || !is_numeric($id)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The RCN for which the process was requested cound not be found."));
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+        }
+        
         $model = new FinanceExpenditure();
         $vat_levels = FinanceFpa::find()->all();
 

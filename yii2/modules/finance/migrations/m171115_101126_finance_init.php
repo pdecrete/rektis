@@ -31,6 +31,7 @@ class m171115_101126_finance_init extends Migration
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_expendwithdrawal' => $this->db->tablePrefix . 'finance_expendwithdrawal',
             'table_invoicetype' => $this->db->tablePrefix . 'finance_invoicetype',
             'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
@@ -181,17 +182,28 @@ class m171115_101126_finance_init extends Migration
                             `exp_date` INTEGER NOT NULL,
                             `exp_lock` VARCHAR(255) NOT NULL,
                             `exp_deleted` BOOLEAN NOT NULL DEFAULT 0,
-                            `kaewithdr_id` INTEGER NOT NULL,
                             `suppl_id` INTEGER NOT NULL,
                             `fpa_value` SMALLINT UNSIGNED NOT NULL CHECK (fpa_value >= 0 AND fpa_value <= 10000), 
                              PRIMARY KEY (`exp_id`),
-                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                             FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                             FOREIGN KEY (`suppl_id`) REFERENCES " . $dbFinTables['table_supplier'] . "(`suppl_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expenditure'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
 
+        /* CREATE TABLE admapp_finance_expendwithdrawal */
+        $create_command  =  "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expendwithdrawal'] .
+                            " ( `kaewithdr_id` INTEGER,
+                                `exp_id` INTEGER,
+                                PRIMARY KEY (`kaewithdr_id`, `exp_id`),
+                                FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                                FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                              )  " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expendwithdrawal'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+                
+        
         /* CREATE TABLE admapp_finance_invoicetype */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoicetype'] .
                            " (`invtype_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -318,6 +330,7 @@ class m171115_101126_finance_init extends Migration
             'table_taxoffice' => $this->db->tablePrefix . "finance_taxoffice",
             'table_supplier' => $this->db->tablePrefix . 'finance_supplier',
             'table_expenditure' => $this->db->tablePrefix . 'finance_expenditure',
+            'table_expendwithdrawal' => $this->db->tablePrefix . 'finance_expendwithdrawal',
             'table_invoicetype' => $this->db->tablePrefix . 'finance_invoicetype',
             'table_invoice' => $this->db->tablePrefix . 'finance_invoice',
             'table_deduction' => $this->db->tablePrefix . 'finance_deduction',
