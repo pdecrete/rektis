@@ -47,17 +47,6 @@ if ($model->deleted) {
         ?>
     </p>
 
-    <pre>
-    <?php 
-    $days = $model->getmydaysLeft($model->employee, $model->type, date("Y", strtotime($model->start_date)));
-    echo $days;
-    ?>
-    <?php 
-    $days = $model->getmydaysLeft($model->employee, $model->type, date("Y", strtotime($model->start_date)), $model->start_date);
-    echo $days;
-    ?>
-    </pre>
-
     <?=
     DetailView::widget([
         'model' => $model,
