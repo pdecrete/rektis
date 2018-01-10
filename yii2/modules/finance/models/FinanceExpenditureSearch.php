@@ -18,7 +18,7 @@ class FinanceExpenditureSearch extends FinanceExpenditure
     public function rules()
     {
         return [
-            [['exp_id', 'exp_amount', 'exp_date', 'exp_deleted', 'kaewithdr_id', 'suppl_id', 'fpa_value'], 'integer'],
+            [['exp_id', 'exp_amount', 'exp_date', 'exp_deleted', 'suppl_id', 'fpa_value'], 'integer'],
             [['exp_lock'], 'safe'],
         ];
     }
@@ -70,7 +70,6 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             'exp_amount' => $this->exp_amount,
             'exp_date' => $this->exp_date,
             'exp_deleted' => $this->exp_deleted,
-            'kaewithdr_id' => $this->kaewithdr_id,
             'suppl_id' => $this->suppl_id,
             'fpa_value' => $this->fpa_value,
         ]);

@@ -25,8 +25,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'exp_deleted') ?>
 
-    <?php // echo $form->field($model, 'kaewithdr_id') ?>
-
     <?php // echo $form->field($model, 'suppl_id') ?>
 
     <?php // echo $form->field($model, 'fpa_value') ?>

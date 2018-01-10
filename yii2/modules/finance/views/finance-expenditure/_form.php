@@ -19,11 +19,19 @@ use app\modules\finance\Module;
     <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'suppl_id')->textInput() ?>
-    
+
     <?= $form->field($model, 'fpa_value')->dropDownList(
         ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),
         ['prompt'=> Module::t('modules/finance/app', 'VAT')])
-    ?>    
+    ?>
+    
+    <?php 
+        foreach($expendwithdrawals_models as $index => $expendwithdrawals_model){
+            echo $form->field($expendwithdrawals_model, "[{$index}]kaewithdr_id")->dropDownList(
+                              ArrayHelper::map($kaewithdrawals, 'kaewithdr_id', 'kaewithdr_amount'),
+                              ['prompt'=> Module::t('modules/finance/app', 'Select Withdrawal')]);
+        }
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -18,7 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'expendwithdrawals_models' => $expendwithdrawals_models,
         'vat_levels' => $vat_levels,
+        'kaewithdrawals' => $kaewithdrawals        
     ]) ?>
 
 </div>

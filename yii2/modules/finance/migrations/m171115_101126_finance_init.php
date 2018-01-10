@@ -195,6 +195,7 @@ class m171115_101126_finance_init extends Migration
         $create_command  =  "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expendwithdrawal'] .
                             " ( `kaewithdr_id` INTEGER,
                                 `exp_id` INTEGER,
+                                `expwithdr_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                                 PRIMARY KEY (`kaewithdr_id`, `exp_id`),
                                 FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                                 FOREIGN KEY (`kaewithdr_id`) REFERENCES " . $dbFinTables['table_kaewithdrawal'] . "(`kaewithdr_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
