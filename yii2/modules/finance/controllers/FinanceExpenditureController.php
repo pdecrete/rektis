@@ -18,6 +18,7 @@ use app\modules\finance\models\FinanceKaewithdrawal;
 use app\modules\finance\models\FinanceKaecredit;
 use app\modules\finance\models\FinanceExpendwithdrawal;
 use app\modules\finance\models\FinanceExpenditurestate;
+use app\modules\finance\models\FinanceSupplier;
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -49,11 +50,26 @@ class FinanceExpenditureController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         $kaesListModel = FinanceKae::find()->all();
+        $expendwithdrawal = array();
+        //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
 
+        foreach($dataProvider->models as $expend_model){
+            $expendwithdrawal[$expend_model['exp_id']] = FinanceKaewithdrawal::find()->
+            where(['kaewithdr_id' => FinanceExpendwithdrawal::find()->
+                                        where(['exp_id' => $expend_model['exp_id']])->one()->kaewithdr_id])->all();
+        }
+        
+        echo "<pre>"; print_r($expendwithdrawal); echo "</pre>";
+        
+        die();
+            //$expendwithdrawal[$expend_model->exp_id] = FinanceExpendwithdrawal::find()->where(['exp_id' => $expend_model->exp_id])->all();
+        
+        echo "<pre>"; print_r($expendwithdrawal); echo "</pre>"; die();
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'kaes' => $kaesListModel,
+            'kaes' => $kaesListModel
         ]);
     }
 
@@ -69,6 +85,7 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The RCN for which the process was requested cound not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
+        $suppliers = FinanceSupplier::find()->all();
         $kaecredit_id = FinanceKaecredit::find()->where(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]])->one()->kaecredit_id;
         $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
         
@@ -97,27 +114,44 @@ class FinanceExpenditureController extends Controller
             //die();
             try{
                 $transaction = Yii::$app->db->beginTransaction();                              
-                $model->fpa_value = Money::toDbPercentage($model->fpa_value);
+                $model->fpa_value = Money::toDbPercentage($model->fpa_value);                
                 $model->exp_date = date("Y-m-d H:i:s");
                 $model->exp_deleted = 0;
                 $model->exp_lock = 0;
+                /*echo "<pre>"; print_r($model->toArray()); echo "</pre>";
+                if(!$model->validate()){
+                    print_r($model->getErrors());
+                    die();
+                }*/
                 if(!$model->save()) throw new Exception();
                 
                 $expend_state_model = new FinanceExpenditurestate();
                 $expend_state_model->exp_id = $model->exp_id;
                 $expend_state_model->state_id = 1;
                 $expend_state_model->expstate_date = date("Y-m-d H:i:s");
+                echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
                 if(!$expend_state_model->save()) throw new Exception();
                 
                 $partial_amount = $model->exp_amount; 
                 foreach ($expendwithdrawals_models as $expendwithdrawals_model){
+                    $expendwithdrawals_model->exp_id = $model->exp_id;
                     $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
                     if($partial_amount > $withdrawal_balance){
                         $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
                         $partial_amount = $partial_amount - $withdrawal_balance;
                     }
+                    else {
+                        $expendwithdrawals_model->expwithdr_amount = $partial_amount;
+                        $partial_amount = 0;
+                        //echo "<pre>"; print_r($expendwithdrawals_model->toArray()); echo "</pre>"; die();
+                        if(!$expendwithdrawals_model->save()) 
+                            throw new Exception();
+                        break;
+                    }
+                    //echo "<pre>"; print_r($expendwithdrawals_model->toArray()); echo "</pre>"; die();
                     if(!$expendwithdrawals_model->save()) throw new Exception();
                 }
+                if($partial_amount > 0) throw new Exception();
                 
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
@@ -135,7 +169,8 @@ class FinanceExpenditureController extends Controller
                 'model' => $model,
                 'expendwithdrawals_models' => $expendwithdrawals_models,
                 'vat_levels' => $vat_levels,
-                'kaewithdrawals' => $kaewithdrawals
+                'kaewithdrawals' => $kaewithdrawals,
+                'suppliers' => $suppliers
             ]);
         }
     }

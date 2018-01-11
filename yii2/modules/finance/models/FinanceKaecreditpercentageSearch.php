@@ -52,7 +52,7 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
                                 $cred . ".kaecredit_date", $cred . ".kaecredit_updated", 
                                 $cred . ".year", $kae . ".*"])
                     ->from([$prc, $cred, $kae])
-                    ->where($prc . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
+                    ->where($cred . '.year=' . Yii::$app->session["working_year"] . " AND " . $prc . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

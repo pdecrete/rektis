@@ -179,8 +179,8 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditure'] .
                           "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `exp_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
-                            `exp_date` INTEGER NOT NULL,
-                            `exp_lock` VARCHAR(255) NOT NULL,
+                            `exp_date` DATETIME NOT NULL,
+                            `exp_lock` BOOLEAN NOT NULL DEFAULT 0,
                             `exp_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,
                             `fpa_value` SMALLINT UNSIGNED NOT NULL CHECK (fpa_value >= 0 AND fpa_value <= 10000), 

@@ -41,8 +41,8 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     {
         return [
             [['exp_amount', 'exp_date', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
-            [['exp_amount', 'exp_date', 'exp_deleted', 'suppl_id'], 'integer'],
-            [['exp_lock'], 'string', 'max' => 255],
+            [['exp_amount', 'exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
+            [['exp_date'], 'safe'],
             [['suppl_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceSupplier::className(), 'targetAttribute' => ['suppl_id' => 'suppl_id']],
         ];
     }

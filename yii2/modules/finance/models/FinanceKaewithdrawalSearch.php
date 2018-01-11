@@ -56,7 +56,7 @@ class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
             $sum_percents . " AS percentages ",
             $kae . ".*", ])
             ->from([$wthdr, $cred, $kae])
-            ->where($wthdr . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
+            ->where($cred . '.year=' . Yii::$app->session["working_year"] . " AND " . $wthdr . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
             
             $dataProvider = new ActiveDataProvider([
                 'query' => $query,

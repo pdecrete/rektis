@@ -18,7 +18,10 @@ use app\modules\finance\Module;
 
     <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'suppl_id')->textInput() ?>
+    <?= $form->field($model, 'suppl_id')->dropDownList(
+        ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),
+        ['prompt'=> Module::t('modules/finance/app', 'Supplier')])
+    ?>
 
     <?= $form->field($model, 'fpa_value')->dropDownList(
         ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),

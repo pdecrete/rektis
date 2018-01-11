@@ -44,14 +44,34 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         $prefix = Yii::$app->db->tablePrefix;
         $exp_states = $prefix . 'finance_expenditurestate';
         $exps = $prefix . 'finance_expenditure';
+        $expwithdr = $prefix . 'finance_expendwithdrawal';
+        $wthdr = $prefix . "finance_kaewithdrawal";
+        $cred = $prefix . "finance_kaecredit";   
+        
+        /*
+            SELECT admapp_finance_expenditure.* 
+            FROM `admapp_finance_expenditure`, admapp_finance_expendwithdrawal 
+            WHERE admapp_finance_expenditure.exp_id=admapp_finance_expendwithdrawal.exp_id
+            AND admapp_finance_expendwithdrawal.kaewithdr_id 
+            IN (SELECT admapp_finance_kaewithdrawal.kaewithdr_id 
+            FROM admapp_finance_kaewithdrawal, admapp_finance_kaecredit
+            WHERE admapp_finance_kaecredit.year = 2019 AND admapp_finance_kaewithdrawal.kaecredit_id = admapp_finance_kaecredit.kaecredit_id)
+         */
+        
         
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
         
         $query = (new \yii\db\Query())
                     ->select([$exps . ".*", $count_states . " AS statescount "])
-                    ->from([$exps]);
-        
+                    ->from([$exps, $expwithdr])
+                    ->where($exps . ".exp_id=" . $expwithdr . ".exp_id AND " . 
+                            $expwithdr . ".kaewithdr_id 
+                            IN (SELECT " . $wthdr . ".kaewithdr_id
+                                FROM " . $wthdr . ", " . $cred . "  
+                                WHERE " . $cred . ".year=" . Yii::$app->session["working_year"] . "
+                                AND " . $wthdr . ".kaecredit_id=" . $cred . ".kaecredit_id)");
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
