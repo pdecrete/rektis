@@ -26,11 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $this->render('_search', ['model' => $searchModel]); ?>
     </div>
     <?php
-    $searchJs = "$('#searchBtn').click(function(){ \$('#searchForm').toggle('slow'); });";
+    $searchJs = "$('#searchBtn').click(function(){ \$('#searchForm').toggle(); });";
     $this->registerJs($searchJs, $this::POS_END);
     ?>
     <p>
-        <?= Html::a(Yii::t('app', 'Search'), NULL, ['id' => 'searchBtn', 'class' => 'btn btn-info']) ?>
+        <?= Html::a(Yii::t('app', 'Search filters'), NULL, ['id' => 'searchBtn', 'class' => 'btn btn-info']) ?>
         <?= Html::a(Yii::t('app', 'Add Employee'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 

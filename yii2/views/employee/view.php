@@ -13,6 +13,26 @@ $this->title = $model->surname . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Employees'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
+$js = <<<EOJS
+$("a[data-toggle='tab']").on("show.bs.tab", function (e) {
+    var tab = e.target.getAttribute("href")
+    if (history.pushState) {
+        history.pushState(null, null, tab);
+    } else {
+        location.hash = tab;
+    }
+});
+if (location.hash) {
+    $("a[href='" + location.hash + "']").tab("show");
+}
+$(window).on("popstate", function () {
+    if (location.hash) {
+        $("a[href='" + location.hash + "']").tab("show");
+    }
+});
+EOJS;
+$this->registerJs($js, $this::POS_READY);
+
 ?>
 <div class="employee-view">
 
