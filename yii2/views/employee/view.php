@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ?>
         <?= Html::a(Yii::t('app', 'Create Leave'), [ 'leave/create', 'employee' => $model->id], ['class' => 'btn btn-primary']) ?>
-<?= Html::a(Yii::t('app', 'Create Transport'), [ 'transport/create', 'employee' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a(Yii::t('app', 'Create Transport'), [ 'transport/create', 'employee' => $model->id], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <ul class="nav nav-tabs" role="tablist">

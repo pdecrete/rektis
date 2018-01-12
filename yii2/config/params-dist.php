@@ -24,4 +24,5 @@ return [
     'trans_mtpy' => 0.02,
     'trans_day_reim' => 40,
     'trans_out_limit' => 50,
+    'default_leave_type' => 10 // set the id of the default leave type
 ];
