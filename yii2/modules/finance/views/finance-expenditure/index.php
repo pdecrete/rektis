@@ -13,6 +13,8 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->title = Module::t('modules/finance/app', 'Finance Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
+//echo "<pre>"; print_r($expendwithdrawals[15]['WITHDRAWAL']); echo "</pre>"; die();
+
 ?>
 <div class="finance-expenditure-index">
 	
@@ -50,6 +52,22 @@ $this->params['breadcrumbs'][] = $this->title;
              'value' => function ($model) {return Money::toPercentage($model['fpa_value']);}
             ],
             ['attribute' => 'exp_date', 'label' => Module::t('modules/finance/app', 'Creation Date')],
+            ['attribute' => 'Withdrawals', 'label' => Module::t('modules/finance/app', 'Assigned Withdrawals'),
+             'format' => 'html',
+                'value' => function($model) use ($expendwithdrawals) {
+                $exp_withdrawals = $expendwithdrawals[$model['exp_id']]['WITHDRAWAL'];
+                $count_withdrawals = count($exp_withdrawals);
+                $retvalue = "<ul>";
+                for($i = 0; $i < $count_withdrawals; $i++){
+                    $retvalue .= "<li><strong><u>" . $exp_withdrawals[$i]['kaewithdr_decision'] . '</u></strong>' . 
+                    '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ': €' .
+                    Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i]);
+                    $retvalue .= "</li>";
+                }
+                $retvalue .= "</ul>";
+                return $retvalue;
+             }
+            ],
             ['attribute' => 'statescount', 
              'label' => Module::t('modules/finance/app', 'State'),
              'format' => 'html',
@@ -72,7 +90,19 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $retvalue;                            
                         }
             ],
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',
+             'template' => '{update}&nbsp;{delete}',
+             'urlCreator' => function ($action, $model) {
+                if ($action === 'update') {
+                    $url ='/finance/finance-expenditure/update?id=' . $model['exp_id'];
+                    return $url;
+                }
+                if ($action === 'delete') {
+                    $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
+                    return $url;
+                }
+                }
+            ],
         ],
     ]); ?>
 </div>

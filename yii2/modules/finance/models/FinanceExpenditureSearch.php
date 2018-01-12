@@ -70,7 +70,8 @@ class FinanceExpenditureSearch extends FinanceExpenditure
                             IN (SELECT " . $wthdr . ".kaewithdr_id
                                 FROM " . $wthdr . ", " . $cred . "  
                                 WHERE " . $cred . ".year=" . Yii::$app->session["working_year"] . "
-                                AND " . $wthdr . ".kaecredit_id=" . $cred . ".kaecredit_id)");
+                                AND " . $wthdr . ".kaecredit_id=" . $cred . ".kaecredit_id)")->distinct();
+        //echo $query->createCommand()->getRawSql();die();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
