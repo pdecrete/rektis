@@ -73,6 +73,7 @@ return [
     'Import failed' => 'Η εισαγωγή απέτυχε',
     'Import information' => 'Πληροφορίες εισαγωγής',
     'In group' => 'Σε ομάδα κενών',
+    'Logo' => 'Λογότυπο',
     'Manage Distributions' => 'Διαχείριση κατανομών',
     'Manage call positions distribution' => 'Διαχείριση κατανομών διαθέσιμων κενών',
     'Mime' => 'Mime',

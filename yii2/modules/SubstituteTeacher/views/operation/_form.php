@@ -32,6 +32,8 @@ use kartik\select2\Select2;
 
     ?>
 
+    <?= $form->field($model, 'logo')->dropdownList(Operation::getLogoChoices()) ?>
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

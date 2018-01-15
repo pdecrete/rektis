@@ -6,6 +6,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 
 /**
  * This is the model class for table "{{%stperation}}".
@@ -14,6 +15,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $year
  * @property string $title
  * @property string $description
+ * @property string $logo The filename of the logo, relative to the images folder
  * @property string $created_at
  * @property string $updated_at
  *
@@ -46,7 +48,7 @@ class Operation extends \yii\db\ActiveRecord
                 ]
             ],
             [['created_at', 'updated_at'], 'safe'],
-            [['title'], 'string', 'max' => 500],
+            [['title', 'logo'], 'string', 'max' => 500],
             [['description'], 'string', 'max' => 90],
         ];
     }
@@ -76,6 +78,7 @@ class Operation extends \yii\db\ActiveRecord
             'year' => Yii::t('substituteteacher', 'Year'),
             'title' => Yii::t('substituteteacher', 'Title'),
             'description' => Yii::t('substituteteacher', 'Description'),
+            'logo' => Yii::t('substituteteacher', 'Logo'),
             'specialisation_labels' => Yii::t('substituteteacher', 'Specialisation Labels'),
             'specialisation_ids' => Yii::t('substituteteacher', 'Specialisation Ids'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
@@ -108,6 +111,20 @@ class Operation extends \yii\db\ActiveRecord
             $options["$y"] = $y;
         }
         return $options;
+    }
+
+    public static function getLogoChoices()
+    {
+        $images_dir = Yii::getAlias("@webroot/images/");
+
+        $files = FileHelper::findFiles($images_dir, ['recursive' => true]);
+        if (count($files) > 0) {
+            array_walk($files, function (&$item, $key) {
+                $item = basename($item);
+            });
+        }
+        sort($files, SORT_STRING);
+        return array_combine($files, $files);
     }
 
     /**

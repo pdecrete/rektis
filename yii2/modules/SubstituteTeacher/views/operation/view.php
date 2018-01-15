@@ -41,6 +41,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'html'
             ],
             'description',
+            [
+                'attribute' => 'logo',
+                'value' => '@web/images/' . $model->logo,
+                'format' => ['image', ['class' => 'img-responsive']]
+            ],
             'created_at',
             'updated_at',
         ],
