@@ -32,6 +32,19 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             'title',
             [
+                'attribute' => 'school_type',
+                'value' => 'school_type_label',
+                'label' => Yii::t('substituteteacher', 'Sch.Type'),
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'school_type',
+                    'data' => \app\modules\SubstituteTeacher\models\Position::getSchoolTypeChoices(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
                 'attribute' => 'operation_id',
                 'value' => 'operation.title',
 //                'filter' => \app\modules\SubstituteTeacher\models\Operation::selectables(),

@@ -19,7 +19,7 @@ class OperationSearch extends Operation
     {
         return [
             [['id', 'year'], 'integer'],
-            [['title', 'description', 'created_at', 'updated_at'], 'safe'],
+            [['title', 'description', 'logo', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -69,6 +69,7 @@ class OperationSearch extends Operation
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['like', 'logo', $this->logo])
             ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;

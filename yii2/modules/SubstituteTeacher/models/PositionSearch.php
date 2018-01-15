@@ -18,7 +18,7 @@ class PositionSearch extends Position
     public function rules()
     {
         return [
-            [['id', 'operation_id', 'specialisation_id', 'prefecture_id', 'teachers_count', 'hours_count', 'whole_teacher_hours', 'covered_teachers_count', 'covered_hours_count'], 'integer'],
+            [['id', 'operation_id', 'specialisation_id', 'prefecture_id', 'teachers_count', 'hours_count', 'whole_teacher_hours', 'covered_teachers_count', 'covered_hours_count', 'school_type'], 'integer'],
             [['title', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -65,6 +65,7 @@ class PositionSearch extends Position
         $query->andFilterWhere([
             'id' => $this->id,
             'operation_id' => $this->operation_id,
+            'school_type' => $this->school_type,
             'specialisation_id' => $this->specialisation_id,
             'prefecture_id' => $this->prefecture_id,
             'teachers_count' => $this->teachers_count,

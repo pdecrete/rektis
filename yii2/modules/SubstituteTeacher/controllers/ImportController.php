@@ -34,6 +34,7 @@ class ImportController extends Controller
             'D' => 'teachers_count',
             'E' => 'hours_count',
             'F' => 'whole_teacher_hours',
+            'G' => 'school_type',
         ]
     ];
 
@@ -53,7 +54,7 @@ class ImportController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['file-information'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -64,23 +65,6 @@ class ImportController extends Controller
                 ],
             ],
         ];
-    }
-
-//    private $workflows = array(
-//        'entity' => array(
-//            'label' => 'Import entity data',
-//            'route' => array('files', 'data' => 'entity'),
-//            'description' => 'Import entity data',
-//        ),
-//        'incident' => array(
-//            'label' => 'Incident data import',
-//            'route' => array('files', 'data' => 'incident'),
-//            'description' => 'Import incident related data',
-//        ),
-
-    public function actionIndex()
-    {
-        $this->redirect(['list-metadata', 'file' => 'lala', 'filter' => 'xyz']);
     }
 
     /**
@@ -203,9 +187,16 @@ class ImportController extends Controller
                     $specialisations[$data['specialisation']] = null; // this will also cause a problem later, but we want that
                 }
             }
+
+            if (intval($data['school_type']) === 1 || $data['school_type'] === 'ΚΕΔΔΥ') {
+                $data['school_type'] = Position::SCHOOL_TYPE_KEDDY;
+            } else {
+                $data['school_type'] = Position::SCHOOL_TYPE_DEFAULT;
+            }
             // now try to do the trick 
             $position = new Position();
             $position->title = $data['title'];
+            $position->school_type = intval($data['school_type']);
             $position->operation_id = $operation;
             $position->specialisation_id = $specialisations[$data['specialisation']];
             $position->prefecture_id = $prefectures[$data['prefecture']];

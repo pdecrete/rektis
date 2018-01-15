@@ -19,6 +19,20 @@ use yii\web\View;
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
     <?=
+    $form->field($model, 'school_type')->widget(SwitchBox::className(), [
+        'options' => [
+            'label' => '',
+        ],
+        'clientOptions' => [
+            'onColor' => 'primary',
+            'onText' => Yii::t('substituteteacher', 'SCHOOL KEDDY'),
+            'offColor' => 'primary',
+            'offText' => Yii::t('substituteteacher', 'SCHOOL UNIT'),
+        ]
+    ]);
+    ?>
+
+    <?=
     $form->field($model, 'operation_id')->widget(Select2::classname(), [
         'data' => \app\modules\SubstituteTeacher\models\Operation::selectables(),
         'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
@@ -28,6 +42,7 @@ use yii\web\View;
     ]);
 
     ?>
+    
     <?=
     $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
         'data' => app\models\Specialisation::selectables(),

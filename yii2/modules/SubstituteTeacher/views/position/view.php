@@ -36,6 +36,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             [
+                'attribute' => 'school_type',
+                'value' => $model->school_type_label
+            ],
+            [
                 'attribute' => 'operation.title',
                 'label' => $model->getAttributeLabel('operation_id')
             ],

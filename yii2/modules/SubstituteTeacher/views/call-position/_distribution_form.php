@@ -31,6 +31,19 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
             // 'id',
             'title',
             [
+                'attribute' => 'school_type',
+                'value' => 'school_type_label',
+                'label' => Yii::t('substituteteacher', 'Sch.Type'),
+                'filter' => Select2::widget([
+                    'model' => $positionsSearchModel,
+                    'attribute' => 'school_type',
+                    'data' => \app\modules\SubstituteTeacher\models\Position::getSchoolTypeChoices(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
                 'attribute' => 'operation_id',
                 'value' => 'operation.title',
                 'filter' => Select2::widget([
@@ -147,6 +160,11 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
             // 'call_id',
             // 'position_id',
             'position.title',
+            [
+                'attribute' => 'position.school_type',
+                'value' => 'position.school_type_label',
+                'label' => Yii::t('substituteteacher', 'Sch.Type')
+            ],
             'teachers_count',
             'hours_count',
             [

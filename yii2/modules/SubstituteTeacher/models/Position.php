@@ -14,6 +14,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property integer $id
  * @property string $title
+ * @property integer $school_type Defualts to 0, if 1 denotes KEDDY
  * @property integer $operation_id
  * @property integer $specialisation_id
  * @property integer $prefecture_id
@@ -36,7 +37,11 @@ class Position extends \yii\db\ActiveRecord
     const POSITION_TYPE_TEACHER = 1;
     const POSITION_TYPE_HOURS = 0;
 
+    const SCHOOL_TYPE_DEFAULT = 0;
+    const SCHOOL_TYPE_KEDDY = 1;
+
     public $position_has_type, $position_has_type_label; // use to select teachers or hours count
+    public $school_type_label;
     public $covered, $remaining;
 
     /**
@@ -53,7 +58,10 @@ class Position extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['operation_id', 'title', 'whole_teacher_hours'], 'required'],
+            ['school_type', 'default', 'value' => Position::SCHOOL_TYPE_DEFAULT],
+            ['school_type', 'filter', 'filter' => 'intval'],
+            [['operation_id', 'title', 'whole_teacher_hours', 'school_type'], 'required'],
+            ['school_type', 'in', 'range' => [0, 1]],
             [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count'], 'default', 'value' => 0],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
 //                'if' => '0', 'replace' => true, 'otherAttributeValue' => 0, 'otherAttribute' => 'teachers_count'],
@@ -125,6 +133,7 @@ class Position extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
             'title' => Yii::t('substituteteacher', 'Title'),
+            'school_type' => Yii::t('substituteteacher', 'School type'),
             'operation_id' => Yii::t('substituteteacher', 'Operation'),
             'specialisation_id' => Yii::t('substituteteacher', 'Specialisation'),
             'prefecture_id' => Yii::t('substituteteacher', 'Prefecture'),
@@ -188,6 +197,17 @@ class Position extends \yii\db\ActiveRecord
     }
 
     /**
+     * Return a list of available school types for selection options
+     */
+    public static function getSchoolTypeChoices()
+    {
+        return [
+            (string)self::SCHOOL_TYPE_DEFAULT => Yii::t('substituteteacher', 'SCHOOL UNIT'),
+            (string)self::SCHOOL_TYPE_KEDDY => Yii::t('substituteteacher', 'SCHOOL KEDDY')
+        ];
+    }
+
+    /**
      * @inheritdoc
      * 
      */
@@ -198,6 +218,7 @@ class Position extends \yii\db\ActiveRecord
         $this->position_has_type_label = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? \Yii::t('substituteteacher', 'Teachers') : \Yii::t('substituteteacher', 'Hours');
         $this->covered = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? $this->covered_teachers_count : $this->covered_hours_count;
         $this->remaining = ($this->position_has_type == Position::POSITION_TYPE_TEACHER) ? $this->teachers_count - $this->covered_teachers_count : $this->hours_count - $this->covered_hours_count;
+        $this->school_type_label = ($this->school_type == self::SCHOOL_TYPE_KEDDY) ? Yii::t('substituteteacher', 'SCHOOL KEDDY') : Yii::t('substituteteacher', 'SCHOOL UNIT');
     }
 
     /**
