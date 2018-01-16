@@ -27,15 +27,24 @@ use app\modules\finance\Module;
         ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),
         ['prompt'=> Module::t('modules/finance/app', 'VAT')])
     ?>
-    
+    <hr />
+    <h3><?= Module::t('modules/finance/app', 'Assign withdrawals');?></h3>
     <?php 
         foreach($expendwithdrawals_models as $index => $expendwithdrawals_model){
             echo $form->field($expendwithdrawals_model, "[{$index}]kaewithdr_id")->dropDownList(
                               ArrayHelper::map($kaewithdrawals, 'kaewithdr_id', 'kaewithdr_amount'),
-                              ['prompt'=> Module::t('modules/finance/app', 'Select Withdrawal')]);
+                              ['prompt'=> Module::t('modules/finance/app', 'Assign Withdrawal')]);
         }
     ?>
-
+	<hr />
+	<h3><?= Module::t('modules/finance/app', 'Assign deductions');?></h3>
+    <?php 
+        foreach($expenddeduction_models as $index => $expenddeduction_model){
+            echo $form->field($expenddeduction_model, "[{$index}]deduct_id")->dropDownList(
+                              ArrayHelper::map($deductions, 'deduct_id', 'deduct_name'),
+                              ['prompt'=> Module::t('modules/finance/app', 'Assign Deduction')]);
+    }
+    ?>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

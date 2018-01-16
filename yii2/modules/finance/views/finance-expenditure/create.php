@@ -22,7 +22,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'expendwithdrawals_models' => $expendwithdrawals_models,
         'vat_levels' => $vat_levels,
         'kaewithdrawals' => $kaewithdrawals,
-        'suppliers' => $suppliers
+        'suppliers' => $suppliers,
+        'expenddeduction_models' => $expenddeduction_models,
+        'deductions' => $deductions
     ]) ?>
 
 </div>

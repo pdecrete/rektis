@@ -20,6 +20,8 @@ use app\modules\finance\models\FinanceExpendwithdrawal;
 use app\modules\finance\models\FinanceExpenditurestate;
 use app\modules\finance\models\FinanceSupplier;
 use app\modules\finance\models\FinanceInvoice;
+use app\modules\finance\models\FinanceDeduction;
+use app\modules\finance\models\FinanceExpenddeduction;
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -103,7 +105,12 @@ class FinanceExpenditureController extends Controller
                 unset($kaewithdrawals[$key]);
         }
         
-        //echo "<pre>"; print_r($kaewithdrawals); echo "</pre>";
+        $deductions = FinanceDeduction::find()->all();
+        $expenddeduction_models = array();
+        for($i = 0; $i < count($deductions); $i++)
+            $expenddeduction_models[$i] = new FinanceExpenddeduction();
+        
+        //echo "<pre>"; print_r($deductions); echo "</pre>";
         //die();
         
         $model = new FinanceExpenditure();
@@ -174,7 +181,9 @@ class FinanceExpenditureController extends Controller
                 'expendwithdrawals_models' => $expendwithdrawals_models,
                 'vat_levels' => $vat_levels,
                 'kaewithdrawals' => $kaewithdrawals,
-                'suppliers' => $suppliers
+                'suppliers' => $suppliers,
+                'expenddeduction_models' => $expenddeduction_models,
+                'deductions' => $deductions
             ]);
         }
     }
