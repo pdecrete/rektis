@@ -22,6 +22,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/admapp1701.js',
+        'js/bootstrapModalForm.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

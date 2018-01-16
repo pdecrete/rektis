@@ -50,26 +50,29 @@ class FinanceExpenditureController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         $kaesListModel = FinanceKae::find()->all();
-        $expendwithdrawal = array();
-        //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
-
+        $expendwithdrawals = array();
+        $prefix = Yii::$app->db->tablePrefix;
+        $expwithdr = $prefix . 'finance_expendwithdrawal';
+        $wthdr = $prefix . "finance_kaewithdrawal";
+        
         foreach($dataProvider->models as $expend_model){
-            $expendwithdrawal[$expend_model['exp_id']] = FinanceKaewithdrawal::find()->
-            where(['kaewithdr_id' => FinanceExpendwithdrawal::find()->
-                                        where(['exp_id' => $expend_model['exp_id']])->one()->kaewithdr_id])->all();
+            $withdrawal_model = (new \yii\db\Query())
+            ->select($expwithdr . '.*,'. $wthdr . '.*' )
+            ->from([$expwithdr, $wthdr])
+            ->where($expwithdr . '.kaewithdr_id=' . $wthdr . '.kaewithdr_id AND' . ' exp_id =' . $expend_model['exp_id'])
+            ->all();
+            $expendwithdrawals[$expend_model['exp_id']]['WITHDRAWAL'] = $withdrawal_model;
+            for($i = 0; $i < count($withdrawal_model); $i++)
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = 
+                    FinanceExpendwithdrawal::find()->
+                    where(['exp_id' => $expend_model['exp_id'], 'kaewithdr_id' => $withdrawal_model[$i]['kaewithdr_id']])->one()['expwithdr_amount'];
         }
-        
-        echo "<pre>"; print_r($expendwithdrawal); echo "</pre>";
-        
-        die();
-            //$expendwithdrawal[$expend_model->exp_id] = FinanceExpendwithdrawal::find()->where(['exp_id' => $expend_model->exp_id])->all();
-        
-        echo "<pre>"; print_r($expendwithdrawal); echo "</pre>"; die();
-        
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'kaes' => $kaesListModel
+            'kaes' => $kaesListModel,
+            'expendwithdrawals' => $expendwithdrawals
         ]);
     }
 
@@ -207,6 +210,57 @@ class FinanceExpenditureController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Sets the expenditure state to the next state (e.g. if it is in the "Initial" state, then the 
+     * state is set to "Demanded")
+     * If the action is successful, the next visual indicator will be shown.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionForwardstate($id=15)
+    {   
+        $exp_model = $this->findModel($id);
+        $state_model = new FinanceExpenditurestate();
+        $state_model->exp_id = $exp_model->exp_id;
+        $supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
+                
+        if ($state_model->load(Yii::$app->request->post()) && $state_model->save()) {    
+            return $this->redirect(['index']);
+        } else {
+            return $this->renderAjax('forwardstate', [
+                'state_model' => $state_model,
+                'supplier' => $supplier
+            ]);
+        }
+    }
+    
+    /**
+     * Sets the expenditure state to the next state (e.g. if it is in the "Demanded" state, then the 
+     * state is set to "Initial")
+     * If the action is successful, the visual indicators will be shown appropriately.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionBackwardstate($id)
+    {
+        $this->findModel($id)->delete();
+        
+        return $this->redirect(['index']);
+    }
+    
+    /**
+     * Sets the expenditure state to "Paid" meaning that the payment of the expenditure has been completed.
+     * If the action is successful, the green visual indicator will be shown.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionCompleted($id)
+    {
+        $this->findModel($id)->delete();
+        
+        return $this->redirect(['index']);
+    }
+    
     /**
      * Finds the FinanceExpenditure model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
