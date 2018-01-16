@@ -28,12 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Finance Expenditure'),
         'actionUrl' => '/index.php/finance/finance-expenditure/create'
-    ]) ?>
- 
- 
-<?= Html::button('Create List', ['id' => 'modelButton', 'value' => \yii\helpers\Url::to(['forwardstate']), 'class' => 'btn btn-success']) ?>
- 
- 
+    ]) ?> 
  
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -50,8 +45,6 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return Money::toCurrency($model['exp_amount']);}
             ],
-//            ['attribute' => 'exp_lock', 'label' => Module::t('modules/finance/app', 'Supplier')],
-//            ['attribute' => 'exp_deleted', 'label' => Module::t('modules/finance/app', 'Supplier')],
             ['attribute' => 'fpa_value', 
              'label' => Module::t('modules/finance/app', 'VAT'),
              'format' => 'html',
@@ -77,6 +70,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'statescount', 
              'label' => Module::t('modules/finance/app', 'State'),
              'format' => 'html',
+                'contentOptions' => [
+                    'class' => 'text-nowrap'
+                ],
              'value' => function($model) {
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
@@ -97,16 +93,24 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{update}&nbsp;{delete}&nbsp;{forwardstate}',
+             'contentOptions' => ['class' => 'text-nowrap'],
+             'template' => '{backwardstate} {forwardstate} {update} {delete}',
                 'buttons' => [
-                    'forwardstate' => function ($model) {
-                            return Html::a('<span class="glyphicon glyphicon-arrow-right"></span>', 
-                                            Url::to(['#']),
-                                            [   'id' => 'modelAnchor',
-                                                'value' => Url::to(['forwardstate']),
-                                                'title' => Module::t('modules/finance/app', 'Forward to next state')
-                                            ]);
-                            },
+                    'forwardstate' => function ($url, $model) {
+                        if($model['statescount'] != 4){
+                            return Html::a('<span class="glyphicon glyphicon-arrow-right"></span>', $url,
+                                           ['title' => Module::t('modules/finance/app', 'Forward to next state')]);
+                            }
+                        },
+                        'backwardstate' => function ($url, $model) {
+                        if($model['statescount'] > 1){
+                            return Html::a('<span class="glyphicon glyphicon-arrow-left"></span>', $url,
+                                ['title' => Module::t('modules/finance/app', 'Backward to previous state'),
+                                    'data'=>['confirm'=>Module::t('modules/finance/app', "Are you sure you want to change the state of the expenditure?"),
+                                 'method' => "post"]
+                                ]);
+                            }
+                        }
                     ],                    
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
@@ -115,6 +119,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     if ($action === 'delete') {
                         $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
+                        return $url;
+                    }
+                    if ($action === 'backwardstate') {
+                        $url ='/finance/finance-expenditure/backwardstate?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'forwardstate') {

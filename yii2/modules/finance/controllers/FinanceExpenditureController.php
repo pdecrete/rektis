@@ -19,6 +19,7 @@ use app\modules\finance\models\FinanceKaecredit;
 use app\modules\finance\models\FinanceExpendwithdrawal;
 use app\modules\finance\models\FinanceExpenditurestate;
 use app\modules\finance\models\FinanceSupplier;
+use app\modules\finance\models\FinanceInvoice;
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -85,7 +86,7 @@ class FinanceExpenditureController extends Controller
     public function actionCreate($id)
     {
         if(!isset($id) || !is_numeric($id)){
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The RCN for which the process was requested cound not be found."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
         $suppliers = FinanceSupplier::find()->all();
@@ -204,9 +205,33 @@ class FinanceExpenditureController extends Controller
      * @return mixed
      */
     public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
+    {        
+        if(!isset($id) || !is_numeric($id)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+        }
+        $stopedhere = "";
+        $expenditure = $this->findModel($id);        
+        try{
+            $transaction = Yii::$app->db->beginTransaction();
+            if(!FinanceExpendwithdrawal::deleteAll(['exp_id' => $expenditure->exp_id]))
+                throw new Exception();
+            if(!FinanceExpenditurestate::deleteAll(['exp_id' => $expenditure->exp_id]))
+                throw new Exception();
+            if(FinanceInvoice::find(['exp_id' => $expenditure->exp_id])->where(['exp_id' => $expenditure->exp_id])->count() != 0)
+                if(!FinanceInvoice::deleteAll(['exp_id' => $expenditure->exp_id]))
+                    throw new Exception();
+            if(!$expenditure->delete())
+                throw new Exception();
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was deleted successfully."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $e){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to delete expenditure." . $stopedhere));
+            return $this->redirect(['index']);
+        }
         return $this->redirect(['index']);
     }
 
@@ -217,19 +242,36 @@ class FinanceExpenditureController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionForwardstate($id=15)
-    {   
+    public function actionForwardstate($id)
+    {
+        if(!isset($id) || !is_numeric($id)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
+        
         $exp_model = $this->findModel($id);
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
-        $supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
+        //$supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
                 
-        if ($state_model->load(Yii::$app->request->post()) && $state_model->save()) {    
-            return $this->redirect(['index']);
+        if ($state_model->load(Yii::$app->request->post())){
+            try{
+                $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $state_model->exp_id])->count();
+                //echo $state_model->exp_id . "---" . $statescount; die();
+                if($statescount < 0 || $statescount >= 4) throw new Exception();
+                $state_model->state_id = $statescount + 1;
+                if(!$state_model->save())  throw new Exception();
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
+                return $this->redirect(['index']);
+            }
+            catch(Exception $e){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to change expenditure's state."));
+                return $this->redirect(['index']);
+            }
         } else {
-            return $this->renderAjax('forwardstate', [
+            return $this->render('forwardstate', [
                 'state_model' => $state_model,
-                'supplier' => $supplier
+                //'supplier' => $supplier
             ]);
         }
     }
@@ -243,23 +285,26 @@ class FinanceExpenditureController extends Controller
      */
     public function actionBackwardstate($id)
     {
-        $this->findModel($id)->delete();
-        
-        return $this->redirect(['index']);
+        if(!isset($id) || !is_numeric($id)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
+
+        try{
+            $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $id])->count();
+            if($statescount <= 1 || $statescount > 4) throw new Exception();
+            if(!FinanceExpenditureState::find()->
+                where(['exp_id' => $id, 'state_id' => $statescount])->one()->delete())
+                throw new Exception();
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
+            return $this->redirect(['index']);           
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to change expenditure's state."));
+            return $this->redirect(['index']);
+        }
     }
-    
-    /**
-     * Sets the expenditure state to "Paid" meaning that the payment of the expenditure has been completed.
-     * If the action is successful, the green visual indicator will be shown.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionCompleted($id)
-    {
-        $this->findModel($id)->delete();
-        
-        return $this->redirect(['index']);
-    }
+
     
     /**
      * Finds the FinanceExpenditure model based on its primary key value.

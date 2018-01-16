@@ -270,18 +270,6 @@ AppAsset::register($this);
                 </div>
             </div>
         </footer>
-        
-        <?php 
-            Modal::begin([
-                    'id'     => 'model',
-                    'size'   => 'model-lg',
-            ]);
-            
-            echo "<div id='modelContent'></div>";
-            
-            Modal::end();
-        ?>
-                    
         <?php $this->endBody() ?>
     </body>
 </html>

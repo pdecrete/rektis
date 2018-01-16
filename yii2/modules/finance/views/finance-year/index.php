@@ -38,6 +38,9 @@ $this->render('/default/infopanel');
                 'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-ok"></span>' : ' ';}
             ],
             ['class' => 'yii\grid\ActionColumn',
+                'contentOptions' => [
+                    'class' => 'text-nowrap'
+                ],
              'template' => '{view}&nbsp;{update}&nbsp;{delete}&nbsp;{lock}&nbsp;{currentyear}',
              'buttons' => [
                                 'view' => function ($url, $dataProvider) {
