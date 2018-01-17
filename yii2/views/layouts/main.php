@@ -159,6 +159,10 @@ AppAsset::register($this);
                                 'label' => 'Ειδικότητες',
                                 'url' => [ '/specialisation/index' ]
                             ],
+                            [
+                                'label' => 'Κατάλογος αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/teacher-registry/index' ]
+                            ],
 
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
@@ -176,6 +180,15 @@ AppAsset::register($this);
                             ],
                             [
                                 'label' => 'Αναπληρωτές',
+                                'url' => [ '/SubstituteTeacher/teacher/index' ]
+                            ],
+                            [
+                                'label' => 'Προτιμήσεις τοποθέτησης αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/placement-preference/index' ]
+                            ],
+                            [
+                                'label' => 'Καταγραφή κατάστασης αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/teacher-status-audit/index' ]
                             ],
                             [
                                 'label' => 'Διαχείριση αιτήσεων',
