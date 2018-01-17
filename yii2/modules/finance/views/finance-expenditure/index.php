@@ -67,12 +67,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $retvalue;
              }
             ],
+            ['attribute' => 'kae_id',
+                'label' => Module::t('modules/finance/app', 'RCN'),
+                'format' => 'html',
+                'value' => function ($model) use ($expendwithdrawals) {
+                                return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
+                            }
+            ],
             ['attribute' => 'statescount', 
              'label' => Module::t('modules/finance/app', 'State'),
              'format' => 'html',
-                'contentOptions' => [
-                    'class' => 'text-nowrap'
-                ],
+             'contentOptions' => ['class' => 'text-nowrap'],
              'value' => function($model) {
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
@@ -93,8 +98,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
+             'header' => Module::t('modules/finance/app', 'Expenditure<br/>Actions'),
              'contentOptions' => ['class' => 'text-nowrap'],
-             'template' => '{backwardstate} {forwardstate} {update} {delete}',
+             'template' => '{backwardstate} {forwardstate} {delete}',
                 'buttons' => [
                     'forwardstate' => function ($url, $model) {
                         if($model['statescount'] != 4){
@@ -113,10 +119,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     ],                    
                 'urlCreator' => function ($action, $model) {
-                    if ($action === 'update') {
+                    /*if ($action === 'update') {
                         $url ='/finance/finance-expenditure/update?id=' . $model['exp_id'];
                         return $url;
-                    }
+                    }*/
                     if ($action === 'delete') {
                         $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
                         return $url;
@@ -131,6 +137,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
 
                 }
+            ],
+            [   'attribute' => 'invoice',
+                'header' => Module::t('modules/finance/app', 'Invoice<br />Actions'),
+                'format' => 'html',
+                'value' => function ($model) {return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];},
+                'contentOptions' => ['class' => 'text-nowrap'],
             ],
         ],
     ]); ?>

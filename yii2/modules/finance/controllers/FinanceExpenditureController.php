@@ -58,6 +58,9 @@ class FinanceExpenditureController extends Controller
         $expwithdr = $prefix . 'finance_expendwithdrawal';
         $wthdr = $prefix . "finance_kaewithdrawal";
         
+        //$invoices = FinanceInvoice::find()->where()->all();
+        //$invoice_models = array();
+        
         foreach($dataProvider->models as $expend_model){
             $withdrawal_model = (new \yii\db\Query())
             ->select($expwithdr . '.*,'. $wthdr . '.*' )
@@ -66,11 +69,23 @@ class FinanceExpenditureController extends Controller
             ->all();
             $expendwithdrawals[$expend_model['exp_id']]['WITHDRAWAL'] = $withdrawal_model;
             for($i = 0; $i < count($withdrawal_model); $i++)
-                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = 
-                    FinanceExpendwithdrawal::find()->
-                    where(['exp_id' => $expend_model['exp_id'], 'kaewithdr_id' => $withdrawal_model[$i]['kaewithdr_id']])->one()['expwithdr_amount'];
+            {                
+                $kaewithdrawal = FinanceExpendwithdrawal::find()
+                ->where(['exp_id' => $expend_model['exp_id'], 'kaewithdr_id' => $withdrawal_model[$i]['kaewithdr_id']])
+                ->one();
+                
+                $kaecredit_id = FinanceKaewithdrawal::find()
+                ->where(['kaewithdr_id' => $kaewithdrawal['kaewithdr_id']])
+                ->one()['kaecredit_id']; 
+                
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];
+                
+                $expendwithdrawals[$expend_model['exp_id']]['RELATEDKAE'] = 
+                FinanceKaecredit::find()->where(['kaecredit_id' => $kaecredit_id])->one()['kae_id'];
+            }
         }
-
+        //echo "<pre>"; print_r($expendwithdrawals); echo "</pre>";die();
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -107,11 +122,8 @@ class FinanceExpenditureController extends Controller
         
         $deductions = FinanceDeduction::find()->all();
         $expenddeduction_models = array();
-        for($i = 0; $i < count($deductions); $i++)
+        for($i = 0; $i < count($deductions)-1; $i++)
             $expenddeduction_models[$i] = new FinanceExpenddeduction();
-        
-        //echo "<pre>"; print_r($deductions); echo "</pre>";
-        //die();
         
         $model = new FinanceExpenditure();
         $vat_levels = FinanceFpa::find()->all();
@@ -119,60 +131,11 @@ class FinanceExpenditureController extends Controller
         foreach ($vat_levels as $vat_level)
             $vat_level->fpa_value = Money::toPercentage($vat_level->fpa_value);
         
-        if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post()))// $expendwithdrawals_models->load(Yii::$app->request->post()))
+        if ($model->load(Yii::$app->request->post()) 
+            && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
+            && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post()))
         {
-            //echo "<pre>"; print_r($expendwithdrawals_models); echo "</pre>";
-            //die();
-            try{
-                $transaction = Yii::$app->db->beginTransaction();                              
-                $model->fpa_value = Money::toDbPercentage($model->fpa_value);                
-                $model->exp_date = date("Y-m-d H:i:s");
-                $model->exp_deleted = 0;
-                $model->exp_lock = 0;
-                /*echo "<pre>"; print_r($model->toArray()); echo "</pre>";
-                if(!$model->validate()){
-                    print_r($model->getErrors());
-                    die();
-                }*/
-                if(!$model->save()) throw new Exception();
-                
-                $expend_state_model = new FinanceExpenditurestate();
-                $expend_state_model->exp_id = $model->exp_id;
-                $expend_state_model->state_id = 1;
-                $expend_state_model->expstate_date = date("Y-m-d H:i:s");
-                echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
-                if(!$expend_state_model->save()) throw new Exception();
-                
-                $partial_amount = $model->exp_amount; 
-                foreach ($expendwithdrawals_models as $expendwithdrawals_model){
-                    $expendwithdrawals_model->exp_id = $model->exp_id;
-                    $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
-                    if($partial_amount > $withdrawal_balance){
-                        $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
-                        $partial_amount = $partial_amount - $withdrawal_balance;
-                    }
-                    else {
-                        $expendwithdrawals_model->expwithdr_amount = $partial_amount;
-                        $partial_amount = 0;
-                        //echo "<pre>"; print_r($expendwithdrawals_model->toArray()); echo "</pre>"; die();
-                        if(!$expendwithdrawals_model->save()) 
-                            throw new Exception();
-                        break;
-                    }
-                    //echo "<pre>"; print_r($expendwithdrawals_model->toArray()); echo "</pre>"; die();
-                    if(!$expendwithdrawals_model->save()) throw new Exception();
-                }
-                if($partial_amount > 0) throw new Exception();
-                
-                $transaction->commit();
-                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
-                return $this->redirect(['index']);
-            }
-            catch(Exception $e){
-                $transaction->rollBack();
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create expenditure."));
-                return $this->redirect(['index']);
-            }
+            $this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
         } 
         else 
         {
@@ -194,19 +157,126 @@ class FinanceExpenditureController extends Controller
      * @param integer $id
      * @return mixed
      */
+    /*
     public function actionUpdate($id)
-    {
+    {        
+        if(!isset($id) || !is_numeric($id)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+        }
+        $suppliers = FinanceSupplier::find()->all();
+        $kaecredit_id = FinanceKaecredit::find()->where(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]])->one()->kaecredit_id;
+        $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
+        
+            $i = 0;
+            $expendwithdrawals_models = array();
+            foreach($kaewithdrawals as $key=>$kaewithdrawal){
+                if(FinanceExpendwithdrawal::getWithdrawalBalance($kaewithdrawal->kaewithdr_id) > 0){
+                    $expendwithdrawals_models[$i++] = new FinanceExpendwithdrawal();
+                }
+                else
+                    unset($kaewithdrawals[$key]);
+            }
+        
+        $deductions = FinanceDeduction::find()->all();
+        $expenddeduction_models = array();
+        for($i = 0; $i < count($deductions)-1; $i++)
+            $expenddeduction_models[$i] = new FinanceExpenddeduction();
+            
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        } else {
-            return $this->render('update', [
+        $vat_levels = FinanceFpa::find()->all();
+        
+        foreach ($vat_levels as $vat_level)
+            $vat_level->fpa_value = Money::toPercentage($vat_level->fpa_value);
+            
+        if ($model->load(Yii::$app->request->post())
+            && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
+            && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post()))
+        {
+            $this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
+        }
+        else
+        {
+            return $this->render('create', [
                 'model' => $model,
+                'expendwithdrawals_models' => $expendwithdrawals_models,
+                'vat_levels' => $vat_levels,
+                'kaewithdrawals' => $kaewithdrawals,
+                'suppliers' => $suppliers,
+                'expenddeduction_models' => $expenddeduction_models,
+                'deductions' => $deductions
             ]);
         }
     }
+    */
 
+    /**
+     * Updates an existing FinanceExpenditure model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    private function saveModels($model, $expendwithdrawals_models, $expenddeduction_models)
+    {
+        try{
+            $transaction = Yii::$app->db->beginTransaction();
+            $model->fpa_value = Money::toDbPercentage($model->fpa_value);
+            $model->exp_date = date("Y-m-d H:i:s");
+            $model->exp_deleted = 0;
+            $model->exp_lock = 0;
+            
+            if(!$model->save()) throw new Exception();
+            
+            for($i = 0; $i < count($expenddeduction_models); $i++)
+                $expenddeduction_models[$i]->exp_id = $model->exp_id;
+                
+                if(!$expenddeduction_models[0]->save()) throw new Exception();
+                
+                for($i = 1; $i < count($expenddeduction_models); $i++){
+                    if(!($expenddeduction_models[$i]->deduct_id == 0)){
+                        if(!$expenddeduction_models[$i]->save()) throw new Exception();
+                    }
+                }
+                
+                $expend_state_model = new FinanceExpenditurestate();
+                $expend_state_model->exp_id = $model->exp_id;
+                $expend_state_model->state_id = 1;
+                $expend_state_model->expstate_date = date("Y-m-d H:i:s");
+                echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
+                if(!$expend_state_model->save()) throw new Exception();
+                
+                $partial_amount = $model->exp_amount;
+                foreach ($expendwithdrawals_models as $expendwithdrawals_model){
+                    $expendwithdrawals_model->exp_id = $model->exp_id;
+                    $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
+                    if($partial_amount > $withdrawal_balance){
+                        $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
+                        $partial_amount = $partial_amount - $withdrawal_balance;
+                    }
+                    else {
+                        $expendwithdrawals_model->expwithdr_amount = $partial_amount;
+                        $partial_amount = 0;
+                        
+                        if(!$expendwithdrawals_model->save())
+                            throw new Exception();
+                            break;
+                    }
+                    
+                    if(!$expendwithdrawals_model->save()) throw new Exception();
+                }
+                if($partial_amount > 0) throw new Exception();
+                
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
+                return $this->redirect(['index']);
+        }
+        catch(Exception $e){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create expenditure."));
+            return $this->redirect(['index']);
+        }
+    }
+    
     /**
      * Deletes an existing FinanceExpenditure model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -223,6 +293,8 @@ class FinanceExpenditureController extends Controller
         $expenditure = $this->findModel($id);        
         try{
             $transaction = Yii::$app->db->beginTransaction();
+            if(!FinanceExpenddeduction::deleteAll(['exp_id' => $expenditure->exp_id]))
+                throw new Exception();
             if(!FinanceExpendwithdrawal::deleteAll(['exp_id' => $expenditure->exp_id]))
                 throw new Exception();
             if(!FinanceExpenditurestate::deleteAll(['exp_id' => $expenditure->exp_id]))
