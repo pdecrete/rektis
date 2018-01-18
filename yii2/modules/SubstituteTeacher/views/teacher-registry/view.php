@@ -6,36 +6,43 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherRegistry */
 
-$this->title = $model->id;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Teacher Registries'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="teacher-registry-view">
+    <div class="teacher-registry-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+        <h1>
+            <?= Html::encode($this->title) ?>
+        </h1>
 
-    <p>
-        <?= Html::a(Yii::t('substituteteacher', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
+        <p>
+            <?= Html::a(Yii::t('substituteteacher', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('substituteteacher', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
         ]) ?>
-    </p>
+        </p>
 
-    <?= DetailView::widget([
+        <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
-            'specialisation_id',
-            'gender',
+            [
+                'attribute' => 'specialisation_id',
+                'value' => function ($m) {
+                    return ($m->specialisation) ? $m->specialisation->label : null;
+                }
+            ],
+            'gender_label',
             'surname',
             'firstname',
             'fathername',
             'mothername',
-            'marital_status',
+            'marital_status_label',
             'protected_children',
             'mobile_phone',
             'home_phone',
@@ -58,4 +65,4 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
-</div>
+    </div>

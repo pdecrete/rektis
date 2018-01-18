@@ -51,6 +51,10 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     const MARITAL_STATUS_WIDOWED = 'W';
     const MARITAL_STATUS_UNKNOWN = 'U';
 
+    public $gender_label;
+    public $marital_status_label;
+    public $name; // fullname for display reasons
+
     /**
      * @inheritdoc
      */
@@ -150,7 +154,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     /**
      * Get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
-     * 
+     *
      */
     public static function getChoices($for = 'gender')
     {
@@ -172,6 +176,49 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         }
 
         return $choices;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->name = "{$this->firstname} {$this->surname} ({$this->fathername})";
+
+        switch ($this->gender) {
+            case self::GENDER_FEMALE:
+                $this->gender_label = Yii::t('substituteteacher', 'Female');
+                break;
+            case self::GENDER_MALE:
+                $this->gender_label = Yii::t('substituteteacher', 'Male');
+                break;
+            case self::GENDER_OTHER:
+                $this->gender_label = Yii::t('substituteteacher', 'Other');
+                break;
+            default:
+                $this->gender_label = null;
+                break;
+        }
+
+        switch ($this->marital_status) {
+            case self::MARITAL_STATUS_DIVORCED:
+                $this->marital_status_label = Yii::t('substituteteacher', 'Divorced');
+                break;
+            case self::MARITAL_STATUS_MARRIED:
+                $this->marital_status_label = Yii::t('substituteteacher', 'Married');
+                break;
+            case self::MARITAL_STATUS_SINGLE:
+                $this->marital_status_label = Yii::t('substituteteacher', 'Single');
+                break;
+            case self::MARITAL_STATUS_UNKNOWN:
+                $this->marital_status_label = Yii::t('substituteteacher', 'Unknown');
+                break;
+            case self::MARITAL_STATUS_WIDOWED:
+                $this->marital_status_label = Yii::t('substituteteacher', 'Widowed');
+                break;
+            default:
+                $this->marital_status_label = null;
+                break;
+        }
     }
 
     /**

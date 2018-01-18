@@ -1,7 +1,9 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
+use kartik\select2\Select2;
+use app\models\Specialisation;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherRegistrySearch */
@@ -13,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="teacher-registry-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Create Teacher Registry'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -24,16 +25,27 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'specialisation_id',
-            'gender',
+            // 'id',
+            [
+                'attribute' => 'specialisation_id',
+                'value' => 'specialisation.label',
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'specialisation_id',
+                    'data' => Specialisation::selectables(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            // 'gender',
             'surname',
             'firstname',
             // 'fathername',
             // 'mothername',
             // 'marital_status',
             // 'protected_children',
-            // 'mobile_phone',
+            'mobile_phone',
             // 'home_phone',
             // 'work_phone',
             // 'home_address',
@@ -45,14 +57,19 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'identity_number',
             // 'bank',
             // 'iban',
-            // 'email:email',
+            'email:email',
             // 'birthdate',
             // 'birthplace',
             // 'comments:ntext',
             // 'created_at',
             // 'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'visibleButtons' => [
+                    'delete' => \Yii::$app->user->can('admin'),
+                ],
+            ],
         ],
     ]); ?>
 </div>
