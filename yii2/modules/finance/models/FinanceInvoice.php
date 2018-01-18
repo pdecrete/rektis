@@ -37,8 +37,9 @@ class FinanceInvoice extends \yii\db\ActiveRecord
     {
         return [
             [['inv_number', 'inv_date', 'inv_order', 'suppl_id', 'exp_id', 'invtype_id'], 'required'],
-            [['inv_date', 'inv_deleted', 'suppl_id', 'exp_id', 'invtype_id'], 'integer'],
+            [['inv_deleted', 'suppl_id', 'exp_id', 'invtype_id'], 'integer'],
             [['inv_number', 'inv_order'], 'string', 'max' => 255],
+            [['inv_date'], 'safe'],
             [['exp_id'], 'unique'],
             [['suppl_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceSupplier::className(), 'targetAttribute' => ['suppl_id' => 'suppl_id']],
             [['exp_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceExpenditure::className(), 'targetAttribute' => ['exp_id' => 'exp_id']],

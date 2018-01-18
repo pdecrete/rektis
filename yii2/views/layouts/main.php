@@ -176,20 +176,28 @@ AppAsset::register($this);
                             ],
                         ],
                     ],
-                    [ 	'label' => 'Διαχείριση Δαπανών',
+                    [ 	'label' => 'Δαπάνες',
                         'visible' => !Yii::$app->user->isGuest,
                         'items' => [
-                            [	'label' => 'Διαχείριση Οικονομικού Έτους',
-                                'url' => ['/finance/default/administeryear']
+                            [	'label' => 'Κεντρική Διαχείριση',
+                                'url' => ['/finance/default']
+                            ],
+                            [
+                                'label' => 'Διαχείριση Οικονομικού Έτους',
+                                'url' => ['/finance/default/administeryear'],
+                            ],
+                            [
+                                'label' => 'Παράμετροι',
+                                'url' => ['/finance/default/parameterize'],
                             ],
                             '<li class="divider"></li>',
                             [
                                 'label' => 'Δαπάνες',
-                                'url' => ['/finance/default'],
+                                'url' => ['/finance/finance-expenditure'],
                             ],
                             [
                                 'label' => 'Τιμολόγια',
-                                'url' => ['/finance/default'],
+                                'url' => ['/finance/finance-invoice'],
                             ],
                             [	'label' => 'Προμηθευτές',
                                 'url' => ['/finance/finance-supplier']

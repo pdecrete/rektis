@@ -227,7 +227,7 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `inv_number` VARCHAR(255) NOT NULL, 
-                            `inv_date` INTEGER NOT NULL,
+                            `inv_date` DATETIME NOT NULL,
                             `inv_order` VARCHAR(255) NOT NULL,
                             `inv_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,

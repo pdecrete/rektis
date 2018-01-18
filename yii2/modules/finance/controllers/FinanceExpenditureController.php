@@ -67,7 +67,13 @@ class FinanceExpenditureController extends Controller
             ->from([$expwithdr, $wthdr])
             ->where($expwithdr . '.kaewithdr_id=' . $wthdr . '.kaewithdr_id AND' . ' exp_id =' . $expend_model['exp_id'])
             ->all();
+            
+            $invoice = FinanceInvoice::find()->where(['exp_id' => $expend_model['exp_id']])->one()['inv_id'];
+            
             $expendwithdrawals[$expend_model['exp_id']]['WITHDRAWAL'] = $withdrawal_model;
+            
+            $expendwithdrawals[$expend_model['exp_id']]['INVOICE'] = $invoice;
+            
             for($i = 0; $i < count($withdrawal_model); $i++)
             {                
                 $kaewithdrawal = FinanceExpendwithdrawal::find()
@@ -118,6 +124,11 @@ class FinanceExpenditureController extends Controller
             }
             else
                 unset($kaewithdrawals[$key]);
+        }
+      
+        if(count($expendwithdrawals_models) == 0){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "There is no withdrawal for this RCN to create expenditure."));
+            return $this->redirect(['index']);
         }
         
         $deductions = FinanceDeduction::find()->all();
