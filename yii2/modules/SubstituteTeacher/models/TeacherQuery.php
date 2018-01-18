@@ -9,10 +9,15 @@ namespace app\modules\SubstituteTeacher\models;
  */
 class TeacherQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    public function year($year)
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['year' => $year]);
+    }
+
+    public function status($status)
+    {
+        return $this->andWhere(['status' => $status]);
+    }
 
     /**
      * @inheritdoc

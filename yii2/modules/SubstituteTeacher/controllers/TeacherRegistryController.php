@@ -114,6 +114,7 @@ class TeacherRegistryController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
+     * @throws UnprocessableEntityHttpException If the teacher is involved in any process
      */
     public function actionDelete($id)
     {

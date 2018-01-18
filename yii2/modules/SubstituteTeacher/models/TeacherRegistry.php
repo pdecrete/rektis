@@ -4,6 +4,7 @@ namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
 use app\models\Specialisation;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stteacher_registry}}".
@@ -41,6 +42,8 @@ use app\models\Specialisation;
  */
 class TeacherRegistry extends \yii\db\ActiveRecord
 {
+    use Selectable;
+
     const GENDER_FEMALE = 'F';
     const GENDER_MALE = 'M';
     const GENDER_OTHER = 'O';

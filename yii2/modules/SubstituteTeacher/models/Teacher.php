@@ -3,6 +3,7 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stteacher}}".
@@ -19,6 +20,14 @@ use Yii;
  */
 class Teacher extends \yii\db\ActiveRecord
 {
+    use Selectable;
+
+    const TEACHER_STATUS_ELIGIBLE = 0;
+    const TEACHER_STATUS_APPOINTED = 1;
+    const TEACHER_STATUS_NEGATION = 2;
+
+    public $status_label;
+
     /**
      * @inheritdoc
      */
@@ -34,7 +43,8 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['registry_id', 'year', 'status'], 'integer'],
-            [['year'], 'required'],
+            [['points'], 'default', 'value' => 0],
+            [['year', 'points'], 'required'],
             [['points'], 'number'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
@@ -77,6 +87,45 @@ class Teacher extends \yii\db\ActiveRecord
     public function getTeacherStatusAudits()
     {
         return $this->hasMany(TeacherStatusAudit::className(), ['teacher_id' => 'id']);
+    }
+
+    /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     *
+     */
+    public static function getChoices($for = 'status')
+    {
+        $choices = [];
+        if ($for === 'status') {
+            return [
+                self::TEACHER_STATUS_ELIGIBLE => Yii::t('substituteteacher', 'Eligible for appointment'),
+                self::TEACHER_STATUS_APPOINTED => Yii::t('substituteteacher', 'Teacher appointed'),
+                self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
+            ];
+        }
+
+        return $choices;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        switch ($this->status) {
+            case self::TEACHER_STATUS_ELIGIBLE:
+                $this->status_label = Yii::t('substituteteacher', 'Eligible for appointment');
+                break;
+            case self::TEACHER_STATUS_APPOINTED:
+                $this->status_label = Yii::t('substituteteacher', 'Teacher appointed');
+                break;
+            case self::TEACHER_STATUS_NEGATION:
+                $this->status_label = Yii::t('substituteteacher', 'Teacher denied appointment');
+                break;
+            default:
+                $this->status_label = null;
+                break;
+        }
     }
 
     /**
