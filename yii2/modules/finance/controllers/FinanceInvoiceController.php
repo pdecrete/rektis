@@ -51,24 +51,30 @@ class FinanceInvoiceController extends Controller
 
     /**
      * Displays a single FinanceInvoice model.
+     * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
+     * 
      * @param integer $id
+     * @param integer $expenditures_return
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id, $expenditures_return = 0)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'expenditures_return' => $expenditures_return
         ]);
     }
 
     /**
      * Creates a new FinanceInvoice model for the expenditure with id $id.
+     * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
      * If creation is successful, the browser will be redirected to the expendinture 'index' page.
      * 
      * @param integer $id
+     * @param integer $expenditures_return
      * @return mixed
      */
-    public function actionCreate($id)
+    public function actionCreate($id, $expenditures_return = 0)
     {
         $invoice_model = new FinanceInvoice();
         $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $id]);
@@ -95,7 +101,8 @@ class FinanceInvoiceController extends Controller
                 'invoice_model' => $invoice_model,
                 'expenditure_model' => $expenditure_model,
                 'supplier_model' => $supplier_model,
-                'invoicetypes_model' => $invoicetypes_model
+                'invoicetypes_model' => $invoicetypes_model,
+                'expenditures_return' => $expenditures_return
             ]);
         }
     }
@@ -103,16 +110,19 @@ class FinanceInvoiceController extends Controller
     /**
      * Updates an existing FinanceInvoice model.
      * If update is successful, the browser will be redirected to the 'view' page.
+     * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
+     * 
      * @param integer $id
+     * @param integer $expenditures_return
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $expenditures_return = 0)
     {  
         $invoice_model = $this->findModel($id);
         $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $invoice_model->exp_id]);
         $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
         $invoicetypes_model = FinanceInvoicetype::find()->all();
-                
+   
         if ($invoice_model->load(Yii::$app->request->post())){
             try{
                 if(!$invoice_model->save())
@@ -125,11 +135,12 @@ class FinanceInvoiceController extends Controller
                 return $this->redirect(['/finance/finance-expenditure']);
             }
         } else {
-            return $this->render('create', [
+            return $this->render('update', [
                 'invoice_model' => $invoice_model,
                 'expenditure_model' => $expenditure_model,
                 'supplier_model' => $supplier_model,
-                'invoicetypes_model' => $invoicetypes_model
+                'invoicetypes_model' => $invoicetypes_model,
+                'expenditures_return' => $expenditures_return
             ]);
         }
     }
@@ -137,17 +148,24 @@ class FinanceInvoiceController extends Controller
     /**
      * Deletes an existing FinanceInvoice model.
      * If deletion is successful, the browser will be redirected to the expenditures 'index' page.
+     * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
+     * 
      * @param integer $id
+     * @param integer $expenditures_return 
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $expenditures_return = 0)
     {
         if(!$this->findModel($id)->delete()){            
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting invoice."));
-            return $this->redirect(['/finance/finance-expenditure']);
+            if($expenditures_return == 1)
+                return $this->redirect(['/finance/finance-expenditure']);
+            return $this->redirect(['/finance/finance-invoice']);
         }
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was deleted succesfully."));
-        return $this->redirect(['/finance/finance-expenditure']);
+        if($expenditures_return == 1)
+            return $this->redirect(['/finance/finance-expenditure']);
+        return $this->redirect(['/finance/finance-invoice']);
     }
 
     /**

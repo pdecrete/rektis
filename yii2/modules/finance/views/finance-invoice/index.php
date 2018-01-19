@@ -1,13 +1,14 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceInvoiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-
-$this->title = Yii::t('app', 'Finance Invoices');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->title = Module::t('modules/finance/app', 'Invoices');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-invoice-index">
@@ -15,9 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Finance Invoice'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -28,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'inv_number',
             'inv_date',
             'inv_order',
-            'inv_deleted',
+            //'inv_deleted',
             // 'suppl_id',
             // 'exp_id',
             // 'invtype_id',

@@ -12,7 +12,7 @@ use app\modules\finance\components\Money;
 /* @var $searchModel app\modules\finance\models\FinanceExpenditureSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->title = Module::t('modules/finance/app', 'Finance Expenditures');
+$this->title = Module::t('modules/finance/app', 'Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($expendwithdrawals[15]['WITHDRAWAL']); echo "</pre>"; die();
@@ -150,24 +150,20 @@ $this->params['breadcrumbs'][] = $this->title;
                                                           'Create invoice for the expenditure.')]);
                                 else {
                                     $retvalue = Html::a('<span class="glyphicon glyphicon-eye-open"></span>',
-                                        '/finance-invoice/view?id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                        '/finance/finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                         ['title' => Module::t('modules/finance/app',
                                             'View the invoice details for the expenditure.')]);
                                     $retvalue .= "&nbsp;" . Html::a('<span class="glyphicon glyphicon-pencil"></span>',
-                                        '/finance-invoice/update?id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                        '/finance/finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                         ['title' => Module::t('modules/finance/app',
                                             'Update the invoice details for the expenditure.')]);
-                                    $retvalue .= "&nbsp;" . Html::a('<span class="glyphicon glyphicon-trash"></span>',
-                                        '/finance-invoice/delete?id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
-                                        ['title' => Module::t('modules/finance/app', 'Delete the invoice for the expenditure.'),
-                                         'data'=>['confirm'=>"Η διαγραφή του τιμολογίου είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι για τη διαγραφή;",
-                                         'method' => 'post']]); ///////////////TODO METHOD POST
                                 }
+                                $retvalue .= "";
                                 return $retvalue;
                                     
                            },
                 'contentOptions' => ['class' => 'text-nowrap'],
-            ],
-        ],
-    ]); ?>
+            ],        ],
+
+    ]); ?><?= Html::a('submit', Url::to(['/finance/finance-invoice/delete?id=1']), ['data-method' => 'POST']) ?>
 </div>

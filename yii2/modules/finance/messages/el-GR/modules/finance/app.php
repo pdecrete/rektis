@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Parameters' => 'Παράμετροι',
     'Create/Update/Delete Withdrawal from an RCN\'s credit' => 'Δημιουργία/Ενημέρωση/Διαγραφή Ανάληψης από την πίστωση ενός ΚΑΕ',
     'The action is not permitted! The year is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος είναι κλειδωμένο.',
     'The action is not permitted! The year you are working on is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος στο οποίο εργάζεστε είναι κλειδωμένο.',

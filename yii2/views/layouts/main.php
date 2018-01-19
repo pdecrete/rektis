@@ -3,7 +3,6 @@
 /* @var $content string */
 
 use yii\helpers\Html;
-use yii\bootstrap\Modal;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
