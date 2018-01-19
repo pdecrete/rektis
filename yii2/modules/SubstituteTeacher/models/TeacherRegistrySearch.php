@@ -18,7 +18,7 @@ class TeacherRegistrySearch extends TeacherRegistry
     public function rules()
     {
         return [
-            [['id', 'specialisation_id', 'protected_children'], 'integer'],
+            [['id', 'protected_children', 'aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
             [['gender', 'surname', 'firstname', 'fathername', 'mothername', 'marital_status', 'mobile_phone', 'home_phone', 'work_phone', 'home_address', 'city', 'postal_code', 'social_security_number', 'tax_identification_number', 'tax_service', 'identity_number', 'bank', 'iban', 'email', 'birthdate', 'birthplace', 'comments', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -60,7 +60,6 @@ class TeacherRegistrySearch extends TeacherRegistry
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'specialisation_id' => $this->specialisation_id,
             'protected_children' => $this->protected_children,
             'birthdate' => $this->birthdate,
             'created_at' => $this->created_at,

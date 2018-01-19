@@ -10,7 +10,6 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * This is the model class for table "{{%stteacher_registry}}".
  *
  * @property integer $id
- * @property integer $specialisation_id
  * @property string $gender
  * @property string $surname
  * @property string $firstname
@@ -33,12 +32,20 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property string $email
  * @property string $birthdate
  * @property string $birthplace
+ * @property integer $aei
+ * @property integer $tei
+ * @property integer $epal
+ * @property integer $iek
+ * @property integer $military_service_certificate
+ * @property integer $sign_language
+ * @property integer $braille
  * @property string $comments
  * @property string $created_at
  * @property string $updated_at
  *
  * @property Teacher[] $teachers
- * @property Specialisation $specialisation
+ * @property Specialisation[] $specialisations
+ * @property TeacherRegistrySpecialisation[] $teacherRegistrySpecialisations
  */
 class TeacherRegistry extends \yii\db\ActiveRecord
 {
@@ -74,7 +81,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         return [
             [['birthdate'], 'default', 'value' => null],
             [['birthdate'], 'date', 'format' => 'php:Y-m-d'],
-            [['specialisation_id'], 'integer'],
+            [['specialisation_id', 'aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
             [['protected_children'], 'integer', 'min' => 0, 'max' => '15'],
             [['comments'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
@@ -132,6 +139,13 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             'email' => Yii::t('substituteteacher', 'Email'),
             'birthdate' => Yii::t('substituteteacher', 'Birthdate'),
             'birthplace' => Yii::t('substituteteacher', 'Birthplace'),
+            'aei' => Yii::t('app', 'Aei'),
+            'tei' => Yii::t('app', 'Tei'),
+            'epal' => Yii::t('app', 'Epal'),
+            'iek' => Yii::t('app', 'Iek'),
+            'military_service_certificate' => Yii::t('app', 'Military Service Certificate'),
+            'sign_language' => Yii::t('app', 'Sign Language'),
+            'braille' => Yii::t('app', 'Braille'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
@@ -149,9 +163,18 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSpecialisation()
+    public function getSpecialisations()
     {
-        return $this->hasOne(Specialisation::className(), ['id' => 'specialisation_id']);
+        return $this->hasMany(Specialisation::className(), ['id' => 'specialisation_id'])
+            ->viaTable('{{%stteacher_registry_specialisation}}', ['registry_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeacherRegistrySpecialisations()
+    {
+        return $this->hasMany(TeacherRegistrySpecialisation::className(), ['registry_id' => 'id']);
     }
 
     /**

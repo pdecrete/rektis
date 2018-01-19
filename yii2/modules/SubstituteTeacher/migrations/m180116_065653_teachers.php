@@ -17,7 +17,6 @@ class m180116_065653_teachers extends Migration
         // the main pool of teacher data
         $this->createTable('{{%stteacher_registry}}', [
             'id' => $this->primaryKey(),
-            'specialisation_id' => $this->integer()->defaultValue(null),
             'gender' => $this->char(1)->notNull()->defaultValue(''),
             'surname' => $this->string(100)->notNull()->defaultValue(''),
             'firstname' => $this->string(100)->notNull()->defaultValue(''),
@@ -37,20 +36,35 @@ class m180116_065653_teachers extends Migration
             'identity_number' => $this->string(30)->notNull()->defaultValue('')->comment('ΑΔΤ'),
             'bank' => $this->string(100)->notNull()->defaultValue(''),
             'iban' => $this->string(34)->notNull()->defaultValue(''),
-            //
             'email' => $this->string(150)->notNull()->defaultValue(''),
             'birthdate' => $this->date()->defaultValue(null),
             'birthplace' => $this->string(100)->notNull()->defaultValue(''),
+            // 
+            'aei' => $this->boolean()->notNull()->defaultValue(false)->comment('Πτυχίο ΑΕΙ'),
+            'tei' => $this->boolean()->notNull()->defaultValue(false)->comment('Πτυχίο TΕΙ'),
+            'epal' => $this->boolean()->notNull()->defaultValue(false)->comment('Απολυτήριο ΕΠΑΛ'),
+            'iek' => $this->boolean()->notNull()->defaultValue(false)->comment('Απολυτήριο ΙΕΚ'),
+            'military_service_certificate' => $this->boolean()->notNull()->defaultValue(false),
+            'sign_language' => $this->boolean()->notNull()->defaultValue(false),
+            'braille' => $this->boolean()->notNull()->defaultValue(false),
+            //
             'comments' => $this->text()->notNull()->defaultValue(''),
             'created_at' => $this->timestamp()->notNull()->defaultValue(0),
             'updated_at' => $this->timestamp()->notNull()->defaultValue(new yii\db\Expression('NOW()')),
             ], $tableOptions);
-        $this->createIndex('idx_stteacher_registry_specialisation', '{{%stteacher_registry}}', ['specialisation_id']);
-        $this->addForeignKey('fk_stteacher_registry_specialisation_specialisation', '{{%stteacher_registry}}', 'specialisation_id', '{{%specialisation}}', 'id', 'RESTRICT', 'CASCADE');
         $this->createIndex('idx_stteacher_registry_identity_number_unique', '{{%stteacher_registry}}', 'identity_number', true);
         $this->createIndex('idx_stteacher_registry_social_security_number_unique', '{{%stteacher_registry}}', 'social_security_number', true);
         $this->createIndex('idx_stteacher_registry_tax_identification_number_unique', '{{%stteacher_registry}}', 'tax_identification_number', true);
         $this->addCommentOnTable('{{%stteacher_registry}}', 'Main repository of teachers information');
+
+        $this->createTable('{{%stteacher_registry_specialisation}}', [
+            'id' => $this->primaryKey(),
+            'registry_id' => $this->integer()->defaultValue(null),
+            'specialisation_id' => $this->integer()->defaultValue(null)
+        ], $tableOptions);
+        $this->createIndex('idx_stteacher_registry_specialisation', '{{%stteacher_registry_specialisation}}', ['registry_id', 'specialisation_id'], true);
+        $this->addForeignKey('fk_stteacher_registry_specialisation_teacher', '{{%stteacher_registry_specialisation}}', 'registry_id', '{{%stteacher_registry}}', 'id', 'RESTRICT', 'CASCADE');
+        $this->addForeignKey('fk_stteacher_registry_specialisation_specialisation', '{{%stteacher_registry_specialisation}}', 'specialisation_id', '{{%specialisation}}', 'id', 'RESTRICT', 'CASCADE');
 
         // per year eligible teachers
         $this->createTable('{{%stteacher}}', [
@@ -59,7 +73,8 @@ class m180116_065653_teachers extends Migration
             'year' => $this->integer()->notNull(),
             'status' => $this->smallInteger()->unsigned()->notNull()->defaultValue(0)->comment('Service status, i.e. 1 for appointed'),
             'points' => $this->decimal(9, 3)->unsigned()->notNull()->defaultValue(0.0),
-            // TODO: this should be enriched with json data or multiple properties
+            'data' => $this->text()->defaultValue('')->comment('All of the rest teacher information')
+            // TODO: this should be expanded in later versions 
         ]);
         $this->addForeignKey('fk_teacher_registry_id', '{{%stteacher}}', 'registry_id', '{{%stteacher_registry}}', 'id', 'SET NULL', 'CASCADE');
         $this->createIndex('idx_stteacher_by_year', '{{%stteacher}}', ['year']);
@@ -105,7 +120,10 @@ class m180116_065653_teachers extends Migration
         $this->dropForeignKey('fk_teacher_registry_id', '{{%stteacher}}');
         $this->dropTable('{{%stteacher}}');
 
-        $this->dropForeignKey('fk_stteacher_registry_specialisation_specialisation', '{{%stteacher_registry}}');
+        $this->dropForeignKey('fk_stteacher_registry_specialisation_teacher', '{{%stteacher_registry_specialisation}}');
+        $this->dropForeignKey('fk_stteacher_registry_specialisation_specialisation', '{{%stteacher_registry_specialisation}}');
+        $this->dropTable('{{%stteacher_registry_specialisation}}');
+
         $this->dropTable('{{%stteacher_registry}}');
     }
 }
