@@ -5,6 +5,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stcall}}".
@@ -21,8 +22,10 @@ use yii\helpers\ArrayHelper;
  */
 class Call extends \yii\db\ActiveRecord
 {
+    use Selectable;
 
-    public $application_start_ts, $application_end_ts;
+    public $application_start_ts;
+    public $application_end_ts;
     public $label;
 
     /**
@@ -95,15 +98,12 @@ class Call extends \yii\db\ActiveRecord
     /**
      * Get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
-     * 
-     * @param int $year
      */
-    public static function selectables()
+    public static function defaultSelectables($index_property = 'id', $label_property = 'label', $group_property = null)
     {
-        $choices_aq = (new CallQuery(get_called_class()))
-            ->orderBy(['application_start' => SORT_DESC]);
-
-        return ArrayHelper::map($choices_aq->all(), 'id', 'label');
+        return static::selectables($index_property, $label_property, $group_property, function ($aq) {
+            return $aq->orderBy(['application_start' => SORT_DESC]);
+        });
     }
 
     public function afterFind()

@@ -2,7 +2,7 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
-use yii\helpers\ArrayHelper;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stprefecture}}".
@@ -15,6 +15,7 @@ use yii\helpers\ArrayHelper;
  */
 class Prefecture extends \yii\db\ActiveRecord
 {
+    use Selectable;
 
     public $label;
 
@@ -66,21 +67,31 @@ class Prefecture extends \yii\db\ActiveRecord
     }
 
     /**
-     * Get a list of available choices in the form of
+     * Provided a year, get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
-     * 
-     * @param null|string $region if provided, filters by region
+     * If year provided is "invalid" all choices are retured.
+     *
+     * @param int $year
      */
-    public static function selectables($region = null)
+    public static function selectablesForRegion($region = null)
     {
-        $choices_aq = new PrefectureQuery(get_called_class());
         if ($region !== null) {
-            $choices_aq->where(['region' => $region]);
+            return static::selectables('id', 'prefecture', 'region', function ($aq) use ($year) {
+                return $aq->where(['region' => $region])
+                    ->orderBy(['region' => SORT_ASC]);
+            });
+        } else {
+            return static::defaultSelectables('id', 'prefecture', 'region');
         }
-        $choices_aq->orderBy(['region' => SORT_ASC]);
-
-        return ArrayHelper::map($choices_aq->all(), 'id', 'prefecture', 'region');
     }
+
+    public static function defaultSelectables($index_property = 'id', $label_property = 'prefecture', $group_property = 'region')
+    {
+        return static::selectables($index_property, $label_property, $group_property, function ($aq) {
+            return $aq->orderBy(['region' => SORT_ASC]);
+        });
+    }
+
 
     /**
      * @inheritdoc
