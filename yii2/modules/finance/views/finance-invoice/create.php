@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceInvoice */
 
-$this->title = Module::t('modules/finance/app', 'Create Finance Invoice');
+$this->title = Module::t('modules/finance/app', 'Create Voucher');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 if($expenditures_return == 1)
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['/finance/finance-expenditure/']];

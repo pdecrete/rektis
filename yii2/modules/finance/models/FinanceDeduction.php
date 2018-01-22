@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -49,14 +50,14 @@ class FinanceDeduction extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'deduct_id' => Yii::t('app', 'Deduct ID'),
-            'deduct_name' => Yii::t('app', 'Deduct Name'),
-            'deduct_description' => Yii::t('app', 'Deduct Description'),
-            'deduct_date' => Yii::t('app', 'Deduct Date'),
-            'deduct_percentage' => Yii::t('app', 'Deduct Percentage'),
-            'deduct_downlimit' => Yii::t('app', 'Deduct Downlimit'),
-            'deduct_uplimit' => Yii::t('app', 'Deduct Uplimit'),
-            'deduct_obsolete' => Yii::t('app', 'Deduct Obsolete'),
+            'deduct_id' => Module::t('modules/finance/app', 'Deduct ID'),
+            'deduct_name' => Module::t('modules/finance/app', 'Title'),
+            'deduct_description' => Module::t('modules/finance/app', 'Description'),
+            'deduct_date' => Module::t('modules/finance/app', 'Date'),
+            'deduct_percentage' => Module::t('modules/finance/app', 'Percentage'),
+            'deduct_downlimit' => Module::t('modules/finance/app', 'Minimum Amount'),
+            'deduct_uplimit' => Module::t('modules/finance/app', 'Maximum Amount'),
+            'deduct_obsolete' => Module::t('modules/finance/app', 'Obsolete'),
         ];
     }
 

@@ -10,20 +10,20 @@ use app\modules\finance\components\Money;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Yii::t('app', 'Finance Fpas');
+$this->title = Module::t('modules/finance/app', 'VAT options');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-fpa-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <p class="text-right">
-        <?= Html::a(Yii::t('app', 'Create VAT option'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create VAT option'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,        
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'fpa_value',
+            ['attribute' => 'fpa_value', 'label' => Module::t('modules/finance/app', 'VAT Percentage')],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',
              'urlCreator' => function ($action, $model) {

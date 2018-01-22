@@ -23,29 +23,29 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Tax Office'); ?></h3>
-                <p><?= Module::t('modules/finance/app', 'Create/Update/Delete Tax Offices'); ?></p>
+                <p><?= Module::t('modules/finance/app', 'Create/Edit/Delete Tax Offices'); ?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Administer Tax Offices'), Url::to(['/finance/finance-taxoffice']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
         <div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'VAT')?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer VAT options')?></p>
-            <p><?= Html::a(Module::t('modules/finance/app', 'Vat options'), Url::to(['/finance/finance-fpa']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
+            <p><?= Html::a(Module::t('modules/finance/app', 'VAT Options'), Url::to(['/finance/finance-fpa']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
     </div>
     <div class="row">
         <div class="col-lg-4">
-            <h3><?= Module::t('modules/finance/app', 'Expenditure State')?></h3>
+            <h3><?= Module::t('modules/finance/app', 'Expenditure States')?></h3>
             <p><?= Module::t('modules/finance/app', 'Administer expenditure states')?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure States'), Url::to(['/finance/finance-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>    	
 		<div class="col-lg-4">
-            <h3><?= Module::t('modules/finance/app', 'Expenditure Deduction'); ?></h3>
-            <p><?= Module::t('modules/finance/app', 'Administer available deductions to be assigned to expenditures.'); ?></p>
+            <h3><?= Module::t('modules/finance/app', 'Expenditure Deductions'); ?></h3>
+            <p><?= Module::t('modules/finance/app', 'Administer deductions to be assigned to expenditures.'); ?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Expenditure Deductions'), Url::to(['/finance/finance-deduction']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Voucher Types'); ?></h3>
-            <p><?= Module::t('modules/finance/app', 'Administer available types of vouchers.'); ?></p>
+            <p><?= Module::t('modules/finance/app', 'Administer types of vouchers.'); ?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Voucher Types'), Url::to(['/finance/finance-invoicetype']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>            
 	</div>

@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -36,7 +37,7 @@ class FinanceFpa extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'fpa_value' => Yii::t('app', 'Fpa Value'),
+            'fpa_value' => Module::t('modules/finance/app', 'Percentage'),
         ];
     }
 

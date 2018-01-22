@@ -231,6 +231,7 @@ class FinanceExpenditureController extends Controller
     {
         try{
             $transaction = Yii::$app->db->beginTransaction();
+            $model->exp_amount = Money::toCents($model->exp_amount); 
             $model->fpa_value = Money::toDbPercentage($model->fpa_value);
             $model->exp_date = date("Y-m-d H:i:s");
             $model->exp_deleted = 0;
@@ -253,7 +254,7 @@ class FinanceExpenditureController extends Controller
                 $expend_state_model->exp_id = $model->exp_id;
                 $expend_state_model->state_id = 1;
                 $expend_state_model->expstate_date = date("Y-m-d H:i:s");
-                echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
+                //echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
                 if(!$expend_state_model->save()) throw new Exception();
                 
                 $partial_amount = $model->exp_amount;
@@ -341,6 +342,12 @@ class FinanceExpenditureController extends Controller
             return $this->redirect(['/finance/finance-expenditure/index']);
         }
         
+        $invoice = FinanceInvoice::findOne(['exp_id' => $id]);
+        if(is_null($invoice)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The state of the expenditure cannot change. Please create voucher first."));
+            return $this->redirect(['index']);
+        }
+                    
         $exp_model = $this->findModel($id);
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
@@ -350,9 +357,11 @@ class FinanceExpenditureController extends Controller
             try{
                 $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $state_model->exp_id])->count();
                 //echo $state_model->exp_id . "---" . $statescount; die();
-                if($statescount < 0 || $statescount >= 4) throw new Exception();
+                if($statescount < 0 || $statescount >= 4) 
+                    throw new Exception();
                 $state_model->state_id = $statescount + 1;
-                if(!$state_model->save())  throw new Exception();
+                if(!$state_model->save())  
+                    throw new Exception();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
                 return $this->redirect(['index']);
             }

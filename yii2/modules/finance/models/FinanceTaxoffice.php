@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -40,8 +41,8 @@ class FinanceTaxoffice extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'taxoffice_id' => Yii::t('app', 'Tax Office ID'),
-            'taxoffice_name' => Yii::t('app', 'Tax Office Name'),
+            'taxoffice_id' => Module::t('modules/finance/app', 'Code'),
+            'taxoffice_name' => Module::t('modules/finance/app', 'Title'),
         ];
     }
 

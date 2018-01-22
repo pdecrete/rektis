@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -41,7 +42,8 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     {
         return [
             [['exp_amount', 'exp_date', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
-            [['exp_amount', 'exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
+            [['exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
+            [['exp_amount'], 'number'],
             [['exp_date'], 'safe'],
             [['suppl_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceSupplier::className(), 'targetAttribute' => ['suppl_id' => 'suppl_id']],
         ];
@@ -53,13 +55,13 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'exp_id' => Yii::t('app', 'Exp ID'),
-            'exp_amount' => Yii::t('app', 'Exp Amount'),
-            'exp_date' => Yii::t('app', 'Exp Date'),
-            'exp_lock' => Yii::t('app', 'Exp Lock'),
-            'exp_deleted' => Yii::t('app', 'Exp Deleted'),
-            'suppl_id' => Yii::t('app', 'Suppl ID'),
-            'fpa_value' => Yii::t('app', 'Fpa Value'),
+            'exp_id' => Module::t('modules/finance/app', 'ID'),
+            'exp_amount' => Module::t('modules/finance/app', 'Amount'),
+            'exp_date' => Module::t('modules/finance/app', 'Date'),
+            'exp_lock' => Module::t('modules/finance/app', 'Locked'),
+            'exp_deleted' => Module::t('modules/finance/app', 'Deleted'),
+            'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
+            'fpa_value' => Module::t('modules/finance/app', 'VAT')
         ];
     }
 

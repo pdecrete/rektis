@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -39,8 +40,8 @@ class FinanceInvoicetype extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'invtype_id' => Yii::t('app', 'Invtype ID'),
-            'invtype_title' => Yii::t('app', 'Invtype Title'),
+            'invtype_id' => Module::t('modules/finance/app', 'Invtype ID'),
+            'invtype_title' => Module::t('modules/finance/app', 'Title'),
         ];
     }
 

@@ -5,8 +5,6 @@ use app\modules\finance\components\Money;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\data\ArrayDataProvider;
-use yii\grid\ActionColumn;
-use yii\grid\CheckboxColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaecreditSearch */
@@ -33,15 +31,17 @@ $provider = new ArrayDataProvider([
     </p>
 	<?= GridView::widget(   [  'dataProvider' => $provider,
 	                           'columns' => [  
-                                                'kae_id',
-                                                'kae_title',
-                                                'kaecredit_date',
-	                                            'kaecredit_updated',
-                                                ['attribute' => 'kaecredit_amount',
-            	                                 'format' => 'html',
-            	                                 'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
-                                                ],
-                                            ]
+	                               ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+	                               ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
+	                               ['attribute' => 'kaecredit_date', 'label' => Module::t('modules/finance/app', 'Created')],
+	                               ['attribute' => 'kaecredit_updated', 'label' => Module::t('modules/finance/app', 'Τροποποιήθηκε')],	                                            
+                                   ['attribute' => 'kaecredit_amount',
+                                    'label' => Module::t('modules/finance/app', 'Credit Amount'),
+                                    'format' => 'html',
+                                    'value' => function ($model) {return '<span class="pull-right">' . Money::toCurrency($model['kaecredit_amount']) . '</span>';},
+                                   ],
+                                 
+                                ]
 	                        ]);
     ?>
 </div>

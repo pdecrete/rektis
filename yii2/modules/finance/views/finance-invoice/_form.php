@@ -25,20 +25,21 @@ use yii\widgets\ActiveForm;
 	
 	<?= $form->field($invoice_model, 'invtype_id')->dropDownList(
                     ArrayHelper::map($invoicetypes_model,'invtype_id', 'invtype_title'),
-                                    ['prompt'=>Module::t('modules/finance/app', 'Voucher Type')])
+                                    ['prompt'=>Module::t('modules/finance/app', '---')])->
+                                    label(Module::t('modules/finance/app', 'Voucher Type'));
     ?>
     
-    <?= $form->field($invoice_model, 'inv_number')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($invoice_model, 'inv_number')->textInput(['maxlength' => true])->
+                label(Module::t('modules/finance/app', 'Number')); ?>
 
-    <?= $form->field($invoice_model, 'inv_order')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($invoice_model, 'inv_order')->textInput(['maxlength' => true])->
+                label(Module::t('modules/finance/app', 'Order')); ?>
     
-    <?= $form->field($invoice_model, 'inv_date')->widget(DateControl::classname(), [
-            'type' => DateControl::FORMAT_DATE
-        ]);
-    ?>
+    <?= $form->field($invoice_model, 'inv_date')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->
+                label(Module::t('modules/finance/app', 'Date')); ?>
 
     <div class="form-group">
-        <?= Html::submitButton($invoice_model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

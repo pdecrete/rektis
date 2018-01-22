@@ -7,8 +7,8 @@ use yii\helpers\Html;
 /* @var $model app\modules\finance\models\FinanceInvoicetype */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Module::t('modules/finance/app', 'Create Finance Invoicetype');
-$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Invoicetypes'), 'url' => ['index']];
+$this->title = Module::t('modules/finance/app', 'Create Voucher Type');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Voucher Types'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-invoicetype-create">

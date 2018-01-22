@@ -47,7 +47,7 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal ID'),
+            'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal'),
             'kaewithdr_amount' => Module::t('modules/finance/app', 'Withdrawal Amount'),
             'kaewithdr_decision' => Module::t('modules/finance/app', 'Withdrawal Decision'),
             'kaewithdr_date' => Module::t('modules/finance/app', 'Created Date'),

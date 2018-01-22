@@ -14,12 +14,11 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'F
 $this->title = Module::t('modules/finance/app', 'Finance Years');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->render('/default/infopanel'); 
 
 ?>
 
 <div class="finance-year-index">
-
+<?= $this->render('/default/infopanel'); ?>
     <h1><?= Html::encode($this->title) ?></h1>
     <p style="text-align: right;">
         <?= Html::a(Module::t('modules/finance/app', 'Create Finance Year'), ['create'], ['class' => 'btn btn-success']) ?>

@@ -8,8 +8,8 @@ use yii\helpers\Html;
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
 $this->title = Module::t('modules/finance/app', 'Update Deduction');
-$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Deductions'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Deductions'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="finance-deduction-update">

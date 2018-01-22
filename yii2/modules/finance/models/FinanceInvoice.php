@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -53,14 +54,14 @@ class FinanceInvoice extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'inv_id' => Yii::t('app', 'Inv ID'),
-            'inv_number' => Yii::t('app', 'Inv Number'),
-            'inv_date' => Yii::t('app', 'Inv Date'),
-            'inv_order' => Yii::t('app', 'Inv Order'),
-            'inv_deleted' => Yii::t('app', 'Inv Deleted'),
-            'suppl_id' => Yii::t('app', 'Suppl ID'),
-            'exp_id' => Yii::t('app', 'Exp ID'),
-            'invtype_id' => Yii::t('app', 'Invtype ID'),
+            'inv_id' => Module::t('modules/finance/app', 'ID'),
+            'inv_number' => Module::t('modules/finance/app', 'Number'),
+            'inv_date' => Module::t('modules/finance/app', 'Date'),
+            'inv_order' => Module::t('modules/finance/app', 'Order'),
+            'inv_deleted' => Module::t('modules/finance/app', 'Deleted'),
+            'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
+            'exp_id' => Module::t('modules/finance/app', 'Expenditure ID'),
+            'invtype_id' => Module::t('modules/finance/app', 'Voucher Type'),
         ];
     }
 

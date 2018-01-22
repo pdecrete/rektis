@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Module::t('modules/finance/app', 'Finance Taxoffices');
+$this->title = Module::t('modules/finance/app', 'Tax Offices');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-taxoffice-index">
@@ -18,17 +18,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p style="text-align: right;">
-        <?= Html::a(Module::t('modules/finance/app', 'Create Finance Taxoffice'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Insert Tax Οffice'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'taxoffice_id',
-            'taxoffice_name',
-
+            ['attribute' => 'taxoffice_id', 'label' => Module::t('modules/finance/app', 'Code')],
+            ['attribute' => 'taxoffice_name', 'label' => Module::t('modules/finance/app', 'Name')],
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{update}&nbsp;{delete}'
             ],

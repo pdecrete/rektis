@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Module::t('modules/finance/app', 'Finance Invoicetypes');
+$this->title = Module::t('modules/finance/app', 'Invoice Types');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-invoicetype-index">
@@ -18,13 +18,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
-        <?= Html::a(Module::t('modules/finance/app', 'Create Finance Invoicetype'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Invoice Type'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'invtype_title',
+            ['attribute' => 'invtype_title', 'label' => Module::t('modules/finance/app', 'Title')],
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{update}&nbsp;{delete}',
                 'urlCreator' => function ($action, $model) {

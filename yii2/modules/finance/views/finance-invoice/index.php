@@ -8,7 +8,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\modules\finance\models\FinanceInvoiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
-$this->title = Module::t('modules/finance/app', 'Invoices');
+$this->title = Module::t('modules/finance/app', 'Vouchers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-invoice-index">
@@ -21,11 +21,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'inv_id',
-            'inv_number',
-            'inv_date',
-            'inv_order',
+            ['attribute' => 'inv_number', 'label' => Module::t('modules/finance/app', 'Invoice number')],
+            ['attribute' => 'inv_date', 'label' => Module::t('modules/finance/app', 'Invoice date')],
+            ['attribute' => 'inv_order', 'label' => Module::t('modules/finance/app', 'Invoice order')],
             //'inv_deleted',
             // 'suppl_id',
             // 'exp_id',

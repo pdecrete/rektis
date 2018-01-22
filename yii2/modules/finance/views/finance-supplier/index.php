@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Yii::t('app', 'Finance Suppliers');
+$this->title = Module::t('modules/finance/app', 'Suppliers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= $this->render('/default/infopanel'); ?>
@@ -19,25 +19,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p style="text-align: right;">
-        <?= Html::a(Yii::t('app', 'Create Finance Supplier'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Supplier'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'suppl_id',
-            'suppl_name',
-            'suppl_vat',
-            'suppl_address',
-            'suppl_phone',
-            'suppl_fax',
-            'suppl_iban',
-            'suppl_employerid',
-            'taxoffice_id',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            ['attribute' => 'suppl_name', 'label' => Module::t('modules/finance/app', 'Επωνυμία')],
+            ['attribute' => 'suppl_vat', 'label' => Module::t('modules/finance/app', 'ΑΦΜ')],
+            ['attribute' => 'suppl_address', 'label' => Module::t('modules/finance/app', 'Διεύθυνση')],
+            ['attribute' => 'suppl_phone', 'label' => Module::t('modules/finance/app', 'Τηλέφωνο')],
+            ['attribute' => 'suppl_fax', 'label' => Module::t('modules/finance/app', 'Φαξ')],
+            ['attribute' => 'suppl_iban', 'label' => Module::t('modules/finance/app', 'IBAN')],
+            ['class' => 'yii\grid\ActionColumn', 'contentOptions' => ['class' => 'text-nowrap'],],
         ],
     ]); ?>
 </div>

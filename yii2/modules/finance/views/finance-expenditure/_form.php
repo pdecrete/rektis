@@ -33,7 +33,8 @@ use app\modules\finance\Module;
         foreach($expendwithdrawals_models as $index => $expendwithdrawals_model){
             echo $form->field($expendwithdrawals_model, "[{$index}]kaewithdr_id")->dropDownList(
                               ArrayHelper::map($kaewithdrawals, 'kaewithdr_id', 'kaewithdr_amount'),
-                              ['prompt'=> Module::t('modules/finance/app', 'Assign Withdrawal')]);
+                              ['prompt' => Module::t('modules/finance/app', 'Assign Withdrawal')])->
+                              label(false);
         }
     ?>
 	<hr />

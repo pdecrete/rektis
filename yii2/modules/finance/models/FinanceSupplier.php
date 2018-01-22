@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -52,15 +53,15 @@ class FinanceSupplier extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'suppl_id' => Yii::t('app', 'Supplier ID'),
-            'suppl_name' => Yii::t('app', 'Name'),
-            'suppl_vat' => Yii::t('app', 'VAT'),
-            'suppl_address' => Yii::t('app', 'Address'),
-            'suppl_phone' => Yii::t('app', 'Phone'),
-            'suppl_fax' => Yii::t('app', 'FAX'),
-            'suppl_iban' => Yii::t('app', 'IBAN'),
-            'suppl_employerid' => Yii::t('app', 'Employer id'),
-            'taxoffice_id' => Yii::t('app', 'Tax Office'),
+            'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
+            'suppl_name' => Module::t('modules/finance/app', 'Name'),
+            'suppl_vat' => Module::t('modules/finance/app', 'VAT'),
+            'suppl_address' => Module::t('modules/finance/app', 'Address'),
+            'suppl_phone' => Module::t('modules/finance/app', 'Phone Number'),
+            'suppl_fax' => Module::t('modules/finance/app', 'FAX'),
+            'suppl_iban' => Module::t('modules/finance/app', 'IBAN'),
+            'suppl_employerid' => Module::t('modules/finance/app', 'Employer Registration Number'),
+            'taxoffice_id' => Module::t('modules/finance/app', 'Tax Office'),
         ];
     }
 

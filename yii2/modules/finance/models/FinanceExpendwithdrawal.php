@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -43,9 +44,9 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kaewithdr_id' => Yii::t('app', 'Kaewithdr ID'),
-            'exp_id' => Yii::t('app', 'Exp ID'),
-            'expwithdr_amount' => Yii::t('app', 'Expwithdr Amount'),
+            'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal'),
+            'exp_id' => Module::t('modules/finance/app', 'Expenditure'),
+            'expwithdr_amount' => Module::t('modules/finance/app', 'Amount'),
         ];
     }
 

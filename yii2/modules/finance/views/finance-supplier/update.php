@@ -5,14 +5,11 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceSupplier */
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Finance Supplier',
-]) . $model->suppl_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Suppliers'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->suppl_id, 'url' => ['view', 'id' => $model->suppl_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->title = Module::t('modules/finance/app', 'Update Supplier');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Suppliers'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title
 ?>
 <?= $this->render('/default/infopanel'); ?>
 <div class="finance-supplier-update">

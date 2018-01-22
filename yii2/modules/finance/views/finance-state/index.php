@@ -9,7 +9,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Module::t('modules/finance/app', 'Finance States');
+$this->title = Module::t('modules/finance/app', 'Expenditure States');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-state-index">
@@ -17,14 +17,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
-        <?= Html::a(Module::t('modules/finance/app', 'Create Finance State'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create State'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'state_name',
+            ['attribute' => 'state_name', 'label' => Module::t('modules/finance/app', 'State')],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',   
             ],

@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	<?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
-        'btnLiteral' => Module::t('modules/finance/app', 'Create Finance Expenditure'),
+        'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
         'actionUrl' => '/index.php/finance/finance-expenditure/create'
     ]) ?> 
  
@@ -50,7 +50,8 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return Money::toPercentage($model['fpa_value']);}
             ],
-            ['attribute' => 'exp_date', 'label' => Module::t('modules/finance/app', 'Creation Date')],
+            ['attribute' => 'exp_date', 
+             'label' => Module::t('modules/finance/app', 'Created')],
             ['attribute' => 'Withdrawals', 'label' => Module::t('modules/finance/app', 'Assigned Withdrawals'),
              'format' => 'html',
                 'value' => function($model) use ($expendwithdrawals) {
@@ -98,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'header' => Module::t('modules/finance/app', 'Expenditure<br/>Actions'),
+             'header' => Module::t('modules/finance/app', 'Expenditure<br />Actions'),
              'contentOptions' => ['class' => 'text-nowrap'],
              'template' => '{backwardstate} {forwardstate} {delete}',
                 'buttons' => [
@@ -139,7 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [   'attribute' => 'invoice',
-                'header' => Module::t('modules/finance/app', 'Invoice<br />Actions'),
+                'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Invoice<br />Actions') . '</span>',
                 'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals){
                                 $retvalue = "";
@@ -165,5 +166,5 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['class' => 'text-nowrap'],
             ],        ],
 
-    ]); ?><?= Html::a('submit', Url::to(['/finance/finance-invoice/delete?id=1']), ['data-method' => 'POST']) ?>
+    ]); ?>
 </div>

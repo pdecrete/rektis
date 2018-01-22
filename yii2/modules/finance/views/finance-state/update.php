@@ -1,16 +1,15 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceState */
-
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Finance State',
-]) . $model->state_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance States'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->state_id, 'url' => ['view', 'id' => $model->state_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
+$this->title = Module::t('modules/finance/app', 'Update State');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'States'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-state-update">
 
