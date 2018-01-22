@@ -32,9 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             [
-                'attribute' => 'specialisation_id',
+                'attribute' => 'specialisation_ids',
                 'value' => function ($m) {
-                    return ($m->specialisation) ? $m->specialisation->label : null;
+                    return implode(', ', $m->specialisation_labels);
                 }
             ],
             'gender_label',

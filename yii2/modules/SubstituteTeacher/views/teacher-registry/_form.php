@@ -18,11 +18,11 @@ use kartik\datecontrol\DateControl;
         <div class="row">
             <div class="col-md-6">
                 <?=
-                $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
+                $form->field($model, 'specialisation_ids')->widget(Select2::classname(), [
                     'data' => \app\models\Specialisation::selectables(),
                     'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
                     'pluginOptions' => [
-                        'multiple' => false,
+                        'multiple' => true,
                         'allowClear' => true
                     ],
                 ]);

@@ -26,18 +26,22 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             // 'id',
+
             [
-                'attribute' => 'specialisation_id',
-                'value' => 'specialisation.label',
+                'attribute' => 'specialisation_ids',
+                'value' => function ($m) {
+                    return implode(', ', $m->specialisation_labels);
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
-                    'attribute' => 'specialisation_id',
+                    'attribute' => 'specialisation_ids',
                     'data' => Specialisation::selectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
                 ]),
             ],
+
             // 'gender',
             'surname',
             'firstname',

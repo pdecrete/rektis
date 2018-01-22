@@ -5,6 +5,7 @@ namespace app\modules\SubstituteTeacher\controllers;
 use Yii;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySearch;
+use app\models\Specialisation;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -81,13 +82,31 @@ class TeacherRegistryController extends Controller
     {
         $model = new TeacherRegistry();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    if (!empty($model->specialisation_ids)) {
+                        $specialisations = Specialisation::findAll(['id' => $model->specialisation_ids]);
+                        foreach ($specialisations as $specialisation) {
+                            $model->link('specialisations', $specialisation);
+                        }
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('danger', 'Δεν ολοκληρώθηκε η εισαγωγή των στοιχείων.');
+                    $transaction->rollBack();
+                }
+            } catch (Exception $e) {
+                Yii::$app->session->setFlash('danger', 'Δεν ολοκληρώθηκε η εισαγωγή των στοιχείων λόγω τεχνικού προβλήματος.');
+                $transaction->rollBack();
+            }
         }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -100,13 +119,32 @@ class TeacherRegistryController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if ($model->save()) {
+                    $model->unlinkAll('specialisations');
+                    if (!empty($model->specialisation_ids)) {
+                        $specialisations = Specialisation::findAll(['id' => $model->specialisation_ids]);
+                        foreach ($specialisations as $specialisation) {
+                            $model->link('specialisations', $specialisation);
+                        }
+                    }
+                    $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    Yii::$app->session->setFlash('danger', 'Δεν ολοκληρώθηκε η ενημέρωση των στοιχείων.');
+                    $transaction->rollBack();
+                }
+            } catch (Exception $e) {
+                Yii::$app->session->setFlash('danger', 'Δεν ολοκληρώθηκε η ενημέρωση των στοιχείων λόγω τεχνικού προβλήματος.');
+                $transaction->rollBack();
+            }
         }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**

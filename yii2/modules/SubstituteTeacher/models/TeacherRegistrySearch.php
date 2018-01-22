@@ -19,6 +19,8 @@ class TeacherRegistrySearch extends TeacherRegistry
     {
         return [
             [['id', 'protected_children', 'aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
+            // ['specialisation_ids', 'each', 'rule' => ['integer']],
+            ['specialisation_ids', 'integer'],
             [['gender', 'surname', 'firstname', 'fathername', 'mothername', 'marital_status', 'mobile_phone', 'home_phone', 'work_phone', 'home_address', 'city', 'postal_code', 'social_security_number', 'tax_identification_number', 'tax_service', 'identity_number', 'bank', 'iban', 'email', 'birthdate', 'birthplace', 'comments', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -41,7 +43,8 @@ class TeacherRegistrySearch extends TeacherRegistry
      */
     public function search($params)
     {
-        $query = TeacherRegistry::find();
+        $query = TeacherRegistry::find()
+            ->joinWith('specialisations');
 
         // add conditions that should always apply here
 
@@ -87,6 +90,8 @@ class TeacherRegistrySearch extends TeacherRegistry
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'birthplace', $this->birthplace])
             ->andFilterWhere(['like', 'comments', $this->comments]);
+
+        $query->andFilterWhere(['specialisations.id' => $this->specialisation_ids]);
 
         return $dataProvider;
     }

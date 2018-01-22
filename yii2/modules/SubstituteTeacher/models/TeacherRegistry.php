@@ -64,6 +64,8 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     public $gender_label;
     public $marital_status_label;
     public $name; // fullname for display reasons
+    public $specialisation_ids;
+    public $specialisation_labels;
 
     /**
      * @inheritdoc
@@ -81,7 +83,8 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         return [
             [['birthdate'], 'default', 'value' => null],
             [['birthdate'], 'date', 'format' => 'php:Y-m-d'],
-            [['specialisation_id', 'aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
+            [['aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
+            ['specialisation_ids', 'each', 'rule' => ['integer']],
             [['protected_children'], 'integer', 'min' => 0, 'max' => '15'],
             [['comments'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
@@ -99,11 +102,15 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['tax_identification_number'], 'unique'],
             [['gender'], 'in', 'range' => [self::GENDER_FEMALE, self::GENDER_MALE, self::GENDER_OTHER]],
             [['marital_status'], 'in', 'range' => [self::MARITAL_STATUS_SINGLE, self::MARITAL_STATUS_MARRIED, self::MARITAL_STATUS_DIVORCED, self::MARITAL_STATUS_WIDOWED, self::MARITAL_STATUS_UNKNOWN]],
-            [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
+            [
+                'specialisation_ids', 'each', 'rule' => [
+                    'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => 'id'
+                ]
+            ],
             [
                 ['gender', 'firstname', 'surname', 'fathername', 'mothername', 'marital_status', 'protected_children',
                  'mobile_phone', 'city', 'tax_identification_number', 'tax_service', 'social_security_number', 'identity_number',
-                 'bank', 'iban', 'email', 'birthdate', 'specialisation_id'],
+                 'bank', 'iban', 'email', 'birthdate', 'specialisation_ids'],
                 'required'
             ],
         ];
@@ -117,6 +124,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
             'specialisation_id' => Yii::t('substituteteacher', 'Specialisation'),
+            'specialisation_ids' => Yii::t('substituteteacher', 'Specialisations'),
             'gender' => Yii::t('substituteteacher', 'Gender'),
             'surname' => Yii::t('substituteteacher', 'Surname'),
             'firstname' => Yii::t('substituteteacher', 'Firstname'),
@@ -166,7 +174,8 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     public function getSpecialisations()
     {
         return $this->hasMany(Specialisation::className(), ['id' => 'specialisation_id'])
-            ->viaTable('{{%stteacher_registry_specialisation}}', ['registry_id' => 'id']);
+            ->viaTable('{{%stteacher_registry_specialisation}}', ['registry_id' => 'id'])
+            ->from(['specialisations' => '{{%specialisation}}']);
     }
 
     /**
@@ -209,6 +218,14 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         parent::afterFind();
 
         $this->name = "{$this->firstname} {$this->surname} ({$this->fathername})";
+
+        $this->specialisation_labels = array_map(function ($m) {
+            return $m->label;
+        }, $this->specialisations);
+        $this->specialisation_ids = array_map(function ($m) {
+            return $m->id;
+        }, $this->specialisations);
+
 
         switch ($this->gender) {
             case self::GENDER_FEMALE:
