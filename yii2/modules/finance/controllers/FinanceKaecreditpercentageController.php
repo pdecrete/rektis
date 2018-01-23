@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaecreditpercentage;
 use app\modules\finance\models\FinanceKaecreditpercentageSearch;
 use Yii;
+use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -42,7 +43,7 @@ class FinanceKaecreditpercentageController extends Controller
                                                             return $this->redirect(['index']);
                                                         }
                                 ],
-                                [   'actions' =>['index', 'create', 'update', 'delete'], 
+                                [   'actions' =>['index', 'create', 'update', 'delete', 'masspercentage'], 
                                     'allow' => true,
                                     'roles' => ['@'],
                                 ]
@@ -91,7 +92,7 @@ class FinanceKaecreditpercentageController extends Controller
             
         $model = new FinanceKaecreditpercentage();
         $kae = FinanceKae::findOne(['kae_id' => $id]);
-        $kaecredit = FinanceKaecredit::findOne(['kae_id' => $id]);
+        $kaecredit = FinanceKaecredit::findOne(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]]);
         $model->kaecredit_id = $kaecredit->kaecredit_id;
 
         if ($model->load(Yii::$app->request->post())){
@@ -99,12 +100,14 @@ class FinanceKaecreditpercentageController extends Controller
                 $newPercentage = Money::toDbPercentage($model->kaeperc_percentage);
                 $model->kaeperc_percentage = $newPercentage;
                 $currentPercentSum = FinanceKaecreditpercentage::getKaeCreditSumPercentage($kaecredit->kaecredit_id);
-                if(($currentPercentSum +  $newPercentage) > 10000 || $newPercentage <= 0)  throw new \Exception();
-                if(!$model->save()) throw new \Exception();
+                if(($currentPercentSum +  $newPercentage) > 10000 || $newPercentage <= 0)  throw new Exception();
+                //echo "<pre>"; print_r($model); echo "<pre>";
+                if(!$model->save()) 
+                    throw new Exception();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
-            catch(\Exception $exc){
+            catch(Exception $exc){
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving changes. Please check the validity of the input data (e.g. percentage or percentages sum <= 100%) or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
@@ -183,6 +186,47 @@ class FinanceKaecreditpercentageController extends Controller
         }
         
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deletion of the percentage attributed to the RCN credit was completed successfully"));
+        return $this->redirect(['index']);
+    }
+    
+    /**
+     * Sets default percentages for specific RCNS (813, 824, 831, 832, 9xxx, 2224).
+     * @return mixed
+     */
+    public function actionMasspercentage()
+    {
+        $kaes = [813, 824, 831, 832, 2224, 9511, 9711, 9821, 9831, 9832];
+        $atleastone_perc_created = 0;
+        for ($i = 0; $i < count($kaes); $i++){
+            try{
+                $kaecredit_id = FinanceKaecredit::find()->
+                                where(['kae_id' => $kaes[$i], 
+                                       'year' => Yii::$app->session["working_year"]])->
+                                one()->kaecredit_id;
+                
+                $default_percentage = FinanceKaecreditpercentage::find()->where(['kaecredit_id' => $kaecredit_id])->count();
+                if($default_percentage) {
+                    Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The default percentage for {$kaes[$i]} already exists."));
+                    continue;
+                }
+                                
+                $new_default_percentage = new FinanceKaecreditpercentage();
+                $new_default_percentage->kaecredit_id = $kaecredit_id;
+                $new_default_percentage->kaeperc_percentage = 10000;
+                $new_default_percentage->kaeperc_date = date("Y-m-d H:i:s");
+                $new_default_percentage->kaeperc_decision = Module::t('modules/finance/app', "Default Percentage");
+                if(!$new_default_percentage->save())
+                    throw new Exception();
+                $atleastone_perc_created = 1;
+            }
+            catch(Exception $e){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating the default percentages."));
+                return $this->redirect(['index']);
+            }
+            
+        }
+        if($atleastone_perc_created)
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The default percentage (100%) for some RCNs (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) was created successfully."));
         return $this->redirect(['index']);
     }
 

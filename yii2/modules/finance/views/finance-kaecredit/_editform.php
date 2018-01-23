@@ -22,7 +22,7 @@ use app\modules\finance\components\Money;
         		</tr>
 <?php           foreach($kaetitles as $index => $kaetitle):?>
 				<tr>
-					<td class="text-center"><?php echo $model[$index]->kae_id ?></td>
+					<td class="text-center"><?php echo sprintf('%04d', $model[$index]->kae_id); ?></td>
 					<td><?php echo $kaetitle ?></td>
 					<td class="text-center">
 						<?= $form->field($model[$index], "[{$index}]kaecredit_amount")->textInput(['maxlength' => true, 

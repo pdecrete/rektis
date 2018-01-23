@@ -31,7 +31,11 @@ $provider = new ArrayDataProvider([
     </p>
 	<?= GridView::widget(   [  'dataProvider' => $provider,
 	                           'columns' => [  
-	                               ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+	                               ['attribute' => 'kae_id', 
+	                                'label' => Module::t('modules/finance/app', 'RCN'),
+	                                'format' => 'html',
+	                                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}                                   
+	                               ],
 	                               ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
 	                               ['attribute' => 'kaecredit_date', 'label' => Module::t('modules/finance/app', 'Created')],
 	                               ['attribute' => 'kaecredit_updated', 'label' => Module::t('modules/finance/app', 'Τροποποιήθηκε')],	                                            

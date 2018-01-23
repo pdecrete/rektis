@@ -13,6 +13,7 @@ $kaecredit->kaecredit_amount = Money::toCurrency($kaecredit->kaecredit_amount);
 $model->kaeperc_percentage = Money::toPercentage($model->kaeperc_percentage);
 
 $model->kaeperc_date = date("Y-m-d H:i:s");
+$kae->kae_id = sprintf('%04d', $kae->kae_id);
 ?>
 
 <div class="finance-kaecreditpercentage-form">

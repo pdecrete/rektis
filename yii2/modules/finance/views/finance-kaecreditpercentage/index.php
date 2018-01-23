@@ -18,11 +18,13 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-kaecreditpercentage-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    
+
     <?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Attribute percentage to RCN credit'),
-        'actionUrl' => '/index.php/finance/finance-kaecreditpercentage/create'
+        'actionUrl' => '/index.php/finance/finance-kaecreditpercentage/create',
+        'otherbuttons' => [[Module::t('modules/finance/app', 'Automatic Percentage Definition'), 
+                           'masspercentage']]
     ]) ?>
 	
     <?= GridView::widget([
@@ -30,7 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+            ['attribute' => 'kae_id', 
+             'label' => Module::t('modules/finance/app', 'RCN'),
+             'format' => 'html',
+                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}
+            ],
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
             ['attribute' => 'kaecredit_amount',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
@@ -43,6 +49,11 @@ $this->params['breadcrumbs'][] = $this->title;
              'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);}
             ],
             ['attribute' => 'kaeperc_date', 'label' => Module::t('modules/finance/app', 'Date')],
+            ['attribute' => 'sumpercentage',
+                'label' => Module::t('modules/finance/app', 'Total Percentage'),
+                'format' => 'html',
+                'value' => function ($model) {return Money::toPercentage($model['sumpercentage']);}
+            ],
             ['attribute' => 'kaeperc_decision', 'label' => Module::t('modules/finance/app', 'Decision')],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',
@@ -66,7 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     $url = '/finance/finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
                                                     return $url;
                                                 }
-                                            }
+                                            },
+                            'contentOptions' => ['class' => 'text-nowrap'],
             ],
         ],
     ]); ?>

@@ -26,11 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'kae_id',
+            ['attribute' => 'kae_id',                
+                'format' => 'html',
+                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}
+            ],
             'kae_title',
             'kae_description',
-
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}'
             ],

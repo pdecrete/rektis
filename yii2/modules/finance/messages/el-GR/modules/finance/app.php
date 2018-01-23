@@ -17,6 +17,12 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The default percentage (100%) for RCNs 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 was created successfully.' =>
+    'Το προκαθορισμένο ποσοστό (100%) για τους ΚΑΕ 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 δημιουργήθηκε επιτυχώς',
+    'Failure in creating the default percentages.' => 'Αποτυχία δημιουργίας των προκαθορισμένων ποσοστών',
+    'Default Percentage' => 'Προκαθορισμένο Ποσοστό',
+    'Automatic Percentage Definition' => 'Αυτόματη Απόδοση Ποσοστών',
+    'Total Percentage' => 'Συνολικό Ποσοστό',
     'Update Financial Year' => 'Ενημέρωση Οικονομικού Έτους',
     'Create Voucher Type' => 'Δημιουργία Τύπου Παραστατικού',
     'Update Voucher Type' => 'Ενημέρωση Τύπου Παραστατικού',
@@ -61,10 +67,11 @@ return [
     'Administer VAT options' => 'Διαχείριση επιλογών ΦΠΑ',
     'VAT Options' => 'Επιλογές ΦΠΑ',
     'Create/Edit/Delete Tax Offices' => 'Δημιουργία/Επεξεργασία/Διαγραφή ΔΟΥ',
-    'VAT options' => 'Επιλογές ΦΠΑ', 
+    'VAT Number' => 'Α.Φ.Μ.', 
     'Update VAT option' => 'Ενημέρωση επιλογής ΦΠΑ',
     'Create VAT option' => 'Εισαγωγή επιλογής ΦΠΑ',
     'VAT Percentage' => 'Ποσοστό ΦΠΑ',
+    'Create Tax Office' => 'Εισαγωγή ΔΟΥ',
     'Update Tax Office' => 'Ενημέρωση ΔΟΥ',
     'Tax Office' => 'ΔΟΥ',
     'Administer Tax Offices' => 'Διαχείριση ΔΟΥ',

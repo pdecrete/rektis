@@ -98,6 +98,32 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $retvalue;                            
                         }
             ],
+            [   'attribute' => 'invoice',
+                'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Invoice<br />Actions') . '</span>',
+                'format' => 'html',
+                'value' => function ($model) use ($expendwithdrawals){
+                $retvalue = "";
+                if(is_null($expendwithdrawals[$model['exp_id']]['INVOICE']))
+                    $retvalue = Html::a('<span class="glyphicon glyphicon-list-alt"></span>',
+                        '/finance/finance-invoice/create?id=' . $model['exp_id'],
+                        ['title' => Module::t('modules/finance/app',
+                            'Create invoice for the expenditure.')]);
+                        else {
+                            $retvalue = Html::a('<span class="glyphicon glyphicon-eye-open"></span>',
+                                '/finance/finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                ['title' => Module::t('modules/finance/app',
+                                    'View the invoice details for the expenditure.')]);
+                                $retvalue .= "&nbsp;" . Html::a('<span class="glyphicon glyphicon-pencil"></span>',
+                                    '/finance/finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                    ['title' => Module::t('modules/finance/app',
+                                        'Update the invoice details for the expenditure.')]);
+                        }
+                        $retvalue .= "";
+                        return $retvalue;
+                        
+                },
+                'contentOptions' => ['class' => 'text-nowrap'],
+            ],
             ['class' => 'yii\grid\ActionColumn',
              'header' => Module::t('modules/finance/app', 'Expenditure<br />Actions'),
              'contentOptions' => ['class' => 'text-nowrap'],
@@ -113,17 +139,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         if($model['statescount'] > 1){
                             return Html::a('<span class="glyphicon glyphicon-arrow-left"></span>', $url,
                                 ['title' => Module::t('modules/finance/app', 'Backward to previous state'),
-                                    'data'=>['confirm'=>Module::t('modules/finance/app', "Are you sure you want to change the state of the expenditure?"),
+                                 'data'=>['confirm'=>Module::t('modules/finance/app', "Are you sure you want to change the state of the expenditure?"),
                                  'method' => "post"]
                                 ]);
                             }
                         }
                     ],                    
                 'urlCreator' => function ($action, $model) {
-                    /*if ($action === 'update') {
-                        $url ='/finance/finance-expenditure/update?id=' . $model['exp_id'];
-                        return $url;
-                    }*/
                     if ($action === 'delete') {
                         $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
                         return $url;
@@ -139,32 +161,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 }
             ],
-            [   'attribute' => 'invoice',
-                'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Invoice<br />Actions') . '</span>',
-                'format' => 'html',
-                'value' => function ($model) use ($expendwithdrawals){
-                                $retvalue = "";
-                                if(is_null($expendwithdrawals[$model['exp_id']]['INVOICE']))
-                                    $retvalue = Html::a('<span class="glyphicon glyphicon-list-alt"></span>', 
-                                                        '/finance/finance-invoice/create?id=' . $model['exp_id'],
-                                                         ['title' => Module::t('modules/finance/app', 
-                                                          'Create invoice for the expenditure.')]);
-                                else {
-                                    $retvalue = Html::a('<span class="glyphicon glyphicon-eye-open"></span>',
-                                        '/finance/finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
-                                        ['title' => Module::t('modules/finance/app',
-                                            'View the invoice details for the expenditure.')]);
-                                    $retvalue .= "&nbsp;" . Html::a('<span class="glyphicon glyphicon-pencil"></span>',
-                                        '/finance/finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
-                                        ['title' => Module::t('modules/finance/app',
-                                            'Update the invoice details for the expenditure.')]);
-                                }
-                                $retvalue .= "";
-                                return $retvalue;
-                                    
-                           },
-                'contentOptions' => ['class' => 'text-nowrap'],
-            ],        ],
-
+       ],
     ]); ?>
 </div>

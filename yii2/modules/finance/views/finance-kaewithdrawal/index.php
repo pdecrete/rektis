@@ -31,7 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            ['attribute' => 'kae_id', 'label' => Module::t('modules/finance/app', 'RCN')],
+            ['attribute' => 'kae_id', 
+             'label' => Module::t('modules/finance/app', 'RCN'),
+             'format' => 'html',
+             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}            
+            ],
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
             ['attribute' => 'kaecredit_amount', 
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
@@ -69,7 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     $url = '/finance/finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                     return $url;
                 }
-                }
+                },
+                'contentOptions' => ['class' => 'text-nowrap'],
            ],
         ],
     ]); ?>

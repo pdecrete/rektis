@@ -55,10 +55,10 @@ class FinanceSupplier extends \yii\db\ActiveRecord
         return [
             'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
             'suppl_name' => Module::t('modules/finance/app', 'Name'),
-            'suppl_vat' => Module::t('modules/finance/app', 'VAT'),
+            'suppl_vat' => Module::t('modules/finance/app', 'VAT Number'),
             'suppl_address' => Module::t('modules/finance/app', 'Address'),
             'suppl_phone' => Module::t('modules/finance/app', 'Phone Number'),
-            'suppl_fax' => Module::t('modules/finance/app', 'FAX'),
+            'suppl_fax' => Module::t('modules/finance/app', 'Fax'),
             'suppl_iban' => Module::t('modules/finance/app', 'IBAN'),
             'suppl_employerid' => Module::t('modules/finance/app', 'Employer Registration Number'),
             'taxoffice_id' => Module::t('modules/finance/app', 'Tax Office'),

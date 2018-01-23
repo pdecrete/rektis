@@ -46,19 +46,8 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         $exps = $prefix . 'finance_expenditure';
         $expwithdr = $prefix . 'finance_expendwithdrawal';
         $wthdr = $prefix . "finance_kaewithdrawal";
-        $cred = $prefix . "finance_kaecredit";   
-        
-        /*
-            SELECT admapp_finance_expenditure.* 
-            FROM `admapp_finance_expenditure`, admapp_finance_expendwithdrawal 
-            WHERE admapp_finance_expenditure.exp_id=admapp_finance_expendwithdrawal.exp_id
-            AND admapp_finance_expendwithdrawal.kaewithdr_id 
-            IN (SELECT admapp_finance_kaewithdrawal.kaewithdr_id 
-            FROM admapp_finance_kaewithdrawal, admapp_finance_kaecredit
-            WHERE admapp_finance_kaecredit.year = 2019 AND admapp_finance_kaewithdrawal.kaecredit_id = admapp_finance_kaecredit.kaecredit_id)
-         */
-        
-        
+        $cred = $prefix . "finance_kaecredit";         
+      
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
         
