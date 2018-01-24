@@ -107,8 +107,8 @@ class PlacementPreference extends \yii\db\ActiveRecord
     /**
      * Check ordering of a group of placement preferences.
      * Sets error on first model if ordering is not unique or incremented by 1.
-     * 
-     * @return boolean 
+     *
+     * @return boolean
      */
     public static function checkOrdering($modelsPlacementPreferences)
     {
@@ -144,8 +144,8 @@ class PlacementPreference extends \yii\db\ActiveRecord
      * - school type preferences per prefecture may be mixed but ALL, if selected, has to be the only choice in a prefecture
      *
      * Sets error on first model accordingly.
-     * 
-     * @return boolean 
+     *
+     * @return boolean
      */
     public static function checkRules($modelsPlacementPreferences)
     {
@@ -161,6 +161,7 @@ class PlacementPreference extends \yii\db\ActiveRecord
                 'order' => $m->order,
                 'prefecture_id' => $m->prefecture_id,
                 'school_type' => $m->school_type,
+                'id' => $m->id
             ];
         }, $modelsPlacementPreferences);
         // sort by order
@@ -171,8 +172,7 @@ class PlacementPreference extends \yii\db\ActiveRecord
         $prefectures_count = array_count_values(array_map(function ($v) {
             return $v['prefecture_id'];
         }, $check_fields));
-        // echo "<pre>prefectures_count:\n", var_export($prefectures_count, true), "</pre>";
-        // and check prefectures mixup
+        // and check prefectures sequential preference and school type selections
         foreach ($prefectures_count as $prefecture_id => $cnt) {
             if ($cnt == 1) {
                 continue; // no need to check sole selections
@@ -182,21 +182,27 @@ class PlacementPreference extends \yii\db\ActiveRecord
             });
             $first = reset($prefecture_placements);
             $last = end($prefecture_placements);
-            // echo "<pre>pref: {$prefecture_id}\n",
-            //     "count ", ((int)$last['order'] - (int)$first['order'] + 1), 
-            //     " cnt {$cnt} ",
-            //     var_export($prefecture_placements, true), "</pre>";
-            if (((int)$last['order'] - (int)$first['order'] + 1) != $cnt) { 
+
+            // and check prefectures sequential preference
+            if (((int)$last['order'] - (int)$first['order'] + 1) != $cnt) {
                 $valid = false;
                 $m = reset($modelsPlacementPreferences);
                 $m->addError('prefecture_id', Yii::t('substituteteacher', 'The prefectures must not be mixed in ordering.'));
             }
+            // check if school type selections are valid; if ALL schools have been selected, it should be the only choice
+            $school_type_all_selection = array_filter($prefecture_placements, function ($v) {
+                return $v['school_type'] == PlacementPreference::SCHOOL_TYPE_ANY;
+            });
+            if (!empty($school_type_all_selection)) {
+                $valid = false;
+                $school_type_all_selection0 = reset($school_type_all_selection);
+                $m = array_filter($modelsPlacementPreferences, function ($m) use ($school_type_all_selection0) {
+                    return $m->id == $school_type_all_selection0['id'];
+                });
+                $m0 = reset($m);
+                $m0->addError('school_type', Yii::t('substituteteacher', 'When selecting all school types, no other school type selection must be made in the same prefecture.'));
+            }
         }
-
-        // echo "<pre>";
-        // echo var_export($check_fields, true);
-        // echo "</pre>";
-        // die;
 
         return $valid;
     }
