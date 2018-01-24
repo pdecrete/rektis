@@ -1,6 +1,6 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
@@ -47,6 +47,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Teacher::getChoices('status')
             ],
             'points',
+            [
+                'attribute' => '',
+                'header' => Yii::t('substituteteacher', 'Placement preferences'),
+                'value' => function ($m) {
+                    return $m->placementPreferences ? implode('<br>', 
+                        array_map(function ($pref) {
+                            return $pref->label_for_teacher;
+                        }, $m->placementPreferences)
+                    ) : null;
+                },
+                'filter' => false,
+                'format' => 'html'
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

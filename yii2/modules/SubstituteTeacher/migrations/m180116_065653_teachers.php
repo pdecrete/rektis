@@ -102,7 +102,8 @@ class m180116_065653_teachers extends Migration
         ]);
         $this->addForeignKey('fk_placement_preference_teacher_id', '{{%stplacement_preference}}', 'teacher_id', '{{%stteacher}}', 'id', 'SET NULL', 'CASCADE');
         $this->addForeignKey('fk_placement_preference_prefecture_id', '{{%stplacement_preference}}', 'prefecture_id', '{{%stprefecture}}', 'id', 'SET NULL', 'CASCADE');
-        $this->createIndex('idx_placement_preference_unique', '{{%stplacement_preference}}', ['teacher_id', 'prefecture_id', 'school_type', 'order'], true);
+        $this->createIndex('idx_placement_preference_order', '{{%stplacement_preference}}', ['teacher_id', 'order']);
+        $this->createIndex('idx_placement_preference_unique', '{{%stplacement_preference}}', ['teacher_id', 'prefecture_id', 'school_type'], true);
         $this->addCommentOnTable('{{%stplacement_preference}}', 'Holds prefecture and school type preferences');
     }
 

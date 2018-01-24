@@ -4,6 +4,7 @@ namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
 use app\modules\SubstituteTeacher\traits\Selectable;
+use app\modules\SubstituteTeacher\models\Prefecture;
 
 /**
  * This is the model class for table "{{%stteacher}}".
@@ -13,10 +14,13 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property integer $year
  * @property integer $status
  * @property string $points
+ * 
+ * @property string $name
  *
  * @property PlacementPreference[] $placementPreferences
  * @property TeacherRegistry $registry
  * @property TeacherStatusAudit[] $teacherStatusAudits
+ * @property Prefecture[] $placementPreferencePrefectures
  */
 class Teacher extends \yii\db\ActiveRecord
 {
@@ -27,6 +31,7 @@ class Teacher extends \yii\db\ActiveRecord
     const TEACHER_STATUS_NEGATION = 2;
 
     public $status_label;
+    public $name;
 
     /**
      * @inheritdoc
@@ -44,7 +49,7 @@ class Teacher extends \yii\db\ActiveRecord
         return [
             [['registry_id', 'year', 'status'], 'integer'],
             [['points'], 'default', 'value' => 0],
-            [['year', 'points'], 'required'],
+            [['registry_id', 'year', 'status'], 'required'],
             [['points'], 'number'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
@@ -70,7 +75,18 @@ class Teacher extends \yii\db\ActiveRecord
      */
     public function getPlacementPreferences()
     {
-        return $this->hasMany(PlacementPreference::className(), ['teacher_id' => 'id']);
+        return $this->hasMany(PlacementPreference::className(), ['teacher_id' => 'id'])
+            ->orderBy(['[[order]]' => SORT_ASC]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlacementPreferencePrefectures()
+    {
+        return $this->hasMany(Prefecture::className(), ['id' => 'prefecture_id'])
+            ->viaTable('{{%stplacement_preference}}', ['prefecture_id' => 'id'])
+            ->from(['prefectures' => '{{%stprefecture}}']);
     }
 
     /**
@@ -111,6 +127,8 @@ class Teacher extends \yii\db\ActiveRecord
     public function afterFind()
     {
         parent::afterFind();
+
+        $this->name = ($this->registry ? $this->registry->name : '-') . " ({$this->year})";
 
         switch ($this->status) {
             case self::TEACHER_STATUS_ELIGIBLE:

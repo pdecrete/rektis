@@ -186,6 +186,11 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         return $this->hasMany(TeacherRegistrySpecialisation::className(), ['registry_id' => 'id']);
     }
 
+    public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)
+    {
+        return static::selectables($index_property, $label_property, $group_property, null);
+    }
+
     /**
      * Get a list of available choices in the form of
      * ID => LABEL suitable for select lists.

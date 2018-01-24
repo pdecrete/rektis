@@ -2,6 +2,10 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use kartik\select2\Select2;
+use app\modules\SubstituteTeacher\models\Prefecture;
+use app\modules\SubstituteTeacher\models\PlacementPreference;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementPreferenceSearch */
@@ -13,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="placement-preference-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Create Placement Preference'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -24,13 +27,42 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'teacher_id',
-            'prefecture_id',
-            'school_type',
+            // 'id',
+            [
+                'attribute' => 'teacher_id',
+                'value' => function ($m) { return $m->teacher ? $m->teacher->name : null; },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'teacher_id',
+                    'data' => TeacherRegistry::defaultSelectables(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
+                'attribute' => 'prefecture_id',
+                'value' => function ($m) { return $m->prefecture ? $m->prefecture->label : null; },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'prefecture_id',
+                    'data' => Prefecture::defaultSelectables(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
+                'attribute' => 'school_type',
+                'value' => 'school_type_label',
+                'filter' => PlacementPreference::getChoices('school_type')
+            ],
             'order',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update} {delete}',
+            ],
         ],
     ]); ?>
 </div>
