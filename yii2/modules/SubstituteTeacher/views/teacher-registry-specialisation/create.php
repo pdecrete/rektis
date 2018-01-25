@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation */
 
-$this->title = Yii::t('app', 'Create Teacher Registry Specialisation');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Teacher Registry Specialisations'), 'url' => ['index']];
+$this->title = Yii::t('substituteteacher', 'Create Teacher Registry Specialisation');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Teacher Registry Specialisations'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="teacher-registry-specialisation-create">

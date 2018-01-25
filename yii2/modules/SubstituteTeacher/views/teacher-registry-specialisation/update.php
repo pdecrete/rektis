@@ -5,12 +5,12 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
+$this->title = Yii::t('substituteteacher', 'Update {modelClass}: ', [
     'modelClass' => 'Teacher Registry Specialisation',
 ]) . $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Teacher Registry Specialisations'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Teacher Registry Specialisations'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = Yii::t('substituteteacher', 'Update');
 ?>
 <div class="teacher-registry-specialisation-update">
 

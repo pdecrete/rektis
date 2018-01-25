@@ -1,7 +1,10 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\widgets\DetailView;
+use yii\grid\GridView;
+use app\modules\SubstituteTeacher\models\Teacher;
+use yii\data\ArrayDataProvider;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherRegistry */
@@ -66,3 +69,41 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     </div>
+
+    <?php if (!empty($model->teachers)) : ?>
+    <?php 
+    $dataProvider2 = new ArrayDataProvider([
+        'allModels' => $model->getTeachers()->orderBy(['year' => SORT_DESC])->all(),
+    ]);
+    ?>
+    <div class="teacher-index">
+        <h1><?= Yii::t('substituteteacher', 'Appearances') ?></h1>
+        <?= GridView::widget([
+        'dataProvider' => $dataProvider2,
+        'filterModel' => null,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            'year',
+            [
+                'attribute' => 'status',
+                'value' => 'status_label',
+            ],
+            'points',
+            [
+                'attribute' => '',
+                'header' => Yii::t('substituteteacher', 'Placement preferences'),
+                'value' => function ($m) {
+                    return $m->placementPreferences ? implode(
+                        '<br>',
+                        array_map(function ($pref) {
+                            return $pref->label_for_teacher;
+                        }, $m->placementPreferences)
+                    ) : null;
+                },
+                'format' => 'html'
+            ],
+        ],
+    ]); ?>
+    </div>
+    <?php endif; ?>

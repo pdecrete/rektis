@@ -45,9 +45,9 @@ class TeacherRegistrySpecialisation extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'registry_id' => Yii::t('app', 'Registry ID'),
-            'specialisation_id' => Yii::t('app', 'Specialisation ID'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'registry_id' => Yii::t('substituteteacher', 'Registry ID'),
+            'specialisation_id' => Yii::t('substituteteacher', 'Specialisation ID'),
         ];
     }
 
