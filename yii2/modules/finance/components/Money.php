@@ -20,19 +20,17 @@ class Money
     
     public static function toCurrency($amount, $formatted = false){
         if($formatted) 
-            return Yii::$app->formatter->asCurrency(round($amount/100));        
+            return Yii::$app->formatter->asCurrency($amount/100);        
         return $amount/100;        
     }
     
-    public static function toPercentage($dbPercentage, $formatted = true)
-    {
+    public static function toPercentage($dbPercentage, $formatted = true) {
         if($formatted == false)
             return round($dbPercentage/100, 4);
         return Yii::$app->formatter->asPercent(round($dbPercentage/10000, 4), 2);
     }
     
-    public static function toDbPercentage($percentage)
-    {   
+    public static function toDbPercentage($percentage) {   
         return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));; 
     }
 }

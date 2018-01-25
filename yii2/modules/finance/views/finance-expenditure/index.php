@@ -16,7 +16,6 @@ $this->title = Module::t('modules/finance/app', 'Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($expendwithdrawals[15]['WITHDRAWAL']); echo "</pre>"; die();
-
 ?>
 <div class="finance-expenditure-index">
 	
@@ -32,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
  
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'suppl_id',
@@ -42,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['attribute' => 'exp_amount', 
              'label' => Module::t('modules/finance/app', 'Amount'),
-             'format' => 'html',
+             'format' => 'currency',
              'value' => function ($model) {return Money::toCurrency($model['exp_amount']);}
             ],
             ['attribute' => 'fpa_value', 
@@ -60,8 +58,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 $retvalue = "<ul>";
                 for($i = 0; $i < $count_withdrawals; $i++){
                     $retvalue .= "<li><strong><u>" . $exp_withdrawals[$i]['kaewithdr_decision'] . '</u></strong>' . 
-                    '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ': €' .
-                    Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i]);
+                    '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ': ' .
+                    Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i], true);
                     $retvalue .= "</li>";
                 }
                 $retvalue .= "</ul>";
@@ -72,7 +70,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => Module::t('modules/finance/app', 'RCN'),
                 'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals) {
-                                return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
+                                //return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
+                                return $model['kae_id'];
                             }
             ],
             ['attribute' => 'statescount', 

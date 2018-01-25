@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
             ['attribute' => 'kaecredit_amount',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
-             'format' => 'html',
+             'format' => 'currency',
              'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
             ],
             ['attribute' => 'kaeperc_percentage',

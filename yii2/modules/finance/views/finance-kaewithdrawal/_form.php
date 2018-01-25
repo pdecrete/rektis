@@ -23,7 +23,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'kaewithdr_amount')->
+                     textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
 

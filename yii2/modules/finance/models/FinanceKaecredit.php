@@ -37,6 +37,7 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
         return [
             [['kaecredit_amount', 'kaecredit_date', 'year', 'kae_id'], 'required'],
             [['year', 'kae_id'], 'integer'],
+            [['kaecredit_amount'], 'number'],
             [['kaecredit_date', 'kaecredit_updated'], 'safe'],
             [['year'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceYear::className(), 'targetAttribute' => ['year' => 'year']],
             [['kae_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceKae::className(), 'targetAttribute' => ['kae_id' => 'kae_id']],

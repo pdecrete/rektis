@@ -36,12 +36,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'deduct_downlimit',
                 'label' => Module::t('modules/finance/app', 'Minimum amount'),
                 'format' => 'html',
-                'value' => function ($model) {return Money::toCurrency($model['deduct_downlimit']);}
+                'value' => function ($model) {return Money::toCurrency($model['deduct_downlimit'], true);}
             ],
             ['attribute' => 'deduct_uplimit',
                 'label' => Module::t('modules/finance/app', 'Maximum amount'),
                 'format' => 'html',
-                'value' => function ($model) {return Money::toCurrency($model['deduct_uplimit']);}
+                'value' => function ($model) {return Money::toCurrency($model['deduct_uplimit'], true);}
             ],            
             ['attribute' => 'deduct_date', 'label' => Module::t('modules/finance/app', 'Created')],
             ['attribute' => 'deduct_obsolete',

@@ -38,6 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
             ['attribute' => 'kaecredit_amount', 
+             'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
              'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaecredit_amount']);}
             ],
@@ -46,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
              'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);}
             ],
             ['attribute' => 'kaewithdr_amount', 
+             'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Withdrawal Amount'),
              'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaewithdr_amount']);},
             ],

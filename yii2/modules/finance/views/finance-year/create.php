@@ -9,7 +9,7 @@ use yii\helpers\Html;
 /* @var $model app\modules\finance\models\FinanceYear */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
-$this->title = Module::t('modules/finance/app', 'Create Finance Year');
+$this->title = Module::t('modules/finance/app', 'Create Year');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Finance Years'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

@@ -34,7 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'year',
-            'year_credit',
+            ['attribute' => 'year_credit',
+                'format' => 'currency'],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
                 'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? Module::t('modules/finance/app', 'Yes') : Module::t('modules/finance/app', 'No');}

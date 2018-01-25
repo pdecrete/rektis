@@ -86,8 +86,8 @@ class FinanceExpenditureController extends Controller
                 
                 $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];
                 
-                $expendwithdrawals[$expend_model['exp_id']]['RELATEDKAE'] = 
-                FinanceKaecredit::find()->where(['kaecredit_id' => $kaecredit_id])->one()['kae_id'];
+                //$expendwithdrawals[$expend_model['exp_id']]['RELATEDKAE'] = 
+                //FinanceKaecredit::find()->where(['kaecredit_id' => $kaecredit_id])->one()['kae_id'];
             }
         }
         //echo "<pre>"; print_r($expendwithdrawals); echo "</pre>";die();
@@ -119,6 +119,7 @@ class FinanceExpenditureController extends Controller
         $i = 0;
         $expendwithdrawals_models = array();
         foreach($kaewithdrawals as $key=>$kaewithdrawal){
+            $kaewithdrawal->kaewithdr_amount = Money::toCurrency($kaewithdrawal->kaewithdr_amount, true);
             if(FinanceExpendwithdrawal::getWithdrawalBalance($kaewithdrawal->kaewithdr_id) > 0){
                 $expendwithdrawals_models[$i++] = new FinanceExpendwithdrawal();
             }

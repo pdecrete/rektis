@@ -21,13 +21,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('/default/infopanel'); ?>
     <h1><?= Html::encode($this->title) ?></h1>
     <p style="text-align: right;">
-        <?= Html::a(Module::t('modules/finance/app', 'Create Finance Year'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Year'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
             'year',
-            'year_credit',
+            ['attribute' => 'year_credit', 
+             'format' => 'currency'],
             [   'attribute' => 'year_iscurrent',
                 'format' => 'html',
                 'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? '<span class="glyphicon glyphicon-pushpin"></span>' : ' ';}

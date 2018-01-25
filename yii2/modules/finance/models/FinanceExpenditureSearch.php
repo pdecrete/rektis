@@ -51,8 +51,12 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
         
+        $kae = "(SELECT " . $cred . ".kae_id FROM " . $cred . "," . $wthdr . " 
+                 WHERE " . $cred . ".kaecredit_id=" . $wthdr . ".kaecredit_id AND "
+                 . $wthdr . ".kaewithdr_id=" . $expwithdr . ".kaewithdr_id)";
+        
         $query = (new \yii\db\Query())
-                    ->select([$exps . ".*", $count_states . " AS statescount "])
+                    ->select([$exps . ".*", $count_states . " AS statescount ", $kae . " AS kae_id "])
                     ->from([$exps, $expwithdr])
                     ->where($exps . ".exp_id=" . $expwithdr . ".exp_id AND " . 
                             $expwithdr . ".kaewithdr_id 
@@ -64,6 +68,11 @@ class FinanceExpenditureSearch extends FinanceExpenditure
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',  
+                                        'exp_amount', 'exp_date', 'statescount', 'kae_id'
+                                        ],
+                'defaultOrder' => ['suppl_id'=>SORT_ASC]
+            ],
         ]);
 
         $this->load($params);

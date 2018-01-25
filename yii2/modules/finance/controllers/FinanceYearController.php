@@ -100,14 +100,19 @@ class FinanceYearController extends Controller
         $model = new FinanceYear();
 
         if ($model->load(Yii::$app->request->post())){
-            $model->year_credit = Money::toCents($model->year_credit);
-            if(!Integrity::uniqueCurrentYear()) $model->year_iscurrent = 1;
-            if(!$model->save()){
+            try {
+                $model->year_credit = Money::toCents($model->year_credit);
+                if(!Integrity::uniqueCurrentYear()) $model->year_iscurrent = 1;
+            
+                if(!$model->save()) 
+                    throw new Exception();
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year was created successfully."));
+                return $this->redirect(['index']);                
+            }
+            catch(Exception $e){
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating financial year."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year was created successfully."));
-            return $this->redirect(['index']);
         }
         else
             return $this->render('create', ['model' => $model]);

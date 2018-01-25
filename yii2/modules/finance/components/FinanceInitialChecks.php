@@ -18,7 +18,7 @@ class FinanceInitialChecks extends ActionFilter
         
         if(!($workingYear = Integrity::uniqueCurrentYear()))
         {
-            Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Error in defining the financial year as currently working. Check if currently working year is correctly defined or contact with the administrator."));
+            Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "Error in defining the financial year as currently working. Check if currently working year is correctly defined or contact with the administrator."));
 
             if(!(Yii::$app->controller->id == 'finance-year'))
             {
@@ -31,7 +31,7 @@ class FinanceInitialChecks extends ActionFilter
         
         if(!Integrity::creditsIntegrity(Yii::$app->session["working_year"]))
         {
-            Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "The sum of RCN credits is not equal to the credit of financial year {year}. Please correct to continue.", ['year' => Yii::$app->session["working_year"]]));
+            Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "The sum of RCN credits is not equal to the credit of financial year {year}. Please correct to continue.", ['year' => Yii::$app->session["working_year"]]));
             
             if(!(Yii::$app->controller->id == 'finance-kaecredit')){
                 return Yii::$app->response->redirect(['/finance/finance-kaecredit']);

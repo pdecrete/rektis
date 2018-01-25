@@ -135,29 +135,29 @@ class FinanceKaecreditController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try{
                 foreach($kaecredits as $kaecredit)
-                    if(!$kaecredit->save()) throw new Exception();
+                    if(!$kaecredit->save()) {
+                        throw new Exception();
+                        Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "Your action did not complete succesfull. There was an error during saving in the database."));
+                    }
+                
+                $year = Yii::$app->session["working_year"];
+                if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year)){
+                    Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "The sum of credits for the RCN is not equal to the credit attributed for year {year} . Please correct to continue.", ['year' => $year]));
+                    throw new Exception();
+                }
+                Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
+                    
                 $transaction->commit();
+                return $this->redirect(['/finance/finance-kaecredit']);
+            
             }
             catch(Exception $e){
-                $transaction->rollBack();
-                Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "Your action did not complete succesfull. There was an error during saving in the database."));
+                $transaction->rollBack();   
                 return $this->redirect(['/finance/finance-kaecredit']);
             }
         }
         else
             throw new Exception("Data validation failure.");
-        
-        $year = Yii::$app->session["working_year"];
-        if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year))
-        {
-            Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "The sum of credits for the RCN is not equal to the credit attributed for year {year}. Please correct to continue.", ['year' => $year]));
-            return $this->redirect(['/finance/finance-kaecredit']);
-        }
-        else{
-            Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Your choices were succesfully saved."));
-            return $this->redirect(['/finance/finance-kaecredit']);
-            
-        }
     }
     
     /**

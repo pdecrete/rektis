@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\widgets\MaskedInput;
 use yii\bootstrap\ActiveForm;
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
@@ -30,7 +31,7 @@ use app\modules\finance\components\Money;
                                                                 					    'min' => "0.00" , 
                                                                 					    'step' => '0.01', 
                                                                 					    'style' => 'text-align: right', 
-						    'value' => Money::toCurrency($model[$index]->kaecredit_amount)])->label(false); 
+						    'value' => $model[$index]->kaecredit_amount/100])->label(false); 
                         ?>
 				    </td>									
 				</tr>

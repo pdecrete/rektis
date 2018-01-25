@@ -38,7 +38,8 @@ class FinanceDeduction extends \yii\db\ActiveRecord
         return [
             [['deduct_name', 'deduct_date', 'deduct_percentage'], 'required'],
             [['deduct_date'], 'safe'],
-            [['deduct_downlimit', 'deduct_uplimit', 'deduct_obsolete'], 'integer'],
+            [['deduct_obsolete'], 'integer'],
+            [['deduct_downlimit', 'deduct_uplimit'], 'number'],
             [['deduct_name'], 'string', 'max' => 100],
             [['deduct_description'], 'string', 'max' => 1000],
         ];
