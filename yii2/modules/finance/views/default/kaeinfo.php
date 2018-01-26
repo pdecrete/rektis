@@ -6,13 +6,16 @@ $balance = Money::toCurrency($kaeCredit->kaecredit_amount)*Money::toPercentage($
 $balance_formatted = Money::toCurrency(Money::toCurrency($kaeCredit->kaecredit_amount)*Money::toPercentage($kaeCreditSumPercentage, false), true);
 $withdrawalsSum = 0;
 ?>
-
+<?php $collpased = ($options['collapsed'] == 1)? 'in': ''; ?>
+<?php if($options['showbutton']) :?>
 <p>
     <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#kaeInfo">
     	<?php echo Module::t('modules/finance/app', 'RCN {kae_id} - Quick Info', ['kae_id' => sprintf('%04d', $kae->kae_id)]);?>
     </button>
 </p>
-<div id="kaeInfo" class="collapse in"  style="width: 50% !important;">
+<?php endif;?>
+
+<div id="kaeInfo" class="collapse <?= $collpased ?>">
     <div class="container-fluid well">
   		<div class="row">
         <table class="table table-hover">

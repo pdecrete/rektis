@@ -12,11 +12,17 @@ use app\modules\finance\Module;
 
 ?>
 
-<div class="finance-expenditure-form">
+<div class="finance-expenditure-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true, 
+                                					    'type' => 'number', 
+                                					    'min' => "0.00" , 
+                                					    'step' => '0.01', 
+                                					    'style' => 'text-align: left', 
+                                                        'value' => $model['exp_amount']])->label(false); 
+    ?>
 
     <?= $form->field($model, 'suppl_id')->dropDownList(
         ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),
@@ -41,19 +47,21 @@ use app\modules\finance\Module;
 	<h3><?= Module::t('modules/finance/app', 'Assign deductions');?></h3>
     <?php 
     //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>";
+        $index = 0;
         echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList(
         [
-            $deductions[0]['deduct_id'] => $deductions[0]['deduct_name'],
-            $deductions[1]['deduct_id'] => $deductions[1]['deduct_name'],
+            $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'],
+            $deductions[++$index]['deduct_id'] => $deductions[1]['deduct_name'],
+            $deductions[++$index]['deduct_id'] => $deductions[2]['deduct_name'],
         ],
         ['separator'=>'<br/>']
         )->label(false);
     
-        for($i = 1; $i < count($expenddeduction_models); $i++){
+        for($i = $index; $i < count($expenddeduction_models); $i++){
             echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$i+1]->deduct_name, 'value' => $deductions[$i+1]->deduct_id]);
         }
     ?>
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

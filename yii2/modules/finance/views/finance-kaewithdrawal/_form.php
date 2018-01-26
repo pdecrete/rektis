@@ -9,31 +9,38 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<?= 
-    $this->render('/default/kaeinfo', [
-        'model' => $model,
-        'kae' => $kae,
-        'kaeCredit' => $kaeCredit,
-        'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
-        'kaeWithdrwals' => $kaeWithdrwals
-    ]) 
-?>
+<div class="row">    
+    <div class="finance-kaewithdrawal-form col-lg-6">
     
-<div class="finance-kaewithdrawal-form">
-
-    <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'kaewithdr_amount')->
-                     textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
-
-    <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")]) ?>
-
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php $form = ActiveForm::begin(); ?>
+    
+        <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true,
+                                                        'type' => 'number',
+                                                        'min' => "0.00" ,
+                                                        'step' => '0.01',
+                                                        'style' => 'text-align: left',
+                                                        'value' => $model['kaewithdr_amount']])->label(false); ?>
+    
+        <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
+    
+        <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")]) ?>
+    
+        <div class="form-group pull-right">
+            <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        </div>
+    
+        <?php ActiveForm::end(); ?>    
     </div>
-
-    <?php ActiveForm::end(); ?>
-
+    <div class="col-lg-6">
+        <?= 
+        $this->render('/default/kaeinfo', [
+            'model' => $model,
+            'kae' => $kae,
+            'kaeCredit' => $kaeCredit,
+            'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
+            'kaeWithdrwals' => $kaeWithdrwals,
+            'options' => ['showbutton' => 0, 'collapsed' => 1]
+        ]) 
+        ?>
+    </div>
 </div>

@@ -66,10 +66,14 @@ class FinanceKaewithdrawalController extends Controller
         $searchModel = new FinanceKaewithdrawalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $kaesListModel = FinanceKae::find()->all();
+
+        $kaewithdrsbalance = FinanceKaewithdrawal::getAllWithdrawalsBalance($kaesListModel, Yii::$app->session["working_year"]);
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'kaes' => $kaesListModel
+            'kaes' => $kaesListModel,
+            'balances' => $kaewithdrsbalance,
         ]);
     }
 

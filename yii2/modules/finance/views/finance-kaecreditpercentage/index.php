@@ -18,13 +18,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-kaecreditpercentage-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+		<?php $otherbutton = Html::a(Module::t('modules/finance/app', 'Automatic Percentage Definition'), ['masspercentage'], 
+	                                       ['class' => 'btn btn-success', 'data-method' => 'POST', 
+	                                        'data-confirm' => Module::t('modules/finance/app', 
+	                                        'Are you sure you want to automatically set credit percentages for specific RCNs?')]); ?>
     <?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Attribute percentage to RCN credit'),
         'actionUrl' => '/index.php/finance/finance-kaecreditpercentage/create',
-        'otherbuttons' => [[Module::t('modules/finance/app', 'Automatic Percentage Definition'), 
-                           'masspercentage']]
+        'otherbuttons' => [$otherbutton],
+        //'otherbuttons' => [[Module::t('modules/finance/app', 'Automatic Percentage Definition'),'masspercentage']]
     ]) ?>
 	
     <?= GridView::widget([

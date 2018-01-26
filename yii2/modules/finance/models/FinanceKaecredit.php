@@ -92,6 +92,9 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
         return new FinanceKaecreditQuery(get_called_class());
     }
     
+    public static function getKaecreditId($kae_id, $year){
+        return FinanceKaecredit::find()->where(['kae_id' => $kae_id, 'year' => $year])->one()->kaecredit_id;
+    }
     
     public static function getSumKaeCredits($year)
     {

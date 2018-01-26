@@ -58,8 +58,7 @@ class FinanceExpenditureController extends Controller
         $expwithdr = $prefix . 'finance_expendwithdrawal';
         $wthdr = $prefix . "finance_kaewithdrawal";
         
-        //$invoices = FinanceInvoice::find()->where()->all();
-        //$invoice_models = array();
+        $kaewithdrsbalance = FinanceKaewithdrawal::getAllWithdrawalsBalance($kaesListModel, Yii::$app->session["working_year"]);
         
         foreach($dataProvider->models as $expend_model){
             $withdrawal_model = (new \yii\db\Query())
@@ -96,7 +95,8 @@ class FinanceExpenditureController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'kaes' => $kaesListModel,
-            'expendwithdrawals' => $expendwithdrawals
+            'expendwithdrawals' => $expendwithdrawals,
+            'balances' => $kaewithdrsbalance,
         ]);
     }
 

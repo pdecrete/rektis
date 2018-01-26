@@ -79,6 +79,38 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     {
         return new FinanceKaewithdrawalQuery(get_called_class());
     }
+        
+    /**
+     * Returns the balance of the all the credits of the RCNs in $kaeslist ($kaesListModel = FinanceKae::find()->all()) of the year $year 
+     * @param integer $kaelist
+     * @param integer $year
+     * @return FinanceKaewithdrawalQuery the active query used by this AR class.
+     */
+    public static function getAllWithdrawalsBalance($kaeslist, $year){
+        $kaewithdrsbalance = array();
+        for($i = 0; $i < count($kaeslist); $i++)
+            $kaewithdrsbalance[$kaeslist[$i]['kae_id']] = FinanceKaewithdrawal::getWithdrawalsBalance(
+                FinanceKaecredit::getKaecreditId($kaeslist[$i]['kae_id'], $year));
+        return $kaewithdrsbalance;
+    }
+    
+    /**
+     * Returns the balance of the RCN credit with id $kaecredit_id 
+     * @param integer $kaecredit_id
+     * @return FinanceKaewithdrawalQuery the active query used by this AR class.
+     */
+    public static function getWithdrawalsBalance($kaecredit_id){
+        $kaewithdrs = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id]);
+        if(!count($kaewithdrs->all()))
+            return 0;
+        $kaewithdrs_sum = $kaewithdrs->sum('kaewithdr_amount'); 
+        $kaewithdr_id = $kaewithdrs->one()->kaewithdr_id;
+
+        $exps_sum = FinanceExpendwithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->sum('expwithdr_amount');
+        //echo "<pre>"; echo ($kaewithdrs_sum - $exps_sum); "</pre>"; die();
+
+        return ($kaewithdrs_sum - $exps_sum);
+    }
     
     /**
      * Returns the total sum of withdraws carried out for the RCN credit with id $kaecredit_id (corresponds to an 

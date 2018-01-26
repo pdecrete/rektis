@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= 
         $this->render('/default/kaeslist', [
         'kaes' => $kaes,
+        'balances' => $balances, 
         'btnLiteral' => Module::t('modules/finance/app', 'New Withdrawal'),
         'actionUrl' => '/index.php/finance/finance-kaewithdrawal/create']) 
 	?>

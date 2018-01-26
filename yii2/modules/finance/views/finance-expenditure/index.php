@@ -1,11 +1,10 @@
 <?php
 
 use app\modules\finance\Module;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\GridView;
-use app\modules\finance\models\FinanceSupplier;
 use app\modules\finance\components\Money;
+use app\modules\finance\models\FinanceSupplier;
+use yii\grid\GridView;
+use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
@@ -26,7 +25,8 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
-        'actionUrl' => '/index.php/finance/finance-expenditure/create'
+        'actionUrl' => '/index.php/finance/finance-expenditure/create',
+	    'balances' => $balances,
     ]) ?> 
  
     <?= GridView::widget([

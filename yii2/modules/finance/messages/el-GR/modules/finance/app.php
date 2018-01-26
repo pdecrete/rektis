@@ -17,6 +17,9 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Withdrawals Total Balance' => 'Συνολικό Διαθέσιμο Αναλήψεων',
+    'Are you sure you want to automatically set credit percentages for specific RCNs?' =>
+    'Είστε σίγουρος/-η ότι θέλετε να γίνει αυτόματος καθορισμός ποσοστών πιστώσεων για συγκεκριμένους ΚΑΕ;',
     'The default percentage (100%) for RCNs 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 was created successfully.' =>
     'Το προκαθορισμένο ποσοστό (100%) για τους ΚΑΕ 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 δημιουργήθηκε επιτυχώς',
     'Failure in creating the default percentages.' => 'Αποτυχία δημιουργίας των προκαθορισμένων ποσοστών',
