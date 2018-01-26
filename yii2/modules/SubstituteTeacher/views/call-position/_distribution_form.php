@@ -49,7 +49,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'filter' => Select2::widget([
                     'model' => $positionsSearchModel,
                     'attribute' => 'operation_id',
-                    'data' => \app\modules\SubstituteTeacher\models\Operation::selectables(),
+                    'data' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
@@ -73,7 +73,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'filter' => Select2::widget([
                     'model' => $positionsSearchModel,
                     'attribute' => 'prefecture_id',
-                    'data' => app\modules\SubstituteTeacher\models\Prefecture::selectables(),
+                    'data' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],

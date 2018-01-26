@@ -34,7 +34,7 @@ use yii\web\View;
 
     <?=
     $form->field($model, 'operation_id')->widget(Select2::classname(), [
-        'data' => \app\modules\SubstituteTeacher\models\Operation::selectables(),
+        'data' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
         'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
         'pluginOptions' => [
             'allowClear' => false
@@ -55,7 +55,7 @@ use yii\web\View;
     ?>
     <?=
     $form->field($model, 'prefecture_id')->widget(Select2::classname(), [
-        'data' => app\modules\SubstituteTeacher\models\Prefecture::selectables(),
+        'data' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
         'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
         'pluginOptions' => [
             'allowClear' => false

@@ -47,11 +47,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'operation_id',
                 'value' => 'operation.title',
-//                'filter' => \app\modules\SubstituteTeacher\models\Operation::selectables(),
+//                'filter' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'operation_id',
-                    'data' => \app\modules\SubstituteTeacher\models\Operation::selectables(),
+                    'data' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
@@ -73,11 +73,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'prefecture_id',
                 'value' => 'prefecture.prefecture',
-//                'filter' => app\modules\SubstituteTeacher\models\Prefecture::selectables(),
+//                'filter' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'prefecture_id',
-                    'data' => app\modules\SubstituteTeacher\models\Prefecture::selectables(),
+                    'data' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],

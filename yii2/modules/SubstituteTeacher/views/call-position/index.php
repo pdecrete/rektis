@@ -41,13 +41,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'call_id',
                 'value' => 'call.label',
                 'enableSorting' => false,
-                'filter' => \app\modules\SubstituteTeacher\models\Call::selectables()
+                'filter' => \app\modules\SubstituteTeacher\models\Call::defaultSelectables()
             ],
             [
                 'attribute' => 'position_id',
                 'value' => 'position.title',
                 'enableSorting' => false,
-                'filter' => false, // \app\modules\SubstituteTeacher\models\Position::selectables()
+                'filter' => false, // \app\modules\SubstituteTeacher\models\Position::defaultSelectables()
             ],
             [
                 'attribute' => 'teachers_count',
@@ -100,7 +100,7 @@ $form = ActiveForm::begin([
             <?= Yii::t('substituteteacher', 'Calls') ?>
         </div>
         <div class="col-sm-6">
-            <?= Html::dropDownList('call', null, \app\modules\SubstituteTeacher\models\Call::selectables(), ['class' => 'form-control']) ?>
+            <?= Html::dropDownList('call', null, \app\modules\SubstituteTeacher\models\Call::defaultSelectables(), ['class' => 'form-control']) ?>
         </div>
     </div>
     <div class="row">

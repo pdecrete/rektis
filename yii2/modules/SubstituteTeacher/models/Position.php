@@ -6,6 +6,7 @@ use app\models\Specialisation;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 //use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;
 
@@ -33,6 +34,7 @@ use yii\helpers\ArrayHelper;
  */
 class Position extends \yii\db\ActiveRecord
 {
+    use Selectable;
 
     const POSITION_TYPE_TEACHER = 1;
     const POSITION_TYPE_HOURS = 0;
@@ -40,9 +42,11 @@ class Position extends \yii\db\ActiveRecord
     const SCHOOL_TYPE_DEFAULT = 0;
     const SCHOOL_TYPE_KEDDY = 1;
 
-    public $position_has_type, $position_has_type_label; // use to select teachers or hours count
+    public $position_has_type;
+    public $position_has_type_label; // use to select teachers or hours count
     public $school_type_label;
-    public $covered, $remaining;
+    public $covered;
+    public $remaining;
 
     /**
      * @inheritdoc
@@ -73,7 +77,7 @@ class Position extends \yii\db\ActiveRecord
                 'filter' => function ($value) {
                     return 0;
                 },
-                'when' => function($model) {
+                'when' => function ($model) {
                     return $model->position_has_type == Position::POSITION_TYPE_HOURS;
                 }
             ],
@@ -86,17 +90,17 @@ class Position extends \yii\db\ActiveRecord
                 'filter' => function ($value) {
                     return 0;
                 },
-                'when' => function($model) {
+                'when' => function ($model) {
                     return $model->position_has_type == Position::POSITION_TYPE_TEACHER;
                 }
             ],
             [['teachers_count', 'covered_teachers_count'], 'required',
-                'when' => function($model) {
+                'when' => function ($model) {
                     return $model->position_has_type == Position::POSITION_TYPE_TEACHER;
                 }
             ],
             [['hours_count', 'covered_hours_count'], 'required',
-                'when' => function($model) {
+                'when' => function ($model) {
                     return $model->position_has_type == Position::POSITION_TYPE_HOURS;
                 }
             ],
@@ -185,15 +189,12 @@ class Position extends \yii\db\ActiveRecord
     /**
      * Get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
-     * 
-     * @param int $year
      */
-    public static function selectables()
+    public static function defaultSelectables($index_property = 'id', $label_property = 'title', $group_property = null)
     {
-        $choices_aq = (new PositionQuery(get_called_class()))
-            ->orderBy(['title' => SORT_DESC]);
-
-        return ArrayHelper::map($choices_aq->all(), 'id', 'title');
+        return static::selectables($index_property, $label_property, $group_property, function ($aq) {
+            return $aq->orderBy(['title' => SORT_DESC]);
+        });
     }
 
     /**
@@ -209,7 +210,7 @@ class Position extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * 
+     *
      */
     public function afterFind()
     {

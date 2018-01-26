@@ -5,8 +5,8 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\models\Specialisation;
-use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stperation}}".
@@ -23,8 +23,9 @@ use yii\helpers\FileHelper;
  */
 class Operation extends \yii\db\ActiveRecord
 {
+    use Selectable;
 
-    public $specialisation_ids; // associated specialisations 
+    public $specialisation_ids; // associated specialisations
     public $specialisation_labels;
 
     /**
@@ -129,7 +130,7 @@ class Operation extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * 
+     *
      */
     public function afterFind()
     {
@@ -139,8 +140,8 @@ class Operation extends \yii\db\ActiveRecord
                 return $m->id;
             }, $this->specialisations);
             $this->specialisation_labels = implode('<br/>', array_map(function ($m) {
-                    return $m->code . ' ' . $m->name;
-                }, $this->specialisations));
+                return $m->code . ' ' . $m->name;
+            }, $this->specialisations));
         }
     }
 
@@ -148,17 +149,23 @@ class Operation extends \yii\db\ActiveRecord
      * Provided a year, get a list of available choices in the form of
      * ID => LABEL suitable for select lists.
      * If year provided is "invalid" all choices are retured.
-     * 
+     *
      * @param int $year
      */
-    public static function selectables($year = null)
+    public static function selectablesForYear($year)
     {
-        $choices_aq = new OperationQuery(get_called_class());
-        if (in_array($year, self::getYearChoices())) {
-            $choices_aq->where(['year' => $year]);
+        if (in_array($year, self::getYearChoices(), true)) {
+            return static::selectables('id', 'title', 'year', function ($aq) use ($year) {
+                return $aq->where(['year' => $year]);
+            });
+        } else {
+            return static::defaultSelectables('id', 'title', 'year');
         }
+    }
 
-        return ArrayHelper::map($choices_aq->all(), 'id', 'title', 'year');
+    public static function defaultSelectables($index_property = 'id', $label_property = 'title', $group_property = 'year')
+    {
+        return static::selectables($index_property, $label_property, $group_property, null);
     }
 
     /**
