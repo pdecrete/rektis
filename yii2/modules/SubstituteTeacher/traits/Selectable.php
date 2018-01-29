@@ -24,7 +24,7 @@ trait Selectable
      */
     public static function selectables($index_property = 'id', $label_property = 'label', $group_property = null, $callable = null)
     {
-        $active_query = (get_called_class())::find();
+        $active_query = call_user_func(get_called_class() . '::find');
 
         if (is_callable($callable)) {
             $active_query = $callable($active_query);
