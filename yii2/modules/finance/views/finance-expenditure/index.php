@@ -5,6 +5,7 @@ use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceSupplier;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use app\modules\finance\models\FinanceExpenditurestate;
 
 
 /* @var $this yii\web\View */
@@ -14,7 +15,6 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->title = Module::t('modules/finance/app', 'Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
-//echo "<pre>"; print_r($expendwithdrawals[15]['WITHDRAWAL']); echo "</pre>"; die();
 ?>
 <div class="finance-expenditure-index">
 	
@@ -79,26 +79,36 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'contentOptions' => ['class' => 'text-nowrap'],
              'value' => function($model) {
+                            $state_commnents = array();
+                            
+                            $state_commnents[1] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 1]))['expstate_date'] .  
+                                                  " (" . $tmp['expstate_comment'] . ")";
+                            $state_commnents[2] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 2]))['expstate_date'] .
+                                                  " (" . $tmp['expstate_comment'] . ")";
+                            $state_commnents[3] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 3]))['expstate_date'] .
+                                                  " (" . $tmp['expstate_comment'] . ")";
+                            $state_commnents[4] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 4]))['expstate_date'] .
+                                                  " (" . $tmp['expstate_comment'] . ")";
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;"></span>';
+                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>';
                             else if($model['statescount'] == 2)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;"></span>
-                                          &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red;"></span>';
+                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>';
                             else if($model['statescount'] == 3)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;"></span>
-                                      &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red;"></span>
-                                      &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;"></span>';
+                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>';
                             else if($model['statescount'] == 4)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;"></span>
-                                      &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red;"></span>
-                                      &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;"></span>
-                                      &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:green;"></span>';
+                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>
+                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span>';                            
                             return $retvalue;                            
                         }
             ],
             [   'attribute' => 'invoice',
-                'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Invoice<br />Actions') . '</span>',
+                'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Voucher<br />Actions') . '</span>',
                 'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals){
                 $retvalue = "";

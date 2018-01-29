@@ -163,6 +163,7 @@ class m171115_101126_finance_init extends Migration
                             `suppl_vat` INTEGER NOT NULL,
                             `suppl_address` VARCHAR(255),
                             `suppl_phone` INTEGER,
+                            `suppl_email` VARCHAR(255),
                             `suppl_fax` INTEGER,
                             `suppl_iban` VARCHAR(27) NOT NULL,
                             `suppl_employerid` VARCHAR(100) NOT NULL,
@@ -228,7 +229,7 @@ class m171115_101126_finance_init extends Migration
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `inv_number` VARCHAR(255) NOT NULL, 
                             `inv_date` DATE NOT NULL,
-                            `inv_order` VARCHAR(255) NOT NULL,
+                            `inv_order` VARCHAR(255),
                             `inv_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,
                             `exp_id` INTEGER NOT NULL,
@@ -259,11 +260,11 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         $insert_command = "INSERT INTO " . $dbFinTables['table_deduction'] . 
-                          "(deduct_id, deduct_name, deduct_date, deduct_percentage, deduct_downlimit) VALUES ";
+                          "(deduct_id, deduct_name, deduct_date, deduct_percentage, deduct_downlimit, deduct_uplimit) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(1, 'Παροχή υπηρεσιών ή αγορά υλικών αγαθών κάτω των 150 ευρώ', NOW(), 0, 0, 15000)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(2, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 400, 15000)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(3, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 800, 15000)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(4, 'Δαπάνη καθαριότητας', NOW(), 10, 0)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(2, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 400, 15000, NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(3, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 800, 15000, NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(4, 'Δαπάνη καθαριότητας', NOW(), 10, 0, NULL)")->execute();
         
         /* CREATE TABLE admapp_finance_expenddeduction */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenddeduction'] .

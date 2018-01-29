@@ -22,6 +22,7 @@ use app\modules\finance\models\FinanceSupplier;
 use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceExpenddeduction;
+use app\modules\finance\models\FinanceState;
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -348,8 +349,13 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The state of the expenditure cannot change. Please create voucher first."));
             return $this->redirect(['index']);
         }
-                    
+        
+        
+        
         $exp_model = $this->findModel($id);
+        $current_state = FinanceExpenditurestate::find()->where(['exp_id' => $exp_model->exp_id, ])->max('state_id');
+        $current_state_name = FinanceState::findOne(['state_id' => $current_state])['state_name']; 
+        //echo "<pre>"; var_dump($current_state); echo "</pre>"; die();
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
         //$supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
@@ -373,7 +379,7 @@ class FinanceExpenditureController extends Controller
         } else {
             return $this->render('forwardstate', [
                 'state_model' => $state_model,
-                //'supplier' => $supplier
+                'current_state_name' => $current_state_name,
             ]);
         }
     }

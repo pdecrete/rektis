@@ -27,9 +27,9 @@ $this->params['breadcrumbs'][] = $this->title;
 			<p><?= Html::a(Module::t('modules/finance/app', 'Expenditures'), Url::to(['/finance/finance-expenditure']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
         <div class="col-lg-4">
-            <h3><?= Module::t('modules/finance/app', 'Invoices');?></h3>
-            <p><?= Module::t('modules/finance/app', 'Invoices administration (create new invoice, update details, delete)');?></p>
-			<p><?= Html::a(Module::t('modules/finance/app', 'Invoices'), Url::to(['/finance/finance-invoice']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            <h3><?= Module::t('modules/finance/app', 'Vouchers');?></h3>
+            <p><?= Module::t('modules/finance/app', 'Vouchers administration (create new voucher, update details, delete)');?></p>
+			<p><?= Html::a(Module::t('modules/finance/app', 'Vouchers'), Url::to(['/finance/finance-invoice']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>         
     </div>
 

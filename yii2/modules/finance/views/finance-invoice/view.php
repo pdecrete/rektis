@@ -1,8 +1,12 @@
 <?php
 
 use app\modules\finance\Module;
+use app\modules\finance\models\FinanceExpenditure;
+use app\modules\finance\models\FinanceInvoicetype;
+use app\modules\finance\models\FinanceSupplier;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceInvoice */
@@ -15,6 +19,15 @@ else
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
 
 $this->params['breadcrumbs'][] = $this->title;
+/*
+$unioned_model = array();
+foreach($model as $key=>$value){
+    $unioned_model[$key] = $value;;
+}
+$unioned_model['suppl_id'] = $supplier_model->suppl_name;
+$unioned_model['invtype_id'] = $supplier_model->suppl_name;
+echo "<pre>"; print_r($unioned_model); echo "</pre>";
+*/
 ?>
 <div class="finance-invoice-view">
 
@@ -33,14 +46,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= DetailView::widget([
         'model' => $model,
+        //'supplier_model' => $supplier_model,
         'attributes' => [
+            ['attribute' => 'suppl_id',
+                'value' => function ($model) {
+                return FinanceSupplier::findOne(['suppl_id' => $model->suppl_id])['suppl_name'];
+                }
+            ],
+            [
+                'attribute' => Module::t('modules/finance/app', 'Amount'),
+                'value' => function($model){
+                                return Money::toCurrency(FinanceExpenditure::findOne(['exp_id' => $model->exp_id])['exp_amount'], true);}
+            ],
             'inv_number',
             'inv_date',
             'inv_order',
             //'inv_deleted',
-            'suppl_id',
-            //'exp_id',
-            'invtype_id',
+            ['attribute' => 'invtype_id',
+                'value' => function ($model) {
+                return FinanceInvoicetype::findOne(['invtype_id' => $model->invtype_id])['invtype_title'];
+                }
+            ],            
         ],
     ]) ?>
 

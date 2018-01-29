@@ -37,7 +37,7 @@ class FinanceInvoice extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['inv_number', 'inv_date', 'inv_order', 'suppl_id', 'exp_id', 'invtype_id'], 'required'],
+            [['inv_number', 'inv_date', 'suppl_id', 'exp_id', 'invtype_id'], 'required'],
             [['inv_deleted', 'suppl_id', 'exp_id', 'invtype_id'], 'integer'],
             [['inv_number', 'inv_order'], 'string', 'max' => 255],
             [['inv_date'], 'safe'],

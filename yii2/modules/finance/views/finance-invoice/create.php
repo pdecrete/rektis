@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 if($expenditures_return == 1)
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['/finance/finance-expenditure/']];
     else
-        $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Invoices'), 'url' => ['/finance/finance-invoice/']];
+        $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-invoice-create">

@@ -2,6 +2,7 @@
 
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
+use app\modules\finance\models\FinanceKaecredit;
 
 $columnsNum = 3;
 $kaesCount = count($kaes);
@@ -36,12 +37,15 @@ if($kaesCount != 0):
       		<div class="row">
       			<?php foreach ($kaesListDivide as $kaeList) : ?>
       						<div class="col-lg-<?php echo 12/$columnsNum; ?>">
-      							<?php foreach ($kaeList as $kaeListItem):?> 
+      							<?php foreach ($kaeList as $kaeListItem):
+      							        if(FinanceKaecredit::findOne(['kae_id' => $kaeListItem->kae_id])['kaecredit_amount'] != 0):
+      							?>
                                         <p><a href='<?php echo $actionUrl; ?>?id=<?php echo $kaeListItem->kae_id; ?>' 
                                         <?php if(isset($balances)){ ?>data-toggle="tooltip" title="<?= Module::t('modules/finance/app', 'Withdrawals Total Balance') . ": " . Money::toCurrency($balances[$kaeListItem->kae_id], true) ?><?php }?>"><span class="label label-primary"><?= sprintf('%04d',$kaeListItem->kae_id); ?></span>
                                         <?php echo $kaeListItem->kae_title;?></a>
                                         </p>
-                                <?php endforeach;?>
+                                <?php   endif;
+                                      endforeach;?>
       						</div>		
       			<?php endforeach;?>      			
     		</div>

@@ -59,8 +59,10 @@ class FinanceInvoiceController extends Controller
      */
     public function actionView($id, $expenditures_return = 0)
     {
+        $invoice_model = $this->findModel($id);
+       
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $invoice_model,
             'expenditures_return' => $expenditures_return
         ]);
     }
