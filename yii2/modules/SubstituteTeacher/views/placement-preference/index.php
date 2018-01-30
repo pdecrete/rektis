@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
@@ -34,7 +34,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'teacher_id',
-                    'data' => TeacherRegistry::defaultSelectables(),
+                    'data' => Teacher::defaultSelectables(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
+                'attribute' => 'year',
+                'value' => function ($m) { return $m->teacher ? $m->teacher->year : null; },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'year',
+                    'data' => Teacher::defaultSelectables('year', 'year'),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],

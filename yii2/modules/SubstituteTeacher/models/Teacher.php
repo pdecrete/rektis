@@ -124,6 +124,11 @@ class Teacher extends \yii\db\ActiveRecord
         return $choices;
     }
 
+    public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)
+    {
+        return static::selectables($index_property, $label_property, $group_property, null);
+    }
+
     public function afterFind()
     {
         parent::afterFind();
