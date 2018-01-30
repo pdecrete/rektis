@@ -5,19 +5,20 @@ use kartik\datecontrol\DateControl;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceInvoice */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="finance-invoice-form">
+<div class="finance-invoice-form col-lg-6">
 
 	<div class="panel panel-default">
 		<div class="panel-heading"><h4><?= Module::t('modules/finance/app', 'Voucher Details') ?></h4></div>
 		<div class="panel-body">
 			<p><strong><?= Module::t('modules/finance/app', 'Supplier') ?>: </strong><?= $supplier_model->suppl_name;?></p>
-			<p><strong><?= Module::t('modules/finance/app', 'Amount') ?>: </strong><?= $expenditure_model->exp_amount;?></p>
+			<p><strong><?= Module::t('modules/finance/app', 'Amount') ?>: </strong><?= Money::toCurrency($expenditure_model->exp_amount, true);?></p>
 		</div>
 	</div>
 	
@@ -38,7 +39,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($invoice_model, 'inv_date')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->
                 label(Module::t('modules/finance/app', 'Date')); ?>
 
-    <div class="form-group">
+    <div class="form-group text-right">
         <?= Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

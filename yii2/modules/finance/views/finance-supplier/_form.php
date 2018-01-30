@@ -10,7 +10,7 @@ use app\modules\finance\models\FinanceTaxoffice;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="finance-supplier-form">
+<div class="finance-supplier-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -38,7 +38,7 @@ use app\modules\finance\models\FinanceTaxoffice;
             ['prompt'=>'ΔΟΥ Προμηθευτή'])
     ?>
 
-    <div class="form-group">
+    <div class="form-group text-right">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

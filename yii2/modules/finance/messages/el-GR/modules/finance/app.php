@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Select suppplier...' => 'Επιλέξτε προμηθευτή...',
+    'There is no withdrawal for this RCN to create expenditure.' => 'Δεν υπάρχει διαθέσιμο από ανάληψη σε αυτόν τον ΚΑΕ για να δημιουργηθεί δαπάνη.',
     'Forward Expenditure State' => 'Προώθηση κατάστασης δαπάνης',
     'Forward Expenditure State to ' => 'Προώθηση κατάστασης δαπάνης σε ',
     'Withdrawals Total Balance' => 'Συνολικό Διαθέσιμο Αναλήψεων',
@@ -161,7 +163,7 @@ return [
     'Reports' => 'Αναφορές',
     'Vouchers' => 'Παραστατικά',
     'Suppliers' => 'Προμηθευτές',
-    'The sum of RCN credits is not equal to the credit of financial year {year} . Please correct to continue.' => 'Το άθροισμα των πιστώσεων των ΚΑΕ δεν συμφωνεί με την πίστωση για το έτος {year}. Παρακαλώ διορθώστε για να προχωρήσετε.',
+    'The sum of RCN credits is not equal to the credit of financial year {year}. Please correct to continue.' => 'Το άθροισμα των πιστώσεων των ΚΑΕ δεν συμφωνεί με την πίστωση για το έτος {year}. Παρακαλώ διορθώστε για να προχωρήσετε.',
     'Error in defining the financial year as currently working. Check if currently working year is correctly defined or contact with the administrator.' => 'Σφάλμα στον ορισμό του οικονομικού έτους στο οποίο εργάζεστε. Ελέγξτε αν έχετε ορίσει έτος στο οποίο εργάζεστε ή επικοινωνήστε με το διαχειριστή.',
     'Administer RCN' => 'Διαχείριση ΚΑΕ',
     'Create/Update/Delete RCN' => 'Δημιουργία/Επεξεργασία/Διαγραφή ΚΑΕ',

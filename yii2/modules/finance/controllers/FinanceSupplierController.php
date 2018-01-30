@@ -71,7 +71,7 @@ class FinanceSupplierController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new supplier. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The new supplier was created successfully."));
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The new supplier was created successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('create', [

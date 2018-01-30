@@ -41,7 +41,7 @@ $provider = new ArrayDataProvider([
 	                               ['attribute' => 'kaecredit_updated', 'label' => Module::t('modules/finance/app', 'Τροποποιήθηκε')],	                                            
                                    ['attribute' => 'kaecredit_amount',
                                     'label' => Module::t('modules/finance/app', 'Credit Amount'),
-                                    'format' => 'currency',
+                                    'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount'], true);}
                                     //'contentOptions' => ['class' => 'text-right']
                                    ],
                                  

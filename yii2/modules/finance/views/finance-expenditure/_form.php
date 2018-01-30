@@ -4,6 +4,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\modules\finance\Module;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
@@ -24,9 +25,10 @@ use app\modules\finance\Module;
                                                         'value' => $model['exp_amount']])->label(false); 
     ?>
 
-    <?= $form->field($model, 'suppl_id')->dropDownList(
-        ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),
-        ['prompt'=> Module::t('modules/finance/app', 'Supplier')])
+    <?= $form->field($model, 'suppl_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),
+            'options' => ['placeholder' => Module::t('modules/finance/app', 'Select suppplier...')],
+        ]);
     ?>
 
     <?= $form->field($model, 'fpa_value')->dropDownList(

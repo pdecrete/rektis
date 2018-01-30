@@ -3,6 +3,7 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
+use kartik\mpdf\Pdf;
 use yii\base\Model;
 use app\modules\finance\Module;
 use app\modules\finance\models\FinanceExpenditure;
@@ -23,6 +24,8 @@ use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceExpenddeduction;
 use app\modules\finance\models\FinanceState;
+
+
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -413,6 +416,32 @@ class FinanceExpenditureController extends Controller
         }
     }
 
+    
+    public function actionPaymentreport(){
+        
+        $data = "test";
+        
+        $content = $this->renderPartial('paymentreport', [
+            'data' => $data,
+        ]);
+        
+        $pdf = new Pdf([
+            'mode' => Pdf::MODE_UTF8,
+            'format' => Pdf::FORMAT_A4,
+            'orientation' => Pdf::ORIENT_LANDSCAPE,
+            'filename' => 'aitisi.pdf',
+            'destination' => Pdf::DEST_DOWNLOAD,
+            'content' => $content,
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
+            'methods' => [
+                'SetHeader' => ['Header'],
+                'SetFooter' => ['Σελίδα: {PAGENO} από {nb}'],
+            ]
+        ]);
+        return $pdf->render();
+    }
     
     /**
      * Finds the FinanceExpenditure model based on its primary key value.
