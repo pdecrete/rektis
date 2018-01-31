@@ -13,6 +13,7 @@ use Yii;
  * @property integer $suppl_vat
  * @property string $suppl_address
  * @property integer $suppl_phone
+ * @property string $suppl_email 
  * @property integer $suppl_fax
  * @property string $suppl_iban
  * @property string $suppl_employerid
@@ -40,7 +41,8 @@ class FinanceSupplier extends \yii\db\ActiveRecord
         return [
             [['suppl_name', 'suppl_vat', 'suppl_iban', 'suppl_employerid', 'taxoffice_id'], 'required'],
             [['suppl_vat', 'suppl_phone', 'suppl_fax', 'taxoffice_id'], 'integer'],
-            [['suppl_name', 'suppl_address'], 'string', 'max' => 255],
+            [['suppl_name', 'suppl_address', 'suppl_email'], 'string', 'max' => 255],
+            [['suppl_email'], 'email'],
             [['suppl_iban'], 'string', 'max' => 27],
             [['suppl_employerid'], 'string', 'max' => 100],
             [['taxoffice_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceTaxoffice::className(), 'targetAttribute' => ['taxoffice_id' => 'taxoffice_id']],
@@ -57,6 +59,7 @@ class FinanceSupplier extends \yii\db\ActiveRecord
             'suppl_name' => Module::t('modules/finance/app', 'Name'),
             'suppl_vat' => Module::t('modules/finance/app', 'VAT Number'),
             'suppl_address' => Module::t('modules/finance/app', 'Address'),
+            'suppl_email' => Module::t('modules/finance/app', 'E-mail'),
             'suppl_phone' => Module::t('modules/finance/app', 'Phone Number'),
             'suppl_fax' => Module::t('modules/finance/app', 'Fax'),
             'suppl_iban' => Module::t('modules/finance/app', 'IBAN'),

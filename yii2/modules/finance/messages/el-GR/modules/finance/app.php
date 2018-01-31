@@ -17,6 +17,17 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Export Payment Report' => 'Εξαγωγή Κατάστασης Πληρωμής',
+    'Expedinture Payment Report' => 'Κατάσταση Πληρωμής Δαπάνης',
+    'For the needs of the Regional Directorate of Primary & Secondary Education of Crete' => 'Για τις ανάγκες της Περιφερειακής Δ/νσης Π/θμιας & Δ/θμιας Εκπ/σης Κρήτης',
+    'Beneficiary Details' => 'Στοιχεία Δικαιούχου',
+    'Voucher Number' => 'Αριθμο Τιμολογίου',
+    'Rationale' => 'Αιτιολογία',
+    'Expenditure Amount' => 'Ποσό Δαπάνης',
+    'Tax' => 'Φόρος',
+    'Payable Amount' => 'Πληρωτέο Ποσό',
+    'Net Value' => 'Καθαρή Αξία',
+    'Sum' => 'Σύνολο',
     'Select suppplier...' => 'Επιλέξτε προμηθευτή...',
     'There is no withdrawal for this RCN to create expenditure.' => 'Δεν υπάρχει διαθέσιμο από ανάληψη σε αυτόν τον ΚΑΕ για να δημιουργηθεί δαπάνη.',
     'Forward Expenditure State' => 'Προώθηση κατάστασης δαπάνης',
@@ -171,6 +182,7 @@ return [
     'Percentages of initial RCNs credits' => 'Ποσοστά διάθεσης πιστώσεων ΚΑΕ',
     'Administer Financial Year' => 'Διαχείριση Οικονομικού Έτους',
     'Set RCN credits for the <strong>currently, working</strong> year' => 'Καθορισμός πιστώσεων στους ΚΑΕ του <strong>τρέχοντος</strong> έτους',
+    'Financial Year' => 'Οικονομικό Έτος',
     'Financial Years' => 'Οικονομικά Έτη',
     'Create/Update/Delete/Lock/Set Currently Working Year' => 'Δημιουργία/Επεξεργασία/Διαγραφή/Κλείδωμα/Ορισμός ως τρέχον',
     'Update RCΝ credits' => 'Ενημέρωση πιστώσεων ΚΑΕ',

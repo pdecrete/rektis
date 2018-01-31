@@ -417,12 +417,48 @@ class FinanceExpenditureController extends Controller
     }
 
     
+    /**
+     * Creates the Expedinture Payment Report (pdf file) for the expenditure with $id
+     * @param integer $id
+     * @return mixed
+     */
     public function actionPaymentreport(){
+        $models = array();
+        $kae = "";
+        //echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
+        $exp_ids = Yii::$app->request->post('selection');
         
-        $data = "test";
-        
+        try{
+            if(is_null($exp_ids))
+                throw new Exception();
+            foreach($exp_ids as $index=>$id){
+                $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $id]);
+                $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model['suppl_id']]);
+                $invoice_model = FinanceInvoice::findOne(['exp_id' => $expenditure_model['exp_id']]);
+                
+                $models[$index]['EXPENDITURE'] = $expenditure_model;
+                $models[$index]['SUPPLIER'] = $supplier_model;
+                $models[$index]['INVOICE'] = $invoice_model;
+            
+                $kaewithdr_id = FinanceExpendwithdrawal::find()->
+                                    where(['exp_id' => $expenditure_model['exp_id']])->all()[0]['kaewithdr_id'];
+                $kaecredit_id = FinanceKaewithdrawal::findOne(['kaewithdr_id' => $kaewithdr_id])['kaecredit_id'];        
+                $exp_kae = FinanceKaecredit::findOne(['kaecredit_id' => $kaecredit_id])['kae_id'];
+                if($kae == "")
+                    $kae = $exp_kae;
+                else if($exp_kae != $kae)
+                    throw new Exception();
+            }
+            $year = Yii::$app->session["working_year"];
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures."));
+            return $this->redirect(['index']);
+        }
         $content = $this->renderPartial('paymentreport', [
-            'data' => $data,
+            'models' => $models,
+            'year' => $year,
+            'kae' => $kae,
         ]);
         
         $pdf = new Pdf([
@@ -435,10 +471,7 @@ class FinanceExpenditureController extends Controller
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
             'cssInline' => '.kv-heading-1{font-size:18px}',
             'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
-            'methods' => [
-                'SetHeader' => ['Header'],
-                'SetFooter' => ['Σελίδα: {PAGENO} από {nb}'],
-            ]
+
         ]);
         return $pdf->render();
     }

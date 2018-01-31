@@ -27,8 +27,7 @@ if($kaesCount != 0):
     	           endforeach; 
     	      endif;
     	?>
-    	
-        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#kaesList">
+		<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#kaesList">
         	<?php echo $btnLiteral; ?>
         </button>
     </p>

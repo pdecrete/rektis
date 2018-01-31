@@ -24,6 +24,9 @@ use kartik\select2\Select2;
                                 					    'style' => 'text-align: left', 
                                                         'value' => $model['exp_amount']])->label(false); 
     ?>
+    
+    <?= $form->field($model, 'exp_description')->textInput(['maxlength' => true]); 
+    ?>
 
     <?= $form->field($model, 'suppl_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),

@@ -24,6 +24,8 @@ use app\modules\finance\models\FinanceTaxoffice;
     <?= $form->field($model, 'suppl_phone')->widget(\yii\widgets\MaskedInput::className(), 
                                                     ['mask' => '9999999999'])?>
 
+    <?= $form->field($model, 'suppl_email')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'suppl_fax')->widget(\yii\widgets\MaskedInput::className(), 
                                                     ['mask' => '9999999999'])?>
 

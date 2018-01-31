@@ -41,7 +41,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['exp_amount', 'exp_date', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
+            [['exp_amount', 'exp_date', 'exp_description', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
             [['exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
             [['exp_amount'], 'number'],
             [['exp_date'], 'safe'],
@@ -57,6 +57,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
         return [
             'exp_id' => Module::t('modules/finance/app', 'ID'),
             'exp_amount' => Module::t('modules/finance/app', 'Amount'),
+            'exp_description' => Module::t('modules/finance/app', 'Description'),
             'exp_date' => Module::t('modules/finance/app', 'Date'),
             'exp_lock' => Module::t('modules/finance/app', 'Locked'),
             'exp_deleted' => Module::t('modules/finance/app', 'Deleted'),

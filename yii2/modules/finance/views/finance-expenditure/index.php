@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="finance-expenditure-index">
-	
+			
 	<?= $this->render('/default/infopanel');?>
 	
     <h1><?= Html::encode($this->title) ?></h1>
@@ -26,9 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
         'actionUrl' => '/index.php/finance/finance-expenditure/create',
-	    'balances' => $balances,
+	    'balances' => $balances,	    
     ]) ?> 
  
+	<?=Html::beginForm(['paymentreport'],'post');?>
+ 		
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
@@ -38,10 +40,16 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];}
             ],
+            ['attribute' => 'exp_description',
+                'label' => Module::t('modules/finance/app', 'Description'),
+                'format' => 'html',
+                'value' => function ($model) {return $model['exp_description'];}
+            ],
             ['attribute' => 'exp_amount', 
              'label' => Module::t('modules/finance/app', 'Amount'),
              'format' => 'currency',
-             'value' => function ($model) {return Money::toCurrency($model['exp_amount']);}
+             'value' => function ($model) {return Money::toCurrency($model['exp_amount']);},
+             'contentOptions' => ['class' => 'text-nowrap']
             ],
             ['attribute' => 'fpa_value', 
              'label' => Module::t('modules/finance/app', 'VAT'),
@@ -71,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals) {
                                 //return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
-                                return $model['kae_id'];
+                                return sprintf('%04d', $model['kae_id']);
                             }
             ],
             ['attribute' => 'statescount', 
@@ -170,6 +178,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 }
             ],
+            ['class' => 'yii\grid\CheckboxColumn', 
+                        'checkboxOptions' => function($model){return ['value' => $model['exp_id']];}],
        ],
     ]); ?>
+    <p style="text-align: right;">
+    	<?= Html::submitButton(Module::t('modules/finance/app', 'Export Payment Report'), 
+	                                                       ['class' => 'btn btn-success',]);?>
+	</p>	                                                               
+    <?= Html::endForm();?>
 </div>

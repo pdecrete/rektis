@@ -95,7 +95,7 @@ class FinanceSupplierController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was updated successfully."));
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The supplier was updated successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('update', [
@@ -117,7 +117,7 @@ class FinanceSupplierController extends Controller
             return $this->redirect(['index', 'id' => $model->suppl_id]);
         }
         
-        Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The supplier was deleted successfully."));
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The supplier was deleted successfully."));
         return $this->redirect(['index']);
     }
 
