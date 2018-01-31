@@ -12,6 +12,8 @@ use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Position;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use app\modules\SubstituteTeacher\models\Teacher;
 
 /**
  * Description of ImportController
@@ -23,8 +25,8 @@ class ImportController extends Controller
     /**
      *
      * @var array contains the field mappings for the import files;
-     *      Main key is the import identifier 
-     *      Secondary keys are column letters and values are thw data associated 
+     *      Main key is the import identifier
+     *      Secondary keys are column letters and values are thw data associated
      */
     private $_column_data_idx = [
         'position' => [
@@ -35,6 +37,11 @@ class ImportController extends Controller
             'E' => 'hours_count',
             'F' => 'whole_teacher_hours',
             'G' => 'school_type',
+        ],
+        'teacher' => [
+            'A' => 'vat_number',
+            'B' => 'placement_preferences',
+            'C' => 'points',            
         ]
     ];
 
@@ -68,11 +75,11 @@ class ImportController extends Controller
     }
 
     /**
-     * 
+     *
      * @param string $type denotes the import process/datatype
      * @param int $file_id the file identifier
      * @return mixed
-     * @throws NotFoundHttpException if the file cannot be found 
+     * @throws NotFoundHttpException if the file cannot be found
      * @throws BadRequestHttpException if the type parameter if not handled
      */
     public function actionFileInformation($type, $file_id)
@@ -80,6 +87,9 @@ class ImportController extends Controller
         switch ($type) {
             case 'position':
                 $route = 'import/position';
+                break;
+            case 'teacher':
+                $route = 'import/teacher';
                 break;
             default:
                 throw new BadRequestHttpException(Yii::t('substituteteacher', 'The requested import type is not handled.'));
@@ -101,19 +111,8 @@ class ImportController extends Controller
 
     public function actionPosition($file_id, $sheet = 0, $action = '', $operation = '')
     {
-        if (($file_model = SubstituteTeacherFile::findOne(['id' => $file_id])) == null) {
-            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested file does not exist.'));
-        }
-
-        $model = new BaseImportModel();
-        $model->find($file_model->getFullFilepath());
-
-        $model->phpexcelfile->setActiveSheetIndex($sheet);
-        $worksheet = $model->phpexcelfile->getActiveSheet();
-        $highestRow = $worksheet->getHighestRow();
-        $line_limit = min([$highestRow, 50]);
-        $highestColumn = $worksheet->getHighestColumn();
-        $highestColumnIndex = \PHPExcel_Cell::columnIndexFromString($highestColumn);
+        // get file information and set basic parameters
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
 
         $is_valid = true;
         if ($action == 'validate') {
@@ -124,7 +123,7 @@ class ImportController extends Controller
             if (!$this->validatePosition($operation, $worksheet)) {
                 return $this->redirect(['position', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
             }
-            Yii::$app->session->removeAllFlashes(); // supress success message 
+            Yii::$app->session->removeAllFlashes(); // supress success message
 
             if (!$this->importPosition($operation, $worksheet, $highestColumn)) {
                 return $this->redirect(['position', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
@@ -146,9 +145,71 @@ class ImportController extends Controller
         ]);
     }
 
+    public function actionTeacher($file_id, $sheet = 0, $action = '', $year = '')
+    {
+        // get file information and set basic parameters
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
+
+        $is_valid = true;
+        if ($action == 'validate') {
+            $is_valid = $this->validateTeacher($year, $worksheet);
+        }
+
+        if ($action == 'import') {
+            if (!$this->validateTeacher($year, $worksheet)) {
+                return $this->redirect(['teacher', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            }
+            Yii::$app->session->removeAllFlashes(); // supress success message
+
+            if (!$this->importTeacher($year, $worksheet, $highestColumn)) {
+                return $this->redirect(['teacher', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            } else {
+                return $this->redirect(['teacher/index']);
+            }
+        }
+
+        return $this->render('file-preview-teacher', [
+                'action' => $action,
+                'sheet' => $sheet,
+                'model' => $model,
+                'file_id' => $file_id,
+                'worksheet' => $worksheet,
+                'highestRow' => $highestRow,
+                'line_limit' => $line_limit,
+                'highestColumn' => $highestColumn,
+                'highestColumnIndex' => $highestColumnIndex,
+        ]);
+    }
+
     /**
-     * 
-     * @return boolean whether the import succeeded or not 
+     * Get import file model, import handler model and sheet information
+     *
+     * @param int $file_id The identifier of the import file
+     * @param int $sheet The number of the sheet to use
+     * @return array $file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex
+     */
+    protected function prepareImportFile($file_id, $sheet)
+    {
+        if (($file_model = SubstituteTeacherFile::findOne(['id' => $file_id])) == null) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested file does not exist.'));
+        }
+
+        $model = new BaseImportModel();
+        $model->find($file_model->getFullFilepath());
+
+        $model->phpexcelfile->setActiveSheetIndex($sheet);
+        $worksheet = $model->phpexcelfile->getActiveSheet();
+        $highestRow = $worksheet->getHighestRow();
+        $line_limit = min([$highestRow, 50]);
+        $highestColumn = $worksheet->getHighestColumn();
+        $highestColumnIndex = \PHPExcel_Cell::columnIndexFromString($highestColumn);
+
+        return [$file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex];
+    }
+
+    /**
+     *
+     * @return boolean whether the import succeeded or not
      */
     protected function importPosition($operation, $worksheet, $highestColumn)
     {
@@ -193,7 +254,7 @@ class ImportController extends Controller
             } else {
                 $data['school_type'] = Position::SCHOOL_TYPE_DEFAULT;
             }
-            // now try to do the trick 
+            // now try to do the trick
             $position = new Position();
             $position->title = $data['title'];
             $position->school_type = intval($data['school_type']);
@@ -218,7 +279,7 @@ class ImportController extends Controller
         if (empty($errors)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                // clear old data; it was checked earlier 
+                // clear old data; it was checked earlier
                 $deletions = Position::deleteAll(['operation_id' => $operation]);
 
                 // add all new positions
@@ -245,8 +306,8 @@ class ImportController extends Controller
     }
 
     /**
-     * 
-     * @return boolean whether the validation succeeded or not 
+     *
+     * @return boolean whether the validation succeeded or not
      */
     protected function validatePosition($operation, $worksheet)
     {
@@ -280,13 +341,13 @@ class ImportController extends Controller
                     }
                 }
             }
-            // $teachers_count and $hours_count are set via $$data_key 
+            // $teachers_count and $hours_count are set via $$data_key
             if ((int) $teachers_count + (int) $hours_count == 0) {
                 $errors[] = Yii::t('substituteteacher', 'There is no information about either teachers or hours for the position at line {n}', ['n' => $row_index]);
             }
         }
 
-        // get unique FK values 
+        // get unique FK values
         $prefectures = array_unique($prefectures);
         $specialisations = array_unique($specialisations);
         $located_count_prefectures = \app\modules\SubstituteTeacher\models\Prefecture::find()
@@ -324,15 +385,154 @@ class ImportController extends Controller
         return empty($errors);
     }
 
+
     /**
-     * 
+     *
+     * @return boolean whether the import succeeded or not
+     */
+    protected function importTeacher($year, $worksheet, $highestColumn)
+    {
+        $errors = [];
+        $stop_at_errorcount = 10; // skip rest of the process if this many errors occur
+        $teachers = []; // models to save
+        // keep ids for fks
+        $vat_numbers = [];
+
+        foreach ($worksheet->getRowIterator() as $row) {
+            $row_index = $row->getRowIndex();
+            if ($row_index == 1) {
+                continue;
+            }
+
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+
+            $data_row = $worksheet->rangeToArray("A{$row_index}:{$highestColumn}{$row_index}");
+            $data = array_combine($this->_column_data_idx['teacher'], $data_row[0]);
+
+            if (!array_key_exists($data['vat_number'], $vat_numbers)) {
+                $teacher_registry_model = TeacherRegistry::findOne(['tax_identification_number' => $data['vat_number']]);
+                if ($teacher_registry_model) {
+                    $vat_numbers[$data['vat_number']] = $teacher_registry_model->id;
+                } else {
+                    $vat_numbers[$data['vat_number']] = null; // this will cause a problem later, but we want that
+                }
+            }
+
+            $teacher = new Teacher();
+            $teacher->registry_id = $vat_numbers[$data['vat_number']];
+            $teacher->year = $year;
+            $teacher->status = Teacher::TEACHER_STATUS_ELIGIBLE;
+            $teacher->points = $data['points'];
+           
+            if (!$teacher->validate()) {
+                $errors[] = $this->extractErrorMessages($teacher->getErrors());
+                if (count($errors) >= $stop_at_errorcount) {
+                    break;
+                }
+            } else {
+                $teachers[] = $teacher;
+            }
+        }
+
+        if (empty($errors)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                // clear old data; it was checked earlier
+                // $deletions = Teacher::deleteAll(['year_id' => $year]);
+
+                // add all new teachers
+                foreach ($teachers as $teacher) {
+                    if (!$teacher->save()) {
+                        throw new Exception(Yii::t('substituteteacher', 'An error occured while saving a teacher.'));
+                    }
+                }
+                $transaction->commit();
+                \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
+            } catch (\Exception $ex) {
+                $transaction->rollBack();
+                \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Import failed') . '</h3>');
+                \Yii::$app->session->addFlash('danger', $ex->getMessage());
+            }
+        } else {
+            \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Problems discovered') . '</h3>');
+            $never_mind = array_walk($errors, function ($v, $k) {
+                \Yii::$app->session->addFlash('danger', $v);
+            });
+        }
+
+        return empty($errors);
+    }
+
+    /**
+     * Check for:
+     * - afm seems valid
+     * - afm can be located at the eacher registry
+     * - placement preferences seem valid (letter order, etc)
+     *
+     * @return boolean whether the validation succeeded or not
+     */
+    protected function validateTeacher($year, $worksheet)
+    {
+        $errors = [];
+        $vat_numbers = [];
+
+        foreach ($worksheet->getRowIterator() as $row) {
+            $row_index = $row->getRowIndex();
+            if ($row_index == 1) {
+                continue;
+            }
+
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+
+            foreach ($cellIterator as $cell) {
+                $cell_column = $cell->getColumn();
+                // $cell_row = $cell->getRow();
+
+                if (isset($this->_column_data_idx['teacher'][$cell_column])) {
+                    $data_key = $this->_column_data_idx['teacher'][$cell_column];
+                    $$data_key = BaseImportModel::getCalculatedValue($cell);
+                    if ($data_key == 'vat_number') {
+                        $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
+                    }
+                }
+            }
+        }
+
+        // get unique FK values
+        $vat_numbers = array_unique($vat_numbers);
+        $located_count_vat_numbers = TeacherRegistry::find()
+            ->andWhere(['tax_identification_number' => $vat_numbers])
+            ->count();
+
+        if (($diff = count($vat_numbers) - $located_count_vat_numbers) > 0) {
+            $errors[] = Yii::t('substituteteacher', '<strong>Could not locate {n,plural,=1{1 tax identification number} other{# tax identification numbers}}</strong> out of {m} total.', ['n' => $diff, 'm' => count($vat_numbers)]);
+        }
+
+        // TODO check if there are entries already in the requested year
+
+        if (empty($errors)) {
+            \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'No apparent problems'));
+        } else {
+            \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Problems discovered') . '</h3>');
+            $never_mind = array_walk($errors, function ($v, $k) {
+                \Yii::$app->session->addFlash('danger', $v);
+            });
+        }
+
+        return empty($errors);
+    }
+
+    /**
+     *
      * @param array $errors in the form of model errors after validation
-     * @return string a concatenated string of the error messages 
+     * @return string a concatenated string of the error messages
      */
     public static function extractErrorMessages($errors)
     {
         return trim(array_reduce(array_values($errors), function ($c, $v) {
-                return $c . implode(' ', $v) . ' ';
-            }, ''));
+            return $c . implode(' ', $v) . ' ';
+        }, ''));
     }
 }
