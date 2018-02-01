@@ -10,6 +10,7 @@ $this->title = $model->deduct_id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Deductions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-deduction-view">
 
     <h1><?= Html::encode($this->title) ?></h1>

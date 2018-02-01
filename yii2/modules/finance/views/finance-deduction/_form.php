@@ -13,7 +13,7 @@ $model->deduct_downlimit = Money::toCurrency($model->deduct_downlimit);
 $model->deduct_uplimit = Money::toCurrency($model->deduct_uplimit);
 $model->deduct_percentage = Money::toPercentage($model->deduct_percentage);
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-deduction-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>

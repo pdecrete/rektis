@@ -41,9 +41,13 @@ class FinanceKaecreditController extends Controller
                                                 return $this->redirect(['index']);
                                             }
                         ],
+                        [   'actions' =>['index'],
+                            'allow' => true,
+                            'roles' => ['financial_viewer'],
+                        ],
                         [   'actions' =>['index', 'create', 'update'],
                             'allow' => true,
-                            'roles' => ['@'],
+                            'roles' => ['financial_director'],
                         ]
                     ]
             ],

@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\controllers;
 
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 /**
@@ -13,7 +14,20 @@ class DefaultController extends Controller
      * Renders the index view for the module
      * @return string
      */
-
+    
+    public function behaviors(){
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['financial_viewer'],
+                    ],
+                ],
+            ],
+        ];
+    }
     
     public function actionIndex()
     {

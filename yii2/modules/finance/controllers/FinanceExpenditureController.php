@@ -11,6 +11,7 @@ use app\modules\finance\models\FinanceExpenditureSearch;
 use app\modules\finance\models\FinanceKae;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceFpa;
 use app\modules\finance\components\Money;
@@ -37,14 +38,14 @@ class FinanceExpenditureController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        return  ['verbs' =>  [   'class' => VerbFilter::className(),
+                                'actions' => ['delete' => ['POST']]],
+                'access' => [   'class' => AccessControl::className(),
+                                'rules' =>  [
+                                                ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                                                ['allow' => true, 'roles' => ['financial_editor']]
+                                            ]]
+                ];
     }
 
     /**

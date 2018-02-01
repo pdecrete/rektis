@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceTaxoffice;
 use app\modules\finance\models\FinanceTaxofficeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -27,6 +28,11 @@ class FinanceTaxofficeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                    ['allow' => true, 'roles' => ['financial_director']]
+                ]]
         ];
     }
 

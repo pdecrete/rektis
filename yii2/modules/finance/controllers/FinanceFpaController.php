@@ -7,8 +7,8 @@ use app\modules\finance\Module;
 use app\modules\finance\models\FinanceFpa;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\components\Money;
 
@@ -27,8 +27,13 @@ class FinanceFpaController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
-                ],
-            ],
+                ]],
+                'access' => [   'class' => AccessControl::className(),
+                    'rules' =>  [
+                        ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                        ['allow' => true, 'roles' => ['financial_editor']]
+                    ]
+                ]
         ];
     }
 

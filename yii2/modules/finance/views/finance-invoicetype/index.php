@@ -12,13 +12,15 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'P
 $this->title = Module::t('modules/finance/app', 'Invoice Types');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-invoicetype-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
-        <?= Html::a(Module::t('modules/finance/app', 'Create Invoice Type'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Module::t('modules/finance/app', 'Create Voucher Type'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

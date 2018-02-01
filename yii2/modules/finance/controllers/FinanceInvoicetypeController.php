@@ -7,6 +7,7 @@ use app\modules\finance\models\FinanceInvoicetype;
 use app\modules\finance\models\FinanceInvoicetypeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\Module;
 use yii\base\Exception;
@@ -28,6 +29,11 @@ class FinanceInvoicetypeController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                    ['allow' => true, 'roles' => ['financial_editor']]
+                ]]
         ];
     }
 

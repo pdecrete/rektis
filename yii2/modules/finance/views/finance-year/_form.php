@@ -21,7 +21,7 @@ use yii\widgets\MaskedInput;
                                 					    'min' => "0.00" , 
                                 					    'step' => '0.01', 
                                 					    'style' => 'text-align: left', 
-                                                        'value' => $model['year_credit']])->label(false); 
+                                                        'value' => $model['year_credit']]); 
     
     
     ?>

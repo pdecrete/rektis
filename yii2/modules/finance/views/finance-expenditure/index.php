@@ -16,10 +16,8 @@ $this->title = Module::t('modules/finance/app', 'Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
+<?= $this->render('/default/infopanel');?>
 <div class="finance-expenditure-index">
-			
-	<?= $this->render('/default/infopanel');?>
-	
     <h1><?= Html::encode($this->title) ?></h1>
 
 	<?= $this->render('/default/kaeslist', [

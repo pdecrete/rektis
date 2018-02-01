@@ -13,6 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'P
 $this->title = Module::t('modules/finance/app', 'Deductions');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-deduction-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

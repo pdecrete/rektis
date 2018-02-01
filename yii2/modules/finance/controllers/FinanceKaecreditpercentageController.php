@@ -43,9 +43,13 @@ class FinanceKaecreditpercentageController extends Controller
                                                             return $this->redirect(['index']);
                                                         }
                                 ],
-                                [   'actions' =>['index', 'create', 'update', 'delete', 'masspercentage'], 
+                                [   'actions' =>['index'],
                                     'allow' => true,
-                                    'roles' => ['@'],
+                                    'roles' => ['financial_viewer'],
+                                ],
+                                [   'actions' =>['index', 'create', 'update', 'delete', 'masspercentage'],
+                                    'allow' => true,
+                                    'roles' => ['financial_director'],
                                 ]
                                ]
                 ],

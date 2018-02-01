@@ -23,23 +23,20 @@ class FinanceKaeController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),               
-                'rules' => [
-                        [   'actions' =>['index', 'create', 'update'],
-                            'allow' => true,
-                            'roles' => ['@'],
-                        ]
-                    ]
+        return  [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
+                    ],
                 ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+                'access' => [   'class' => AccessControl::className(),
+                                'rules' =>  [
+                                    ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                                    ['allow' => true, 'roles' => ['financial_editor']]
+                                ]
+                            ]
+                ];
     }
 
     /**

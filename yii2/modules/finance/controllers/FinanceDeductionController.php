@@ -9,6 +9,7 @@ use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceDeductionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\components\Money;
 
@@ -27,8 +28,14 @@ class FinanceDeductionController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    ],
                 ],
-            ],
+                'access' => [   'class' => AccessControl::className(),
+                    'rules' =>  [
+                        ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
+                        ['allow' => true, 'roles' => ['financial_editor']]
+                    ]
+                ]
         ];
     }
 

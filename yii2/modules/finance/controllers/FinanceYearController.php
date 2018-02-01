@@ -40,9 +40,13 @@ class FinanceYearController extends Controller
                                                 return $this->redirect(['index']);
                                             }
                         ],
+                        [   'actions' =>['index', 'view'],
+                            'allow' => true,
+                            'roles' => ['financial_viewer'],
+                        ],
                         [   'actions' =>['index', 'view', 'create', 'update', 'lock', 'unlock', 'current-year', 'delete'],
                             'allow' => true,
-                            'roles' => ['@'],
+                            'roles' => ['financial_director'],
                         ]
                         ]
                     ],

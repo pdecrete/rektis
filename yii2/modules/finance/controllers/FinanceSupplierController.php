@@ -8,6 +8,7 @@ use app\modules\finance\models\FinanceSupplier;
 use app\modules\finance\models\FinanceSupplierSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -27,6 +28,11 @@ class FinanceSupplierController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['financial_viewer']],
+                    ['allow' => true, 'roles' => ['financial_editor']]
+                ]]
         ];
     }
     
