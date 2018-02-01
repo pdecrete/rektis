@@ -14,6 +14,7 @@ use app\modules\SubstituteTeacher\models\Prefecture;
 use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
+use app\modules\SubstituteTeacher\models\PlacementPreference;
 
 /**
  * Description of ImportController
@@ -488,18 +489,22 @@ class ImportController extends Controller
 
             foreach ($cellIterator as $cell) {
                 $cell_column = $cell->getColumn();
-                // $cell_row = $cell->getRow();
 
                 if (isset($this->_column_data_idx['teacher'][$cell_column])) {
                     $data_key = $this->_column_data_idx['teacher'][$cell_column];
                     $$data_key = BaseImportModel::getCalculatedValue($cell);
                     if ($data_key == 'vat_number') {
                         $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
+                    } elseif ($data_key == 'placement_preferences') {
+                        $placement_preferences_import = $this->parsePlacementPreferences($placement_preferences);
+                        if ($placement_preferences_import === false) {
+                            $errors[] = Yii::t('substituteteacher', 'Problem with placement preference <em>{str}</em>.', ['str' => $placement_preferences]);
+                        }
                     }
                 }
             }
         }
-
+die();
         // get unique FK values
         $vat_numbers = array_unique($vat_numbers);
         $located_count_vat_numbers = TeacherRegistry::find()
@@ -522,6 +527,71 @@ class ImportController extends Controller
         }
 
         return empty($errors);
+    }
+
+    /**
+     * Get a string of placement preferences (i.e. "ΗΡΧ", "ΗΚ ΗΣ ΡΚ,ΡΣ")
+     * and check it's validity.
+     * Return parsed preferences, ready to use in active record, if wanted.
+     * 
+     * @return boolean|array If false, an error occured, if true valid; array is returned when input is valid and $return_parsed === true
+     */
+    protected function parsePlacementPreferences($placement_preferences, $return_parsed = false)
+    {
+        $placement_preferences_parsed = [];
+
+        $prefectures = Prefecture::defaultSelectables('symbol', 'id', null); // id => symbol
+        $prefectures_symbols = array_keys($prefectures);
+        $prefecture_symbols = implode('', $prefectures_symbols);
+        $school_symbols = PlacementPreference::SCHOOL_TYPE_SCHOOL_SYMBOL . PlacementPreference::SCHOOL_TYPE_KEDDY_SYMBOL;
+
+        $placement_preferences = preg_replace("/[^{$prefecture_symbols}{$school_symbols}]/u", ' ', $placement_preferences);
+        $placement_preferences = preg_split("/\s/u", $placement_preferences, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        if (count($placement_preferences) > 0) {
+            $order = 1;
+            foreach ($placement_preferences as $placement_preference) {
+                $matches = [];
+                if (mb_strlen($placement_preference) === 2 && preg_match("/[{$school_symbols}]/u", $placement_preference) === 1) {
+                    // manipulate preference 
+                    $matches = preg_split('//u', $placement_preference, null, PREG_SPLIT_NO_EMPTY);
+                    if (in_array($matches[0], $prefectures_symbols)) {
+                        if ($return_parsed === true) {
+                            $placement_preferences_parsed[] = [
+                                'prefecture_id' => $prefectures[$matches[0]],
+                                'school_type' => ($matches[1] === PlacementPreference::SCHOOL_TYPE_SCHOOL_SYMBOL ? PlacementPreference::SCHOOL_TYPE_SCHOOL : PlacementPreference::SCHOOL_TYPE_KEDDY),
+                                'order' => $order++
+                            ];
+                        }
+                    } else {
+                        $placement_preferences_parsed = false;
+                        break;
+                    }
+                } else {
+                    // add prefecture as preference for any kind of school
+                    $matches = array_filter(preg_split('//u', $placement_preference, null, PREG_SPLIT_NO_EMPTY), function ($v) {
+                        return !empty($v);
+                    });
+                    foreach ($matches as $pref_match) {
+                        if (in_array($matches[0], $prefectures_symbols)) {
+                            if ($return_parsed === true) {
+                                $placement_preferences_parsed[] = [
+                                    'prefecture_id' => $pref_match,
+                                    'school_type' => PlacementPreference::SCHOOL_TYPE_ANY,
+                                    'order' => $order++
+                                ];
+                            }
+                        } else {
+                            $placement_preferences_parsed = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        echo "<pre>", var_export($placement_preferences_parsed, true), "</pre>";
+
+        return ($return_parsed === true) ? $placement_preferences_parsed : ($placement_preferences_parsed !== false);
     }
 
     /**

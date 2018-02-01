@@ -37,12 +37,12 @@
         "vova07/yii2-imperavi-widget": "^1.3",
         "2amigos/yii2-file-upload-widget": "^1.0",
         "2amigos/yii2-switch-widget": "~1.0",
-        "wbraganca/yii2-dynamicform": "dev-master"
+        "wbraganca/yii2-dynamicform": "dev-master",
+        "yiisoft/yii2-faker": "^2.0"
      },
     "require-dev": {
         "yiisoft/yii2-debug": "*",
-        "yiisoft/yii2-gii": "*",
-        "yiisoft/yii2-faker": "*"
+        "yiisoft/yii2-gii": "*"
     },
     "config": {
         "process-timeout": 1800

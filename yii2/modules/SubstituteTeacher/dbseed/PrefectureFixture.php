@@ -11,10 +11,10 @@ class PrefectureFixture extends ActiveFixture
     protected function getData()
     {
         return [
-            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΗΡΑΚΛΕΙΟΥ'],
-            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΛΑΣΙΘΙΟΥ'],
-            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΡΕΘΥΜΝΟΥ'],
-            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΧΑΝΙΩΝ'],
+            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΗΡΑΚΛΕΙΟΥ', 'symbol' => 'Η'],
+            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΛΑΣΙΘΙΟΥ', 'symbol' => 'Λ'],
+            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΡΕΘΥΜΝΟΥ', 'symbol' => 'Ρ'],
+            ['region' => 'ΚΡΗΤΗΣ', 'prefecture' => 'ΧΑΝΙΩΝ', 'symbol' => 'Χ'],
         ];
     }
 }

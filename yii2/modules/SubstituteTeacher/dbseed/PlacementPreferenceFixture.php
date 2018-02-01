@@ -9,7 +9,7 @@ class PlacementPreferenceFixture extends ActiveFixture
 
     public $tableName = '{{%stplacement_preference}}';
     public $depends = [
-        // 'app\modules\SubstituteTeacher\dbseed\PrefectureFixture', // TODO enable when full seeding is available 
+        'app\modules\SubstituteTeacher\dbseed\PrefectureFixture',
         'app\modules\SubstituteTeacher\dbseed\TeacherFixture',
     ];
 
