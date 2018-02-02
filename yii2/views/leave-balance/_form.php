@@ -18,7 +18,7 @@ use yii\helpers\Url;
 
     <?=
     $form->field($model, 'employee')->widget(Select2::classname(), [
-        'data' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column(),
+        'data' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name, ' τ.', fathersname) as fname", 'id'])->orderBy('fname')->indexBy('id')->column(),
         'options' => [
 			'placeholder' => Yii::t('app', 'Choose...'),
 			'onchange' => '					
