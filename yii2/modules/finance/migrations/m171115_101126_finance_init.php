@@ -298,7 +298,7 @@ class m171115_101126_finance_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditurestate'] .
                           "(`exp_id` INTEGER NOT NULL,
                             `state_id` INTEGER NOT NULL,
-                            `expstate_date` DATETIME NOT NULL,
+                            `expstate_date` DATE NOT NULL,
                             `expstate_comment` VARCHAR(200),
                              PRIMARY KEY (`exp_id`, `state_id`),
                              FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",

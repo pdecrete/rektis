@@ -11,7 +11,7 @@ $this->title = Module::t('modules/finance/app', 'Update Deduction');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Deductions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-deduction-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

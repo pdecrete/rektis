@@ -17,6 +17,12 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Update Expenditure State' => 'Ενημέρωση Στοιχείων Κατάστασης',
+    'Failed to update expenditure\'s state details.' => 'Αποτυχία ενημέρωσης των στοιχείων της κατάστασης της δαπάνης.',
+    'The expenditure\'s state details were updated successfully.' => 'Τα στοιχεία της κατάστασης της δαπάνης ενημερώθηκαν επιτυχώς.',
+    'The state of the expenditure cannot change. Please create voucher first.' => 'Η κατάσταση της δαπάνης δεν μπορεί να αλλάξει. Παρακαλώ, πρώτα δημιουργήστε παραστατικό.',
+    'Unallocated Amount' => 'Μη διαθέσιμο ποσό',
+    'Available Amount for Withdrawal' => 'Διαθέσιμο Ποσό για Ανάληψη',
     'Export Payment Report' => 'Εξαγωγή Κατάστασης Πληρωμής',
     'Expedinture Payment Report' => 'Κατάσταση Πληρωμής Δαπάνης',
     'For the needs of the Regional Directorate of Primary & Secondary Education of Crete' => 'Για τις ανάγκες της Περιφερειακής Δ/νσης Π/θμιας & Δ/θμιας Εκπ/σης Κρήτης',
@@ -118,7 +124,7 @@ return [
     'The action is not permitted! The year is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος είναι κλειδωμένο.',
     'The action is not permitted! The year you are working on is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος στο οποίο εργάζεστε είναι κλειδωμένο.',
     'Total Attributed Percentage' => 'Συνολικό Ποσοστό Διάθεσης',
-    'Available amount' => 'Διαθέσιμο ποσό',
+    'Available Amount' => 'Διαθέσιμο Ποσό',
     'Initial Credit' => 'Αρχική Πίστωση',
     'The percentage attributed to the RCN cannot be deleted. The deletion would cause the withdrawals to exceed the total attributed amount to the RCN.' => 'Η διαγραφή του ποσοστού διάθεσης δεν μπορεί να ολοκληρωθεί. Αν διαγραφεί, οι αναλήψεις θα υπερβαίνουν το συνολικό διαθέσιμο της ΚΑΕ.',
     'Failure in deleting the percentage attributed to the RCN Credit. Please try again or contact with the administrator.' => 'Η διαγραφή του ποσοστού διάθεσης της ΚΑΕ απέτυχε. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
@@ -143,6 +149,7 @@ return [
     'Decision' => 'Απόφαση',
     'Date' => 'Ημερομηνία',
     'Withdrawals' => 'Αναλήψεις',
+    'Withdrawals Sum' => 'Σύνολο Αναλήψεων',
     'Percentage' => 'Ποσοστό',
     'Percentages' => 'Ποσοστά',
     'Failure in saving changes. Please check the validity of the input data (e.g. percentage or percentages sum <= 100%) or contact with the administrator.' => 'Αποτυχία αποθήκευσης των αλλαγών σας. Ελέγξτε την εγκυρότητα των στοιχείων που εισάγατε (π.χ. ποσοστό ή σύνολο ποσοστών ΚΑΕ < 100%) ή επικοινωνήστε με το διαχειριστή.',    

@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'kae_id',
                 'label' => Module::t('modules/finance/app', 'RCN'),
                 'format' => 'html',
-                'value' => function ($model) use ($expendwithdrawals) {
+                'value' => function ($model) {
                                 //return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
                                 return sprintf('%04d', $model['kae_id']);
                             }
@@ -97,19 +97,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                                   " (" . $tmp['expstate_comment'] . ")";
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>';
+                                $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>';
                             else if($model['statescount'] == 2)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>';
+                                $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>';
                             else if($model['statescount'] == 3)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>';
+                                $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>';
                             else if($model['statescount'] == 4)
-                                $retvalue = '<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>
-                                            &nbsp;<span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span>';                            
+                                $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>
+                                            &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=4&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span></a>';                            
                             return $retvalue;                            
                         }
             ],

@@ -14,6 +14,7 @@ else
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update Voucher');
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-invoice-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

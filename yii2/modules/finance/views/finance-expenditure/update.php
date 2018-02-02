@@ -13,11 +13,8 @@ $this->params['breadcrumbs'][] = ['label' => $model->exp_id, 'url' => ['view', '
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="finance-expenditure-update">
-	
 	<?= $this->render('/default/infopanel');?>
-    
     <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
         'expendwithdrawals_models' => $expendwithdrawals_models,

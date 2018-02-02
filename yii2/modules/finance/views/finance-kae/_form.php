@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="finance-kae-form">
+<div class="finance-kae-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'kae_description')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') :  Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

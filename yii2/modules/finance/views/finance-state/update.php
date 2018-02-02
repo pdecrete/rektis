@@ -11,6 +11,7 @@ $this->title = Module::t('modules/finance/app', 'Update State');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'States'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-state-update">
 
     <h1><?= Html::encode($this->title) ?></h1>

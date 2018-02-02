@@ -15,6 +15,7 @@ if($expenditures_return == 1)
         $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-invoice-create">
 
     <h1><?= Html::encode($this->title) ?></h1>

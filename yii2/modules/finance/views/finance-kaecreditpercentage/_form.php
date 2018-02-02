@@ -16,7 +16,7 @@ $model->kaeperc_date = date("Y-m-d H:i:s");
 $kae->kae_id = sprintf('%04d', $kae->kae_id);
 ?>
 
-<div class="finance-kaecreditpercentage-form">
+<div class="finance-kaecreditpercentage-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -30,7 +30,7 @@ $kae->kae_id = sprintf('%04d', $kae->kae_id);
 
     <?= $form->field($model, 'kaeperc_decision')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

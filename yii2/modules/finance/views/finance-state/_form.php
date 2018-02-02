@@ -9,13 +9,13 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="finance-state-form">
+<div class="finance-state-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'state_name')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

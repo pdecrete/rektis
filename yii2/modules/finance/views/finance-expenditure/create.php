@@ -16,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-expenditure-create">
 	<?= $this->render('/default/infopanel');?>
     <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
         'expendwithdrawals_models' => $expendwithdrawals_models,

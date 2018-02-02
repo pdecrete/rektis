@@ -11,6 +11,7 @@ $this->title = Module::t('modules/finance/app', 'Create Voucher Type');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Voucher Types'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?= $this->render('/default/infopanel'); ?>
 <div class="finance-invoicetype-create">
 
     <h1><?= Html::encode($this->title) ?></h1>

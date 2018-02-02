@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\modules\finance\models\FinanceExpenditurestate;
 use app\modules\finance\models\FinanceSupplier;
 use app\modules\finance\models\FinanceExpenditure;
 use app\modules\finance\models\FinanceInvoicetype;
@@ -98,11 +99,15 @@ class FinanceInvoiceController extends Controller
                 if(!$invoice_model->save()) 
                     throw new Exception();                               
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was created successfully."));
-                return $this->redirect(['/finance/finance-expenditure']);
+                if($expenditures_return == 1)
+                    return $this->redirect(['/finance/finance-expenditure']);
+                return $this->redirect(['/finance/finance-invoice']);                
             }
             catch(Exception $e){
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating invoice."));
-                return $this->redirect(['/finance/finance-expenditure']);
+                if($expenditures_return == 1)
+                    return $this->redirect(['/finance/finance-expenditure']);
+                return $this->redirect(['/finance/finance-invoice']);
             }
         } else {
             return $this->render('create', [
@@ -136,11 +141,15 @@ class FinanceInvoiceController extends Controller
                 if(!$invoice_model->save())
                     throw new Exception();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was created successfully."));
-                return $this->redirect(['/finance/finance-expenditure']);
+                if($expenditures_return == 1)
+                    return $this->redirect(['/finance/finance-expenditure']);
+                return $this->redirect(['/finance/finance-invoice']);
             }
             catch(Exception $e){
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating invoice."));
-                return $this->redirect(['/finance/finance-expenditure']);
+                if($expenditures_return == 1)
+                    return $this->redirect(['/finance/finance-expenditure']);
+                return $this->redirect(['/finance/finance-invoice']);
             }
         } else {
             return $this->render('update', [
@@ -164,16 +173,26 @@ class FinanceInvoiceController extends Controller
      */
     public function actionDelete($id, $expenditures_return = 0)
     {
-        if(!$this->findModel($id)->delete()){            
+        try{
+            $invoice_model = FinanceInvoice::findOne(['inv_id' => $id]);
+            if(is_null($invoice_model)) throw new Exception();
+            $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $invoice_model->exp_id])->count();
+            if($statescount > 1) throw new Exception();
+            if(!$this->findModel($id)->delete()) 
+                throw new Exception();
+            
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was deleted succesfully."));
+            if($expenditures_return == 1)
+                return $this->redirect(['/finance/finance-expenditure']);
+            return $this->redirect(['/finance/finance-invoice']);
+            
+        }
+        catch(Exception $e){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting invoice."));
             if($expenditures_return == 1)
                 return $this->redirect(['/finance/finance-expenditure']);
             return $this->redirect(['/finance/finance-invoice']);
-        }
-        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was deleted succesfully."));
-        if($expenditures_return == 1)
-            return $this->redirect(['/finance/finance-expenditure']);
-        return $this->redirect(['/finance/finance-invoice']);
+        }    
     }
 
     /**

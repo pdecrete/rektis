@@ -352,9 +352,7 @@ class FinanceExpenditureController extends Controller
         if(is_null($invoice)){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The state of the expenditure cannot change. Please create voucher first."));
             return $this->redirect(['index']);
-        }
-        
-        
+        }        
         
         $exp_model = $this->findModel($id);
         $current_state = FinanceExpenditurestate::find()->where(['exp_id' => $exp_model->exp_id, ])->max('state_id');
@@ -387,6 +385,45 @@ class FinanceExpenditureController extends Controller
             ]);
         }
     }
+    
+    
+    /**
+     * Sets the expenditure state to the next state (e.g. if it is in the "Initial" state, then the
+     * state is set to "Demanded")
+     * If the action is successful, the next visual indicator will be shown.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdatestate($state_id, $exp_id)
+    {
+        try{
+            $state_model = FinanceExpenditurestate::findOne(['state_id' => $state_id, 'exp_id' => $exp_id]);
+            
+            if(is_null($state_model)) 
+                throw new Exception();
+                                        
+            $current_state_name = FinanceState::findOne(['state_id' => $state_id])['state_name'];
+            
+            if ($state_model->load(Yii::$app->request->post())){                
+                if(!$state_model->save()) 
+                    throw new Exception();
+            
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state details were updated successfully."));
+                return $this->redirect(['index']);
+            }
+            else{
+                return $this->render('updatestate', [
+                    'state_model' => $state_model,
+                    'current_state_name' => $current_state_name,
+                ]);                
+            }            
+        }
+        catch (Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to update expenditure's state details."));
+            return $this->redirect(['index']);
+        }
+    }
+    
     
     /**
      * Sets the expenditure state to the next state (e.g. if it is in the "Demanded" state, then the 
