@@ -15,6 +15,7 @@ use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
+use yii\console\Exception;
 
 /**
  * Description of ImportController
@@ -42,7 +43,7 @@ class ImportController extends Controller
         'teacher' => [
             'A' => 'vat_number',
             'B' => 'placement_preferences',
-            'C' => 'points',            
+            'C' => 'points',
         ]
     ];
 
@@ -395,7 +396,8 @@ class ImportController extends Controller
     {
         $errors = [];
         $stop_at_errorcount = 10; // skip rest of the process if this many errors occur
-        $teachers = []; // models to save
+        $teachers = []; // teacher models to save
+        $placement_preferences_data = []; // array of placement preferences
         // keep ids for fks
         $vat_numbers = [];
 
@@ -420,12 +422,17 @@ class ImportController extends Controller
                 }
             }
 
+            $teacher_registry_id = $vat_numbers[$data['vat_number']];
+            $placement_preferences_data = array_merge($placement_preferences_data, array_map(function ($v) use ($teacher_registry_id) {
+                return array_merge($v, ['teacher_id' => $teacher_registry_id]);
+            }, $this->parsePlacementPreferences($data['placement_preferences'], true)));
+
             $teacher = new Teacher();
             $teacher->registry_id = $vat_numbers[$data['vat_number']];
             $teacher->year = $year;
             $teacher->status = Teacher::TEACHER_STATUS_ELIGIBLE;
             $teacher->points = $data['points'];
-           
+
             if (!$teacher->validate()) {
                 $errors[] = $this->extractErrorMessages($teacher->getErrors());
                 if (count($errors) >= $stop_at_errorcount) {
@@ -439,8 +446,8 @@ class ImportController extends Controller
         if (empty($errors)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                // clear old data; it was checked earlier
-                // $deletions = Teacher::deleteAll(['year_id' => $year]);
+                // should we clear old data? current logic will not lead here if entries exist already
+                // $deletions = Teacher::deleteAll(['year' => $year]);
 
                 // add all new teachers
                 foreach ($teachers as $teacher) {
@@ -448,6 +455,24 @@ class ImportController extends Controller
                         throw new Exception(Yii::t('substituteteacher', 'An error occured while saving a teacher.'));
                     }
                 }
+
+                // find teacher ids
+                $year_teacher_info = Teacher::find()
+                    ->select(['id', 'registry_id'])
+                    ->andWhere(['year' => $year])
+                    ->asArray()
+                    ->all();
+                $year_teacher_ids = [];
+                array_walk($year_teacher_info, function ($v, $k) use (&$year_teacher_ids) {
+                    $year_teacher_ids[$v['registry_id']] = $v['id'];
+                });
+                
+                Yii::$app->db->createCommand()->batchInsert(PlacementPreference::tableName(), ['teacher_id', 'prefecture_id', 'school_type', 'order'], array_map(function ($v) use ($year_teacher_ids) {
+                    return [
+                        $year_teacher_ids[$v['teacher_id']], $v['prefecture_id'], $v['school_type'], $v['order']
+                    ];
+                }, $placement_preferences_data))->execute();
+
                 $transaction->commit();
                 \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
             } catch (\Exception $ex) {
@@ -504,7 +529,7 @@ class ImportController extends Controller
                 }
             }
         }
-die();
+
         // get unique FK values
         $vat_numbers = array_unique($vat_numbers);
         $located_count_vat_numbers = TeacherRegistry::find()
@@ -515,7 +540,19 @@ die();
             $errors[] = Yii::t('substituteteacher', '<strong>Could not locate {n,plural,=1{1 tax identification number} other{# tax identification numbers}}</strong> out of {m} total.', ['n' => $diff, 'm' => count($vat_numbers)]);
         }
 
-        // TODO check if there are entries already in the requested year
+        // check if there are entries already in the requested year
+        if ($year > 1900) {
+            $located_count_teachers_in_year = TeacherRegistry::find()
+                ->joinWith('teachers')
+                ->andWhere([
+                    'tax_identification_number' => $vat_numbers,
+                    Teacher::tableName() . '.year' => $year
+                ])
+                ->count();
+            if ($located_count_teachers_in_year > 0) {
+                $errors[] = Yii::t('substituteteacher', '<strong>{n,plural,=1{1 teacher} other{# teachers}}</strong> are <strong>already included</strong> in the year {y} lists.', ['n' => $located_count_teachers_in_year, 'y' => $year]);
+            }
+        }
 
         if (empty($errors)) {
             \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'No apparent problems'));
@@ -533,7 +570,7 @@ die();
      * Get a string of placement preferences (i.e. "ΗΡΧ", "ΗΚ ΗΣ ΡΚ,ΡΣ")
      * and check it's validity.
      * Return parsed preferences, ready to use in active record, if wanted.
-     * 
+     *
      * @return boolean|array If false, an error occured, if true valid; array is returned when input is valid and $return_parsed === true
      */
     protected function parsePlacementPreferences($placement_preferences, $return_parsed = false)
@@ -553,9 +590,9 @@ die();
             foreach ($placement_preferences as $placement_preference) {
                 $matches = [];
                 if (mb_strlen($placement_preference) === 2 && preg_match("/[{$school_symbols}]/u", $placement_preference) === 1) {
-                    // manipulate preference 
+                    // manipulate preference
                     $matches = preg_split('//u', $placement_preference, null, PREG_SPLIT_NO_EMPTY);
-                    if (in_array($matches[0], $prefectures_symbols)) {
+                    if (in_array($matches[0], $prefectures_symbols, true)) {
                         if ($return_parsed === true) {
                             $placement_preferences_parsed[] = [
                                 'prefecture_id' => $prefectures[$matches[0]],
@@ -573,10 +610,10 @@ die();
                         return !empty($v);
                     });
                     foreach ($matches as $pref_match) {
-                        if (in_array($matches[0], $prefectures_symbols)) {
+                        if (in_array($pref_match, $prefectures_symbols, true)) {
                             if ($return_parsed === true) {
                                 $placement_preferences_parsed[] = [
-                                    'prefecture_id' => $pref_match,
+                                    'prefecture_id' => $prefectures[$pref_match],
                                     'school_type' => PlacementPreference::SCHOOL_TYPE_ANY,
                                     'order' => $order++
                                 ];
@@ -589,7 +626,6 @@ die();
                 }
             }
         }
-        echo "<pre>", var_export($placement_preferences_parsed, true), "</pre>";
 
         return ($return_parsed === true) ? $placement_preferences_parsed : ($placement_preferences_parsed !== false);
     }
