@@ -14,6 +14,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceFpa;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 use yii\base\Exception;
 use app\modules\finance\models\FinanceKaewithdrawal;
@@ -42,6 +43,17 @@ class FinanceExpenditureController extends Controller
                                 'actions' => ['delete' => ['POST']]],
                 'access' => [   'class' => AccessControl::className(),
                                 'rules' =>  [
+                                            [   'actions' => ['create', 'delete', 'forwardstate', 'updatestate', 'backwardstate'],
+                                                'allow' => false,
+                                                'roles' => ['@'],
+                                                'matchCallback' => function ($rule, $action) {                                                    
+                                                                    return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                                                },
+                                                'denyCallback' => function ($rule, $action) {
+                                                                    Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
+                                                                    return $this->redirect(['index']);
+                                                                  }
+                                            ],
                                                 ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
                                                 ['allow' => true, 'roles' => ['financial_editor']]
                                             ]]

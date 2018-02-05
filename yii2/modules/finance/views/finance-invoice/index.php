@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\finance\Module;
+use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -25,7 +26,17 @@ $this->params['breadcrumbs'][] = $this->title;
              'label' => Module::t('modules/finance/app', 'Voucher number'),
             ],
             ['attribute' => 'inv_date', 
-             'label' => Module::t('modules/finance/app', 'Voucher date')],
+             'label' => Module::t('modules/finance/app', 'Voucher date'),
+                'format' => ['date', 'php:Y-m-d'],
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'inv_date',
+                    'pluginOptions' => ['format' => 'Y-m-d'],
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ]                   
+                ])
+            ],
             ['attribute' => 'inv_order', 
              'label' => Module::t('modules/finance/app', 'Voucher order')],
             //'inv_deleted',

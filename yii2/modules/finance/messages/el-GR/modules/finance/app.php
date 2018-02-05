@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Failure in udpating voucher.' => 'Αποτυχία ενημέρωσης παραστατικού',
+    'The voucher was updated successfully.' => 'Το παραστατικό ενημερώθηκε επιτυχώς.',
     'Update Expenditure State' => 'Ενημέρωση Στοιχείων Κατάστασης',
     'Failed to update expenditure\'s state details.' => 'Αποτυχία ενημέρωσης των στοιχείων της κατάστασης της δαπάνης.',
     'The expenditure\'s state details were updated successfully.' => 'Τα στοιχεία της κατάστασης της δαπάνης ενημερώθηκαν επιτυχώς.',

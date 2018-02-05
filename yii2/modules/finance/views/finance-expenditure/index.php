@@ -5,7 +5,10 @@ use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceSupplier;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 use app\modules\finance\models\FinanceExpenditurestate;
+use kartik\datecontrol\DateControl;
+use app\modules\finance\models\FinanceFpa;
 
 
 /* @var $this yii\web\View */
@@ -15,6 +18,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->title = Module::t('modules/finance/app', 'Expenditures');
 $this->params['breadcrumbs'][] = $this->title;
 
+//echo "<pre>"; print_r(FinanceFpa::getFpaLevels()); echo "</pre>"; die();
 ?>
 <?= $this->render('/default/infopanel');?>
 <div class="finance-expenditure-index">
@@ -29,8 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
  
 	<?=Html::beginForm(['paymentreport'],'post');?>
  		
+ 		<?php Pjax::begin([
+            // PJax options
+        ]);?>
+ 		
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'suppl_id',
@@ -38,24 +47,36 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];}
             ],
+            ['attribute' => 'exp_amount', 
+             'label' => Module::t('modules/finance/app', 'Amount'),
+             'format' => 'currency',
+             'value' => function ($model) {return Money::toCurrency($model['exp_amount']);},
+             'contentOptions' => ['class' => 'text-nowrap'],
+             //'filter' => Money::toCents($model['exp_amount']),
+            ],
+            ['attribute' => 'fpa_value', 
+             'label' => Module::t('modules/finance/app', 'VAT'),
+             'format' => 'html',
+             'value' => function ($model) {return Money::toPercentage($model['fpa_value']);},
+             'filter' => FinanceFpa::getFpaLevels(),
+            ],
+            ['attribute' => 'exp_date',
+             'format' => ['raw', 'php:d-m-Y'],
+             'label' => Module::t('modules/finance/app', 'Created'),
+                'filter' => DateControl::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'exp_date',
+                    'type' => DateControl::FORMAT_DATE,
+                    'widgetOptions' => [
+                        'layout' => '{remove}{input}'
+                    ],
+                ])
+            ],
             ['attribute' => 'exp_description',
                 'label' => Module::t('modules/finance/app', 'Description'),
                 'format' => 'html',
                 'value' => function ($model) {return $model['exp_description'];}
             ],
-            ['attribute' => 'exp_amount', 
-             'label' => Module::t('modules/finance/app', 'Amount'),
-             'format' => 'currency',
-             'value' => function ($model) {return Money::toCurrency($model['exp_amount']);},
-             'contentOptions' => ['class' => 'text-nowrap']
-            ],
-            ['attribute' => 'fpa_value', 
-             'label' => Module::t('modules/finance/app', 'VAT'),
-             'format' => 'html',
-             'value' => function ($model) {return Money::toPercentage($model['fpa_value']);}
-            ],
-            ['attribute' => 'exp_date', 
-             'label' => Module::t('modules/finance/app', 'Created')],
             ['attribute' => 'Withdrawals', 'label' => Module::t('modules/finance/app', 'Assigned Withdrawals'),
              'format' => 'html',
                 'value' => function($model) use ($expendwithdrawals) {
@@ -120,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $retvalue = "";
                 if(is_null($expendwithdrawals[$model['exp_id']]['INVOICE']))
                     $retvalue = Html::a('<span class="glyphicon glyphicon-list-alt"></span>',
-                        '/finance/finance-invoice/create?id=' . $model['exp_id'],
+                        '/finance/finance-invoice/create?expenditures_return=1&id=' . $model['exp_id'],
                         ['title' => Module::t('modules/finance/app',
                             'Create invoice for the expenditure.')]);
                         else {
@@ -180,6 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'checkboxOptions' => function($model){return ['value' => $model['exp_id']];}],
        ],
     ]); ?>
+    <?php  Pjax::end();?>
     <p style="text-align: right;">
     	<?= Html::submitButton(Module::t('modules/finance/app', 'Export Payment Report'), 
 	                                                       ['class' => 'btn btn-success',]);?>

@@ -76,7 +76,7 @@ class FinanceInvoiceSearch extends FinanceInvoice
         ]);
 
         $this->load($params);
-
+        //echo "<pre>"; print_r($params); echo "</pre>"; die();
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');

@@ -181,7 +181,7 @@ class m171115_101126_finance_init extends Migration
                           "(`exp_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `exp_amount` " . $moneyDatatype . " UNSIGNED NOT NULL,
                             `exp_description` VARCHAR(500) NOT NULL,
-                            `exp_date` DATETIME NOT NULL,
+                            `exp_date` DATE NOT NULL,
                             `exp_lock` BOOLEAN NOT NULL DEFAULT 0,
                             `exp_deleted` BOOLEAN NOT NULL DEFAULT 0,
                             `suppl_id` INTEGER NOT NULL,

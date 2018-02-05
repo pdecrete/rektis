@@ -4,6 +4,7 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\Module;
+use app\modules\finance\components\Integrity;
 use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceInvoiceSearch;
 use yii\web\Controller;
@@ -35,6 +36,19 @@ class FinanceInvoiceController extends Controller
             ],
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
+                    [   'actions' => ['create', 'update', 'delete'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                                                    return Integrity::isLocked(Yii::$app->session["working_year"]);
+                                                },
+                        'denyCallback' => function ($rule, $action) {
+                                                    Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
+                                                    if(Yii::$app->request->get('expenditures_return') == 1)
+                                                        return $this->redirect(['/finance/finance-expenditure']);
+                                                    return $this->redirect(['/finance/finance-invoice']);
+                                                }
+                        ],
                     ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['financial_viewer']],
                     ['allow' => true, 'roles' => ['financial_editor']]
                 ]]            
@@ -140,13 +154,13 @@ class FinanceInvoiceController extends Controller
             try{
                 if(!$invoice_model->save())
                     throw new Exception();
-                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was created successfully."));
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher was updated successfully."));
                 if($expenditures_return == 1)
                     return $this->redirect(['/finance/finance-expenditure']);
                 return $this->redirect(['/finance/finance-invoice']);
             }
             catch(Exception $e){
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating invoice."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in udpating voucher."));
                 if($expenditures_return == 1)
                     return $this->redirect(['/finance/finance-expenditure']);
                 return $this->redirect(['/finance/finance-invoice']);

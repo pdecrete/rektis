@@ -29,13 +29,13 @@ class FinanceYearController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    [   'actions' => ['update', 'delete'],
-                        'allow' => false,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
+                        [   'actions' => ['update', 'delete'],
+                            'allow' => false,
+                            'roles' => ['@'],
+                            'matchCallback' => function ($rule, $action) {
                                                 return Integrity::isLocked(Yii::$app->request->get('id'));
                                             },
-                        'denyCallback' => function ($rule, $action) {
+                            'denyCallback' => function ($rule, $action) {
                                                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
                                                 return $this->redirect(['index']);
                                             }

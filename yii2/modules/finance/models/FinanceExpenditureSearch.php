@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\modules\finance\models\FinanceExpenditure;
+use app\modules\finance\components\Money;
 
 /**
  * FinanceExpenditureSearch represents the model behind the search form about `app\modules\finance\models\FinanceExpenditure`.
@@ -18,8 +19,8 @@ class FinanceExpenditureSearch extends FinanceExpenditure
     public function rules()
     {
         return [
-            [['exp_id', 'exp_amount', 'exp_date', 'exp_deleted', 'suppl_id', 'fpa_value'], 'integer'],
-            [['exp_lock'], 'safe'],
+            [['exp_id', 'exp_amount', 'exp_date', 'exp_deleted',  'fpa_value'], 'integer'],
+            [['suppl_id', 'exp_lock'], 'safe'],
         ];
     }
 
@@ -46,7 +47,8 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         $exps = $prefix . 'finance_expenditure';
         $expwithdr = $prefix . 'finance_expendwithdrawal';
         $wthdr = $prefix . "finance_kaewithdrawal";
-        $cred = $prefix . "finance_kaecredit";         
+        $cred = $prefix . "finance_kaecredit";
+        $suppl = $prefix . 'finance_supplier';
       
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
@@ -56,14 +58,15 @@ class FinanceExpenditureSearch extends FinanceExpenditure
                  . $wthdr . ".kaewithdr_id=" . $expwithdr . ".kaewithdr_id)";
         
         $query = (new \yii\db\Query())
-                    ->select([$exps . ".*", $count_states . " AS statescount ", $kae . " AS kae_id "])
-                    ->from([$exps, $expwithdr])
-                    ->where($exps . ".exp_id=" . $expwithdr . ".exp_id AND " . 
+                    ->select([$suppl. ".suppl_name", $exps . ".*", $count_states . " AS statescount ", $kae . " AS kae_id "])
+                    ->from([$exps, $expwithdr, $suppl])
+                    ->where($suppl . ".suppl_id=" . $exps . ".suppl_id AND " . $exps . ".exp_id=" . $expwithdr . ".exp_id AND " . 
                             $expwithdr . ".kaewithdr_id 
                             IN (SELECT " . $wthdr . ".kaewithdr_id
                                 FROM " . $wthdr . ", " . $cred . "  
                                 WHERE " . $cred . ".year=" . Yii::$app->session["working_year"] . "
                                 AND " . $wthdr . ".kaecredit_id=" . $cred . ".kaecredit_id)")->distinct();
+                    //->orderBy([$exps . '.suppl_id' => SORT_ASC, $exps . '.exp_id' => SORT_ASC]);
         //echo $query->createCommand()->getRawSql();die();
 
         $dataProvider = new ActiveDataProvider([
@@ -71,11 +74,16 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',  
                                         'exp_amount', 'exp_date', 'exp_description', 'statescount', 'kae_id'
                                         ],
-                'defaultOrder' => ['suppl_id'=>SORT_ASC]
+                'defaultOrder' => ['suppl_id'=>SORT_ASC, 'exp_id'=>SORT_ASC,]
             ],
         ]);
 
+       // echo "<pre>"; echo ($params['FinanceExpenditureSearch']['exp_amount']); echo "</pre>";die();
+       // var_dump($params[]);die();
+        
         $this->load($params);
+       // if(isset($params['FinanceExpenditureSearch']['exp_amount']))
+      //      $this->exp_amount = Money::toCents($this->exp_amount);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -89,12 +97,19 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             'exp_amount' => $this->exp_amount,
             'exp_date' => $this->exp_date,
             'exp_deleted' => $this->exp_deleted,
-            'suppl_id' => $this->suppl_id,
+        //    'suppl_id' => $this->suppl_id,
             'fpa_value' => $this->fpa_value,
         ]);
 
-        $query->andFilterWhere(['like', 'exp_lock', $this->exp_lock]);
+        
+        $query->andFilterWhere(['like', 'suppl_name', $this->suppl_id]);
 
+        //if(isset($params['FinanceExpenditureSearch']['exp_amount']))
+         //   $this->exp_amount = Money::toCurrency($this->exp_amount);
+        
+        //if($params['FinanceExpenditureSearch']['exp_amount'] == 0)
+        //    $this->exp_amount = null;
+            
         return $dataProvider;
     }
 }
