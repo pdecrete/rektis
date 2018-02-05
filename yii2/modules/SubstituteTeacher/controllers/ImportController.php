@@ -389,7 +389,9 @@ class ImportController extends Controller
 
 
     /**
-     *
+     * Some rules may seem missing, but it is supposed that validateTeacher has already been 
+     * called before importTeacher (see import action).
+     * 
      * @return boolean whether the import succeeded or not
      */
     protected function importTeacher($year, $worksheet, $highestColumn)
@@ -466,7 +468,8 @@ class ImportController extends Controller
                 array_walk($year_teacher_info, function ($v, $k) use (&$year_teacher_ids) {
                     $year_teacher_ids[$v['registry_id']] = $v['id'];
                 });
-                
+
+                // placement preferences were checked with validateTeacher 
                 Yii::$app->db->createCommand()->batchInsert(PlacementPreference::tableName(), ['teacher_id', 'prefecture_id', 'school_type', 'order'], array_map(function ($v) use ($year_teacher_ids) {
                     return [
                         $year_teacher_ids[$v['teacher_id']], $v['prefecture_id'], $v['school_type'], $v['order']
@@ -521,8 +524,23 @@ class ImportController extends Controller
                     if ($data_key == 'vat_number') {
                         $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
                     } elseif ($data_key == 'placement_preferences') {
-                        $placement_preferences_import = $this->parsePlacementPreferences($placement_preferences);
+                        // no need to check ordering because it is created by the import process...
+                        // check validity of selections though
+                        $placement_preferences_import = $this->parsePlacementPreferences($placement_preferences, true);
                         if ($placement_preferences_import === false) {
+                            $errors[] = Yii::t('substituteteacher', 'Problem with placement preference <em>{str}</em>.', ['str' => $placement_preferences]);
+                        } else {
+                            $placement_preferences_data = array_map(function ($v) {
+                                $model = new PlacementPreference(array_merge(['id' => 0], $v));
+                                return $model;
+                            }, $placement_preferences_import);
+                        }
+                        if (($valid = PlacementPreference::checkRules($placement_preferences_data)) !== true) {
+                            foreach ($placement_preferences_data as $error_model) {
+                                if ($error_model->hasErrors()) {
+                                    $errors[] = $this->extractErrorMessages($error_model->getErrors());
+                                }
+                            }
                             $errors[] = Yii::t('substituteteacher', 'Problem with placement preference <em>{str}</em>.', ['str' => $placement_preferences]);
                         }
                     }
