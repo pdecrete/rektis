@@ -26,6 +26,8 @@ class PlacementPreference extends \yii\db\ActiveRecord
     const SCHOOL_TYPE_ANY = 0;
     const SCHOOL_TYPE_SCHOOL = 1;
     const SCHOOL_TYPE_KEDDY = 2;
+    const SCHOOL_TYPE_SCHOOL_SYMBOL = 'Σ';
+    const SCHOOL_TYPE_KEDDY_SYMBOL = 'Κ';
 
     public $label_for_teacher;
     public $school_type_label;

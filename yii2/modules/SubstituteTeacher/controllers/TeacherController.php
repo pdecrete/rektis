@@ -36,7 +36,7 @@ class TeacherController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update'],
+                        'actions' => ['index', 'view', 'create', 'update', 'import'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -192,6 +192,11 @@ class TeacherController extends Controller
             'model' => $model,
             'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
         ]);
+    }
+
+    public function actionImport()
+    {
+        throw new \Exception('Not implemented yet');
     }
 
     /**

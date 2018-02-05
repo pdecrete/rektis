@@ -19,14 +19,15 @@ class m171122_101454_prefectures extends Migration
             'id' => $this->primaryKey(),
             'region' => $this->string(150)->notNull()->defaultValue(''),
             'prefecture' => $this->string(150)->notNull()->unique(),
+            'symbol' => $this->char(1)->notNull()->unique()->comment('textual code for batch imports'),
             ], $tableOptions);
 
-        $this->batchInsert('{{%stprefecture}}', ['region', 'prefecture'], [
-            ['ΚΡΗΤΗΣ', 'ΗΡΑΚΛΕΙΟΥ'],
-            ['ΚΡΗΤΗΣ', 'ΛΑΣΙΘΙΟΥ'],
-            ['ΚΡΗΤΗΣ', 'ΡΕΘΥΜΝΟΥ'],
-            ['ΚΡΗΤΗΣ', 'ΧΑΝΙΩΝ'],
-        ]);
+        // $this->batchInsert('{{%stprefecture}}', ['region', 'prefecture', 'symbol'], [
+        //     ['ΚΡΗΤΗΣ', 'ΗΡΑΚΛΕΙΟΥ', 'Η'],
+        //     ['ΚΡΗΤΗΣ', 'ΛΑΣΙΘΙΟΥ', 'Λ'],
+        //     ['ΚΡΗΤΗΣ', 'ΡΕΘΥΜΝΟΥ', 'Ρ'],
+        //     ['ΚΡΗΤΗΣ', 'ΧΑΝΙΩΝ', 'Χ'],
+        // ]);
 
         $this->addColumn('{{%stposition}}', 'prefecture_id', $this->integer()->after('specialisation_id'));
         $this->addForeignKey('fk_prefecture_id', '{{%stposition}}', 'prefecture_id', '{{%stprefecture}}', 'id', 'RESTRICT', 'CASCADE');

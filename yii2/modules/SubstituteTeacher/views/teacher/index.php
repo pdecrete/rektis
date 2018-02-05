@@ -6,6 +6,8 @@ use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 
+$bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -20,6 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a(Yii::t('substituteteacher', 'Batch Insert Teacher In Year'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher'], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a(Yii::t('substituteteacher', 'Download import sample'), "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls", ['class' => 'btn btn-default']) ?>
         </p>
         <?= GridView::widget([
         'dataProvider' => $dataProvider,
