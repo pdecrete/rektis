@@ -114,14 +114,24 @@ class Teacher extends \yii\db\ActiveRecord
     {
         $choices = [];
         if ($for === 'status') {
-            return [
+            $choices = [
                 self::TEACHER_STATUS_ELIGIBLE => Yii::t('substituteteacher', 'Eligible for appointment'),
                 self::TEACHER_STATUS_APPOINTED => Yii::t('substituteteacher', 'Teacher appointed'),
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
             ];
+        } else if ($for === 'year') {
+            // one year before and 2 ahead... 
+            $year = (int)date('Y');
+            $years = range($year - 1, $year + 2);
+            $choices = array_combine($years, $years);
         }
 
         return $choices;
+    }
+
+    public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)
+    {
+        return static::selectables($index_property, $label_property, $group_property, null);
     }
 
     public function afterFind()

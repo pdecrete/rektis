@@ -12,13 +12,15 @@ use app\modules\SubstituteTeacher\models\PlacementPreference;
  */
 class PlacementPreferenceSearch extends PlacementPreference
 {
+    public $year; // filter by teacher year catalog
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'prefecture_id', 'school_type', 'order'], 'integer'],
+            [['id', 'teacher_id', 'prefecture_id', 'school_type', 'order', 'year'], 'integer'],
         ];
     }
 
@@ -40,7 +42,8 @@ class PlacementPreferenceSearch extends PlacementPreference
      */
     public function search($params)
     {
-        $query = PlacementPreference::find();
+        $query = PlacementPreference::find()
+            ->joinWith('teacher');
 
         // add conditions that should always apply here
 
@@ -63,6 +66,7 @@ class PlacementPreferenceSearch extends PlacementPreference
             'prefecture_id' => $this->prefecture_id,
             'school_type' => $this->school_type,
             'order' => $this->order,
+            '{{%stteacher}}.year' => $this->year,
         ]);
 
         return $dataProvider;
