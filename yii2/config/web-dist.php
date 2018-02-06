@@ -116,6 +116,9 @@ $config = [
         'SubstituteTeacher' => [
             'class' => 'app\modules\SubstituteTeacher\SubstituteTeacherModule',
         ],
+        'finance' => [
+            'class' => 'app\modules\finance\Module',
+        ],
         'datecontrol' => [
             'class' => 'kartik\datecontrol\Module',
             // format settings for displaying each date attribute (ICU format example)
