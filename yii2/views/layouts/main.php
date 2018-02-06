@@ -129,7 +129,7 @@ AppAsset::register($this);
 
                     [
                         'label' => 'Αναπληρωτές',
-                        'visible' => Yii::$app->user->can('admin'), // TODO change when role is applicable
+                        'visible' => Yii::$app->user->can('spedu_user'), // TODO change when role is applicable
                         'items' => [
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-file"></i> Αρχεία δεδομένων</li>',
                             [
