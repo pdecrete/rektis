@@ -236,8 +236,27 @@ class Leave extends \yii\db\ActiveRecord
         return $total;
     }
 
-    public function getmydaysLeft($empid, $leavetype, $year)
+    /**
+     * 
+     * @param string|int $empid
+     * @param int $leavetype 
+     * @param int $year The year to get the leave days for 
+     * @param string $upto_date 'YYYY-MM-DD' formatted date to restrict the date up to which the days count will sum 
+     */
+    public function getmydaysLeft($empid, $leavetype, $year, $upto_date = null)
     {
+        $query_params = [
+            ':id' => $empid,
+            ':del' => 0,
+            ':type' => $leavetype,
+            ':year' => $year
+        ];
+        if ($upto_date !== null) {
+            $restrict_dates_clause = 'AND admapp_leave.start_date <= :uptodate';
+            $query_params[':uptodate'] = $upto_date;
+        } else {
+            $restrict_dates_clause = '';
+        }
         $total = Yii::$app->db->createCommand(
             ' select CASE WHEN daysleft IS NULL THEN leaveLimit ELSE daysleft END AS daysleft from ( ' .
             '	select employeeID, leaveID, leaveTypeName, leaveLimit, leaveCheck, leaveYear, deleted, duration, case when days is not null then days when days is null then  0 end as days, case when days is not null then (leaveLimit + days - duration) when days is null then (leaveLimit - duration) end as daysleft ' .
@@ -247,6 +266,7 @@ class Leave extends \yii\db\ActiveRecord
             '	FROM admapp_leave ' .
             '	LEFT OUTER JOIN admapp_employee ON ( admapp_leave.employee = admapp_employee.id ) , admapp_leave_type ' .
             '	WHERE admapp_leave.type = admapp_leave_type.id ' .
+            "   {$restrict_dates_clause} " .
             '	AND admapp_employee.id = :id   ' .
             '	AND admapp_leave.deleted = :del ' .
             '	AND admapp_leave_type.id = :type ' .
@@ -256,13 +276,7 @@ class Leave extends \yii\db\ActiveRecord
             '	 admapp_leave_balance AS B on ( B.employee = A.employeeID AND B.leave_type = A.leaveID and B.year = A.leaveYear - 1 )  ' .
             ' 	WHERE leaveYear = :year ' .
             '	) AS C ',
-            [
-                ':id' => $empid,
-                ':del' => 0,
-                ':type' => $leavetype,
-                ':year' => $year,
-            ]
-
+            $query_params
         )->queryScalar();
         return $total;
     }

@@ -118,11 +118,12 @@ class LeaveController extends Controller
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
             $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . '/' . Yii::$app->formatter->asDate($currentModel->application_protocol_date, 'php:d-m-Y'));
-            $rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)));
+            $rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)), $currentModel->start_date);
             $templateProcessor->setValue('REM' . "#{$i}", $rem);
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
             $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);
             $templateProcessor->setValue('POSITION' . "#{$i}", $currentModel->employeeObj->position0->name);
+            $templateProcessor->setValue('LEAVE_REASON' . "#{$i}", $currentModel->reason);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
             if (($currentModel->extra_reason1 !== '') && ($currentModel->extra_reason1 !== null)) {
                 $k++;
@@ -323,19 +324,21 @@ class LeaveController extends Controller
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             if ($model->typeObj->check == true) {
-                $left = $model->daysLeft;
-                if ($left == null) {
-                    //					$left = $model->typeObj->limit;
-                    $leave = new Leave;
-                    $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
-                    $days = ($days > 0) ? $days : 0;
+                // check if days have changed and only then check left days
+                if (($prev_days = (int)$model->getOldAttribute('duration')) != (int)$model->duration) {
+                    $left = $model->daysLeft;
+                    if ($left == null) {
+                        $leave = new Leave;
+                        $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
+                        $days = ($days > 0) ? $days : 0;
 
-                    $left = $model->typeObj->limit + $days;
-                }
-                if ($model->duration > $left) {
-                    $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
-                    Yii::$app->session->setFlash('danger', $str);
-                    return $this->render('update', ['model' => $model]);
+                        $left = $model->typeObj->limit + $days;
+                    }
+                    if ($model->duration > $left) {
+                        $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
+                        Yii::$app->session->setFlash('danger', $str);
+                        return $this->render('update', ['model' => $model]);
+                    }
                 }
             }
         }

@@ -62,6 +62,7 @@ class Employee extends ActiveRecord
 {
     public $leaveSumDelFlag = 0; // Για τα σύνολα των αδειών αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
     public $transportSumDelFlag = 0; // Για τα σύνολα των μετακινήσεων αν θα βγαίνουν για τις μη διεγραμμένες (0) ή τις διεγραμμένες (1)
+    public $default_leave_type; 
 
     /**
      * @inheritdoc
@@ -87,12 +88,23 @@ class Employee extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+        parent::init();
+
+        if (array_key_exists('default_leave_type', Yii::$app->params)) {
+            $this->default_leave_type = Yii::$app->params['default_leave_type'];
+        } else {
+            $this->default_leave_type = null;
+        }
+    }
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
+            ['default_leave_type', 'default', 'value' => $this->default_leave_type],
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'pay_scale', 'master_degree', 'doctorate_degree', 'work_experience', 'deleted', 'default_leave_type'], 'integer'],
             [['status', 'specialisation', 'service_organic', 'service_serve', 'position', 'name', 'surname', 'fathersname', 'tax_identification_number', /* 'social_security_number', */ 'identification_number', /* 'appointment_fek', 'appointment_date', */ 'rank', 'pay_scale'/* , 'service_adoption_date' */], 'required'],
             [['tax_identification_number'], 'string', 'max' => 9],

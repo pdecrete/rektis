@@ -47,80 +47,155 @@ AppAsset::register($this);
                         'visible' => !Yii::$app->user->isGuest,
                         'items' => [
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Εφαρμογής</li>',
-                            [	'label' => 'Ειδικότητες',
-                                'url' => ['/specialisation']
+                            [    'label' => 'Ειδικότητες',
+                                'url' => ['/specialisation/index']
                             ],
-                            [	'label' => 'Υπηρεσίες',
+                            [    'label' => 'Υπηρεσίες',
                                 'url' => ['/service']
                             ],
-                            [	'label' => 'Θέσεις',
+                            [    'label' => 'Θέσεις',
                                 'url' => ['/position']
                             ],
-                            [	'label' => 'Καταστάσεις υπαλλήλων',
+                            [    'label' => 'Καταστάσεις υπαλλήλων',
                                 'url' => ['/employee-status']
                             ],
-                            
                             '<li class="divider"></li>',
-                            
+
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-sunglasses"></i> Αδειών</li>',
-                            [	'label' => 'Είδη αδειών',
+
+                            [    'label' => 'Είδη αδειών',
                                 'url' => ['/leave-type']
                             ],
-                           
+
                             '<li class="divider"></li>',
-                           
+
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i> Μετακινήσεων</li>',
-                            [	'label' => 'Αποστάσεις',
+
+                            [    'label' => 'Αποστάσεις',
                                 'url' => ['/transport-distance']
                             ],
-                            [	'label' => 'Είδη μετακινήσεων',
+                            [    'label' => 'Είδη μετακινήσεων',
                                 'url' => ['/transport-type']
                             ],
-                            [	'label' => 'Μέσα μετακίνησης',
+                            [    'label' => 'Μέσα μετακίνησης',
                                 'url' => ['/transport-mode']
                             ],
-                            [	'label' => 'Αποφάσεις ανάληψης υποχρέωσης',
+                            [    'label' => 'Αποφάσεις ανάληψης υποχρέωσης',
                                 'url' => ['/transport-funds']
                             ],
-                            [	'label' => 'Καταστάσεις μετακινήσεων',
+                            [    'label' => 'Καταστάσεις μετακινήσεων',
                                 'url' => ['/transport-status']
                             ],
-                            
+
                             Yii::$app->user->can('admin') ?
                             '<li class="divider"></li>' :
                             '<li></li>',
-                            
+
                             Yii::$app->user->can('admin') ?
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-dashboard"></i> Διαχειριστικές</li>' :
                             '<li></li>',
-                            
-                            [	'label' => 'Auth items',
+
+                            [    'label' => 'Auth items',
                                 'url' => ['/auth-item'],
                                 'visible' => Yii::$app->user->can('admin'),
                             ],
-                            [	'label' => 'Auth item connections',
+                            [    'label' => 'Auth item connections',
                                 'url' => ['/auth-item-child'],
                                 'visible' => Yii::$app->user->can('admin'),
                             ],
-                            [	'label' => 'Auth assignments',
+                            [    'label' => 'Auth assignments',
                                 'url' => ['/auth-assignment'],
                                 'visible' => Yii::$app->user->can('admin'),
                             ],
-                            [	'label' => 'Auth rules',
+                            [    'label' => 'Auth rules',
                                 'url' => ['/auth-rule'],
                                 'visible' => Yii::$app->user->can('admin'),
                             ],
                         ],
                     ],
-                    
-                    [ 	'label' => 'Χρήστες',
+
+                    [
+                        'label' => 'Χρήστες',
                         'visible' => Yii::$app->user->can('admin'),
                         'items' => [
-                            [	'label' => 'Όλοι οι χρήστες',
+                            [    'label' => 'Όλοι οι χρήστες',
                                 'url' => ['/user/index']
                             ],
-                            [	'label' => 'Νέος χρήστης',
+                            [    'label' => 'Νέος χρήστης',
                                 'url' => ['/user/create']
+                            ],
+                        ],
+                    ],
+
+                    [
+                        'label' => 'Αναπληρωτές',
+                        'visible' => Yii::$app->user->can('admin'), // TODO change when role is applicable
+                        'items' => [
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-file"></i> Αρχεία δεδομένων</li>',
+                            [
+                                'label' => 'Διαθέσιμα αρχεία',
+                                'url' => [ '/SubstituteTeacher/substitute-teacher-file/index' ]
+                            ],
+                            [
+                                'label' => 'Μεταφόρτωση αρχείων',
+                                'url' => [ '/SubstituteTeacher/substitute-teacher-file/upload' ]
+                            ],
+
+                            '<li class="divider"></li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
+                            [
+                                'label' => 'Πράξεις',
+                                'url' => [ '/SubstituteTeacher/operation/index' ]
+                            ],
+                            [
+                                'label' => 'Σχέσεις πράξεων - ειδικοτήτων',
+                                'url' => [ '/SubstituteTeacher/operation-specialisation/index' ],
+                                'visible' => Yii::$app->user->can('admin'),
+                            ],
+                            [
+                                'label' => 'Περιφερειακές Ενότητες',
+                                'url' => [ '/SubstituteTeacher/prefecture/index' ]
+                            ],
+                            [
+                                'label' => 'Ειδικότητες',
+                                'url' => [ '/specialisation/index' ]
+                            ],
+                            [
+                                'label' => 'Κατάλογος αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/teacher-registry/index' ]
+                            ],
+
+                            '<li class="divider"></li>',
+                            '<li class="dropdown-header"><i class="glyphicon glyphicon-list"></i> Στοιχεία</li>',
+                            [
+                                'label' => 'Λειτουργικά κενά',
+                                'url' => [ '/SubstituteTeacher/position/index' ]
+                            ],
+                            [
+                                'label' => 'Προσκλήσεις προσλήψεων',
+                                'url' => [ '/SubstituteTeacher/call/index' ]
+                            ],
+                            [
+                                'label' => 'Κατανομές ΠΥΣΕΕΠ',
+                                'url' => [ '/SubstituteTeacher/call-position/index' ]
+                            ],
+                            [
+                                'label' => 'Αναπληρωτές',
+                                'url' => [ '/SubstituteTeacher/teacher/index' ]
+                            ],
+                            [
+                                'label' => 'Προτιμήσεις τοποθέτησης αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/placement-preference/index' ]
+                            ],
+                            [
+                                'label' => 'Καταγραφή κατάστασης αναπληρωτών',
+                                'url' => [ '/SubstituteTeacher/teacher-status-audit/index' ]
+                            ],
+                            [
+                                'label' => 'Διαχείριση αιτήσεων',
+                            ],
+                            [
+                                'label' => 'Κατανομή',
                             ],
                         ],
                     ],
@@ -141,14 +216,15 @@ AppAsset::register($this);
                     [ 	'label' => 'Εργαζόμενοι',
                         'visible' => !Yii::$app->user->isGuest,
                         'items' => [
-                            [	'label' => 'Όλοι οι εργαζόμενοι',
+
+                            [    'label' => 'Όλοι οι εργαζόμενοι',
                                 'url' => ['/employee/index']
                             ],
-                            
+
                             '<li class="divider"></li>',
-                            
+
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-sunglasses"></i></li>',
-                            [	'label' => 'Άδειες',
+                            [    'label' => 'Άδειες',
                                 'url' => ['/leave']
                             ],
                             [
@@ -159,10 +235,10 @@ AppAsset::register($this);
                                 'label' => 'Αποφάσεις μεταφοράς υπολοίπων αδειών',
                                 'url' => ['/leave-balance'],
                             ],
-                            
+
                             '<li class="divider"></li>',
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
-                            [	'label' => 'Μετακινήσεις',
+                            [    'label' => 'Μετακινήσεις',
                                 'url' => ['/transport']
                             ],
                             [
@@ -214,20 +290,23 @@ AppAsset::register($this);
                     ],
                     Yii::$app->user->isGuest ?
                             [ 	'label' => '<i class="glyphicon glyphicon-log-in"></i> Είσοδος',
+
                                 'encode' => false,
                                 'visible' => Yii::$app->user->isGuest,
                                 'url' => ['/site/login']
                             ] :
-                            [ 	'label' => '<i class="glyphicon glyphicon-user"></i>',
+
+                            [    'label' => '<i class="glyphicon glyphicon-user"></i>',
                                 'encode' => false,
                                 'visible' => !Yii::$app->user->isGuest,
                                 'items' => [
                                     '<li class="dropdown-header">' . Yii::$app->user->identity->username . '</li>',
-                                    [	'label' => 'Ο λογαριασμός μου',
+
+                                    [    'label' => 'Ο λογαριασμός μου',
                                         'url' => ['/user/account']
                                     ],
                                     '<li class="divider"></li>',
-                                    [	'label' => '<i class="glyphicon glyphicon-log-out"></i> Έξοδος',
+                                    [    'label' => '<i class="glyphicon glyphicon-log-out"></i> Έξοδος',
                                         'encode' => false,
                                         'url' => ['/site/logout'],
                                         'linkOptions' => ['data-method' => 'post']
@@ -249,7 +328,7 @@ AppAsset::register($this);
                 <?php
                 foreach (Yii::$app->session->getAllFlashes() as $key => $message) {
                     if (!is_array($message)) {
-                        $messages = array($message);
+                        $messages = [$message];
                     } else {
                         $messages = $message;
                     }
