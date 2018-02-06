@@ -59,10 +59,10 @@ AppAsset::register($this);
                             [    'label' => 'Καταστάσεις υπαλλήλων',
                                 'url' => ['/employee-status']
                             ],
-
                             '<li class="divider"></li>',
 
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-sunglasses"></i> Αδειών</li>',
+
                             [    'label' => 'Είδη αδειών',
                                 'url' => ['/leave-type']
                             ],
@@ -70,6 +70,7 @@ AppAsset::register($this);
                             '<li class="divider"></li>',
 
                             '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i> Μετακινήσεων</li>',
+
                             [    'label' => 'Αποστάσεις',
                                 'url' => ['/transport-distance']
                             ],
@@ -201,21 +202,21 @@ AppAsset::register($this);
                     
                     [
                         'label' => Yii::t('app', 'Announcements'),
-                    	'visible' => Yii::$app->user->can('admin'),
+                        'visible' => Yii::$app->user->can('admin'),
                         'items' => [
                             [
-                                'label' => Yii::t('app', 'All announcements'), // 'Όλες οι ανακοινώσεις', 
-								'url' => ['/announcement/index']
-							],
+                                'label' => Yii::t('app', 'All announcements'), // 'Όλες οι ανακοινώσεις',
+                                'url' => ['/announcement/index']
+                            ],
                             [	'label' => Yii::t('app', 'Create Announcement'),
-								'url' => ['/announcement/create']
-							],
+                                'url' => ['/announcement/create']
+                            ],
                         ],
                     ],
-
                     [ 	'label' => 'Εργαζόμενοι',
-						'visible' => !Yii::$app->user->isGuest,
+                        'visible' => !Yii::$app->user->isGuest,
                         'items' => [
+
                             [    'label' => 'Όλοι οι εργαζόμενοι',
                                 'url' => ['/employee/index']
                             ],
@@ -250,23 +251,57 @@ AppAsset::register($this);
                             ],
                         ],
                     ],
-                    [    'label' => 'Σχετικά',
+                    [ 	'label' => 'Δαπάνες',
+                        'visible' => !Yii::$app->user->isGuest,
+                        'items' => [
+                            [	'label' => 'Κεντρική Διαχείριση',
+                                'url' => ['/finance/default']
+                            ],
+                            [
+                                'label' => 'Διαχείριση Οικονομικού Έτους',
+                                'url' => ['/finance/default/administeryear'],
+                            ],
+                            [
+                                'label' => 'Παράμετροι',
+                                'url' => ['/finance/default/parameterize'],
+                            ],
+                            '<li class="divider"></li>',
+                            [
+                                'label' => 'Δαπάνες',
+                                'url' => ['/finance/finance-expenditure'],
+                            ],
+                            [
+                                'label' => 'Τιμολόγια',
+                                'url' => ['/finance/finance-invoice'],
+                            ],
+                            [	'label' => 'Προμηθευτές',
+                                'url' => ['/finance/finance-supplier']
+                            ],
+                            [	'label' => 'Αναφορές',
+                                'url' => ['/finance/default']
+                            ],
+                        ],
+                    ],
+                    [ 	'label' => 'Σχετικά',
                         'url' => ['/site/about']
                     ],
-                    [    'label' => 'Επικοινωνία',
+                    [ 	'label' => 'Επικοινωνία',
                         'url' => ['/site/contact']
                     ],
                     Yii::$app->user->isGuest ?
-                            [    'label' => '<i class="glyphicon glyphicon-log-in"></i> Είσοδος',
+                            [ 	'label' => '<i class="glyphicon glyphicon-log-in"></i> Είσοδος',
+
                                 'encode' => false,
                                 'visible' => Yii::$app->user->isGuest,
                                 'url' => ['/site/login']
                             ] :
+
                             [    'label' => '<i class="glyphicon glyphicon-user"></i>',
                                 'encode' => false,
                                 'visible' => !Yii::$app->user->isGuest,
                                 'items' => [
                                     '<li class="dropdown-header">' . Yii::$app->user->identity->username . '</li>',
+
                                     [    'label' => 'Ο λογαριασμός μου',
                                         'url' => ['/user/account']
                                     ],
@@ -321,7 +356,6 @@ AppAsset::register($this);
                 </div>
             </div>
         </footer>
-
         <?php $this->endBody() ?>
     </body>
 </html>
