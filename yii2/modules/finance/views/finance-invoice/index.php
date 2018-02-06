@@ -3,6 +3,7 @@
 use app\modules\finance\Module;
 use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
+use yii\widgets\Pjax;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -16,7 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= $this->render('/default/infopanel');?>
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+	
+	<?php Pjax::begin();?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -27,11 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['attribute' => 'inv_date', 
              'label' => Module::t('modules/finance/app', 'Voucher date'),
-                'format' => ['date', 'php:Y-m-d'],
+                'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([
                     'model' => $searchModel,
                     'attribute' => 'inv_date',
-                    'pluginOptions' => ['format' => 'Y-m-d'],
                     'widgetOptions' => [
                         'layout' => '{remove}{input}'
                     ]                   
@@ -63,4 +64,5 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
+    <?php  Pjax::end();?>
 </div>

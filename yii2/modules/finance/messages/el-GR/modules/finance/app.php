@@ -17,6 +17,9 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'RCN Credit Withdrawals Balance' => 'Υπόλοιπο Αναλήψεων ΚΑΕ',
+    'RCN Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων ΚΑΕ',
+    'RCN Credit Available' => 'Διαθέσιμο ποσό ΚΑΕ',
     'Failure in udpating voucher.' => 'Αποτυχία ενημέρωσης παραστατικού',
     'The voucher was updated successfully.' => 'Το παραστατικό ενημερώθηκε επιτυχώς.',
     'Update Expenditure State' => 'Ενημέρωση Στοιχείων Κατάστασης',

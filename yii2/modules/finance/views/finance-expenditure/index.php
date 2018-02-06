@@ -33,9 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
  
 	<?=Html::beginForm(['paymentreport'],'post');?>
  		
- 		<?php Pjax::begin([
-            // PJax options
-        ]);?>
+	<?php Pjax::begin();?>
  		
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

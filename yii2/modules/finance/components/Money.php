@@ -33,4 +33,8 @@ class Money
     public static function toDbPercentage($percentage) {   
         return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));; 
     }
+    
+    public static function dbPercentagetoDecimal($percentage){
+        return $percentage/10000;
+    }
 }

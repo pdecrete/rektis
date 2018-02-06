@@ -5,6 +5,8 @@ use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 use dosamigos\chartjs\ChartJs;
 use app\modules\finance\models\FinanceKaecredit;
+use app\modules\finance\models\FinanceKaecreditpercentage;
+use app\modules\finance\models\FinanceKaewithdrawal;
 
 function random_color_part() {
     return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
@@ -15,19 +17,26 @@ function random_color() {
 }
 
 if(Integrity::uniqueCurrentYear()):
+
     $credits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
     $labels = array();
     $data = array();
-    $colors = array();
+    $available = array();
+    $withdrawals = array();
+    $withdrawalsbalance = array();
+
     foreach ($credits as $index=>$credit){
         if($credit->kaecredit_amount != 0){
+            $kaecredit_percentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($credit->kaecredit_id);
             $labels[$index] = sprintf('%04d', $credit->kae_id);
             $data[$index] = Money::toCurrency($credit->kaecredit_amount);
-            $colors[$index] = '#' . random_color();
+            $available[$index] = Money::toCurrency($credit->kaecredit_amount*Money::dbPercentagetoDecimal($kaecredit_percentage));            
+            $withdrawals[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawsSum($credit->kaecredit_id));
+            $withdrawalsbalance[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawalsBalance($credit->kaecredit_id));
         }
     }
     
-    //echo "<pre>"; print_r($data); echo "</pre>"; die();
+    //echo "<pre>"; print_r($percentages); echo "</pre>"; die();
     
 ?>
     <div class="row">
@@ -53,19 +62,36 @@ if(Integrity::uniqueCurrentYear()):
 						<hr />
 						<div class="row">
 						    <?= ChartJs::widget([
-                                    'type' => 'horizontalBar',   
+                                    'type' => 'horizontalBar',
+						            //'barThickness' => 10,
+						            'options' => ['height' => count($data)*45],
                                     'data' => [
                                         'labels' => $labels,
                                         'datasets' => [
                                             [
                                                 'label' => Module::t('modules/finance/app', "RCN Credits"),                                                
-                                                'backgroundColor' => $colors,
+                                                'backgroundColor' => 'orange',// $colors,
                                                 'data' => $data
                                             ],
+                                            [
+                                                'label' => Module::t('modules/finance/app', "RCN Credit Available"),
+                                                'backgroundColor' => 'blue', //$colors,
+                                                'data' => $available
+                                            ],
+                                            [
+                                                'label' => Module::t('modules/finance/app', "RCN Credit Withdrawals Sum"),
+                                                'backgroundColor' => 'brown', //$colors,
+                                                'data' => $withdrawals
+                                            ],
+                                            [
+                                                'label' => Module::t('modules/finance/app', "RCN Credit Withdrawals Balance"),
+                                                'backgroundColor' => 'green', //$colors,
+                                                'data' => $withdrawalsbalance
+                                            ]
                                          ]
                                     ]
                                 ]);
-                            ?>
+                            ?> 
 						</div>
 					</div>
                 </div>

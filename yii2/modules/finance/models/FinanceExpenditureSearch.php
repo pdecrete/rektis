@@ -5,7 +5,6 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceExpenditure;
 use app\modules\finance\components\Money;
 
 /**
@@ -19,8 +18,8 @@ class FinanceExpenditureSearch extends FinanceExpenditure
     public function rules()
     {
         return [
-            [['exp_id', 'exp_amount', 'exp_date', 'exp_deleted',  'fpa_value'], 'integer'],
-            [['suppl_id', 'exp_lock'], 'safe'],
+            [['exp_id', 'exp_amount', 'exp_deleted',  'fpa_value'], 'integer'],
+            [['suppl_id', 'exp_date', 'exp_lock'], 'safe'],
         ];
     }
 
@@ -78,38 +77,37 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             ],
         ]);
 
-       // echo "<pre>"; echo ($params['FinanceExpenditureSearch']['exp_amount']); echo "</pre>";die();
+        //echo $this->exp_amount . "---</br>";
+        //echo "<pre>"; echo ($params['FinanceExpenditureSearch']['exp_amount']); echo "</pre>";die();
        // var_dump($params[]);die();
         
         $this->load($params);
-       // if(isset($params['FinanceExpenditureSearch']['exp_amount']))
-      //      $this->exp_amount = Money::toCents($this->exp_amount);
-
+                
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
         }
 
+        //$params['FinanceExpenditureSearch']['exp_amount']
+        if($this->exp_amount != "")
+            $converted_amount = Money::toCents($this->exp_amount);
+        else
+            $converted_amount = $this->exp_amount;
+                
         // grid filtering conditions
         $query->andFilterWhere([
             'exp_id' => $this->exp_id,
-            'exp_amount' => $this->exp_amount,
+           // 'exp_amount' => $this->exp_amount,
+            'exp_amount' => $converted_amount,
             'exp_date' => $this->exp_date,
             'exp_deleted' => $this->exp_deleted,
-        //    'suppl_id' => $this->suppl_id,
             'fpa_value' => $this->fpa_value,
         ]);
 
         
         $query->andFilterWhere(['like', 'suppl_name', $this->suppl_id]);
 
-        //if(isset($params['FinanceExpenditureSearch']['exp_amount']))
-         //   $this->exp_amount = Money::toCurrency($this->exp_amount);
-        
-        //if($params['FinanceExpenditureSearch']['exp_amount'] == 0)
-        //    $this->exp_amount = null;
-            
         return $dataProvider;
     }
 }

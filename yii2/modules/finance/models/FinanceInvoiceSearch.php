@@ -18,8 +18,8 @@ class FinanceInvoiceSearch extends FinanceInvoice
     public function rules()
     {
         return [
-            [['inv_id', 'inv_date', 'inv_deleted', 'suppl_id', 'exp_id', 'invtype_id'], 'integer'],
-            [['inv_number', 'inv_order'], 'safe'],
+            [['inv_id', 'inv_deleted', 'suppl_id', 'exp_id', 'invtype_id'], 'integer'],
+            [['inv_number', 'inv_order', 'inv_date'], 'safe'],
         ];
     }
 

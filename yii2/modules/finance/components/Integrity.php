@@ -1,7 +1,6 @@
 <?php
 namespace app\modules\finance\components;
 
-use Yii;
 use app\modules\finance\models\FinanceYear;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaecredit;
