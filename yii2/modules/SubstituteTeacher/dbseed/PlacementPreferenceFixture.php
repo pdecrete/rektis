@@ -6,7 +6,6 @@ use yii\test\ActiveFixture;
 
 class PlacementPreferenceFixture extends ActiveFixture
 {
-
     public $tableName = '{{%stplacement_preference}}';
     public $depends = [
         'app\modules\SubstituteTeacher\dbseed\PrefectureFixture',
