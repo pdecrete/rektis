@@ -39,9 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <p><?= Module::t('modules/finance/app', 'View/Edit/Delete parameters like Tax Offices , Suppliers, Expenditures states etc.');?></p>
             <p><?= Html::a(Module::t('modules/finance/app', 'Parameters'), Url::to(['/finance/default/parameterize']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>            
         </div>
+        <!-- 
         <div class="col-lg-4">
             <h3><?= Module::t('modules/finance/app', 'Reports');?></h3>
             <p><?= Module::t('modules/finance/app', 'Reports of expenditures, invoices, credit etc.');?></p>
-        </div>             
+        </div>
+         -->             
     </div>
 </div>

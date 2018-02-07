@@ -139,7 +139,7 @@ class FinanceYearController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating financial year."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The financial year was updated successfully."));
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year was updated successfully."));
             return $this->redirect(['index']);
         }
         else

@@ -17,6 +17,11 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The expenditure was created successfully.' => 'Η δαπάνη δημιουργήθηκε επιτυχώς',
+    'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
+    'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
+    'The RCN was deleted succesfully.' => 'Ο ΚΑΕ διαγράφηκε επιτυχώς.',
+    'Failed to create Payments Report. Please check the selected expenditures.' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες.',
     'RCN Credit Withdrawals Balance' => 'Υπόλοιπο Αναλήψεων ΚΑΕ',
     'RCN Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων ΚΑΕ',
     'RCN Credit Available' => 'Διαθέσιμο ποσό ΚΑΕ',
@@ -40,14 +45,14 @@ return [
     'Net Value' => 'Καθαρή Αξία',
     'Sum' => 'Σύνολο',
     'Select suppplier...' => 'Επιλέξτε προμηθευτή...',
-    'There is no withdrawal for this RCN to create expenditure.' => 'Δεν υπάρχει διαθέσιμο από ανάληψη σε αυτόν τον ΚΑΕ για να δημιουργηθεί δαπάνη.',
+    'There is no withdrawal for this RCN to create expenditure.' => 'Δεν υπάρχει διαθέσιμο ποσό από ανάληψη σε αυτόν τον ΚΑΕ για να δημιουργηθεί δαπάνη.',
     'Forward Expenditure State' => 'Προώθηση κατάστασης δαπάνης',
     'Forward Expenditure State to ' => 'Προώθηση κατάστασης δαπάνης σε ',
     'Withdrawals Total Balance' => 'Συνολικό Διαθέσιμο Αναλήψεων',
     'Are you sure you want to automatically set credit percentages for specific RCNs?' =>
     'Είστε σίγουρος/-η ότι θέλετε να γίνει αυτόματος καθορισμός ποσοστών πιστώσεων για συγκεκριμένους ΚΑΕ;',
-    'The default percentage (100%) for RCNs 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 was created successfully.' =>
-    'Το προκαθορισμένο ποσοστό (100%) για τους ΚΑΕ 0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832 δημιουργήθηκε επιτυχώς',
+    'The default percentage (100%) for some RCNs (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) was created successfully.' =>
+    'Το προκαθορισμένο ποσοστό (100%) για κάποιους ΚΑΕ (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) δημιουργήθηκε επιτυχώς',
     'Failure in creating the default percentages.' => 'Αποτυχία δημιουργίας των προκαθορισμένων ποσοστών',
     'Default Percentage' => 'Προκαθορισμένο Ποσοστό',
     'Automatic Percentage Definition' => 'Αυτόματη Απόδοση Ποσοστών',
@@ -182,6 +187,7 @@ return [
     'Expenditures administration features (create, update, delete expenditure)' => 'Λειτουργίες διαχείρισης δαπανών (νέα δαπάνη, ενημέρωση στοιχείων δαπάνης, διαγραφή κτλ.)',
     'Suppliers administration features (create new supplier, update, delete)' => 'Διαχείριση μητρώου προμηθευτών (δημιουργία νέου προμηθευτή, ενημέρωση στοιχείων κτλ.)',
     'Financial year administration features (new year, RCN credits attribution etc.)' => 'Λειτουργίες διαχείρισης οικονομικού έτους (νέο έτος, κατανομή πιστώσεων κτλ.)',
+    'The financial year was updated successfully.' => 'Το οικονομικό έτος ενημερώθηκε επιτυχώς.',
     'View options' => 'Προβολή επιλογών',
     'Reports' => 'Αναφορές',
     'Vouchers' => 'Παραστατικά',
