@@ -1,6 +1,7 @@
 <?php
 
 namespace app\modules\finance;
+
 use Yii;
 use app\modules\finance\components\FinanceInitialChecks;
 
@@ -17,7 +18,7 @@ class Module extends \yii\base\Module
     /**
      * @inheritdoc
      */
-    
+
     public function behaviors()
     {
         return [
@@ -27,27 +28,26 @@ class Module extends \yii\base\Module
             ],
         ];
     }
-    
+
     public function init()
     {
         parent::init();
         $this->registerTranslations();
     }
-    
+
     public function registerTranslations()
     {
         Yii::$app->i18n->translations['modules/finance/*'] = [
             'class' => 'yii\i18n\PhpMessageSource',
             'forceTranslation' => true,
-            'sourceLanguage' => 'en-US',            
+            'sourceLanguage' => 'en-US',
             'basePath' => '@app/modules/finance/messages',
             'fileMap' => [
-                'modules/finance/app' => 'modules/finance/app.php'                
+                'modules/finance/app' => 'modules/finance/app.php'
             ],
         ];
-        
     }
-    
+
     public static function t($category, $message, $params = [], $language = null)
     {
         //echo "<pre>"; print_r(Yii::$app->i18n->getMessageSource($category)); echo "</pre>"; die();

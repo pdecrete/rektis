@@ -5,11 +5,10 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceKaewithdrawal;
 
 /**
  * FinanceKaewithdrawalSearch represents the model behind the search form about `app\modules\finance\models\FinanceKaewithdrawal`.
- */   
+ */
 class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
 {
     /**
@@ -46,7 +45,7 @@ class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
         $prc = $prefix . "finance_kaecreditpercentage";
         $cred = $prefix . "finance_kaecredit";
         $kae = $prefix . "finance_kae";
-        
+
         $sum_percents = "(SELECT SUM(kaeperc_percentage) FROM " . $prc .
                         " WHERE " . $prc . ".kaecredit_id = " . $cred . ".kaecredit_id)";
 
@@ -57,8 +56,8 @@ class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
             $kae . ".*", ])
             ->from([$wthdr, $cred, $kae])
             ->where($cred . '.year=' . Yii::$app->session["working_year"] . " AND " . $wthdr . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
-            
-            $dataProvider = new ActiveDataProvider([
+
+        $dataProvider = new ActiveDataProvider([
                 'query' => $query,
                 'sort' => ['attributes' => ['kae_id', 'kae_title',
                     'kaecredit_amount', 'percentages', 'kaewithdr_amount', 'kaewithdr_decision', 'kaewithdr_date'],

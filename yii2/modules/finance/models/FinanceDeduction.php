@@ -3,7 +3,6 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%finance_deduction}}".

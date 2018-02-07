@@ -5,6 +5,5 @@ class FinanceHelper
 {
     public static function getKaeCredits($year)
     {
-        
     }
 }

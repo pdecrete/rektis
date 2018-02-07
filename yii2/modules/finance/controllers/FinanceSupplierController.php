@@ -20,7 +20,7 @@ class FinanceSupplierController extends Controller
      * @inheritdoc
      */
     public function behaviors()
-    {        
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -35,7 +35,7 @@ class FinanceSupplierController extends Controller
                 ]]
         ];
     }
-    
+
     /**
      * Lists all FinanceSupplier models.
      * @return mixed
@@ -73,7 +73,7 @@ class FinanceSupplierController extends Controller
         $model = new FinanceSupplier();
 
         if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()) {
+            if (!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new supplier. Please try again."));
                 return $this->redirect(['index']);
             }
@@ -97,7 +97,7 @@ class FinanceSupplierController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()) {
+            if (!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
@@ -118,11 +118,11 @@ class FinanceSupplierController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete()){
+        if (!$this->findModel($id)->delete()) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the supplier. Please try again."));
             return $this->redirect(['index', 'id' => $model->suppl_id]);
         }
-        
+
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The supplier was deleted successfully."));
         return $this->redirect(['index']);
     }

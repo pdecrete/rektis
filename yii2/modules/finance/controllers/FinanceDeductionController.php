@@ -65,17 +65,17 @@ class FinanceDeductionController extends Controller
         $model->deduct_date = date("Y-m-d H:i:s");
 
         if ($model->load(Yii::$app->request->post())) {
-            try{
+            try {
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
                 $model->deduct_uplimit = Money::toCents($model->deduct_uplimit);
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);
 
-                if(!$model->save())
+                if (!$model->save()) {
                     throw new Exception();
+                }
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was created successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating deduction."));
                 return $this->redirect(['index']);
             }
@@ -96,19 +96,19 @@ class FinanceDeductionController extends Controller
     {
         $model = $this->findModel($id);
         $model->deduct_date = date("Y-m-d H:i:s");
-        
+
         if ($model->load(Yii::$app->request->post())) {
-            try{
+            try {
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
                 $model->deduct_uplimit = Money::toCents($model->deduct_uplimit);
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);
 
-                if(!$model->save())
+                if (!$model->save()) {
                     throw new Exception();
+                }
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating deduction."));
                 return $this->redirect(['index']);
             }
@@ -127,11 +127,12 @@ class FinanceDeductionController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete())
+        if (!$this->findModel($id)->delete()) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting deduction."));
-        else
+        } else {
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was deleted successfully."));
-            
+        }
+
         return $this->redirect(['index']);
     }
 

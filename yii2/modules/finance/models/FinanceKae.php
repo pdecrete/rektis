@@ -3,7 +3,6 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%finance_kae}}".
@@ -45,7 +44,7 @@ class FinanceKae extends \yii\db\ActiveRecord
     {
         return [
             'kae_id' => Module::t('modules/finance/app', 'RCN'),
-            'kae_title' => Module::t('modules/finance/app',  'RCN Title'),
+            'kae_title' => Module::t('modules/finance/app', 'RCN Title'),
             'kae_description' => Module::t('modules/finance/app', 'RCN Description'),
         ];
     }
