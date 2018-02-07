@@ -9,6 +9,7 @@ use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKaecredit;
@@ -141,6 +142,21 @@ class FinanceKaeController extends Controller
         }
     }
 
+    /*
+    public function actionDelete($id)
+    {
+        try{
+            $model = $this->findModel($id);
+            if(!$model->delete()) 
+                throw new Exception();
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN was deleted succesfully."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $exc){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting RCN."));
+            return $this->redirect(['index']);
+        }
+    }*/
 
     /**
      * Finds the FinanceKae model based on its primary key value.

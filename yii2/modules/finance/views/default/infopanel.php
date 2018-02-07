@@ -35,7 +35,12 @@ if(Integrity::uniqueCurrentYear()):
             $withdrawalsbalance[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawalsBalance($credit->kaecredit_id));
         }
     }
-    
+    $chart_height = 0;
+    if(count($data) <= 3)
+        $chart_height = 120;
+    else
+        $chart_height = count($data)*45
+        
     //echo "<pre>"; print_r($percentages); echo "</pre>"; die();
     
 ?>
@@ -64,7 +69,7 @@ if(Integrity::uniqueCurrentYear()):
 						    <?= ChartJs::widget([
                                     'type' => 'horizontalBar',
 						            //'barThickness' => 10,
-						            'options' => ['height' => count($data)*45],
+						            'options' => ['height' => $chart_height],
                                     'data' => [
                                         'labels' => $labels,
                                         'datasets' => [
