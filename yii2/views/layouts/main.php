@@ -265,9 +265,10 @@ AppAsset::register($this);
                 ],
 
                 [
-                    'label' => 'Δαπάνες',
+                    'label' => 'Διαχείριση Δαπανών',
                     'visible' => !Yii::$app->user->isGuest,
                     'items' => [
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Ενότητες</li>',
                         [
                             'label' => 'Κεντρική Διαχείριση',
                             'url' => ['/finance/default']
@@ -281,6 +282,7 @@ AppAsset::register($this);
                             'url' => ['/finance/default/parameterize'],
                         ],
                         '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-share-alt"></i> Συντομεύσεις</li>',
                         [
                             'label' => 'Δαπάνες',
                             'url' => ['/finance/finance-expenditure'],

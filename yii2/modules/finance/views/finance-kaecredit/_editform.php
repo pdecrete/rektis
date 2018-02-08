@@ -12,7 +12,7 @@ use app\modules\finance\components\Money;
 //echo "<pre>"; print_r($model); echo "</pre>"; die();
 
 ?>
-
+<div class="finance-kaecredits-form">
 <?php   $form = ActiveForm::begin(['id' => 'kaes-form', 'layout' => 'horizontal']); ?>
 
         	<table class="table table-striped" style="margin: 10px;">
@@ -37,8 +37,10 @@ use app\modules\finance\components\Money;
 				</tr>
 <?php           endforeach;?>
         	</table>
-        	<div class="col-lg-12 text-right">
-				<?= Html::submitButton(Module::t('modules/finance/app', 'Save Credits'), ['class' => 'btn btn-success btn-lg pull-right'])?>
+        	<div class="form-group pull-right">
+        		<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
+				<?= Html::submitButton(Module::t('modules/finance/app', 'Save Credits'), ['class' => 'btn btn-success'])?>
 			</div>
 <?php   ActiveForm::end(); ?>
+</div>
 

@@ -11,13 +11,14 @@ use yii\widgets\ActiveForm;
 $model->fpa_value = Money::toPercentage($model->fpa_value, false);
 ?>
 
-<div class="finance-fpa-form">
+<div class="finance-fpa-form col-lg-3">
 
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'fpa_value')->textInput() ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
+    	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

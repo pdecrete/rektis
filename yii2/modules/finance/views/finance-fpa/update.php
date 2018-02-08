@@ -8,7 +8,7 @@ use yii\helpers\Html;
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
 $this->title = Module::t('modules/finance/app', 'Update VAT option');
-$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'VAT options'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'VAT Options'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-fpa-update">
