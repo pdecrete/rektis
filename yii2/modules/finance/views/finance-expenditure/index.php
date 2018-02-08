@@ -105,14 +105,14 @@ $this->params['breadcrumbs'][] = $this->title;
              'contentOptions' => ['class' => 'text-nowrap'],
              'value' => function($model) {
                             $state_commnents = array();
-                            
-                            $state_commnents[1] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 1]))['expstate_date'] .  
+                            $tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 1]);
+                            $state_commnents[1] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .  
                                                   " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[2] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 2]))['expstate_date'] .
+                            $state_commnents[2] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
                                                   " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[3] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 3]))['expstate_date'] .
+                            $state_commnents[3] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
                                                   " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[4] = Module::t('modules/finance/app', "Date"). ": " . ($tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 4]))['expstate_date'] .
+                            $state_commnents[4] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
                                                   " (" . $tmp['expstate_comment'] . ")";
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
