@@ -48,41 +48,41 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         $wthdr = $prefix . "finance_kaewithdrawal";
         $cred = $prefix . "finance_kaecredit";
         $suppl = $prefix . 'finance_supplier';
-      
+
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
-        
+
         $kae = "(SELECT " . $cred . ".kae_id FROM " . $cred . "," . $wthdr . " 
                  WHERE " . $cred . ".kaecredit_id=" . $wthdr . ".kaecredit_id AND "
                  . $wthdr . ".kaewithdr_id=" . $expwithdr . ".kaewithdr_id)";
-        
+
         $query = (new \yii\db\Query())
                     ->select([$suppl. ".suppl_name", $exps . ".*", $count_states . " AS statescount ", $kae . " AS kae_id "])
                     ->from([$exps, $expwithdr, $suppl])
-                    ->where($suppl . ".suppl_id=" . $exps . ".suppl_id AND " . $exps . ".exp_id=" . $expwithdr . ".exp_id AND " . 
+                    ->where($suppl . ".suppl_id=" . $exps . ".suppl_id AND " . $exps . ".exp_id=" . $expwithdr . ".exp_id AND " .
                             $expwithdr . ".kaewithdr_id 
                             IN (SELECT " . $wthdr . ".kaewithdr_id
                                 FROM " . $wthdr . ", " . $cred . "  
                                 WHERE " . $cred . ".year=" . Yii::$app->session["working_year"] . "
                                 AND " . $wthdr . ".kaecredit_id=" . $cred . ".kaecredit_id)")->distinct();
-                    //->orderBy([$exps . '.suppl_id' => SORT_ASC, $exps . '.exp_id' => SORT_ASC]);
+        //->orderBy([$exps . '.suppl_id' => SORT_ASC, $exps . '.exp_id' => SORT_ASC]);
         //echo $query->createCommand()->getRawSql();die();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',  
+            'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',
                                         'exp_amount', 'exp_date', 'exp_description', 'statescount', 'kae_id'
                                         ],
-                'defaultOrder' => ['suppl_id'=>SORT_ASC, 'exp_id'=>SORT_ASC,]
+                'defaultOrder' => ['suppl_id'=>SORT_ASC, 'exp_id'=>SORT_ASC]
             ],
         ]);
 
         //echo $this->exp_amount . "---</br>";
         //echo "<pre>"; echo ($params['FinanceExpenditureSearch']['exp_amount']); echo "</pre>";die();
-       // var_dump($params[]);die();
-        
+        // var_dump($params[]);die();
+
         $this->load($params);
-                
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
@@ -90,11 +90,12 @@ class FinanceExpenditureSearch extends FinanceExpenditure
         }
 
         //$params['FinanceExpenditureSearch']['exp_amount']
-        if($this->exp_amount != "")
+        if ($this->exp_amount != "") {
             $converted_amount = Money::toCents($this->exp_amount);
-        else
+        } else {
             $converted_amount = $this->exp_amount;
-                
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'exp_id' => $this->exp_id,
@@ -105,7 +106,7 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             'fpa_value' => $this->fpa_value,
         ]);
 
-        
+
         $query->andFilterWhere(['like', 'suppl_name', $this->suppl_id]);
 
         return $dataProvider;

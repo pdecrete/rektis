@@ -4,7 +4,6 @@ use yii\db\Migration;
 
 class m171122_082039_positions extends Migration
 {
-
     public function safeUp()
     {
         $tableOptions = null;

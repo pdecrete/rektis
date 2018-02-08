@@ -2,7 +2,6 @@
 
 namespace app\modules\finance\models;
 
-use Yii;
 use app\modules\finance\Module;
 
 /**
@@ -78,11 +77,11 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-/*    public function getFinanceKaewithdrawals()
-    {
-        return $this->hasMany(FinanceKaewithdrawal::className(), ['kaecredit_id' => 'kaecredit_id']);
-    }
-*/
+    /*    public function getFinanceKaewithdrawals()
+        {
+            return $this->hasMany(FinanceKaewithdrawal::className(), ['kaecredit_id' => 'kaecredit_id']);
+        }
+    */
     /**
      * @inheritdoc
      * @return FinanceKaecreditQuery the active query used by this AR class.
@@ -91,11 +90,12 @@ class FinanceKaecredit extends \yii\db\ActiveRecord
     {
         return new FinanceKaecreditQuery(get_called_class());
     }
-    
-    public static function getKaecreditId($kae_id, $year){
+
+    public static function getKaecreditId($kae_id, $year)
+    {
         return FinanceKaecredit::find()->where(['kae_id' => $kae_id, 'year' => $year])->one()->kaecredit_id;
     }
-    
+
     public static function getSumKaeCredits($year)
     {
         return FinanceKaecredit::find()->where(['year' => $year])->sum('kaecredit_amount');

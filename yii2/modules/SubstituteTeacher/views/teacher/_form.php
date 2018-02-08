@@ -67,7 +67,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
             'school_type',
             'order'
         ],
-    ]); 
+    ]);
     ?>
 
     <div class="panel panel-default">

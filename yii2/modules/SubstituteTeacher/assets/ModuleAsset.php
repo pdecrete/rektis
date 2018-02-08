@@ -3,7 +3,6 @@ namespace app\modules\SubstituteTeacher\assets;
 
 class ModuleAsset extends \yii\web\AssetBundle
 {
-
     public $sourcePath = '';
     public $css = [
     ];

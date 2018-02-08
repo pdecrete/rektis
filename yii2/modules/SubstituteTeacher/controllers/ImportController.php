@@ -389,9 +389,9 @@ class ImportController extends Controller
 
 
     /**
-     * Some rules may seem missing, but it is supposed that validateTeacher has already been 
+     * Some rules may seem missing, but it is supposed that validateTeacher has already been
      * called before importTeacher (see import action).
-     * 
+     *
      * @return boolean whether the import succeeded or not
      */
     protected function importTeacher($year, $worksheet, $highestColumn)
@@ -469,7 +469,7 @@ class ImportController extends Controller
                     $year_teacher_ids[$v['registry_id']] = $v['id'];
                 });
 
-                // placement preferences were checked with validateTeacher 
+                // placement preferences were checked with validateTeacher
                 Yii::$app->db->createCommand()->batchInsert(PlacementPreference::tableName(), ['teacher_id', 'prefecture_id', 'school_type', 'order'], array_map(function ($v) use ($year_teacher_ids) {
                     return [
                         $year_teacher_ids[$v['teacher_id']], $v['prefecture_id'], $v['school_type'], $v['order']

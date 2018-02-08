@@ -41,7 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buttons' => [
                     'select' => function ($url, $model, $key) use ($route, $type) {
                         return Html::a(
-                                '<span class="glyphicon glyphicon-check"></span> ' . Yii::t('substituteteacher', 'Select file'), Url::to([$route, 'type' => $type, 'file_id' => $model->id]), [
+                                '<span class="glyphicon glyphicon-check"></span> ' . Yii::t('substituteteacher', 'Select file'),
+                            Url::to([$route, 'type' => $type, 'file_id' => $model->id]),
+                            [
                                 'class' => 'btn btn-sm btn-primary btn-block',
                                 'title' => Yii::t('substituteteacher', 'Select for import'),
                                 ]

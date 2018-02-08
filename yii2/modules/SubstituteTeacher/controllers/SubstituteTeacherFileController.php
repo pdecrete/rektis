@@ -64,7 +64,8 @@ class SubstituteTeacherFileController extends Controller
         $dataProvider = $searchModel->search(
             \yii\helpers\ArrayHelper::merge(Yii::$app->request->queryParams, [
                 'SubstituteTeacherFileSearch' => ['deleted' => SubstituteTeacherFile::FILE_ACTIVE]
-        ]));
+        ])
+        );
 
         return $this->render('index', [
                 'searchModel' => $searchModel,
@@ -74,7 +75,7 @@ class SubstituteTeacherFileController extends Controller
 
     /**
      * Lists all SubstituteTeacherFile models to select one to import
-     * 
+     *
      * @param string $route The route to forward after selection; route will also receive a parameter "file_id"
      * @return mixed
      */
@@ -84,7 +85,8 @@ class SubstituteTeacherFileController extends Controller
         $dataProvider = $searchModel->search(
             \yii\helpers\ArrayHelper::merge(Yii::$app->request->queryParams, [
                 'SubstituteTeacherFileSearch' => ['deleted' => SubstituteTeacherFile::FILE_ACTIVE]
-        ]));
+        ])
+        );
 
         return $this->render('import', [
                 'searchModel' => $searchModel,
@@ -95,8 +97,8 @@ class SubstituteTeacherFileController extends Controller
     }
 
     /**
-     * Display the upload form for files 
-     * 
+     * Display the upload form for files
+     *
      * @return mixed
      */
     public function actionUpload()
@@ -108,7 +110,7 @@ class SubstituteTeacherFileController extends Controller
 
     /**
      * Used to upload a file to server
-     * 
+     *
      * @return mixed
      */
     public function actionFileUpload()
@@ -137,7 +139,7 @@ class SubstituteTeacherFileController extends Controller
                 $model->uploadfile = $fileName; // no need though
 
                 if ($model->save()) {
-                    // notify of success 
+                    // notify of success
                     $path = \yii\helpers\Url::to(['file-download', 'id' => $model->id]);
                     return Json::encode([
                             'files' => [
@@ -152,7 +154,7 @@ class SubstituteTeacherFileController extends Controller
                             ],
                     ]);
                 } else {
-                    // also remove uploaded file 
+                    // also remove uploaded file
                     @unlink($filePath);
                 }
             }
@@ -163,8 +165,8 @@ class SubstituteTeacherFileController extends Controller
 
     /**
      * Delete an uploaded file
-     * 
-     * @param integer $id 
+     *
+     * @param integer $id
      * @return mixed
      */
     public function actionFileDelete($id)
@@ -195,7 +197,7 @@ class SubstituteTeacherFileController extends Controller
     }
 
     /**
-     * 
+     *
      * @param integer $id
      */
     public function actionFileDownload($id)

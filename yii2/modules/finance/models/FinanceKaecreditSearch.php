@@ -2,10 +2,8 @@
 
 namespace app\modules\finance\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceKaecredit;
 
 /**
  * FinanceKaecreditSearch represents the model behind the search form about `app\modules\finance\models\FinanceKaecredit`.
@@ -43,7 +41,7 @@ class FinanceKaecreditSearch extends FinanceKaecredit
     public function search($params)
     {
         $query = FinanceKaecredit::find();
-                   
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

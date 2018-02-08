@@ -5,7 +5,6 @@ use Yii;
 use app\models\Specialisation;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use app\modules\SubstituteTeacher\traits\Selectable;
 
 //use spapad\yii2helpers\validators\DefaultOnOtherAttributeValidator;

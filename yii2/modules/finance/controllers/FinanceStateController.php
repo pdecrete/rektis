@@ -98,11 +98,11 @@ class FinanceStateController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete()){
+        if (!$this->findModel($id)->delete()) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the expenditure state."));
             return $this->redirect(['index', 'id' => $model->state_id]);
         }
-        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was deleted succesfully."));      
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was deleted succesfully."));
         return $this->redirect(['index']);
     }
 

@@ -69,7 +69,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             </td>
                         <?php endforeach; ?>
                     </tr>
-                    <?php if ($row_index >= $line_limit) break; ?>
+                    <?php if ($row_index >= $line_limit) {
+                                break;
+                            } ?>
                 <?php endforeach; ?>
             </tbody>
         </table>

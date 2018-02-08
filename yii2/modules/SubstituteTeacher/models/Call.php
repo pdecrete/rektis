@@ -4,7 +4,6 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**

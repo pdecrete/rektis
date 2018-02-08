@@ -108,14 +108,16 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'buttons' => [
                     'add' => function ($url, $model, $key) use ($callModel) {
                         return Html::a(
-                                '<span class="glyphicon glyphicon-plus"></span>', Url::to(['distribution-add',
+                                '<span class="glyphicon glyphicon-plus"></span>',
+                            Url::to(['distribution-add',
                                     'CallPosition' => [
                                         'call_id' => $callModel->id,
                                         'position_id' => $model->id,
                                         'teachers_count' => $model->position_has_type === app\modules\SubstituteTeacher\models\Position::POSITION_TYPE_TEACHER ? $model->remaining : 0,
                                         'hours_count' => $model->position_has_type === app\modules\SubstituteTeacher\models\Position::POSITION_TYPE_HOURS ? $model->remaining : 0,
                                     ],
-                                ]), [
+                                ]),
+                            [
                                 'title' => Yii::t('substituteteacher', 'Add whole of remaining to current distribution'),
                                 'data-method' => 'post',
                                 'class' => 'btn btn-sm btn-success'
@@ -149,7 +151,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
     <hr/>
 
     <?= Html::beginForm(['distribution-group', 'call' => $callModel->id], 'post'); ?>
-    <?php // Pjax::begin(); ?>
+    <?php // Pjax::begin();?>
     <?=
     GridView::widget([
         'dataProvider' => $callPositionsDataProvider,
@@ -187,7 +189,9 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'buttons' => [
                     'remove' => function ($url, $model, $key) use ($callModel) {
                         return Html::a(
-                                '<span class="glyphicon glyphicon-trash"></span>', Url::to(['distribution-remove', 'id' => $model->id]), [
+                                '<span class="glyphicon glyphicon-trash"></span>',
+                            Url::to(['distribution-remove', 'id' => $model->id]),
+                            [
                                 'title' => Yii::t('substituteteacher', 'Remove from current distribution'),
                                 'data-method' => 'post',
                                 'class' => 'btn btn-xs btn-danger'
@@ -196,7 +200,9 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                     },
                     'ungroup' => function ($url, $model, $key) use ($callModel) {
                         return Html::a(
-                                '<span class="glyphicon glyphicon-log-out"></span>', Url::to(['distribution-ungroup', 'id' => $model->id]), [
+                                '<span class="glyphicon glyphicon-log-out"></span>',
+                            Url::to(['distribution-ungroup', 'id' => $model->id]),
+                            [
                                 'title' => Yii::t('substituteteacher', 'Ungroup this item'),
                                 'data-method' => 'post',
                                 'class' => 'btn btn-sm btn-info'
@@ -236,7 +242,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
 
     ?>
     <?= Html::submitButton('<span class="glyphicon glyphicon-paperclip"></span> ' . Yii::t('substituteteacher', 'Group selected'), ['class' => 'btn btn-info pull-right']) ?>
-    <?php // Pjax::end(); ?>
+    <?php // Pjax::end();?>
     <?= Html::endForm(); ?> 
 </div>
 

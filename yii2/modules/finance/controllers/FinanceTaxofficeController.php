@@ -60,8 +60,8 @@ class FinanceTaxofficeController extends Controller
     {
         $model = new FinanceTaxoffice();
 
-        if ($model->load(Yii::$app->request->post())){
-            if(!$model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new Tax Office. Please try again."));
                 return $this->redirect(['index']);
             }
@@ -84,8 +84,8 @@ class FinanceTaxofficeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())){
-            if(!$model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
@@ -106,7 +106,7 @@ class FinanceTaxofficeController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete()){
+        if (!$this->findModel($id)->delete()) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the item. Please try again."));
             return $this->redirect(['index']);
         }
