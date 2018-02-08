@@ -292,11 +292,7 @@ AppAsset::register($this);
                         [
                             'label' => 'Προμηθευτές',
                             'url' => ['/finance/finance-supplier']
-                        ],
-                        [
-                            'label' => 'Αναφορές',
-                            'url' => ['/finance/default']
-                        ],
+                        ]
                     ],
                 ],
                 Yii::$app->user->isGuest ? [

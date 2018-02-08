@@ -51,7 +51,9 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);}
             ],
-            ['attribute' => 'kaeperc_date', 'label' => Module::t('modules/finance/app', 'Date')],
+            ['attribute' => 'kaeperc_date', 'label' => Module::t('modules/finance/app', 'Date'),
+             'format' => ['date', 'php:d-m-Y (H:i:s)']
+            ],
             ['attribute' => 'sumpercentage',
                 'label' => Module::t('modules/finance/app', 'Total Percentage'),
                 'format' => 'html',

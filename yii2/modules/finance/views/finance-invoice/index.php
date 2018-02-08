@@ -25,10 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'inv_number', 
-             'label' => Module::t('modules/finance/app', 'Voucher number'),
+             'label' => Module::t('modules/finance/app', 'Voucher Number'),
             ],
             ['attribute' => 'inv_date', 
-             'label' => Module::t('modules/finance/app', 'Voucher date'),
+             'label' => Module::t('modules/finance/app', 'Voucher Date'),
                 'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([
                     'model' => $searchModel,
@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
             ],
             ['attribute' => 'inv_order', 
-             'label' => Module::t('modules/finance/app', 'Voucher order')],
+             'label' => Module::t('modules/finance/app', 'Voucher Order')],
             //'inv_deleted',
             // 'suppl_id',
             // 'exp_id',

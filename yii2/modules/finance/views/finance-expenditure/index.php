@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
              'filter' => FinanceFpa::getFpaLevels(),
             ],
             ['attribute' => 'exp_date',
-             'format' => ['raw', 'php:d-m-Y'],
+             'format' => ['date', 'php:d-m-Y'],
              'label' => Module::t('modules/finance/app', 'Created'),
                 'filter' => DateControl::widget([
                     'model' => $searchModel,

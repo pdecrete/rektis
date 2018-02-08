@@ -510,7 +510,7 @@ class FinanceExpenditureController extends Controller
             'year' => $year,
             'kae' => $kae,
         ]);
-        
+                
         $pdf = new Pdf([
             'mode' => Pdf::MODE_UTF8,
             'format' => Pdf::FORMAT_A4,
@@ -521,7 +521,6 @@ class FinanceExpenditureController extends Controller
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
             'cssInline' => '.kv-heading-1{font-size:18px}',
             'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
-
         ]);
         return $pdf->render();
     }
