@@ -37,8 +37,12 @@ $provider = new ArrayDataProvider([
 	                                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}                                   
 	                               ],
 	                               ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
-	                               ['attribute' => 'kaecredit_date', 'label' => Module::t('modules/finance/app', 'Created')],
-	                               ['attribute' => 'kaecredit_updated', 'label' => Module::t('modules/finance/app', 'Τροποποιήθηκε')],	                                            
+	                               ['attribute' => 'kaecredit_date', 'label' => Module::t('modules/finance/app', 'Created'),
+	                                'format' => ['date', 'php:d-m-Y (H:i:s)'],
+	                               ],
+	                               ['attribute' => 'kaecredit_updated', 'label' => Module::t('modules/finance/app', 'Τροποποιήθηκε'),
+	                                'format' => ['date', 'php:d-m-Y (H:i:s)'],
+	                               ],	                                            
                                    ['attribute' => 'kaecredit_amount',
                                     'label' => Module::t('modules/finance/app', 'Credit Amount'),
                                     'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount'], true);}

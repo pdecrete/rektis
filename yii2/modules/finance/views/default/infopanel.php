@@ -74,22 +74,22 @@ if(Integrity::uniqueCurrentYear()):
                                         'labels' => $labels,
                                         'datasets' => [
                                             [
-                                                'label' => Module::t('modules/finance/app', "RCN Credits"),                                                
+                                                'label' => Module::t('modules/finance/app', "Initial Credit"),                                                
                                                 'backgroundColor' => 'orange',// $colors,
                                                 'data' => $data
                                             ],
                                             [
-                                                'label' => Module::t('modules/finance/app', "RCN Credit Available"),
+                                                'label' => Module::t('modules/finance/app', "Available Credit Amount"),
                                                 'backgroundColor' => 'blue', //$colors,
                                                 'data' => $available
                                             ],
                                             [
-                                                'label' => Module::t('modules/finance/app', "RCN Credit Withdrawals Sum"),
+                                                'label' => Module::t('modules/finance/app', "Withdrawals Sum"),
                                                 'backgroundColor' => 'brown', //$colors,
                                                 'data' => $withdrawals
                                             ],
                                             [
-                                                'label' => Module::t('modules/finance/app', "RCN Credit Withdrawals Balance"),
+                                                'label' => Module::t('modules/finance/app', "Credit Withdrawals Balance"),
                                                 'backgroundColor' => 'green', //$colors,
                                                 'data' => $withdrawalsbalance
                                             ]

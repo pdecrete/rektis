@@ -53,7 +53,9 @@ $this->params['breadcrumbs'][] = $this->title;
              'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaewithdr_amount']);},
             ],
             ['attribute' => 'kaewithdr_decision', 'label' => Module::t('modules/finance/app', 'Withdrawal Decision')],
-            ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date')],
+            ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date'),
+             'format' => ['date', 'php:d-m-Y (H:i:s)']
+            ],
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{update}&nbsp;{delete}',
                 'buttons' =>   [   'update' => function ($url, $model) {

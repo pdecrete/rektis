@@ -10,7 +10,7 @@ use app\modules\finance\components\Money;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Parameters'), 'url' => ['/finance/default/parameterize']];
-$this->title = Module::t('modules/finance/app', 'VAT options');
+$this->title = Module::t('modules/finance/app', 'VAT Options');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= $this->render('/default/infopanel'); ?>

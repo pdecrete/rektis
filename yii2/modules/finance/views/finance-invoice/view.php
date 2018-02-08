@@ -59,7 +59,9 @@ echo "<pre>"; print_r($unioned_model); echo "</pre>";
                                 return Money::toCurrency(FinanceExpenditure::findOne(['exp_id' => $model->exp_id])['exp_amount'], true);}
             ],
             'inv_number',
-            'inv_date',
+            ['attribute' => 'inv_date',
+             'format' => ['date', 'php:d-m-Y'],
+            ],
             'inv_order',
             //'inv_deleted',
             ['attribute' => 'invtype_id',
