@@ -21,7 +21,7 @@ return [
     'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
     'The RCN was deleted succesfully.' => 'Ο ΚΑΕ διαγράφηκε επιτυχώς.',
-    'Failed to create Payments Report. Please check the selected expenditures.' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες.',
+    'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ και να έχει δημιουργηθεί τιμολόγιο για αυτές).',
     'Credit Withdrawals Balance' => 'Υπόλοιπο Αναλήψεων',
     'Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων',
     'Available Credit Amount' => 'Διαθέσιμο ποσό πίστωσης',

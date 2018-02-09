@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Attribute percentage to RCN credit'),
-        'actionUrl' => '/index.php/finance/finance-kaecreditpercentage/create',
+        'actionUrl' => '/finance/finance-kaecreditpercentage/create',
         'otherbuttons' => [$otherbutton],
         //'otherbuttons' => [[Module::t('modules/finance/app', 'Automatic Percentage Definition'),'masspercentage']]
     ]) ?>

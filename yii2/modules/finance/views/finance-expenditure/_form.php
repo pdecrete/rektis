@@ -10,7 +10,6 @@ use kartik\select2\Select2;
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
 
-
 ?>
 
 <div class="finance-expenditure-form col-lg-6">
@@ -22,7 +21,7 @@ use kartik\select2\Select2;
                                 					    'min' => "0.00" , 
                                 					    'step' => '0.01', 
                                 					    'style' => 'text-align: left', 
-                                                        'value' => $model['exp_amount']])->label(false); 
+                                                        'value' => $model['exp_amount']]); 
     ?>
     
     <?= $form->field($model, 'exp_description')->textInput(['maxlength' => true]); 

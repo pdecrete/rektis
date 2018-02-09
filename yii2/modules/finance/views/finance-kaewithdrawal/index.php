@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'kaes' => $kaes,
         //'balances' => $balances, 
         'btnLiteral' => Module::t('modules/finance/app', 'New Withdrawal'),
-        'actionUrl' => '/index.php/finance/finance-kaewithdrawal/create']) 
+        'actionUrl' => '/finance/finance-kaewithdrawal/create']) 
 	?>
 
     <?= GridView::widget([

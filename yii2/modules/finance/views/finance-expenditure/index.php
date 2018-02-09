@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
-        'actionUrl' => '/index.php/finance/finance-expenditure/create',
+        'actionUrl' => '/finance/finance-expenditure/create',
 	    'balances' => $balances,	    
     ]) ?> 
  
@@ -161,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
              'header' => Module::t('modules/finance/app', 'Expenditure<br />Actions'),
              'contentOptions' => ['class' => 'text-nowrap'],
-             'template' => '{backwardstate} {forwardstate} {delete}',
+             'template' => '{backwardstate} {forwardstate} {update} {delete}',
                 'buttons' => [
                     'forwardstate' => function ($url, $model) {
                         if($model['statescount'] != 4){
@@ -182,6 +182,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'delete') {
                         $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
+                        return $url;
+                    }
+                    if ($action === 'update') {
+                        $url = '/finance/finance-expenditure/update?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'backwardstate') {
