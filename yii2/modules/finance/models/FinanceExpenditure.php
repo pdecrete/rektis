@@ -128,7 +128,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function getFinanceInvoice()
     {
         return $this->hasOne(FinanceInvoice::className(), ['exp_id' => 'exp_id']);
-    }
+    }    
 
     /**
      * @inheritdoc

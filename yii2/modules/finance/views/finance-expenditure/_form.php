@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\modules\finance\Module;
 use kartik\select2\Select2;
+use app\modules\finance\components\Money;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
@@ -33,9 +34,9 @@ use kartik\select2\Select2;
         ]);
     ?>
 
-    <?= $form->field($model, 'fpa_value')->dropDownList(
-        ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),
-        ['prompt'=> Module::t('modules/finance/app', 'VAT')])
+    <?= $form->field($model, 'fpa_value')->dropDownList(ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),
+                                                        ['prompt' => Module::t('modules/finance/app', 'VAT'), 
+                                                         'value'  => Money::toPercentage($model->fpa_value, true)]);
     ?>
     <hr />
     <h3><?= Module::t('modules/finance/app', 'Assign withdrawals');?></h3>
@@ -47,11 +48,15 @@ use kartik\select2\Select2;
                               label(false);
         }
     ?>
+    
 	<hr />
 	<h3><?= Module::t('modules/finance/app', 'Assign deductions');?></h3>
     <?php 
-    //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>";
+        
+        //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>"; die();
+        
         $index = 0;
+        
         echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList(
         [
             $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'],
@@ -61,8 +66,9 @@ use kartik\select2\Select2;
         ['separator'=>'<br/>']
         )->label(false);
     
-        for($i = $index; $i < count($expenddeduction_models); $i++){
-            echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$i+1]->deduct_name, 'value' => $deductions[$i+1]->deduct_id]);
+        for($i = 1; $i < count($expenddeduction_models); $i++){
+            ++$index;
+            echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$index]->deduct_name, 'value' => $deductions[$index]->deduct_id]);
         }
     ?>
     <div class="form-group pull-right">

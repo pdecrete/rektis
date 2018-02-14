@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The expenditure was deleted successfully.' => 'Η δαπάνη διαγράφηκε επιτυχώς',
+    'Assigned Amount' => 'Συσχετισμένο Ποσό',
     'The expenditure was created successfully.' => 'Η δαπάνη δημιουργήθηκε επιτυχώς',
     'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',

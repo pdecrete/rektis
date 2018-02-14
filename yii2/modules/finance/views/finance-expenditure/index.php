@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $retvalue = "<ul>";
                 for($i = 0; $i < $count_withdrawals; $i++){
                     $retvalue .= "<li><strong><u>" . $exp_withdrawals[$i]['kaewithdr_decision'] . '</u></strong>' . 
-                    '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ': ' .
+                    '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ':<br/>' .
                     Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i], true);
                     $retvalue .= "</li>";
                 }
