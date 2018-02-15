@@ -43,13 +43,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'suppl_id',
              'label' => Module::t('modules/finance/app', 'Supplier'),
              'format' => 'html',
-             'value' => function ($model) {return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];}
+             'value' => function ($model) {return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];},
+             'headerOptions' => ['class'=> 'text-center']
             ],
             ['attribute' => 'exp_amount', 
              'label' => Module::t('modules/finance/app', 'Amount'),
              'format' => 'currency',
              'value' => function ($model) {return Money::toCurrency($model['exp_amount']);},
              'contentOptions' => ['class' => 'text-nowrap'],
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
              //'filter' => Money::toCents($model['exp_amount']),
             ],
             ['attribute' => 'fpa_value', 
@@ -57,18 +60,22 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => 'html',
              'value' => function ($model) {return Money::toPercentage($model['fpa_value']);},
              'filter' => FinanceFpa::getFpaLevels(),
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'exp_date',
              'format' => ['date', 'php:d-m-Y'],
              'label' => Module::t('modules/finance/app', 'Created'),
-                'filter' => DateControl::widget([
+             'filter' => DateControl::widget([
                     'model' => $searchModel,
                     'attribute' => 'exp_date',
                     'type' => DateControl::FORMAT_DATE,
                     'widgetOptions' => [
                         'layout' => '{remove}{input}'
                     ],
-                ])
+                ]),
+              'headerOptions' => ['class'=> 'text-center'],
+              'contentOptions' => ['class' => 'text-center']
             ],
             ['attribute' => 'exp_description',
                 'label' => Module::t('modules/finance/app', 'Description'),
@@ -89,7 +96,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 $retvalue .= "</ul>";
                 return $retvalue;
-             }
+             },
+             'headerOptions' => ['class'=> 'text-center']
             ],
             ['attribute' => 'kae_id',
                 'label' => Module::t('modules/finance/app', 'RCN'),
@@ -130,7 +138,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                             &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>
                                             &nbsp;<a href="/finance/finance-expenditure/updatestate?state_id=4&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span></a>';                            
                             return $retvalue;                            
-                        }
+                        },
+               'headerOptions' => ['class'=> 'text-center'],
+               'contentOptions' => ['class' => 'text-center']
             ],
             [   'attribute' => 'invoice',
                 'header' => '<span class="text-wrap">' . Module::t('modules/finance/app', 'Voucher<br />Actions') . '</span>',
@@ -156,7 +166,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         return $retvalue;
                         
                 },
-                'contentOptions' => ['class' => 'text-nowrap'],
+                'headerOptions' => ['class'=> 'text-center'],
+                'contentOptions' => ['class' => 'text-nowrap'],                
             ],
             ['class' => 'yii\grid\ActionColumn',
              'header' => Module::t('modules/finance/app', 'Expenditure<br />Actions'),
@@ -197,7 +208,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         return $url;
                     }
 
-                }
+                },
+              'headerOptions' => ['class'=> 'text-center']
             ],
             ['class' => 'yii\grid\CheckboxColumn', 
                         'checkboxOptions' => function($model){return ['value' => $model['exp_id']];}],

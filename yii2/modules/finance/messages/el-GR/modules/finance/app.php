@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
+    'Update Expenditure' => 'Ενημέρωση Δαπάνης',
     'The expenditure was deleted successfully.' => 'Η δαπάνη διαγράφηκε επιτυχώς',
     'Assigned Amount' => 'Συσχετισμένο Ποσό',
     'The expenditure was created successfully.' => 'Η δαπάνη δημιουργήθηκε επιτυχώς',
@@ -24,7 +26,7 @@ return [
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
     'The RCN was deleted succesfully.' => 'Ο ΚΑΕ διαγράφηκε επιτυχώς.',
     'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ και να έχει δημιουργηθεί τιμολόγιο για αυτές).',
-    'Credit Withdrawals Balance' => 'Υπόλοιπο Αναλήψεων',
+    'Available for Usage' => 'Διαθέσιμο για Χρήση',
     'Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων',
     'Available Credit Amount' => 'Διαθέσιμο ποσό πίστωσης',
     'Failure in udpating voucher.' => 'Αποτυχία ενημέρωσης παραστατικού',

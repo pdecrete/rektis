@@ -25,9 +25,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            ['attribute' => 'taxoffice_id', 'label' => Module::t('modules/finance/app', 'Code')],
-            ['attribute' => 'taxoffice_name', 'label' => Module::t('modules/finance/app', 'Name')],
+            ['class' => 'yii\grid\SerialColumn',
+             'headerOptions' => ['class'=> 'text-center'], 'contentOptions' => ['class' => 'text-center']
+            ],
+            ['attribute' => 'taxoffice_id', 'label' => Module::t('modules/finance/app', 'Code'),
+             'headerOptions' => ['class'=> 'text-center'], 'contentOptions' => ['class' => 'text-center']],
+            ['attribute' => 'taxoffice_name', 'label' => Module::t('modules/finance/app', 'Name'),
+             'headerOptions' => ['class'=> 'text-center']],
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{update}&nbsp;{delete}'
             ],

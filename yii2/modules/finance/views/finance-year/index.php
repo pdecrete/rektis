@@ -1,10 +1,8 @@
 <?php
 
 use app\modules\finance\Module;
-use app\modules\finance\components\Integrity;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceYearSearch */
@@ -26,27 +24,44 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            'year',
+            ['attribute' => 'year',
+             'format' => 'html',
+             'contentOptions' => ['class' => 'text-center'],
+             'headerOptions' => ['class'=> 'text-center'],
+            ],
             ['attribute' => 'year_credit', 
-             'format' => 'currency'],
+             'format' => 'currency',
+             'contentOptions' => ['class' => 'text-right'],
+             'headerOptions' => ['class'=> 'text-center'],
+            ],
             [   'attribute' => 'year_iscurrent',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? '<span class="glyphicon glyphicon-pushpin"></span>' : ' ';}
+                'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? '<span class="glyphicon glyphicon-pushpin"></span>' : ' ';},
+                'contentOptions' => ['class' => 'text-center'],
+                'headerOptions' => ['class'=> 'text-center'],
             ],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-ok"></span>' : ' ';}
+                //'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock" style="color:red"></span>' : ' ';}
+                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? 
+                                                                Html::a('<span class="glyphicon glyphicon-lock" style="color:red"></span>', 
+                                                                        ['/finance/finance-year/unlock', 'id'=> $dataProvider->year], 
+                                                                        ['title' => Module::t('modules/finance/app', 'Unlock'),
+                                                                         'data'=>[  'confirm' => "Είστε σίγουροι ότι θέλετε να ξεκλειδώσετε το έτος;",
+                                                                                    'method' => "post"]                                                                            
+                                                                        ]
+                                                                       ) : ' ';},
+                'contentOptions' => ['class' => 'text-center'],
+                'headerOptions' => ['class'=> 'text-center'],
             ],
             ['class' => 'yii\grid\ActionColumn',
-                'contentOptions' => [
-                    'class' => 'text-nowrap'
-                ],
-             'template' => '{view}&nbsp;{update}&nbsp;{delete}&nbsp;{lock}&nbsp;{currentyear}',
+             'contentOptions' => ['class' => 'text-nowrap text-left'],
+             'template' => '{update}&nbsp;{delete}&nbsp;{lock}&nbsp;{currentyear}',
              'buttons' => [
-                                'view' => function ($url, $dataProvider) {
+                                /*'view' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
                                         'title' => Module::t('modules/finance/app', 'View'),]);
-                                },
+                                },*/
                     
                                 'update' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
@@ -60,12 +75,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'lock' => function ($url, $dataProvider) {
                                     if($dataProvider->year_lock == 0)
-                                        return Html::a('<span class="glyphicon glyphicon-lock" style="color:red"></span>', $url, [
+                                        return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
                                             'title' => Module::t('modules/finance/app', 'Lock'),
                                                         'data'=>['confirm'=>"Κλειδώνοντας το έτος καμία αλλαγή δεν θα είναι εφικτή σε αυτό. Είστε σίγουροι ότι θέλετε να κλειδώσετε το έτος;",
                                                         'method' => "post"]]);
                                         else
-                                            return Html::a('<span class="glyphicon glyphicon-lock" style="color:green"></span>', $url, [
+                                            return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
                                                 'title' => Module::t('modules/finance/app', 'Unlock'),
                                                 'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ξεκλειδώσετε το έτος;",
                                                     'method' => "post"]]);

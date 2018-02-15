@@ -25,7 +25,8 @@ if(Integrity::uniqueCurrentYear()):
     $withdrawals = array();
     $withdrawalsbalance = array();
 
-    foreach ($credits as $index=>$credit){
+    $index = 0;
+    foreach ($credits as $credit){
         if($credit->kaecredit_amount != 0){
             $kaecredit_percentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($credit->kaecredit_id);
             $labels[$index] = sprintf('%04d', $credit->kae_id);
@@ -33,16 +34,14 @@ if(Integrity::uniqueCurrentYear()):
             $available[$index] = Money::toCurrency($credit->kaecredit_amount*Money::dbPercentagetoDecimal($kaecredit_percentage));            
             $withdrawals[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawsSum($credit->kaecredit_id));
             $withdrawalsbalance[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawalsBalance($credit->kaecredit_id));
+            $index++;
         }
     }
     $chart_height = 0;
     if(count($data) <= 3)
-        $chart_height = 120;
+        $chart_height = 180;
     else
-        $chart_height = count($data)*45
-        
-    //echo "<pre>"; print_r($percentages); echo "</pre>"; die();
-    
+        $chart_height = count($data)*40;            
 ?>
     <div class="row">
     
@@ -89,7 +88,7 @@ if(Integrity::uniqueCurrentYear()):
                                                 'data' => $withdrawals
                                             ],
                                             [
-                                                'label' => Module::t('modules/finance/app', "Credit Withdrawals Balance"),
+                                                'label' => Module::t('modules/finance/app', "Available for Usage"),
                                                 'backgroundColor' => 'green', //$colors,
                                                 'data' => $withdrawalsbalance
                                             ]

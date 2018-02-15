@@ -34,32 +34,49 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\SerialColumn',
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
+            ],
             ['attribute' => 'kae_id', 
              'label' => Module::t('modules/finance/app', 'RCN'),
              'format' => 'html',
-                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}
+             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
+            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title'),
+             'headerOptions' => ['class'=> 'text-center']             
+            ],
             ['attribute' => 'kaecredit_amount',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
              'format' => 'currency',
-             'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);}
+             'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'kaeperc_percentage',
              'label' => Module::t('modules/finance/app', 'Percentage'),
              'format' => 'html',
-             'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);}
+             'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'kaeperc_date', 'label' => Module::t('modules/finance/app', 'Date'),
-             'format' => ['date', 'php:d-m-Y (H:i:s)']
+             'format' => ['date', 'php:d-m-Y (H:i:s)'],
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
             ],
             ['attribute' => 'sumpercentage',
                 'label' => Module::t('modules/finance/app', 'Total Percentage'),
                 'format' => 'html',
-                'value' => function ($model) {return Money::toPercentage($model['sumpercentage']);}
+                'value' => function ($model) {return Money::toPercentage($model['sumpercentage']);},
+                'headerOptions' => ['class'=> 'text-center'],
+                'contentOptions' => ['class' => 'text-right']
             ],
-            ['attribute' => 'kaeperc_decision', 'label' => Module::t('modules/finance/app', 'Decision')],
+            ['attribute' => 'kaeperc_decision', 'label' => Module::t('modules/finance/app', 'Decision'),
+             'headerOptions' => ['class'=> 'text-center']
+            ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',
              'buttons' =>   [   'update' => function ($url, $model) {

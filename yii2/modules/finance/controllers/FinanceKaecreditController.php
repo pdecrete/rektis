@@ -139,16 +139,13 @@ class FinanceKaecreditController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             try{
                 foreach($kaecredits as $kaecredit)
-                    if(!$kaecredit->save()) {
-                        throw new Exception();
-                        Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "Your action did not complete succesfull. There was an error during saving in the database."));
-                    }
+                    if(!$kaecredit->save())
+                        throw new Exception("Your action did not complete succesfull. There was an error during saving in the database.");
                 
                 $year = Yii::$app->session["working_year"];
-                if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year)){
-                    Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "The sum of credits for the RCN is not equal to the credit attributed for year {year} . Please correct to continue.", ['year' => $year]));
-                    throw new Exception();
-                }
+                if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year))
+                    throw new Exception("The sum of credits for the RCN is not equal to the credit attributed for year {year} . Please correct to continue.", ['year' => $year]);
+
                 Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
                     
                 $transaction->commit();
@@ -156,6 +153,7 @@ class FinanceKaecreditController extends Controller
             
             }
             catch(Exception $e){
+                Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
                 $transaction->rollBack();   
                 return $this->redirect(['/finance/finance-kaecredit']);
             }
@@ -171,7 +169,7 @@ class FinanceKaecreditController extends Controller
      * @return mixed
      */
     public function actionUpdate()
-    {
+    {       
         if(FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])){
             Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Your choices cannot be carried out, because the financial year is locked."));
             return $this->redirect(['/finance/finance-kaecredit/']);

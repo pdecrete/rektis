@@ -100,13 +100,9 @@ class FinanceExpenditureController extends Controller
                 ->where(['kaewithdr_id' => $kaewithdrawal['kaewithdr_id']])
                 ->one()['kaecredit_id']; 
                 
-                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];
-                
-                //$expendwithdrawals[$expend_model['exp_id']]['RELATEDKAE'] = 
-                //FinanceKaecredit::find()->where(['kaecredit_id' => $kaecredit_id])->one()['kae_id'];
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];                
             }
         }
-        //echo "<pre>"; print_r($expendwithdrawals); echo "</pre>";die();
         
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -194,7 +190,7 @@ class FinanceExpenditureController extends Controller
     
     public function actionUpdate($id)
     {   
-        return $this->redirect(['index']);
+        //return $this->redirect(['index']);
         if(!isset($id) || !is_numeric($id)){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
@@ -232,17 +228,14 @@ class FinanceExpenditureController extends Controller
         }  
             
         $deductions = FinanceDeduction::find()->all();
-        //echo "<pre>"; print_r($deductions); echo "</pre>"; die();       
         
         $expenddeduction_models = array();
-        $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['<=', 'deduct_id', 3])->all();
+        $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['<=', 'deduct_id', 3])->one();
 
         if(count($exp_deduction))
             $expenddeduction_models[0] = $exp_deduction;
         for($i = 3; $i < count($deductions); $i++){
             $exp_deductions_checkbox = FinanceExpenddeduction::find()->where(['exp_id' => $id, 'deduct_id'=> $deductions[$i]->deduct_id])->one();
-//            echo "<strong>In update";  echo "</strong>";
-//            echo "<pre>"; print_r($exp_deductions_checkbox); echo "</pre>"; die();
             if(count($exp_deductions_checkbox))
                 $expenddeduction_models[$i-2] = $exp_deductions_checkbox;
             else {    
@@ -250,7 +243,6 @@ class FinanceExpenditureController extends Controller
                 $expenddeduction_models[$i-2]->exp_id = $id;
             }
         }
-        //echo "<pre>"; print_r($expenddeduction_models); echo "<br /><br />"; echo count($expenddeduction_models); echo "</pre>";die();
         
         $vat_levels = FinanceFpa::find()->all();
         
@@ -266,7 +258,7 @@ class FinanceExpenditureController extends Controller
         }
         else
         {
-            return $this->render('create', [
+            return $this->render('update', [
                     'model' => $model,
                     'expendwithdrawals_models' => $expendwithdrawals_models,
                     'vat_levels' => $vat_levels,
@@ -286,7 +278,7 @@ class FinanceExpenditureController extends Controller
      * @return mixed
      */
     private function saveModels($model, $expendwithdrawals_models, $expenddeduction_models, $new_expenditure = true)
-    {   
+    {   //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>"; die();
         try{
             $transaction = Yii::$app->db->beginTransaction();
             $model->exp_amount = Money::toCents($model->exp_amount); 
@@ -300,7 +292,6 @@ class FinanceExpenditureController extends Controller
             if(!$new_expenditure){
                 $old_expdeductions = FinanceExpenddeduction::find()->where(['exp_id' => $model->exp_id])
                                                                    ->andWhere(['>', 'deduct_id', 3])->all();
-                //echo "<pre>"; print_r($old_expdeductions); echo "</pre>"; die();
                 foreach ($old_expdeductions as $old_expdeduction)
                     if(!$old_expdeduction->delete()) throw new Exception();
             }
@@ -312,16 +303,16 @@ class FinanceExpenditureController extends Controller
                 if(!$expend_state_model->save()) throw new Exception();
             }
             
-            //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>"; die();
             for($i = 0; $i < count($expenddeduction_models); $i++){
                 $expenddeduction_models[$i]->exp_id = $model->exp_id;
                 $tmp = $expenddeduction_models[$i]->deduct_id;
                 
                 if(isset($tmp) && $tmp != 0 && $tmp != null){
-                    //echo "I saved " . $tmp;
+              //      echo "I saved " . $tmp . "<br />";
                     if(!$expenddeduction_models[$i]->save()) throw new Exception();
                 }
             }
+            //$transaction->rollBack();
             //die();
             
             $partial_amount = $model->exp_amount;
@@ -345,7 +336,6 @@ class FinanceExpenditureController extends Controller
                     throw new Exception();
                 
             }
-           // echo $partial_amount; die();
             if($partial_amount > 0) throw new Exception();
             
             $transaction->commit();
@@ -421,15 +411,13 @@ class FinanceExpenditureController extends Controller
         $exp_model = $this->findModel($id);
         $current_state = FinanceExpenditurestate::find()->where(['exp_id' => $exp_model->exp_id, ])->max('state_id');
         $current_state_name = FinanceState::findOne(['state_id' => $current_state])['state_name']; 
-        //echo "<pre>"; var_dump($current_state); echo "</pre>"; die();
+        
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
-        //$supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
                 
         if ($state_model->load(Yii::$app->request->post())){
             try{
                 $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $state_model->exp_id])->count();
-                //echo $state_model->exp_id . "---" . $statescount; die();
                 if($statescount < 0 || $statescount >= 4) 
                     throw new Exception();
                 $state_model->state_id = $statescount + 1;
@@ -527,9 +515,7 @@ class FinanceExpenditureController extends Controller
     public function actionPaymentreport(){
         $models = array();
         $kae = "";
-        //echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
         $exp_ids = Yii::$app->request->post('selection');
-        //echo "<pre>"; print_r($exp_ids); echo "</pre>"; die();
         
         try{
             if(is_null($exp_ids))

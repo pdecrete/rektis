@@ -1,16 +1,15 @@
 <?php
 
+use app\modules\finance\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Finance Expenditure',
-]) . $model->exp_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Finance Expenditures'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->exp_id, 'url' => ['view', 'id' => $model->exp_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->title = Module::t('modules/finance/app', 'Update Expenditure');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="finance-expenditure-update">
 	<?= $this->render('/default/infopanel');?>
