@@ -23,6 +23,7 @@ $kae->kae_id = sprintf('%04d', $kae->kae_id);
     <?= $form->field($kae, 'kae_id')->textInput(['readonly' => true]) ?>
     <?= $form->field($kae, 'kae_title')->textInput(['readonly' => true]) ?>
     <?= $form->field($kaecredit, 'kaecredit_amount')->textInput(['readonly' => true]) ?>
+    <?php ;//    Html::textInput('kaecredit_sumpercentage', $kaecredit_sumpercentage); ?>
 	
     <?= $form->field($model, 'kaeperc_percentage')->textInput((['maxlength' => true,] )) ?>
 

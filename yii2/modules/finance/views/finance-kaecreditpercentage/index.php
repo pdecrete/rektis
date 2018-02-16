@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	                                        'Are you sure you want to automatically set credit percentages for specific RCNs?')]); ?>
     <?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
-        'btnLiteral' => Module::t('modules/finance/app', 'Attribute percentage to RCN credit'),
+        'btnLiteral' => Module::t('modules/finance/app', 'Attribute New Percentage'),
         'actionUrl' => '/finance/finance-kaecreditpercentage/create',
         'otherbuttons' => [$otherbutton],
         //'otherbuttons' => [[Module::t('modules/finance/app', 'Automatic Percentage Definition'),'masspercentage']]

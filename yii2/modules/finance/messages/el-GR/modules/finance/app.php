@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
+    'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η διαγραφή της συγκεκριμένης κράτησης.',
     'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
     'Update Expenditure' => 'Ενημέρωση Δαπάνης',
     'The expenditure was deleted successfully.' => 'Η δαπάνη διαγράφηκε επιτυχώς',
@@ -170,8 +172,8 @@ return [
     'The attribution of percentage to RCN credit failed.' => 'Αποτυχία δημιουργίας καθορισμού ποσοστού διάθεσης επί πίστωσης.',
     'The deletion of the percentage attribution of a RCN credit is irreversible action. Are you sure you want to delete this item?' => 'Η διαγραφή του ποσοστού διάθεσης επί της πίστωσης είναι μη αναστρέψιμη ενέργεια. Είστε σίγουροι για τη διαγραφή;',
     'Reset' => 'Καθαρισμός',
-    'RCN Credits Percentages' => 'Ποσοστά πιστώσεων ΚΑΕ',
-    'Attribute percentage to RCN credit' => 'Απόδοση ποσοστού σε πίστωση ΚΑΕ',
+    'RCN Credits Percentages' => 'Ποσοστά Πιστώσεων ΚΑΕ',
+    'Attribute New Percentage' => 'Απόδοση Νέου Ποσοστού',
     'Update RCN Percentage Attribution' => 'Ενημέρωση απόδοσης ποσοστού πίστωσης ΚΑΕ',
     'RCN Percentage Attribution Decision' => 'Απόφαση απόδοσης ποσοστού πίστωσης ΚΑΕ', 
     'RCN Percentage Attribution Date' => 'Ημερομηνία απόδοσης ποσοστού πίστωσης ΚΑΕ',

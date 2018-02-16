@@ -127,12 +127,20 @@ class FinanceDeductionController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete())
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting deduction."));
-        else
-            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was deleted successfully."));
-            
-        return $this->redirect(['index']);
+        try{
+            $model = $this->findModel($id);
+            $model->deduct_obsolete = true;
+            if($model->deduct_id == 1 || $model->deduct_id == 2 || $model->deduct_id == 3)
+                throw new Exception("Deletion is not allowed for this type of deduction.");
+            if(!$model->save()) 
+                throw new Exception("Failure in deleting deduction.");
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was deleted successfully."));                
+            return $this->redirect(['index']);            
+        }
+        catch(Exception $e) {
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
+            return $this->redirect(['index']);
+        }
     }
 
     /**

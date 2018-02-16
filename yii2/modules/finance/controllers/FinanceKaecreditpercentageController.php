@@ -98,6 +98,7 @@ class FinanceKaecreditpercentageController extends Controller
         $kae = FinanceKae::findOne(['kae_id' => $id]);
         $kaecredit = FinanceKaecredit::findOne(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]]);
         $model->kaecredit_id = $kaecredit->kaecredit_id;
+        $kaecredit_sumpercentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($model->kaecredit_id);
 
         if ($model->load(Yii::$app->request->post())){
             try{
@@ -119,7 +120,8 @@ class FinanceKaecreditpercentageController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'kae' => $kae,
-                'kaecredit' => $kaecredit
+                'kaecredit' => $kaecredit,
+                'kaecredit_sumpercentage' => $kaecredit_sumpercentage
             ]);
         }
     }
@@ -135,6 +137,7 @@ class FinanceKaecreditpercentageController extends Controller
         $model = $this->findModel($id);
         $kae = $model->getKae()->one();
         $kaecredit = $model->getKaecredit()->one();
+        $kaecredit_sumpercentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($model->kaecredit_id);
         
         if ($model->load(Yii::$app->request->post())){
             try{                
@@ -158,7 +161,8 @@ class FinanceKaecreditpercentageController extends Controller
             return $this->render('update', [
                 'model' => $model,
                 'kae' => $kae,
-                'kaecredit' => $kaecredit
+                'kaecredit' => $kaecredit,
+                'kaecredit_sumpercentage' => $kaecredit_sumpercentage
             ]);
         }
     }

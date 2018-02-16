@@ -149,7 +149,7 @@ class FinanceExpenditureController extends Controller
             return $this->redirect(['index']);
         }
         
-        $deductions = FinanceDeduction::find()->all();
+        $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
         $expenddeduction_models = array();
         for($i = 3; $i <= count($deductions); $i++) //3 for the first three deductions presented as radiolist
             $expenddeduction_models[$i-3] = new FinanceExpenddeduction();
@@ -227,7 +227,7 @@ class FinanceExpenditureController extends Controller
             return $this->redirect(['index']);
         }  
             
-        $deductions = FinanceDeduction::find()->all();
+        $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
         
         $expenddeduction_models = array();
         $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['<=', 'deduct_id', 3])->one();
