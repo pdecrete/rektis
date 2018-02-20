@@ -251,7 +251,7 @@ class ImportController extends Controller
                 }
             }
 
-            if (intval($data['school_type']) === 1 || $data['school_type'] === 'ΚΕΔΔΥ') {
+            if (intval($data['school_type']) === Position::SCHOOL_TYPE_KEDDY || $data['school_type'] === 'ΚΕΔΔΥ') {
                 $data['school_type'] = Position::SCHOOL_TYPE_KEDDY;
             } else {
                 $data['school_type'] = Position::SCHOOL_TYPE_DEFAULT;

@@ -14,7 +14,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  *
  * @property integer $id
  * @property string $title
- * @property integer $school_type Defualts to 0, if 1 denotes KEDDY
+ * @property integer $school_type Defualts to 1, if 2 denotes KEDDY
  * @property integer $operation_id
  * @property integer $specialisation_id
  * @property integer $prefecture_id
@@ -38,8 +38,8 @@ class Position extends \yii\db\ActiveRecord
     const POSITION_TYPE_TEACHER = 1;
     const POSITION_TYPE_HOURS = 0;
 
-    const SCHOOL_TYPE_DEFAULT = 0;
-    const SCHOOL_TYPE_KEDDY = 1;
+    const SCHOOL_TYPE_DEFAULT = 1;
+    const SCHOOL_TYPE_KEDDY = 2;
 
     public $position_has_type;
     public $position_has_type_label; // use to select teachers or hours count
@@ -64,7 +64,7 @@ class Position extends \yii\db\ActiveRecord
             ['school_type', 'default', 'value' => Position::SCHOOL_TYPE_DEFAULT],
             ['school_type', 'filter', 'filter' => 'intval'],
             [['operation_id', 'title', 'whole_teacher_hours', 'school_type'], 'required'],
-            ['school_type', 'in', 'range' => [0, 1]],
+            ['school_type', 'in', 'range' => [self::SCHOOL_TYPE_DEFAULT, self::SCHOOL_TYPE_KEDDY]],
             [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count'], 'default', 'value' => 0],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
 //                'if' => '0', 'replace' => true, 'otherAttributeValue' => 0, 'otherAttribute' => 'teachers_count'],
