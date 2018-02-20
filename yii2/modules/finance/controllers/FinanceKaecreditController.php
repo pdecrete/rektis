@@ -150,7 +150,7 @@ class FinanceKaecreditController extends Controller
                 
                 $year = Yii::$app->session["working_year"];
                 if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year))
-                    throw new Exception(Module::t('modules/finance/app', "The sum of credits for the RCN is not equal to the credit attributed for year {year} . Please correct to continue.", ['year' => $year]));
+                    throw new Exception(Module::t('modules/finance/app', "The changes were not saved, because the sum of credits is not equal to the credit of the year. Please correct to continue."));
 
                 Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
                     

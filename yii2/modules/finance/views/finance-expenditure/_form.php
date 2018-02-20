@@ -11,6 +11,7 @@ use app\modules\finance\components\Money;
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
 
+$model->exp_amount = Money::toCurrency($model->exp_amount);
 ?>
 
 <div class="finance-expenditure-form col-lg-6">

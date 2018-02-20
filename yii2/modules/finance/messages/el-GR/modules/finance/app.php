@@ -17,6 +17,14 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The deduction was updated successfully.' => 'Η κράτηση ενημερώθηκε επιτυχώς',
+    'The deduction was created successfully.' => 'Η κράτηση δημιουργήθηκε επιτυχώς',
+    'Failure in updating deduction.' => 'Αποτυχία ενημέρωσης της κράτησης.',
+    'Failure in creating deduction.' => 'Αποτυχία δημιουργίας της κράτησης.',
+    'The deduction was set to obsolete.' => 'Η κράτηση καταργήθηκε.',
+    'The expenditure was not saved. Please correct the duplicate withdrawals.' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
+    'The changes were not saved. Please correct the duplicate assigned withdrawals.' => 'Οι αλλαγές δεν αποθηκεύτηκαν. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
+    'Update Withdrawal' => 'Ενημέρωση Ανάληψης',
     'Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
     'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η διαγραφή της συγκεκριμένης κράτησης.',
     'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
@@ -56,8 +64,9 @@ return [
     'Withdrawals Total Balance' => 'Συνολικό Διαθέσιμο Αναλήψεων',
     'Are you sure you want to automatically set credit percentages for specific RCNs?' =>
     'Είστε σίγουρος/-η ότι θέλετε να γίνει αυτόματος καθορισμός ποσοστών πιστώσεων για συγκεκριμένους ΚΑΕ;',
+    'The default percentage for {kae_name} already exists.' => 'Το προκαθορισμένο ποσοστό για τον KAE {kae_name} υπάρχει ήδη.',
     'The default percentage (100%) for some RCNs (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) was created successfully.' =>
-    'Το προκαθορισμένο ποσοστό (100%) για κάποιους ΚΑΕ (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) δημιουργήθηκε επιτυχώς',
+    'Το προκαθορισμένο ποσοστό (100%) για κάποιους ΚΑΕ (0813, 0824, 0831, 0832, 2224, 9511, 9711, 9821, 9831, 9832) δημιουργήθηκε επιτυχώς.',
     'Failure in creating the default percentages.' => 'Αποτυχία δημιουργίας των προκαθορισμένων ποσοστών',
     'Default Percentage' => 'Προκαθορισμένο Ποσοστό',
     'Automatic Percentage Definition' => 'Αυτόματη Απόδοση Ποσοστών',
@@ -174,7 +183,7 @@ return [
     'Reset' => 'Καθαρισμός',
     'RCN Credits Percentages' => 'Ποσοστά Πιστώσεων ΚΑΕ',
     'Attribute New Percentage' => 'Απόδοση Νέου Ποσοστού',
-    'Update RCN Percentage Attribution' => 'Ενημέρωση απόδοσης ποσοστού πίστωσης ΚΑΕ',
+    'Update RCN Percentage' => 'Ενημέρωση ποσοστού πίστωσης ΚΑΕ',
     'RCN Percentage Attribution Decision' => 'Απόφαση απόδοσης ποσοστού πίστωσης ΚΑΕ', 
     'RCN Percentage Attribution Date' => 'Ημερομηνία απόδοσης ποσοστού πίστωσης ΚΑΕ',
     'RCN Percentage Attribution' => 'Απόδοση ποσοστού πίστωσης ΚΑΕ',
@@ -240,7 +249,7 @@ return [
     'Set as currently working' => 'Ορισμός ως τρέχον έτος εργασίας',
     'The financial year {id} was locked succesfully.' => 'Το οικονομικό έτος {id} κλειδώθηκε επιτυχώς.',
     'The financial year {id} was unlocked succesfully.' => 'Το οικονομικό έτος {id} ξεκλειδώθηκε επιτυχώς.',
-    'The sum of credits for the RCN is not equal to the credit attributed for year {year}. Please correct to continue.' => 'Το άθροισμα των πιστώσεων των ΚΑΕ δεν συμφωνεί με την πίστωση για το έτος {year} Παρακαλώ διορθώστε για να προχωρήσετε.',
+    'The changes were not saved, because the sum of credits is not equal to the credit of the year. Please correct to continue.' => 'Οι πιστώσεις δεν αποθηκεύτηκαν, επειδή το άθροισμα των πιστώσεων με την πίστωση του έτους. Παρακαλώ διορθώστε για να προχωρήσετε.',
     'Create' => 'Δημιουργία',
     'Update' => 'Ενημέρωση',
     'View' => 'Προβολή',

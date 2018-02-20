@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaecreditpercentage */
 
-$this->title = Module::t('modules/finance/app', 'Update RCN Percentage Attribution');
+$this->title = Module::t('modules/finance/app', 'Update RCN Percentage');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'RCN Credits Percentages'), 'url' => ['index']];

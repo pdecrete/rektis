@@ -10,6 +10,8 @@ $this->title = Module::t('modules/finance/app', 'Update Expenditure');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+//echo "<pre>"; print_r($model); echo "</pre>"; die();
 ?>
 <div class="finance-expenditure-update">
 	<?= $this->render('/default/infopanel');?>

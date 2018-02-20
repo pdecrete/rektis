@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="row">    
+<div class="row">
     <div class="finance-kaewithdrawal-form col-lg-6">
     
         <?php $form = ActiveForm::begin(); ?>

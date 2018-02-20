@@ -214,7 +214,7 @@ class FinanceKaecreditpercentageController extends Controller
                 
                 $default_percentage = FinanceKaecreditpercentage::find()->where(['kaecredit_id' => $kaecredit_id])->count();
                 if($default_percentage) {
-                    Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The default percentage for {$kaes[$i]} already exists."));
+                    Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The default percentage for {kae_name} already exists.", ['kae_name' => sprintf('%04d', $kaes[$i])]));
                     continue;
                 }
                                 

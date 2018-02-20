@@ -5,7 +5,6 @@ namespace app\modules\finance\controllers;
 use Yii;
 use app\modules\finance\Module;
 use app\modules\finance\models\FinanceYear;
-use app\modules\finance\models\FinanceYearSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\ArrayDataProvider;

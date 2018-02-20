@@ -134,7 +134,7 @@ class FinanceDeductionController extends Controller
                 throw new Exception("Deletion is not allowed for this type of deduction.");
             if(!$model->save()) 
                 throw new Exception("Failure in deleting deduction.");
-            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was deleted successfully."));                
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was set to obsolete."));                
             return $this->redirect(['index']);            
         }
         catch(Exception $e) {

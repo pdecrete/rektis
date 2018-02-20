@@ -42,15 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
-                //'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock" style="color:red"></span>' : ' ';}
-                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? 
-                                                                Html::a('<span class="glyphicon glyphicon-lock" style="color:red"></span>', 
-                                                                        ['/finance/finance-year/unlock', 'id'=> $dataProvider->year], 
-                                                                        ['title' => Module::t('modules/finance/app', 'Unlock'),
-                                                                         'data'=>[  'confirm' => "Είστε σίγουροι ότι θέλετε να ξεκλειδώσετε το έτος;",
-                                                                                    'method' => "post"]                                                                            
-                                                                        ]
-                                                                       ) : ' ';},
+                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock" style="color:red"></span>': ' ';},
                 'contentOptions' => ['class' => 'text-center'],
                 'headerOptions' => ['class'=> 'text-center'],
             ],

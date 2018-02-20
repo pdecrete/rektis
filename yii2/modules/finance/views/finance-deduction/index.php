@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                if($model['deduct_obsolete'] == 0)
                                     return Module::t('modules/finance/app', 'Όχι');
                                else
-                                   return Module::t('modules/finance/app', 'Ναι');
+                                   return '<strong>' . Module::t('modules/finance/app', 'Ναι') . '</strong>';
                             },
              'headerOptions' => ['class'=> 'text-center'], 'contentOptions' => ['class' => 'text-center']
             ],
