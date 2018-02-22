@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The invoice was created successfully.' => 'Το τιμολόγιο δημιουργήθηκε επιτυχώς.',
     'The deduction was updated successfully.' => 'Η κράτηση ενημερώθηκε επιτυχώς',
     'The deduction was created successfully.' => 'Η κράτηση δημιουργήθηκε επιτυχώς',
     'Failure in updating deduction.' => 'Αποτυχία ενημέρωσης της κράτησης.',

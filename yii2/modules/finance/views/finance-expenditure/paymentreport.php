@@ -2,11 +2,9 @@
 
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
-use app\modules\finance\models\FinanceSupplier;
-use yii\grid\GridView;
-use yii\helpers\Html;
-use app\modules\finance\models\FinanceExpenditurestate;
 
+//foreach ($models as $model)
+//echo "<pre>"; print_r($model['DEDUCTIONS']); echo "</pre>"; die();
 //echo "<pre>"; print_r($models); echo "</pre>"; die();
 
 $inline_th_css = 'style="text-align: center;border: 1px solid black;font-weight:bold;"';
@@ -16,6 +14,30 @@ $sum_net_value = 0;
 $sum_vat = 0;
 $sum_taxes = 0;
 $sum_payable_amount = 0;
+$sum_expenditure_taxes = 0;
+
+$deductions_array = array();
+$deductions_array_sum = array();
+$maxnum_deductions = 0;
+foreach ($models as $model){
+    if(count($model['DEDUCTIONS'] > $maxnum_deductions))
+        $maxnum_deductions = count($model['DEDUCTIONS']);
+    foreach ($model['DEDUCTIONS'] as $deduction){
+        $deductions_array[$model['EXPENDITURE']['exp_id']][$deduction['deduct_name']] = $deduction['deduct_percentage'];
+        if(!isset($deductions_array['SUM'][$deduction['deduct_name']])){
+            $deductions_array['SUM'][$deduction['deduct_name']] = array();
+            $deductions_array['SUM'][$deduction['deduct_name']]['SUM_AMOUNT'] = 0;
+            $deductions_array['SUM'][$deduction['deduct_name']]['PERCENTAGE'] = (Money::toPercentage($deduction['deduct_percentage'], true));
+        }
+        $deductions_array['SUM'][$deduction['deduct_name']]['SUM_AMOUNT'] += (Money::toPercentage($deduction['deduct_percentage'], false)/100)*Money::toCurrency($model['EXPENDITURE']['exp_amount']);
+        
+    }
+}
+
+//foreach ($deductions_array['SUM'] as $key=>$value)
+//    echo $key . "<br />";
+//echo "<pre>"; print_r($deductions_array); echo "</pre>";
+//die();
 
 $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.png'));
 ?>
@@ -34,22 +56,26 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Voucher Number') ?></td>
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Rationale') ?></td>									
 			<td colspan="3" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Expenditure Amount') ?></td>
-			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Tax') ?></td>
+		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
+					<td <?= $inline_th_css?>><?= $key ?></td>										
+		<?php   endforeach;?>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
 		</tr>
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Net Value') ?></td>					
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'VAT') ?></td>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>
-			<td <?= $inline_td_css_right?>>
-			<td <?= $inline_td_css_right?>>						
+		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
+					<td <?= $inline_th_css?>><?= $value['PERCENTAGE'] ?></td>										
+		<?php   endforeach;?>
+			<td <?= $inline_td_css_right?>></td>
 		</tr>
 		<?php   foreach($models as $model): 
-    		        $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
-    		        $vat = $net_value * (Money::toPercentage($model['EXPENDITURE']['fpa_value'])/100);
-    		        $taxes = 0;
-    		        $payable_amount = $net_value + $vat + $taxes;
-  		?>				
+                    $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
+                    $vat = $net_value * (Money::toPercentage($model['EXPENDITURE']['fpa_value'])/100);
+                    $taxes = 0;
+                    $sum_expenditure_taxes = 0;
+                    $payable_amount = $net_value + $vat + $taxes;?>				
             		<tr>
             			<td <?= $inline_td_css_left?>><?= $model['SUPPLIER']['suppl_name']; ?></td>
             			<td <?= $inline_td_css_left?>><?= $model['INVOICE']['inv_number']; ?></td>
@@ -57,15 +83,24 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
             			<td <?= $inline_td_css_right?>><?= number_format($net_value, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($vat, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($net_value + $vat, 2, ',', '.') ?></td>
-            			<td <?= $inline_td_css_right?>></td>
-            			<td <?= $inline_td_css_right?>><?= number_format($payable_amount, 2, ',', '.') ?></td>
-            		</tr>
-        <?php
-                    $sum_net_value += $net_value;
+
+		<?php           foreach ($deductions_array['SUM'] as $key=>$value):
+                            if(isset($deductions_array[$model['EXPENDITURE']['exp_id']][$key])):
+                                $tax = Money::toCurrency($model['EXPENDITURE']['exp_amount'],false)*Money::toPercentage($deductions_array[$model['EXPENDITURE']['exp_id']][$key], false)/100;
+                                $sum_expenditure_taxes += $tax;?>
+                                <td <?= $inline_td_css_right?>><?= number_format($tax, 2, ',', '.'); ?></td>
+		<?php               else: ?>
+								<td <?= $inline_td_css_right?>></td>                                
+       	<?php               endif;?>                    		    
+		<?php           endforeach;?>
+		
+        				<td <?= $inline_td_css_right?>><?= number_format($payable_amount + $sum_expenditure_taxes, 2, ',', '.') ?></td>
+        			</tr>
+        <?php       $sum_net_value += $net_value;
                     $sum_vat += $vat;
-                    $sum_taxes = 0;
-                    $sum_payable_amount += $payable_amount;
-                endforeach; ?>
+                    $sum_payable_amount += $payable_amount + $sum_expenditure_taxes;
+                endforeach;?>
+                
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>
 			<td <?= $inline_td_css_right?>></td>
@@ -73,7 +108,10 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
 			<td <?= $inline_td_css_right?>><?= number_format($sum_net_value, 2, ',', '.') ?></td>							
 			<td <?= $inline_td_css_right?>><?= number_format($sum_vat, 2, ',', '.') ?></td>
 			<td <?= $inline_td_css_right?>><?= number_format($sum_net_value + $sum_vat, 2, ',', '.') ?></td>
-			<td <?= $inline_td_css_right?>><?= number_format($sum_taxes, 2, ',', '.') ?></td>
+		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
+					<td <?= $inline_td_css_right?>><?= number_format($value['SUM_AMOUNT'], 2, ',', '.') ?></td>										
+		<?php   endforeach;?>
+
 			<td <?= $inline_td_css_right?>><?= number_format($sum_payable_amount, 2, ',', '.') ?></td>
 		</tr>						
 	</table>
