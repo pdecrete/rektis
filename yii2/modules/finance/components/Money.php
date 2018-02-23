@@ -15,7 +15,8 @@ use Yii;
 class Money
 {    
     public static function toCents($amount) {
-        return intval(round($amount*100));
+        //return intval(round($amount*100));
+        return round($amount*100, 0);
     }
     
     public static function toCurrency($amount, $formatted = false){
@@ -31,7 +32,8 @@ class Money
     }
     
     public static function toDbPercentage($percentage) {   
-        return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));; 
+        //return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));
+        return round(str_replace(',', '.', str_replace('%', '', $percentage))*100, 0);
     }
     
     public static function dbPercentagetoDecimal($percentage){

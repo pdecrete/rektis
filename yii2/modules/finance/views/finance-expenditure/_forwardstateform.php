@@ -24,6 +24,7 @@ use kartik\datecontrol\DateControl;
 	       label(Module::t('modules/finance/app', 'Description')); ?>
     
     <div class="form-group  text-right">
+    	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($state_model->isNewRecord ? Module::t('modules/finance/app', 'Forward Expenditure State') : Module::t('modules/finance/app', 'Update Expenditure State'), ['class' => 'btn btn-primary']) ?>
     </div>
 

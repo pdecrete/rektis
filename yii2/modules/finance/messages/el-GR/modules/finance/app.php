@@ -17,6 +17,12 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The expenditure could not be updated because is not in initial state.' => 'Η δαπάνη δεν μπορεί να ενημερωθεί διότι δεν είναι σε αρχική κατάσταση',
+    'The expenditure could not be deleted because is not in initial state.' => 'Η δαπάνη δεν μπορεί να διαγραφεί διότι δεν είναι σε αρχική κατάσταση',
+    'The expenditure\'s state changed successfully.' => 'Η κατάσταση της δαπάνης άλλαξε επιτυχώς',
+    'Backward to previous state' => 'Επαναφορά σε προηγούμενη κατάσταση',
+    'Forward to next state' => 'Προώθηση στην επόμενη κατάσταση',
+    'Failure in deleting the RCN withdrawal. Please try again or contact with the administrator.' => 'Αποτυχία διαγραφή της ανάληψης από τον ΚΑΕ. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
     'The invoice was created successfully.' => 'Το τιμολόγιο δημιουργήθηκε επιτυχώς.',
     'The deduction was updated successfully.' => 'Η κράτηση ενημερώθηκε επιτυχώς',
     'The deduction was created successfully.' => 'Η κράτηση δημιουργήθηκε επιτυχώς',
@@ -32,6 +38,7 @@ return [
     'Update Expenditure' => 'Ενημέρωση Δαπάνης',
     'The expenditure was deleted successfully.' => 'Η δαπάνη διαγράφηκε επιτυχώς',
     'Assigned Amount' => 'Συσχετισμένο Ποσό',
+    'The expenditure was updated successfully.' => 'Η δαπάνη ενημερώθηκε επιτυχώς',
     'The expenditure was created successfully.' => 'Η δαπάνη δημιουργήθηκε επιτυχώς',
     'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
@@ -162,7 +169,7 @@ return [
     'Failure in deleting the RCN withdrawal. Please try again or contact with the administrator' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ προσπαθήστε ξανά ή επικοινωνήστε με το διαχειριστή.',
     'RCN {kae_id} - Quick Info' => 'ΚΑΕ {kae_id} - Πληροφορίες',
     'RCN Withdrawal' => 'Ανάληψη από ΚΑΕ',
-    'Failure in currying out the RCN withdrawal. Please check the declared the validity of the withdraw amount or contact with the administrator.' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ ελέγξτε την εγκυρότητα του δηλωθέντος ποσού ανάληψης ή επικοινωνήστε με το διαχειριστή.',
+    'Failure in carrying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator.' => 'Σφάλμα κατά την πραγματοποίηση της ανάληψης από τον ΚΑΕ. Παρακαλώ ελέγξτε την εγκυρότητα του δηλωθέντος ποσού ανάληψης ή επικοινωνήστε με το διαχειριστή.',
     'The RCN for which the process was requested cound not be found.' => 'Ο ΚΑΕ για τον οποίο ζητάτε να εφαρμοστεί η ενέργεια που επιλέξατε δεν βρέθηκε.',
     'Withdrawals from RCN Credits' => 'Αναλήψεις από πιστώσεις ΚΑΕ',
     'Withdrawal' => 'Ανάληψη',
@@ -196,7 +203,7 @@ return [
     'The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs' => 'Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Στα οικονομικά έτη που έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ, έχει προστεθεί και ο νέος ΚΑΕ με μηδενική πίστωση.',
     'Failed to create new RCN' => 'Αποτυχία δημιουργίας του νέου ΚΑΕ.',
     'The requested page does not exist.' => 'Η σελίδα δεν βρέθηκε',
-    'Information' => 'Πληροφορίες',
+    'More Information' => 'Περισσότερες Πληροφορίες',
     'Reports of expenditures, invoices, credit etc.' => 'Αναφορές δαπανών, τιμολογίων, πιστώσεων κτλ.',
     'Vouchers administration (create new voucher, update details, delete)' => 'Διαχείριση παραστατικών (δημιουργία νέου παραστατικού, ενημέρωση στοιχείων, διαγραφή)',
     'Expenditures administration features (create, update, delete expenditure)' => 'Λειτουργίες διαχείρισης δαπανών (νέα δαπάνη, ενημέρωση στοιχείων δαπάνης, διαγραφή κτλ.)',

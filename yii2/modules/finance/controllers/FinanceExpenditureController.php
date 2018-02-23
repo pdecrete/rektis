@@ -43,7 +43,7 @@ class FinanceExpenditureController extends Controller
                                 'actions' => ['delete' => ['POST']]],
                 'access' => [   'class' => AccessControl::className(),
                                 'rules' =>  [
-                                            [   'actions' => ['create', 'delete', 'forwardstate', 'updatestate', 'backwardstate'],
+                                            [   'actions' => ['create', 'update', 'delete', 'forwardstate', 'updatestate', 'backwardstate'],
                                                 'allow' => false,
                                                 'roles' => ['@'],
                                                 'matchCallback' => function ($rule, $action) {                                                    
@@ -206,6 +206,13 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
+        
+        $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $id])->count();        
+        if($statescount > 1){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure could not be updated because is not in initial state."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
+        
         $model = $this->findModel($id);
         //$model->exp_amount = Money::toCurrency($model->exp_amount);
         
@@ -308,7 +315,7 @@ class FinanceExpenditureController extends Controller
             $model->exp_deleted = 0;
             $model->exp_lock = 0;
 
-            if(!$model->save()) throw new Exception();
+            if(!$model->save()) throw new Exception("Error saving in the database.");
             
             if(!$new_expenditure){
                 $old_expdeductions = FinanceExpenddeduction::find()->where(['exp_id' => $model->exp_id])
@@ -321,7 +328,7 @@ class FinanceExpenditureController extends Controller
 
                     if(!$delete_it)
                         if(!$old_expdeduction->delete()) 
-                            throw new Exception();                        
+                            throw new Exception("Error deleting previous deduction.");                        
                 }
             }
             else {            
@@ -329,7 +336,7 @@ class FinanceExpenditureController extends Controller
                 $expend_state_model->exp_id = $model->exp_id;
                 $expend_state_model->state_id = 1;
                 $expend_state_model->expstate_date = date("Y-m-d H:i:s");
-                if(!$expend_state_model->save()) throw new Exception();
+                if(!$expend_state_model->save()) throw new Exception("Error in setting the state of the expenditure.");
             }
 
             $tmp_array = array();
@@ -339,7 +346,7 @@ class FinanceExpenditureController extends Controller
                 
                 if(isset($tmp) && $tmp != 0 && $tmp != null){
                     if(!$expenddeduction_models[$i]->save()) 
-                        throw new Exception();
+                        throw new Exception("Error in assigning deductions to the expenditure.");
                 }
             }
             
@@ -352,7 +359,17 @@ class FinanceExpenditureController extends Controller
                 $transaction->rollBack();
                 return false;
             }
-                
+           
+           
+            if(!$new_expenditure){
+                $old_expendwithdrawals = FinanceExpendwithdrawal::findAll(['exp_id' => $model->exp_id]);
+                foreach ($old_expendwithdrawals as $old_expendwithdrawal){
+                    $old_expendwithdrawal->expwithdr_amount = 0;
+                    if(!$old_expendwithdrawal->save()) throw new Exception("Error in deleting old assignment of the expenditure with withdrawals");
+            
+                }
+            }
+            
             $partial_amount = $model->exp_amount;
             foreach ($expendwithdrawals_models as $expendwithdrawals_model){
                 $expendwithdrawals_model->exp_id = $model->exp_id;
@@ -366,7 +383,7 @@ class FinanceExpenditureController extends Controller
                     $partial_amount = 0;
                     
                     if(!$expendwithdrawals_model->save())
-                        throw new Exception();
+                        throw new Exception("Error in assigning withdrawals to exceptions.");
                     break;
                 }
                 
@@ -374,15 +391,18 @@ class FinanceExpenditureController extends Controller
                     throw new Exception();
                 
             }
-            if($partial_amount > 0) throw new Exception();
+            if($partial_amount > 0) throw new Exception("Amount of the expenditure is to high for the available withdrawals.");
             
             $transaction->commit();
-            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
+            if($new_expenditure)
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
+            else
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was updated successfully."));
             return $this->redirect(['index']);
         }
         catch(Exception $e){
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create expenditure."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
             return $this->redirect(['index']);
         }
     }
@@ -399,6 +419,13 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
+        
+        $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $id])->count();
+        if($statescount > 1){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure could not be deleted because is not in initial state."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
+        
         $stopedhere = "";
         $expenditure = $this->findModel($id);        
         try{
@@ -448,7 +475,7 @@ class FinanceExpenditureController extends Controller
         
         $exp_model = $this->findModel($id);
         $current_state = FinanceExpenditurestate::find()->where(['exp_id' => $exp_model->exp_id, ])->max('state_id');
-        $current_state_name = FinanceState::findOne(['state_id' => $current_state])['state_name']; 
+        $current_state_name = FinanceState::findOne(['state_id' => $current_state+1])['state_name']; 
         
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
