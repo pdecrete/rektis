@@ -77,6 +77,10 @@ class FinanceSupplierController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new supplier. Please try again."));
                 return $this->redirect(['index']);
             }
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' created new supplier.', 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The new supplier was created successfully."));
             return $this->redirect(['index']);
         } else {
@@ -101,6 +105,10 @@ class FinanceSupplierController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' updated the supplier with id ' . $id, 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The supplier was updated successfully."));
             return $this->redirect(['index']);
         } else {
@@ -122,6 +130,9 @@ class FinanceSupplierController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the supplier. Please try again."));
             return $this->redirect(['index', 'id' => $model->suppl_id]);
         }
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the supplier with id ' . $id, 'financial');
         
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The supplier was deleted successfully."));
         return $this->redirect(['index']);

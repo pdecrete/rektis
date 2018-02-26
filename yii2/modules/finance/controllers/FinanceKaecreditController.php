@@ -114,7 +114,7 @@ class FinanceKaecreditController extends Controller
         }
     
         if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
-            $this->saveModels($kaecredits);            
+            $this->saveModels($kaecredits, false);
             return $this->redirect(['/finance/finance-kaecredit']);
         } 
         else {
@@ -126,7 +126,7 @@ class FinanceKaecreditController extends Controller
     }
 
     
-    private function saveModels($kaecredits)
+    private function saveModels($kaecredits, $update = true)
     {   
         //echo "<pre>"; print_r($kaecredits); echo "</pre>"; die();
         foreach ($kaecredits as $kaecredit){
@@ -155,6 +155,12 @@ class FinanceKaecreditController extends Controller
                 Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
                     
                 $transaction->commit();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                $action = ($update == true)? "updated": "created";
+                Yii::info('User ' . $user . ' working in year ' . $year . ' ' .  $action . ' credits.', 'financial');
+                
                 return $this->redirect(['/finance/finance-kaecredit']);
             
             }

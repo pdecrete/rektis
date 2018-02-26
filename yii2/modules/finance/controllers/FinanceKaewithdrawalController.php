@@ -122,6 +122,11 @@ class FinanceKaewithdrawalController extends Controller
                     throw new Exception();
                 if(!$model->save()) 
                     throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created withdrawal for RCN (KAE) ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The withdrawal completed successfully."));
                 return $this->redirect(['index']);
             }
@@ -172,7 +177,12 @@ class FinanceKaewithdrawalController extends Controller
                 $newBalance = $balance - $oldModel->kaewithdr_amount + $model->kaewithdr_amount;
                 
                 if($model->kaewithdr_amount <= 0 || ($newBalance < 0)) throw new Exception();
-                if(!$model->save()) throw new Exception();
+                if(!$model->save()) 
+                    throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' updated withdrawal with ' . $id, 'financial');
                 
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The update of the withdrawal completed successfully."));              
                 return $this->redirect(['index', 'id' => $model->kaewithdr_id]);
@@ -206,7 +216,11 @@ class FinanceKaewithdrawalController extends Controller
                 throw new Exception();
             if(!$this->findModel($id)->delete())
                 throw new Exception();
-            
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' deleted withdrawal with ' . $id, 'financial');
+                
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN Withdraw was deleted successfylly."));
             return $this->redirect(['index']);
         }

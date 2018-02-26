@@ -60,7 +60,11 @@ class FinanceStateController extends Controller
     {
         $model = new FinanceState();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' created new expenditure state.', 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was created successfully."));
             return $this->redirect(['index', 'id' => $model->state_id]);
         } else {
@@ -81,6 +85,10 @@ class FinanceStateController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' updated the expenditure state with id ' . $id, 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was created successfully."));
             return $this->redirect(['index', 'id' => $model->state_id]);
         } else {
@@ -102,6 +110,10 @@ class FinanceStateController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the expenditure state."));
             return $this->redirect(['index', 'id' => $model->state_id]);
         }
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the expenditure state with id ' . $id, 'financial');
+        
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure state was deleted succesfully."));      
         return $this->redirect(['index']);
     }

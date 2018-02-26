@@ -17,6 +17,11 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The supplier was deleted successfully.' => 'Ο προμηθευτής διαγράφηκε επιτυχώς.',
+    'The supplier was updated successfully.' => 'Τα στοιχεία του προμηθευτή ενημερώθηκαν επιτυχώς.',
+    'The invoice was deleted succesfully.' => 'Το τιμολόγιο διαγράφηκε επιτυχώς.',
+    'The item was deleted successfully.' => 'Το αντικείμενο διαγράφηκε επιτυχώς',
+    'The item was updated successfully.' => 'Το αντικείμενο ενημερώθηκε επιτυχώς.',
     'The expenditure could not be updated because is not in initial state.' => 'Η δαπάνη δεν μπορεί να ενημερωθεί διότι δεν είναι σε αρχική κατάσταση',
     'The expenditure could not be deleted because is not in initial state.' => 'Η δαπάνη δεν μπορεί να διαγραφεί διότι δεν είναι σε αρχική κατάσταση',
     'The expenditure\'s state changed successfully.' => 'Η κατάσταση της δαπάνης άλλαξε επιτυχώς',

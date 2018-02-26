@@ -72,6 +72,11 @@ class FinanceDeductionController extends Controller
 
                 if(!$model->save())
                     throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created new deduction.', 'financial');
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was created successfully."));
                 return $this->redirect(['index']);
             }
@@ -105,6 +110,11 @@ class FinanceDeductionController extends Controller
 
                 if(!$model->save())
                     throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' updated deduction with id ' . $id, 'financial');
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was updated successfully."));
                 return $this->redirect(['index']);
             }
@@ -134,6 +144,11 @@ class FinanceDeductionController extends Controller
                 throw new Exception("Deletion is not allowed for this type of deduction.");
             if(!$model->save()) 
                 throw new Exception("Failure in deleting deduction.");
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' set deduction with id ' . $id . ' as obselete.', 'financial');              
+                
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was set to obsolete."));                
             return $this->redirect(['index']);            
         }

@@ -76,6 +76,13 @@ $config = [
                     'logFile' => '@runtime/logs/employee.log',
                     'logVars' => []
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['financial'],
+                    'logFile' => '@runtime/logs/financial.log',
+                    'logVars' => [],
+                ],
             // future use (or not?): log to db
             /*
               [

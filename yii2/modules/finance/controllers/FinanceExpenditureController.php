@@ -394,10 +394,17 @@ class FinanceExpenditureController extends Controller
             if($partial_amount > 0) throw new Exception("Amount of the expenditure is to high for the available withdrawals.");
             
             $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            $action = ($new_expenditure == true)? "created new expenditure." : "updated expenditure with id " . $model->exp_id;
+            Yii::info('User ' . $user . ' working in year ' . $year . ' ' .  $action, 'financial');
+            
             if($new_expenditure)
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
             else
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was updated successfully."));
+
             return $this->redirect(['index']);
         }
         catch(Exception $e){
@@ -442,6 +449,11 @@ class FinanceExpenditureController extends Controller
             if(!$expenditure->delete())
                 throw new Exception();
             $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' deleted expenditure with id ' . $id, 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was deleted successfully."));
             return $this->redirect(['index']);
         }
@@ -488,6 +500,11 @@ class FinanceExpenditureController extends Controller
                 $state_model->state_id = $statescount + 1;
                 if(!$state_model->save())  
                     throw new Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' forwarded state of expenditure with id ' . $id, 'financial');
+                                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
                 return $this->redirect(['index']);
             }
@@ -524,7 +541,11 @@ class FinanceExpenditureController extends Controller
             if ($state_model->load(Yii::$app->request->post())){                
                 if(!$state_model->save()) 
                     throw new Exception();
-            
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' updated the details of state (state_id=' . $state_id . ') for the expenditure with id ' . $exp_id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state details were updated successfully."));
                 return $this->redirect(['index']);
             }
@@ -562,6 +583,11 @@ class FinanceExpenditureController extends Controller
             if(!FinanceExpenditureState::find()->
                 where(['exp_id' => $id, 'state_id' => $statescount])->one()->delete())
                 throw new Exception();
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' backwarded state of expenditure with id ' . $id, 'financial');
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
             return $this->redirect(['index']);           
         }
@@ -623,7 +649,11 @@ class FinanceExpenditureController extends Controller
             'year' => $year,
             'kae' => $kae,
         ]);
-                
+
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' created payment report.', 'financial');
+        
         $pdf = new Pdf([
             'mode' => Pdf::MODE_UTF8,
             'format' => Pdf::FORMAT_A4,

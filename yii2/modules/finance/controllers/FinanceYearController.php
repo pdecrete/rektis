@@ -109,6 +109,11 @@ class FinanceYearController extends Controller
             
                 if(!$model->save()) 
                     throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created a new financial year.', 'financial');
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year was created successfully."));
                 return $this->redirect(['index']);                
             }
@@ -138,6 +143,11 @@ class FinanceYearController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating financial year."));
                 return $this->redirect(['index']);
             }
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' updated the financial year ' . $id, 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year was updated successfully."));
             return $this->redirect(['index']);
         }
@@ -162,6 +172,10 @@ class FinanceYearController extends Controller
             return $this->redirect(['/finance/finance-year']);
         }
         
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' locked the financial year ' . $id, 'financial');
+        
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year {id} was locked succesfully.", ['id' => $id]));
         return $this->redirect(['/finance/finance-year']);
     }
@@ -175,6 +189,10 @@ class FinanceYearController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed unlocking financial year" . " " . $id));
             return $this->redirect(['/finance/finance-year']);
         }
+        
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' unlocked the financial year ' . $id, 'financial');
         
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The financial year {id} was unlocked succesfully.", ['id' => $id]));
         return $this->redirect(['/finance/finance-year']);
@@ -205,7 +223,11 @@ class FinanceYearController extends Controller
                 $otherYear->year_iscurrent = 0;
                 if(!$otherYear->save()) throw new Exception();
             }
-            $transaction->commit();            
+            $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' set as current the financial year ' . $id, 'financial');            
         }
         catch(Exception $e){
             $transaction->rollBack();
@@ -231,7 +253,13 @@ class FinanceYearController extends Controller
             $model = $this->findModel($id);
             if($model->year_iscurrent || $model->year_lock)
                 throw new \Exception();
-            $model->delete();
+            if(!$model->delete()) 
+                throw new Exception();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the financial year ' . $id, 'financial');
+                
             Yii::$app->session->addFlash('success', "To οικομομικό έτος " . $id . " διαγράφηκε επιτυχώς.");
             return $this->redirect(['index']);
         }

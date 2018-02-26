@@ -65,7 +65,11 @@ class FinanceTaxofficeController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the new Tax Office. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The changes were saved successfully."));
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' created new tax office.', 'financial');
+
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was created successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('create', [
@@ -89,7 +93,11 @@ class FinanceTaxofficeController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in saving the changes. Please try again."));
                 return $this->redirect(['index']);
             }
-            Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The changes were saved successfully."));
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' updated the tax office with id ' . $id, 'financial');
+            
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was updated successfully."));
             return $this->redirect(['index']);
         } else {
             return $this->render('update', [
@@ -110,7 +118,11 @@ class FinanceTaxofficeController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the item. Please try again."));
             return $this->redirect(['index']);
         }
-        Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The item was deleted successfully."));
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the tax office with id ' . $id, 'financial');
+        
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was deleted successfully."));
         return $this->redirect(['index']);
     }
 

@@ -109,6 +109,11 @@ class FinanceKaecreditpercentageController extends Controller
                 //echo "<pre>"; print_r($model); echo "<pre>";
                 if(!$model->save()) 
                     throw new Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created new percentage for RCN (KAE) ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
@@ -149,7 +154,13 @@ class FinanceKaecreditpercentageController extends Controller
                 //echo strval(((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit)); die();
                 if($model->kaeperc_percentage > 10000 || $model->kaeperc_percentage <= 0 || 
                     ((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit) > 10000) throw new \Exception();
-                if(!$model->save()) throw new \Exception();
+                if(!$model->save()) 
+                    throw new \Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' udpated percentage with ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
@@ -192,6 +203,10 @@ class FinanceKaecreditpercentageController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the percentage attributed to the RCN Credit. Please try again or contact with the administrator."));
             return $this->redirect(['index']);
         }
+        
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' deleted percentage with ' . $id, 'financial');
         
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deletion of the percentage attributed to the RCN credit was completed successfully"));
         return $this->redirect(['index']);
