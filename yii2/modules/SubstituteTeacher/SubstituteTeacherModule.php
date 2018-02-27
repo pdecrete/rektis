@@ -13,7 +13,8 @@ class SubstituteTeacherModule extends Module
 
         $this->registerTranslations();
 
-//        \Yii::configure($this, require(__DIR__ . '/config/params.php'));
+        $this->params['foo'] = 'bar';
+        \Yii::configure($this, require(__DIR__ . '/config/params.php'));
     }
 
     public function registerTranslations()
