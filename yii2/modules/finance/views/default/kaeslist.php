@@ -23,7 +23,7 @@ if($kaesCount != 0):
     <p style="text-align: right;">
     	<?php if(isset($otherbuttons)):    	
     	           foreach($otherbuttons as $otherbutton):
-    	               echo $otherbutton;
+    	               echo $otherbutton . "&nbsp;";
     	           endforeach; 
     	      endif;
     	?>

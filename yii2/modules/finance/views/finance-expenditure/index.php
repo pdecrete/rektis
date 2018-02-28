@@ -23,15 +23,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('/default/infopanel');?>
 <div class="finance-expenditure-index">
     <h1><?= Html::encode($this->title) ?></h1>
-
+    
+    <?=Html::beginForm(['paymentreport'],'post');?>
+		<?php $paymentreportbutton = Html::a(Module::t('modules/finance/app', 'Export Payment Report'), ['paymentreport'], 
+	                                          ['class' => 'btn btn-success', 'data-method' => 'POST',]); ?>
+		<?php $coversheetbutton = Html::a(Module::t('modules/finance/app', 'Export Cover Sheet'), ['coversheet'], 
+	                                          ['class' => 'btn btn-success', 'data-method' => 'POST',]); ?>	                                          
 	<?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
         'actionUrl' => '/finance/finance-expenditure/create',
-	    'balances' => $balances,	    
+	    'balances' => $balances,
+	    'otherbuttons' => [$paymentreportbutton, $coversheetbutton]
     ]) ?> 
  
-	<?=Html::beginForm(['paymentreport'],'post');?>
+	
  		
 	<?php Pjax::begin();?>
  		
@@ -216,9 +222,9 @@ $this->params['breadcrumbs'][] = $this->title;
        ],
     ]); ?>
     <?php  Pjax::end();?>
-    <p style="text-align: right;">
+    <!--<p style="text-align: right;">
     	<?= Html::submitButton(Module::t('modules/finance/app', 'Export Payment Report'), 
 	                                                       ['class' => 'btn btn-success',]);?>
-	</p>	                                                               
+	</p>-->	                                                               
     <?= Html::endForm();?>
 </div>

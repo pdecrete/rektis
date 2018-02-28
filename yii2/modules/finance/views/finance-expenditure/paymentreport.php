@@ -7,7 +7,8 @@ use app\modules\finance\components\Money;
 //echo "<pre>"; print_r($model['DEDUCTIONS']); echo "</pre>"; die();
 //echo "<pre>"; print_r($models); echo "</pre>"; die();
 
-$inline_th_css = 'style="text-align: center;border: 1px solid black;font-weight:bold;"';
+$inline_th_css = 'style="text-align: center;border: 1px solid black;font-weight:bold;word-wrap:break-word;"';
+$inline_th_css_min_width = 'style="text-align: center;border: 1px solid black;font-weight:bold;word-wrap:break-word;width:0px;"';
 $inline_td_css_right = 'style="text-align: right;border: 1px solid black;"';
 $inline_td_css_left = 'style="text-align: left;border: 1px solid black;"';
 $sum_net_value = 0;
@@ -53,20 +54,20 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
 	<table style="width:100%;border-collapse: collapse;">
 		<tr>
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Beneficiary Details') ?></td>
-			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Voucher Number') ?></td>
+			<td rowspan="2" <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Voucher Number') ?></td>
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Rationale') ?></td>									
 			<td colspan="3" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Expenditure Amount') ?></td>
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_th_css?>><?= $key ?></td>										
 		<?php   endforeach;?>
-			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
+			<td <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
 		</tr>
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Net Value') ?></td>					
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'VAT') ?></td>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
-					<td <?= $inline_th_css?>><?= $value['PERCENTAGE'] ?></td>										
+					<td <?= $inline_th_css_min_width?>><?= $value['PERCENTAGE'] ?></td>										
 		<?php   endforeach;?>
 			<td <?= $inline_td_css_right?>></td>
 		</tr>
@@ -94,11 +95,11 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
        	<?php               endif;?>                    		    
 		<?php           endforeach;?>
 		
-        				<td <?= $inline_td_css_right?>><?= number_format($payable_amount + $sum_expenditure_taxes, 2, ',', '.') ?></td>
+        				<td <?= $inline_td_css_right?>><?= number_format($payable_amount - $sum_expenditure_taxes, 2, ',', '.') ?></td>
         			</tr>
         <?php       $sum_net_value += $net_value;
                     $sum_vat += $vat;
-                    $sum_payable_amount += $payable_amount + $sum_expenditure_taxes;
+                    $sum_payable_amount += $payable_amount - $sum_expenditure_taxes;
                 endforeach;?>
                 
 		<tr>

@@ -516,6 +516,7 @@ class FinanceExpenditureController extends Controller
             return $this->render('forwardstate', [
                 'state_model' => $state_model,
                 'current_state_name' => $current_state_name,
+                'state_id' => $current_state
             ]);
         }
     }
@@ -553,6 +554,7 @@ class FinanceExpenditureController extends Controller
                 return $this->render('updatestate', [
                     'state_model' => $state_model,
                     'current_state_name' => $current_state_name,
+                    'state_id' => $state_id
                 ]);                
             }            
         }
@@ -666,6 +668,50 @@ class FinanceExpenditureController extends Controller
             'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
         ]);
         return $pdf->render();
+    }
+    
+    public function actionCoversheet(){
+        try{
+            $exp_ids = Yii::$app->request->post('selection');
+            if(count($exp_ids) != 1)
+                throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select only one expenditure."));
+            
+            $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $exp_ids[0]]);
+            $exp_stateid = FinanceExpenditurestate::find()->where(['exp_id' => $exp_ids[0]])->max('state_id');
+            if($exp_stateid < 2)
+                throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. The selected expenditure is in initial state."));
+            
+            $expstate_model = FinanceExpenditurestate::findOne(['exp_id' => $exp_ids[0], 'state_id' => 2]);
+            $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
+            
+            //echo "<pre>"; print_r($expstate_model); echo "</pre>"; die();
+                
+            $content = $this->renderPartial('coversheet', 
+                                            ['expenditure_model' => $expenditure_model, 
+                                             'expstate_model' => $expstate_model, 
+                                             'supplier_model' => $supplier_model]);
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' created cover sheet for expenditure with id ' . $exp_ids[0] , 'financial');
+            
+            $pdf = new Pdf([
+                'mode' => Pdf::MODE_UTF8,
+                'format' => Pdf::FORMAT_A4,
+                'orientation' => Pdf::ORIENT_PORTRAIT,
+                'filename' => 'aitisi.pdf',
+                'destination' => Pdf::DEST_DOWNLOAD,
+                'content' => $content,
+                'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+                'cssInline' => '.kv-heading-1{font-size:18px}',
+                'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
+            ]);
+            return $pdf->render();
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', $e->getMessage());
+            return $this->redirect(['index']);            
+        }
     }
     
     /**

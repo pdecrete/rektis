@@ -2,6 +2,7 @@
 
 namespace app\modules\finance\models;
 
+use app\modules\finance\Module;
 use Yii;
 
 /**
@@ -35,6 +36,7 @@ class FinanceExpenditurestate extends \yii\db\ActiveRecord
             [['exp_id', 'state_id'], 'integer'],
             [['expstate_date'], 'safe'],
             [['expstate_comment'], 'string', 'max' => 200],
+            [['expstate_protocol'], 'string', 'max' => 100],
             [['exp_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceExpenditure::className(), 'targetAttribute' => ['exp_id' => 'exp_id']],
             [['state_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceState::className(), 'targetAttribute' => ['state_id' => 'state_id']],
         ];
@@ -46,10 +48,11 @@ class FinanceExpenditurestate extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'exp_id' => Yii::t('app', 'Exp ID'),
-            'state_id' => Yii::t('app', 'State ID'),
-            'expstate_date' => Yii::t('app', 'Expstate Date'),
-            'expstate_comment' => Yii::t('app', 'Expstate Comment'),
+            'exp_id' => Module::t('modules/finance/app', 'Exp ID'),
+            'state_id' => Module::t('modules/finance/app', 'State ID'),
+            'expstate_date' => Module::t('modules/finance/app', 'Expstate Date'),
+            'expstate_comment' => Module::t('modules/finance/app', 'Expstate Comment'),
+            'expstate_protocol' => Module::t('modules/finance/app', 'Cover Sheet Protocol'),
         ];
     }
 

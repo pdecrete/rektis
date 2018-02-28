@@ -19,5 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= $this->render('_forwardstateform', [
 	    'state_model' => $state_model,
 	    'current_state_name' => $current_state_name,
+	    'state_id' => $state_id + 1
     ]) ?>
 </div>

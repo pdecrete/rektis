@@ -300,6 +300,7 @@ class m171115_101126_finance_init extends Migration
                             `state_id` INTEGER NOT NULL,
                             `expstate_date` DATE NOT NULL,
                             `expstate_comment` VARCHAR(200),
+                            `expstate_protocol` VARCHAR(100),
                              PRIMARY KEY (`exp_id`, `state_id`),
                              FOREIGN KEY (`exp_id`) REFERENCES " . $dbFinTables['table_expenditure'] . "(`exp_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                              FOREIGN KEY (`state_id`) REFERENCES " . $dbFinTables['table_state'] . "(`state_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "

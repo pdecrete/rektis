@@ -17,9 +17,14 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Failed to create cover sheet. The selected expenditure is in initial state.' => 'Αποτυχία δημιουργίας διαβιβαστικού. Η επιλεχθείσα δαπάνη βρίσκεται σε αρχική κατάσταση.',
+    'Failed to create cover sheet. Please select only one expenditure.' => 'Αποτυχία δημιουργίας διαβιβαστικού. Παρακαλώ επιλέξτε μόνο μια δαπάνη.',
+    'Export Cover Sheet' => 'Εξαγωγή Διαβιβαστικού',
+    'Cover Sheet Protocol' => 'Πρωτόκολλο Διαβιβαστικού',
     'The supplier was deleted successfully.' => 'Ο προμηθευτής διαγράφηκε επιτυχώς.',
     'The supplier was updated successfully.' => 'Τα στοιχεία του προμηθευτή ενημερώθηκαν επιτυχώς.',
     'The invoice was deleted succesfully.' => 'Το τιμολόγιο διαγράφηκε επιτυχώς.',
+    'The item was created successfully.' => 'Το αντικείμενο δημιουργήθηκε επιτυχώς.',
     'The item was deleted successfully.' => 'Το αντικείμενο διαγράφηκε επιτυχώς',
     'The item was updated successfully.' => 'Το αντικείμενο ενημερώθηκε επιτυχώς.',
     'The expenditure could not be updated because is not in initial state.' => 'Η δαπάνη δεν μπορεί να ενημερωθεί διότι δεν είναι σε αρχική κατάσταση',

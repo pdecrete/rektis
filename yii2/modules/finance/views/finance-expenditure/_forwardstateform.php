@@ -20,6 +20,12 @@ use kartik\datecontrol\DateControl;
 	       ])->label(Module::t('modules/finance/app', 'Date'));
     ?>
     
+    <?php 
+        if($state_id == 2)
+            echo $form->field($state_model, 'expstate_protocol')->textInput(['maxlength' => true])->
+            label(Module::t('modules/finance/app', 'Cover Sheet Protocol')); 
+    ?>
+               
 	<?= $form->field($state_model, 'expstate_comment')->textInput(['maxlength' => true])->
 	       label(Module::t('modules/finance/app', 'Description')); ?>
     
