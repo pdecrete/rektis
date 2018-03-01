@@ -17,6 +17,13 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The deduction is already active.' => 'Η κράτηση είναι ήδη ενεργή.',
+    'Failure in activating deduction.' => 'Αποτυχία ενεργοποίησης της κράτησης.',
+    'The deduction was activated.' => 'Η κράτηση ενεργοποιήθηκε',
+    'Are you sure you want to reactivate the deduction?' => 'Είστε σίγουροι ότι θέλετε να επανενεργοποιήσετε την κράτηση;',
+    'Are you sure you want to make the deduction obselete?' => 'Είστε σίγουροι ότι θέλετε να καταργήσετε την κράτηση;',
+    'The deduction is already obsolete.' => 'Η κράτηση είναι ήδη καταργημένη',
+    'The deduction is obsolete and it cannot be edited.' => 'Η κράτηση είναι καταργημένη και δεν μπορεί να επεξεργαστεί.',
     'Failed to create cover sheet. The selected expenditure is in initial state.' => 'Αποτυχία δημιουργίας διαβιβαστικού. Η επιλεχθείσα δαπάνη βρίσκεται σε αρχική κατάσταση.',
     'Failed to create cover sheet. Please select only one expenditure.' => 'Αποτυχία δημιουργίας διαβιβαστικού. Παρακαλώ επιλέξτε μόνο μια δαπάνη.',
     'Export Cover Sheet' => 'Εξαγωγή Διαβιβαστικού',

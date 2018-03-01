@@ -26,6 +26,8 @@ use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceExpenddeduction;
 use app\modules\finance\models\FinanceState;
+use yii\web\User;
+use app\models\Employee;
 
 
 
@@ -609,7 +611,8 @@ class FinanceExpenditureController extends Controller
         $models = array();
         $kae = "";
         $exp_ids = Yii::$app->request->post('selection');
-        
+        $first_expenditure = true;
+        $maxdate = null;
         try{
             if(is_null($exp_ids))
                 throw new Exception();
@@ -617,6 +620,16 @@ class FinanceExpenditureController extends Controller
                 $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $id]);
                 $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model['suppl_id']]);
                 $invoice_model = FinanceInvoice::findOne(['exp_id' => $expenditure_model['exp_id']]);
+                
+                $expstate2_date = FinanceExpenditurestate::findOne(['exp_id' => $id, 'state_id' => 2])->expstate_date;
+                if($first_expenditure){
+                    $maxdate = $expstate2_date;
+                    $first_expenditure = false;
+                }
+                if($expstate2_date > $maxdate)
+                    $maxdate = $expstate2_date; 
+                    
+                //echo "<pre>"; print_r($maxdate); echo "</pre>"; die();
                 
                 $deductions = FinanceExpenddeduction::find()->where(['exp_id' => $id])->all();
                 $deductions_models = array();
@@ -646,10 +659,12 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher)."));
             return $this->redirect(['index']);
         }
+        
         $content = $this->renderPartial('paymentreport', [
             'models' => $models,
             'year' => $year,
             'kae' => $kae,
+            'maxdate' => $maxdate
         ]);
 
         $user = Yii::$app->user->identity->username;
@@ -670,7 +685,7 @@ class FinanceExpenditureController extends Controller
         return $pdf->render();
     }
     
-    public function actionCoversheet(){
+    public function actionCoversheet(){                
         try{
             $exp_ids = Yii::$app->request->post('selection');
             if(count($exp_ids) != 1)
@@ -683,13 +698,13 @@ class FinanceExpenditureController extends Controller
             
             $expstate_model = FinanceExpenditurestate::findOne(['exp_id' => $exp_ids[0], 'state_id' => 2]);
             $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
-            
-            //echo "<pre>"; print_r($expstate_model); echo "</pre>"; die();
                 
             $content = $this->renderPartial('coversheet', 
                                             ['expenditure_model' => $expenditure_model, 
                                              'expstate_model' => $expstate_model, 
-                                             'supplier_model' => $supplier_model]);
+                                             'supplier_model' => $supplier_model,
+                                             'kae' => $expenditure_model->getKae()['kae_id']
+                                            ]);
             
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];

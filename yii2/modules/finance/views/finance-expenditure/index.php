@@ -56,9 +56,9 @@ $this->params['breadcrumbs'][] = $this->title;
              'label' => Module::t('modules/finance/app', 'Amount'),
              'format' => 'currency',
              'value' => function ($model) {return Money::toCurrency($model['exp_amount']);},
-             'contentOptions' => ['class' => 'text-nowrap'],
+             'contentOptions' => ['class' => 'text-nowrap text-right'],
              'headerOptions' => ['class'=> 'text-center'],
-             'contentOptions' => ['class' => 'text-right']
+             //'contentOptions' => ['class' => 'text-right']
              //'filter' => Money::toCents($model['exp_amount']),
             ],
             ['attribute' => 'fpa_value', 
@@ -93,14 +93,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) use ($expendwithdrawals) {
                 $exp_withdrawals = $expendwithdrawals[$model['exp_id']]['WITHDRAWAL'];
                 $count_withdrawals = count($exp_withdrawals);
-                $retvalue = "<ul>";
+                $retvalue = "";
+                //$retvalue = "<ul>";
                 for($i = 0; $i < $count_withdrawals; $i++){
-                    $retvalue .= "<li><strong><u>" . $exp_withdrawals[$i]['kaewithdr_decision'] . '</u></strong>' . 
+                    $retvalue .= "<strong>- " . $exp_withdrawals[$i]['kaewithdr_decision'] . '</strong>' . 
                     '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ':<br/>' .
                     Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i], true);
-                    $retvalue .= "</li>";
+                    $retvalue .= "<br />";
+                    //$retvalue .= "</li>";
                 }
-                $retvalue .= "</ul>";
+                //$retvalue .= "</ul>";
                 return $retvalue;
              },
              'headerOptions' => ['class'=> 'text-center']
@@ -119,15 +121,18 @@ $this->params['breadcrumbs'][] = $this->title;
              'contentOptions' => ['class' => 'text-nowrap'],
              'value' => function($model) {
                             $state_commnents = array();
-                            $tmp = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 1]);
-                            $state_commnents[1] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .  
-                                                  " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[2] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
-                                                  " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[3] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
-                                                  " (" . $tmp['expstate_comment'] . ")";
-                            $state_commnents[4] = Module::t('modules/finance/app', "Date"). ": " . $tmp['expstate_date'] .
-                                                  " (" . $tmp['expstate_comment'] . ")";
+                            $tmp1 = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 1]);
+                            $tmp2 = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 2]);
+                            $tmp3 = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 3]);
+                            $tmp4 = FinanceExpenditurestate::findOne(['exp_id' => $model['exp_id'], 'state_id' => 4]);
+                            $state_commnents[1] = Module::t('modules/finance/app', "Date"). ": " . date('d/m/Y', strtotime($tmp1['expstate_date'])) .  
+                                                  " (" . $tmp1['expstate_comment'] . ")";
+                            $state_commnents[2] = Module::t('modules/finance/app', "Date"). ": " . date('d/m/Y', strtotime($tmp2['expstate_date'])) .
+                                                  " (" . $tmp2['expstate_protocol'] . " - " . $tmp2['expstate_comment'] . ")";
+                            $state_commnents[3] = Module::t('modules/finance/app', "Date"). ": " . date('d/m/Y', strtotime($tmp3['expstate_date'])) .
+                                                  " (" . $tmp3['expstate_comment'] . ")";
+                            $state_commnents[4] = Module::t('modules/finance/app', "Date"). ": " . date('d/m/Y', strtotime($tmp4['expstate_date'])) .
+                                                  " (" . $tmp4['expstate_comment'] . ")";
                             $retvalue = 'UNDEFINED STATE';
                             if($model['statescount'] == 1)
                                 $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>';

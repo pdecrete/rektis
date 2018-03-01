@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
                                                         'value' => $model['kaewithdr_amount']])->label(false); ?>
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
-    
+    	
         <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")]) ?>
     
         <div class="form-group pull-right">

@@ -40,10 +40,14 @@ foreach ($models as $model){
 //echo "<pre>"; print_r($deductions_array); echo "</pre>";
 //die();
 
-$financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.png'));
+$greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 ?>
 <div class="finance-expenditure-index">
-	<p><?= '<img src=' . $financial_logo . '>' ?></p>
+    <table style="border: 0px; padding: 5 5 5 5px;">
+    	<tr><td colspan="2" style="text-align:center"><?= '<img src=' . $greek_logo . '>' ?><h5><strong><?= Yii::$app->params['pde_logo_literal']; ?><br />
+			<?= Yii::$app->params['finance_logo_literal']; ?></strong></h5></td><td></td></tr>
+	</table>
+	<!--p><?= '<img src=' . $greek_logo . '>' ?></p-->
     <p><strong><?= Module::t('modules/finance/app', 'Expedinture Payment Report') ?> </strong>
                <?= '(' . Module::t('modules/finance/app', 'RCN') . sprintf('%04d', $kae) 
                     . ' - ' . Module::t('modules/finance/app', 'Financial Year')  
@@ -124,8 +128,9 @@ $financial_logo = "file:///" . realpath(Yii::getAlias('@images/financial_logo.pn
 			<td style="text-align:center;width:50%;border: 0;">
 				<p>ΒΕΒΑΙΩΝΕΤΑΙ Η ΠΡΑΓΜΑΤΟΠΟΙΗΣΗ ΤΗΣ ΠΑΡΑΠΑΝΩ ΔΑΠΑΝΗΣ</p>
 				<p>&nbsp;</p>
-				<p><strong>Ηράκλειο, <?= date("d-m-Y")?></strong></p>
-				<p><strong><?= Yii::$app->params['director_sign'] ?></strong></p>
+				<p><strong>Ηράκλειο, <?= date('d/m/Y', strtotime($maxdate));?></strong></p>
+				<p><strong><?= Yii::$app->params['director_sign'] ?></strong><br /></p>
+				<p><strong><?= Yii::$app->params['director_name']; ?></strong></p>
 			</td>			
 	</table>
 </div>

@@ -65,14 +65,34 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'], 'contentOptions' => ['class' => 'text-center']
             ],
             ['class' => 'yii\grid\ActionColumn',
-                'template' => '{update}&nbsp;{delete}',
-                    'urlCreator' => function ($action, $model) {
+             'template' => '{update}&nbsp;{delete}&nbsp;{activate}',
+             'buttons' => [
+                    'activate' => function ($url, $model) {
+                                    return Html::a('<span class=" 	glyphicon glyphicon-ok-circle"></span>', $url,
+                                                    ['title' => Module::t('modules/finance/app', 'Ενεργοποίηση'),
+                                                     'data'=>['confirm'=>Module::t('modules/finance/app', "Are you sure you want to reactivate the deduction?"),
+                                                              'method' => "post"]
+                                                    ]);                    
+                                  },
+                    'delete' => function ($url, $model) {
+                                  return Html::a('<span class=" 	glyphicon glyphicon-ban-circle"></span>', $url,
+                                      ['title' => Module::t('modules/finance/app', 'Κατάργηση'),
+                                       'data'=>['confirm'=>Module::t('modules/finance/app', "Are you sure you want to make the deduction obselete?"),
+                                                'method' => "post"]
+                                      ]);
+                                  }
+                ],                
+             'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
                         $url ='/finance/finance-deduction/update?id=' . $model->deduct_id;
                         return $url;
                     }
                     if ($action === 'delete') {
                         $url = '/finance/finance-deduction/delete?id=' . $model->deduct_id;
+                        return $url;
+                    }
+                    if ($action === 'activate') {
+                        $url = '/finance/finance-deduction/activate?id=' . $model->deduct_id;
                         return $url;
                     }
                 },

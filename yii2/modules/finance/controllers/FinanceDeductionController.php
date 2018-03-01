@@ -100,8 +100,13 @@ class FinanceDeductionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->deduct_date = date("Y-m-d H:i:s");
+        if($model->deduct_obsolete == 1){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The deduction is obsolete and it cannot be edited."));
+            return $this->redirect(['index']);            
+        }
         
+        $model->deduct_date = date("Y-m-d H:i:s");
+                
         if ($model->load(Yii::$app->request->post())) {
             try{
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
@@ -130,8 +135,8 @@ class FinanceDeductionController extends Controller
     }
 
     /**
-     * Deletes an existing FinanceDeduction model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * Sets as obselete an existing FinanceDeduction model.
+     * If the action is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
@@ -139,7 +144,10 @@ class FinanceDeductionController extends Controller
     {
         try{
             $model = $this->findModel($id);
-            $model->deduct_obsolete = true;
+            if($model->deduct_obsolete == 1)
+                throw new Exception("The deduction is already obsolete.");
+
+            $model->deduct_obsolete = 1;
             if($model->deduct_id == 1 || $model->deduct_id == 2 || $model->deduct_id == 3)
                 throw new Exception("Deletion is not allowed for this type of deduction.");
             if(!$model->save()) 
@@ -158,6 +166,31 @@ class FinanceDeductionController extends Controller
         }
     }
 
+    
+    public function actionActivate($id){
+        try{
+            $model = $this->findModel($id);
+            if($model->deduct_obsolete == 0)
+                throw new Exception("The deduction is already active.");
+                
+            $model->deduct_obsolete = 0;
+
+            if(!$model->save())
+                throw new Exception("Failure in activating deduction.");
+                    
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' set deduction with id ' . $id . ' as active.', 'financial');
+            
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was activated."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $e) {
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
+            return $this->redirect(['index']);
+        }
+    }
+    
     /**
      * Finds the FinanceDeduction model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

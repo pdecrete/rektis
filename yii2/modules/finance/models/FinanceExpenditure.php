@@ -128,7 +128,18 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function getFinanceInvoice()
     {
         return $this->hasOne(FinanceInvoice::className(), ['exp_id' => 'exp_id']);
-    }    
+    }
+    
+    /**
+     * Returns the KAE model (RCN model) in which the expenditure belongs.
+     * 
+     * @return \yii\db\ActiveQuery
+     */    
+    public function getKae()
+    {
+        $kaewithdrs = $this->getKaewithdrs()->all();
+        return FinanceKae::findOne(['kae_id' => FinanceKaecredit::findOne(['kaecredit_id' => $kaewithdrs[0]->kaewithdr_id])]);
+    }
 
     /**
      * @inheritdoc
