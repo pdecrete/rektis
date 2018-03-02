@@ -15,6 +15,11 @@ class SubstituteTeacherModule extends Module
 
         $this->params['foo'] = 'bar';
         \Yii::configure($this, require(__DIR__ . '/config/params.php'));
+
+        \Yii::$container->setSingleton('Crypt', [
+            'class' => 'app\modules\SubstituteTeacher\components\Crypt',
+            'cryptKeyFile' => $this->params['crypt-key-file']
+        ]);
     }
 
     public function registerTranslations()
