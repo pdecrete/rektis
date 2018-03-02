@@ -8,10 +8,11 @@ use yii\helpers\Html;
 
 $this->title = Module::t('modules/finance/app', 'Update');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
-if($expenditures_return == 1)
+if ($expenditures_return == 1) {
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['/finance/finance-expenditure/']];
-else
+} else {
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
+}
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update Voucher');
 ?>
 <?= $this->render('/default/infopanel'); ?>

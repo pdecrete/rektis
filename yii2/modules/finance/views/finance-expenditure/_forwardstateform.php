@@ -5,7 +5,6 @@ use yii\widgets\ActiveForm;
 use app\modules\finance\Module;
 use kartik\datecontrol\DateControl;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
@@ -17,17 +16,18 @@ use kartik\datecontrol\DateControl;
 
 	<?= $form->field($state_model, 'expstate_date')->widget(DateControl::classname(), [
             'type' => DateControl::FORMAT_DATE
-	       ])->label(Module::t('modules/finance/app', 'Date'));
+           ])->label(Module::t('modules/finance/app', 'Date'));
     ?>
     
     <?php 
-        if($state_id == 2)
+        if ($state_id == 2) {
             echo $form->field($state_model, 'expstate_protocol')->textInput(['maxlength' => true])->
-            label(Module::t('modules/finance/app', 'Cover Sheet Protocol')); 
+            label(Module::t('modules/finance/app', 'Cover Sheet Protocol'));
+        }
     ?>
                
 	<?= $form->field($state_model, 'expstate_comment')->textInput(['maxlength' => true])->
-	       label(Module::t('modules/finance/app', 'Description')); ?>
+           label(Module::t('modules/finance/app', 'Description')); ?>
     
     <div class="form-group  text-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>

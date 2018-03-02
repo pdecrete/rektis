@@ -18,10 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-kaecreditpercentage-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-		<?php $otherbutton = Html::a(Module::t('modules/finance/app', 'Automatic Percentage Definition'), ['masspercentage'], 
-	                                       ['class' => 'btn btn-success', 'data-method' => 'POST', 
-	                                        'data-confirm' => Module::t('modules/finance/app', 
-	                                        'Are you sure you want to automatically set credit percentages for specific RCNs?')]); ?>
+		<?php $otherbutton = Html::a(
+    Module::t('modules/finance/app', 'Automatic Percentage Definition'),
+    ['masspercentage'],
+                                           ['class' => 'btn btn-success', 'data-method' => 'POST',
+                                            'data-confirm' => Module::t(
+
+                                                'modules/finance/app',
+                                            'Are you sure you want to automatically set credit percentages for specific RCNs?'
+
+                                            )]
+); ?>
     <?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Attribute New Percentage'),
@@ -38,27 +45,33 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'kae_id', 
+            ['attribute' => 'kae_id',
              'label' => Module::t('modules/finance/app', 'RCN'),
              'format' => 'html',
-             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'value' => function ($model) {
+                 return sprintf('%04d', $model['kae_id']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title'),
-             'headerOptions' => ['class'=> 'text-center']             
+             'headerOptions' => ['class'=> 'text-center']
             ],
             ['attribute' => 'kaecredit_amount',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
              'format' => 'currency',
-             'value' => function ($model) {return Money::toCurrency($model['kaecredit_amount']);},
+             'value' => function ($model) {
+                 return Money::toCurrency($model['kaecredit_amount']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'kaeperc_percentage',
              'label' => Module::t('modules/finance/app', 'Percentage'),
              'format' => 'html',
-             'value' => function ($model) {return Money::toPercentage($model['kaeperc_percentage']);},
+             'value' => function ($model) {
+                 return Money::toPercentage($model['kaeperc_percentage']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
@@ -70,7 +83,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'sumpercentage',
                 'label' => Module::t('modules/finance/app', 'Total Percentage'),
                 'format' => 'html',
-                'value' => function ($model) {return Money::toPercentage($model['sumpercentage']);},
+                'value' => function ($model) {
+                    return Money::toPercentage($model['sumpercentage']);
+                },
                 'headerOptions' => ['class'=> 'text-center'],
                 'contentOptions' => ['class' => 'text-right']
             ],
@@ -80,26 +95,32 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}&nbsp;{delete}',
              'buttons' =>   [   'update' => function ($url, $model) {
-                                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, 
-                                                    ['title' => Module::t('modules/finance/app', 'Update'),]);
-                                                },
+                 return Html::a(
+                                                    '<span class="glyphicon glyphicon-pencil"></span>',
+                                                    $url,
+                                                    ['title' => Module::t('modules/finance/app', 'Update')]
+                                                );
+             },
                                 'delete' => function ($url, $model) {
-                                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, 
+                                    return Html::a(
+                                                    '<span class="glyphicon glyphicon-trash"></span>',
+                                                    $url,
                                                     ['title' => Module::t('modules/finance/app', 'Delete'),
                                                         'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the percentage attribution of a RCN credit is irreversible action. Are you sure you want to delete this item?"),
-                                                        'method' => "post"]]);
-                                                },
+                                                        'method' => "post"]]
+                                                );
+                                },
                             ],
                             'urlCreator' => function ($action, $model) {
-                                                if ($action === 'update') {
-                                                    $url ='/finance/finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
-                                                    return $url;
-                                                }
-                                                if ($action === 'delete') {
-                                                    $url = '/finance/finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
-                                                    return $url;
-                                                }
-                                            },
+                                if ($action === 'update') {
+                                    $url ='/finance/finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
+                                    return $url;
+                                }
+                                if ($action === 'delete') {
+                                    $url = '/finance/finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
+                                    return $url;
+                                }
+                            },
                             'contentOptions' => ['class' => 'text-nowrap'],
             ],
         ],

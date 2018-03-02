@@ -8,7 +8,7 @@ class m171115_101126_finance_init extends Migration
     //admapp_finance_kae
     //admapp_finance_kaecredit
     //admapp_finance
-    
+
     public function safeUp()
     {
         /*
@@ -21,7 +21,7 @@ class m171115_101126_finance_init extends Migration
             // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
-        
+
         $dbFinTables = [
             'table_year' => $this->db->tablePrefix . 'finance_year',
             'table_kae' => $this->db->tablePrefix . 'finance_kae',
@@ -52,7 +52,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_year'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-            
+
         /* CREATE TABLE admapp_finance_kae */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kae'] .
                            " (`kae_id` INTEGER NOT NULL,                              
@@ -74,7 +74,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(0832, 'Φωτισμός και κίνηση (με ηλεκτρισμό ή φωταέριο)')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0841, 'Διαφημίσεις και Δημοσιεύσεις γενικά')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0843, 'Εκδόσεις - εκτυπώσεις - βιβλιοδεσία (περιλαμβάνεται και η βοήθεια χάρτου)')")->execute();
-//10
+        //10
         Yii::$app->db->createCommand($insert_command . "(0845, 'Κάθε είδους δαπάνες δημοσίων σχέσεων')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0851, 'Αμοιβές για συντήρηση και επισκευή κτιρίων γενικά, εγκαταστάσεων στρατωνισμού, ελλιμενισμού')")->execute();
         Yii::$app->db->createCommand($insert_command . "(0875, 'Αμοιβές για δαπάνες καθαριότητας')")->execute();
@@ -85,7 +85,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(1512, 'Προμήθεια καυσίμων θέρμανσης και δαπάνες κοινοχρήστων')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1699, 'Διάφορες λοιπές δαπάνες')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1711, 'Προμήθεια επίπλων')")->execute();
-//20
+        //20
         Yii::$app->db->createCommand($insert_command . "(1712, 'Προμήθεια συσκευών θέρμανσης και κλιματισμού')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1713, 'Προμήθεια γραφομηχανών,μηχανημάτων φωτοαντιγραφής κλπ. μηχανών γραφείου')")->execute();
         Yii::$app->db->createCommand($insert_command . "(1723, 'Προμήθεια ηλεκτρονικών υπολογιστών, προγραμμάτων και λοιπών υλικών')")->execute();
@@ -95,7 +95,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(9821, 'Υποχρεώσεις από παροχή τηλ/κων υπηρεσιών')")->execute();
         Yii::$app->db->createCommand($insert_command . "(9831, 'Δαπάνες Ύδρευσης και Άδρευσης')")->execute();
         Yii::$app->db->createCommand($insert_command . "(9832, 'Δαπάνες Ηλεκτρικής Ενέργειας')")->execute();
-//29
+        //29
         /* CREATE TABLE admapp_finance_kaecredit */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaecredit'] .
                           "(`kaecredit_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -126,7 +126,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kaecreditpercentage'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-                
+
         /* CREATE TABLE admapp_finance_kaewithdrawal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_kaewithdrawal'] .
                           "(`kaewithdr_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -140,7 +140,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_kaewithdrawal'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
         /* CREATE TABLE admapp_finance_taxoffice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_taxoffice'] . "
                             (`taxoffice_id` INTEGER NOT NULL,
@@ -149,13 +149,13 @@ class m171115_101126_finance_init extends Migration
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_taxoffice'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
-        Yii::$app->db->createCommand($create_command)->execute();        
+        Yii::$app->db->createCommand($create_command)->execute();
         $insert_command = "INSERT INTO " . $dbFinTables['table_taxoffice'] . "(taxoffice_id, taxoffice_name) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(8110, 'Ηρακλείου')")->execute();
         Yii::$app->db->createCommand($insert_command . "(8431, 'Χανίων')")->execute();
         Yii::$app->db->createCommand($insert_command . "(8221, 'Αγίου Νικολάου')")->execute();
         Yii::$app->db->createCommand($insert_command . "(8341, 'Ρεθύμνου')")->execute();
-        
+
         /* CREATE TABLE admapp_finance_supplier */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_supplier'] .
                           "(`suppl_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -205,8 +205,8 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expendwithdrawal'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-                
-        
+
+
         /* CREATE TABLE admapp_finance_invoicetype */
         $create_command  = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoicetype'] .
                            " (`invtype_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -224,7 +224,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('Τιμολόγιο Πώλησης - Δελτίο Αποστολής')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Κατάσταση Πληρωμής')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Λογαριασμός ΔΕΗ/Τηλεπικοινωνιών κτλ.')")->execute();
-        
+
         /* CREATE TABLE admapp_finance_invoice */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_invoice'] .
                           "(`inv_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -260,13 +260,13 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_deduction'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbFinTables['table_deduction'] . 
+        $insert_command = "INSERT INTO " . $dbFinTables['table_deduction'] .
                           "(deduct_id, deduct_name, deduct_date, deduct_percentage, deduct_downlimit, deduct_uplimit) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(1, 'Παροχή υπηρεσιών ή αγορά υλικών αγαθών κάτω των 150 ευρώ', NOW(), 0, 0, 15000)")->execute();
         Yii::$app->db->createCommand($insert_command . "(2, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 400, 15000, NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "(3, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 800, 15000, NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "(4, 'Δαπάνη καθαριότητας', NOW(), 10, 0, NULL)")->execute();
-        
+
         /* CREATE TABLE admapp_finance_expenddeduction */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenddeduction'] .
                           "(`exp_id` INTEGER,
@@ -278,7 +278,7 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expenddeduction'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
         /* CREATE TABLE admapp_finance_state */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_state'] .
                           "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -293,7 +293,7 @@ class m171115_101126_finance_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('ΑΠΑΙΤΗΘΗΚΕ')")->execute();
         Yii::$app->db->createCommand($insert_command . "('ΕΝΤΑΛΜΑΤΟΠΟΙΗΘΗΚΕ')")->execute();
         Yii::$app->db->createCommand($insert_command . "('ΟΛΟΚΛΗΡΩΘΗΚΕ')")->execute();
-        
+
         /* CREATE TABLE admapp_finance_expenditurestate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_expenditurestate'] .
                           "(`exp_id` INTEGER NOT NULL,
@@ -308,8 +308,8 @@ class m171115_101126_finance_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbFinTables['table_expenditurestate'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_finance_expenditurestate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbFinTables['table_fpa'] .
                           "(`fpa_value` SMALLINT UNSIGNED NOT NULL CHECK (fpa_value >= 0 AND fpa_value <= 10000),
@@ -321,7 +321,6 @@ class m171115_101126_finance_init extends Migration
         $insert_command = "INSERT INTO " . $dbFinTables['table_fpa'] . "(fpa_value) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(1300)")->execute();
         Yii::$app->db->createCommand($insert_command . "(2400)")->execute();
-        
     }
 
     public function safeDown()

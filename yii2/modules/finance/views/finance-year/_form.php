@@ -3,7 +3,6 @@
 use app\modules\finance\Module;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\widgets\MaskedInput;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceYear */
@@ -16,14 +15,14 @@ use yii\widgets\MaskedInput;
 
     <?= $form->field($model, 'year')->textInput() ?>
 
-    <?= $form->field($model, 'year_credit')->textInput(['maxlength' => true, 
-                                					    'type' => 'number', 
-                                					    'min' => "0.00" , 
-                                					    'step' => '0.01', 
-                                					    'style' => 'text-align: left', 
-                                                        'value' => $model['year_credit']]); 
-    
-    
+    <?= $form->field($model, 'year_credit')->textInput(['maxlength' => true,
+                                                        'type' => 'number',
+                                                        'min' => "0.00" ,
+                                                        'step' => '0.01',
+                                                        'style' => 'text-align: left',
+                                                        'value' => $model['year_credit']]);
+
+
     ?>
 
     <div class="form-group pull-right">

@@ -25,9 +25,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'exp_deleted') ?>
 
-    <?php // echo $form->field($model, 'suppl_id') ?>
+    <?php // echo $form->field($model, 'suppl_id')?>
 
-    <?php  //echo $form->field($model, 'fpa_value') ?>
+    <?php  //echo $form->field($model, 'fpa_value')?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

@@ -1,7 +1,6 @@
 <?php
 
 use app\modules\finance\Module;
-use app\modules\finance\components\Integrity;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -38,11 +37,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'currency'],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? Module::t('modules/finance/app', 'Yes') : Module::t('modules/finance/app', 'No');}
+                'value' => function ($dataProvider) {
+                    return $dataProvider->year_lock == 1 ? Module::t('modules/finance/app', 'Yes') : Module::t('modules/finance/app', 'No');
+                }
             ],
             [   'attribute' => 'year_iscurrent',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? Module::t('modules/finance/app', 'Yes') : Module::t('modules/finance/app', 'No');}
+                'value' => function ($dataProvider) {
+                    return $dataProvider->year_iscurrent == 1 ? Module::t('modules/finance/app', 'Yes') : Module::t('modules/finance/app', 'No');
+                }
             ]
         ],
     ]) ?>

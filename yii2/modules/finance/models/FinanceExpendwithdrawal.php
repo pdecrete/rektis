@@ -3,7 +3,6 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%finance_expendwithdrawal}}".
@@ -11,7 +10,7 @@ use Yii;
  * @property integer $kaewithdr_id
  * @property integer $exp_id
  * @property string $expwithdr_amount
- *  
+ *
  * @property FinanceExpenditure $exp
  * @property FinanceKaewithdrawal $kaewithdr
  */
@@ -74,10 +73,10 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
     {
         return new FinanceExpendwithdrawalQuery(get_called_class());
     }
-    
+
     /**
      * Returns the sum of the expenditures carried out for the withdrawal with id $kaewithdr_id
-     * 
+     *
      * @param integer $kaewithr_id
      * @return integer
      */
@@ -85,11 +84,12 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
     {
         $expenditures_sum = 0;
         $expend_withdrawals = FinanceExpendwithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->all();
-        foreach ($expend_withdrawals as $expend_withdrawal)
+        foreach ($expend_withdrawals as $expend_withdrawal) {
             $expenditures_sum += $expend_withdrawal->expwithdr_amount;
+        }
         return $expenditures_sum;
     }
-    
+
     /**
      * Returns the balance of the the withdrawal with id $kaewithdr_id
      *

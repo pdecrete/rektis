@@ -13,10 +13,11 @@ use app\modules\finance\components\Money;
 
 $this->title = Module::t('modules/finance/app', 'View Voucher');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
-if($expenditures_return == 1)
+if ($expenditures_return == 1) {
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['/finance/finance-expenditure/']];
-else
+} else {
     $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Vouchers'), 'url' => ['/finance/finance-invoice/']];
+}
 
 $this->params['breadcrumbs'][] = $this->title;
 /*
@@ -50,13 +51,14 @@ echo "<pre>"; print_r($unioned_model); echo "</pre>";
         'attributes' => [
             ['attribute' => 'suppl_id',
                 'value' => function ($model) {
-                return FinanceSupplier::findOne(['suppl_id' => $model->suppl_id])['suppl_name'];
+                    return FinanceSupplier::findOne(['suppl_id' => $model->suppl_id])['suppl_name'];
                 }
             ],
             [
                 'attribute' => Module::t('modules/finance/app', 'Amount'),
-                'value' => function($model){
-                                return Money::toCurrency(FinanceExpenditure::findOne(['exp_id' => $model->exp_id])['exp_amount'], true);}
+                'value' => function ($model) {
+                    return Money::toCurrency(FinanceExpenditure::findOne(['exp_id' => $model->exp_id])['exp_amount'], true);
+                }
             ],
             'inv_number',
             ['attribute' => 'inv_date',
@@ -66,9 +68,9 @@ echo "<pre>"; print_r($unioned_model); echo "</pre>";
             //'inv_deleted',
             ['attribute' => 'invtype_id',
                 'value' => function ($model) {
-                return FinanceInvoicetype::findOne(['invtype_id' => $model->invtype_id])['invtype_title'];
+                    return FinanceInvoicetype::findOne(['invtype_id' => $model->invtype_id])['invtype_title'];
                 }
-            ],            
+            ],
         ],
     ]) ?>
 

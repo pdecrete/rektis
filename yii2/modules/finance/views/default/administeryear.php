@@ -3,7 +3,6 @@
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 use app\modules\finance\Module;
-use app\modules\finance\components\Integrity;
 
 /* @var $this yii\web\View */
 $this->params['breadcrumbs'][] = ['label' =>  Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];

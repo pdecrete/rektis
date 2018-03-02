@@ -25,13 +25,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'suppl_phone') ?>
 
-    <?php // echo $form->field($model, 'suppl_fax') ?>
+    <?php // echo $form->field($model, 'suppl_fax')?>
 
-    <?php // echo $form->field($model, 'suppl_iban') ?>
+    <?php // echo $form->field($model, 'suppl_iban')?>
 
-    <?php // echo $form->field($model, 'suppl_employerid') ?>
+    <?php // echo $form->field($model, 'suppl_employerid')?>
 
-    <?php // echo $form->field($model, 'taxoffice_id') ?>
+    <?php // echo $form->field($model, 'taxoffice_id')?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

@@ -16,8 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-expenditure-changestate">
 	<h1><?php echo($this->title); ?></h1>
 	<?= $this->render('_forwardstateform', [
-	    'state_model' => $state_model,
-	    'current_state_name' => $current_state_name,
-	    'state_id' => $state_id
+        'state_model' => $state_model,
+        'current_state_name' => $current_state_name,
+        'state_id' => $state_id
     ]) ?>
 </div>

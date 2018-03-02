@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-invoice-index">
 	<?= $this->render('/default/infopanel');?>
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 	
 	<?php Pjax::begin();?>
     <?= GridView::widget([
@@ -24,11 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            ['attribute' => 'inv_number', 
+            ['attribute' => 'inv_number',
              'label' => Module::t('modules/finance/app', 'Voucher Number'),
              'headerOptions' => ['class'=> 'text-center']
             ],
-            ['attribute' => 'inv_date', 
+            ['attribute' => 'inv_date',
              'label' => Module::t('modules/finance/app', 'Voucher Date'),
              'format' => ['date', 'php:d-m-Y'],
              'filter' => DateControl::widget([
@@ -36,11 +36,11 @@ $this->params['breadcrumbs'][] = $this->title;
              'attribute' => 'inv_date',
              'widgetOptions' => [
                         'layout' => '{remove}{input}'
-                    ]                   
+                    ]
                 ]),
              'headerOptions' => ['class'=> 'text-center']
             ],
-            ['attribute' => 'inv_order', 
+            ['attribute' => 'inv_order',
              'label' => Module::t('modules/finance/app', 'Voucher Order'),
              'headerOptions' => ['class'=> 'text-center']
             ],
@@ -51,20 +51,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['class' => 'yii\grid\ActionColumn',
              'urlCreator' => function ($action, $model, $key, $index) {
-                    if ($action === 'view') {
-                        $url ='/finance/finance-invoice/view?id='.$model['inv_id'];
-                        return $url;
-                    }
-                    
-                    if ($action === 'update') {
-                        $url ='/finance/finance-invoice/update?id='.$model['inv_id'];
-                        return $url;
-                    }
-                    if ($action === 'delete') {
-                        $url = ['/finance/finance-invoice/delete', 'id'=> $model['inv_id']];
-                        return $url;
-                    }
-                }                
+                 if ($action === 'view') {
+                     $url ='/finance/finance-invoice/view?id='.$model['inv_id'];
+                     return $url;
+                 }
+
+                 if ($action === 'update') {
+                     $url ='/finance/finance-invoice/update?id='.$model['inv_id'];
+                     return $url;
+                 }
+                 if ($action === 'delete') {
+                     $url = ['/finance/finance-invoice/delete', 'id'=> $model['inv_id']];
+                     return $url;
+                 }
+             }
             ],
         ],
     ]); ?>

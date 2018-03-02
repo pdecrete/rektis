@@ -19,13 +19,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
    
-	<?= 
+	<?=
         $this->render('/default/kaeslist', [
         'kaes' => $kaes,
-        //'balances' => $balances, 
+        //'balances' => $balances,
         'btnLiteral' => Module::t('modules/finance/app', 'New Withdrawal'),
-        'actionUrl' => '/finance/finance-kaewithdrawal/create']) 
-	?>
+        'actionUrl' => '/finance/finance-kaewithdrawal/create'])
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -35,33 +35,41 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'kae_id', 
+            ['attribute' => 'kae_id',
              'label' => Module::t('modules/finance/app', 'RCN'),
              'format' => 'html',
-             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'value' => function ($model) {
+                 return sprintf('%04d', $model['kae_id']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],
             ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title'),
              'headerOptions' => ['class'=> 'text-center']
             ],
-            ['attribute' => 'kaecredit_amount', 
+            ['attribute' => 'kaecredit_amount',
              'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
-             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaecredit_amount']);},
+             'value' => function ($dataProvider) {
+                 return Money::toCurrency($dataProvider['kaecredit_amount']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
-            ['attribute' => 'percentages', 
+            ['attribute' => 'percentages',
              'label' => Module::t('modules/finance/app', 'Spending Rate'),
-             'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);},
+             'value' => function ($dataProvider) {
+                 return Money::toPercentage($dataProvider['percentages']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
-            ['attribute' => 'kaewithdr_amount', 
+            ['attribute' => 'kaewithdr_amount',
              'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Withdrawal Amount'),
-             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaewithdr_amount']);},
+             'value' => function ($dataProvider) {
+                 return Money::toCurrency($dataProvider['kaewithdr_amount']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
@@ -73,25 +81,31 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{update}&nbsp;{delete}',
                 'buttons' =>   [   'update' => function ($url, $model) {
-                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
-                    ['title' => Module::t('modules/finance/app', 'Update'),]);
+                    return Html::a(
+                    '<span class="glyphicon glyphicon-pencil"></span>',
+                    $url,
+                    ['title' => Module::t('modules/finance/app', 'Update')]
+                );
                 },
                 'delete' => function ($url, $model) {
-                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+                    return Html::a(
+                    '<span class="glyphicon glyphicon-trash"></span>',
+                    $url,
                     ['title' => Module::t('modules/finance/app', 'Delete'),
                         'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?"),
-                            'method' => "post"]]);
+                            'method' => "post"]]
+                );
                 },
                 ],
                 'urlCreator' => function ($action, $model) {
-                if ($action === 'update') {
-                    $url ='/finance/finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
-                    return $url;
-                }
-                if ($action === 'delete') {
-                    $url = '/finance/finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
-                    return $url;
-                }
+                    if ($action === 'update') {
+                        $url ='/finance/finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
+                        return $url;
+                    }
+                    if ($action === 'delete') {
+                        $url = '/finance/finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
+                        return $url;
+                    }
                 },
                 'contentOptions' => ['class' => 'text-nowrap'],
            ],

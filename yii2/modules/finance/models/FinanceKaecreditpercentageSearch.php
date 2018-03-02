@@ -5,7 +5,6 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceKaecreditpercentage;
 
 /**
  * FinanceKaecreditpercentageSearch represents the model behind the search form about `app\modules\finance\models\FinanceKaecreditpercentage`.
@@ -46,21 +45,21 @@ class FinanceKaecreditpercentageSearch extends FinanceKaecreditpercentage
         $prc = $prefix . "finance_kaecreditpercentage";
         $cred = $prefix . "finance_kaecredit";
         $kae = $prefix . "finance_kae";
-        
-        $sum_percentage = "(SELECT SUM(kaeperc_percentage) FROM " . $prc . 
+
+        $sum_percentage = "(SELECT SUM(kaeperc_percentage) FROM " . $prc .
                           " WHERE " . $cred . ".kaecredit_id=" . $prc . ".kaecredit_id)";
-        
+
         $query = (new \yii\db\Query())
-                    ->select([  $prc . ".*", $cred . ".kaecredit_amount", 
-                                $cred . ".kaecredit_date", $cred . ".kaecredit_updated", 
+                    ->select([  $prc . ".*", $cred . ".kaecredit_amount",
+                                $cred . ".kaecredit_date", $cred . ".kaecredit_updated",
                                 $cred . ".year", $kae . ".*", $sum_percentage . " AS sumpercentage"])
                     ->from([$prc, $cred, $kae])
                     ->where($cred . '.year=' . Yii::$app->session["working_year"] . " AND " . $prc . '.kaecredit_id=' . $cred . '.kaecredit_id AND ' . $cred . '.kae_id=' . $kae . '.kae_id');
-        
+
         // echo $query->createCommand()->rawSql; die();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['attributes' => ['kae_id', 'kae_title', 
+            'sort' => ['attributes' => ['kae_id', 'kae_title',
                         'kaecredit_amount', 'kaeperc_percentage', 'kaeperc_date', 'sumpercentage' ,'kaeperc_decision'],
                         'defaultOrder' => ['kae_id'=>SORT_ASC]
                         ],

@@ -29,20 +29,24 @@ $this->params['breadcrumbs'][] = $this->title;
              'contentOptions' => ['class' => 'text-center'],
              'headerOptions' => ['class'=> 'text-center'],
             ],
-            ['attribute' => 'year_credit', 
+            ['attribute' => 'year_credit',
              'format' => 'currency',
              'contentOptions' => ['class' => 'text-right'],
              'headerOptions' => ['class'=> 'text-center'],
             ],
             [   'attribute' => 'year_iscurrent',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_iscurrent == 1 ? '<span class="glyphicon glyphicon-pushpin"></span>' : ' ';},
+                'value' => function ($dataProvider) {
+                    return $dataProvider->year_iscurrent == 1 ? '<span class="glyphicon glyphicon-pushpin"></span>' : ' ';
+                },
                 'contentOptions' => ['class' => 'text-center'],
                 'headerOptions' => ['class'=> 'text-center'],
             ],
             [   'attribute' => 'year_lock',
                 'format' => 'html',
-                'value' => function ($dataProvider) {return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock" style="color:red"></span>': ' ';},
+                'value' => function ($dataProvider) {
+                    return $dataProvider->year_lock == 1 ? '<span class="glyphicon glyphicon-lock" style="color:red"></span>': ' ';
+                },
                 'contentOptions' => ['class' => 'text-center'],
                 'headerOptions' => ['class'=> 'text-center'],
             ],
@@ -54,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
                                         'title' => Module::t('modules/finance/app', 'View'),]);
                                 },*/
-                    
+
                                 'update' => function ($url, $dataProvider) {
                                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
                                         'title' => Module::t('modules/finance/app', 'Update'),]);
@@ -66,60 +70,59 @@ $this->params['breadcrumbs'][] = $this->title;
                                                         'method' => "post"]]);
                                 },
                                 'lock' => function ($url, $dataProvider) {
-                                    if($dataProvider->year_lock == 0)
+                                    if ($dataProvider->year_lock == 0) {
                                         return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
                                             'title' => Module::t('modules/finance/app', 'Lock'),
                                                         'data'=>['confirm'=>"Κλειδώνοντας το έτος καμία αλλαγή δεν θα είναι εφικτή σε αυτό. Είστε σίγουροι ότι θέλετε να κλειδώσετε το έτος;",
                                                         'method' => "post"]]);
-                                        else
-                                            return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
+                                    } else {
+                                        return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url, [
                                                 'title' => Module::t('modules/finance/app', 'Unlock'),
                                                 'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ξεκλειδώσετε το έτος;",
                                                     'method' => "post"]]);
+                                    }
                                 },
                                 'currentyear' => function ($url, $dataProvider) {
-                                    if($dataProvider->year_iscurrent == 0) 
+                                    if ($dataProvider->year_iscurrent == 0) {
                                         return Html::a('<span class="glyphicon glyphicon-pushpin"></span>', $url, [
                                             'title' => Module::t('modules/finance/app', 'Set as currently working'),
                                                         'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να ορίσετε ώς έτος εργασίας το έτος " . $dataProvider->year . ";",
                                                         'method' => "post"]]);
+                                    }
                                 }
-                    
+
                     ],
                     'urlCreator' => function ($action, $dataProvider, $key, $index) {
-                                if ($action === 'view') {
-                                    $url ='/finance/finance-year/view?id='.$dataProvider->year;
-                                    return $url;
-                                }
-                                
-                                if ($action === 'update') {
-                                    $url ='/finance/finance-year/update?id='.$dataProvider->year;
-                                    return $url;
-                                }
-                                if ($action === 'delete') {
-                                    $url = ['/finance/finance-year/delete', 'id'=> $dataProvider->year];
-                                    return $url;
-                                }
-                                if ($action === 'lock') {
-                                    if($dataProvider->year_lock == 0){
-                                        $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
-                                        return $url;
-                                    }
-                                    else{
-                                        $url = ['/finance/finance-year/unlock', 'id'=> $dataProvider->year];
-                                        return $url;
-                                    }
-                                    
-                                }
-                                if ($action === 'currentyear') {
-                                    $url = ['/finance/finance-year/current-year', 'id'=> $dataProvider->year];
-                                    return $url;
-                                    
-                                } 
+                        if ($action === 'view') {
+                            $url ='/finance/finance-year/view?id='.$dataProvider->year;
+                            return $url;
+                        }
+
+                        if ($action === 'update') {
+                            $url ='/finance/finance-year/update?id='.$dataProvider->year;
+                            return $url;
+                        }
+                        if ($action === 'delete') {
+                            $url = ['/finance/finance-year/delete', 'id'=> $dataProvider->year];
+                            return $url;
+                        }
+                        if ($action === 'lock') {
+                            if ($dataProvider->year_lock == 0) {
+                                $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
+                                return $url;
+                            } else {
+                                $url = ['/finance/finance-year/unlock', 'id'=> $dataProvider->year];
+                                return $url;
+                            }
+                        }
+                        if ($action === 'currentyear') {
+                            $url = ['/finance/finance-year/current-year', 'id'=> $dataProvider->year];
+                            return $url;
+                        }
                     }
             ],
         ],
-    ]); 
-    
+    ]);
+
     ?>
 </div>

@@ -25,11 +25,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'deduct_percentage') ?>
 
-    <?php // echo $form->field($model, 'deduct_downlimit') ?>
+    <?php // echo $form->field($model, 'deduct_downlimit')?>
 
-    <?php // echo $form->field($model, 'deduct_uplimit') ?>
+    <?php // echo $form->field($model, 'deduct_uplimit')?>
 
-    <?php // echo $form->field($model, 'deduct_obsolete') ?>
+    <?php // echo $form->field($model, 'deduct_obsolete')?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

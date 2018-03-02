@@ -5,7 +5,6 @@ namespace app\modules\finance\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceInvoice;
 
 /**
  * FinanceInvoiceSearch represents the model behind the search form about `app\modules\finance\models\FinanceInvoice`.
@@ -50,10 +49,10 @@ class FinanceInvoiceSearch extends FinanceInvoice
         $wthdr = $prefix . "finance_kaewithdrawal";
         $cred = $prefix . "finance_kaecredit";
         $invs = $prefix . "finance_invoice";
-        
+
         $count_states = "(SELECT COUNT(exp_id) FROM " . $exp_states .
         " WHERE " .$exp_states . ".exp_id = " . $exps . ".exp_id)";
-        
+
         $queryExpenditures = (new \yii\db\Query())
                     ->select([$exps . ".exp_id"])
                     ->from([$exps, $expwithdr])
@@ -68,13 +67,13 @@ class FinanceInvoiceSearch extends FinanceInvoice
                     ->select([$invs . ".*"])
                     ->from([$invs])
                     ->where($invs . ".exp_id IN (" . $sqlQueryExpenditures . ")");
-        
+
         //echo $query->createCommand()->getRawSql();die();
 
         $dataProvider = new ActiveDataProvider([
                                 'query' => $query,
                                 'sort' => ['attributes' => ['inv_number', 'inv_date', 'inv_order'],
-                                'defaultOrder' => ['inv_date' => SORT_DESC,]]
+                                'defaultOrder' => ['inv_date' => SORT_DESC]]
                                 ]);
 
         $this->load($params);

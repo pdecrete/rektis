@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-kae-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 
     <p style="text-align: right;">
         <?= Html::a(Module::t('modules/finance/app', 'Create new RCN'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -29,9 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'kae_id',                
+            ['attribute' => 'kae_id',
              'format' => 'html',
-             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'value' => function ($model) {
+                 return sprintf('%04d', $model['kae_id']);
+             },
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-center']
             ],

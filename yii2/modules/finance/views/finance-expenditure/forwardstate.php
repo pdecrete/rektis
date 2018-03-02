@@ -14,11 +14,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('/default/infopanel');?>
 
 <div class="finance-expenditure-changestate">
-	<h1><?php echo($this->title = Module::t('modules/finance/app', 'Forward Expenditure State to ') . 
-	               '"' . $current_state_name . '"');  ?></h1>
+	<h1><?php echo($this->title = Module::t('modules/finance/app', 'Forward Expenditure State to ') .
+                   '"' . $current_state_name . '"');  ?></h1>
 	<?= $this->render('_forwardstateform', [
-	    'state_model' => $state_model,
-	    'current_state_name' => $current_state_name,
-	    'state_id' => $state_id + 1
+        'state_model' => $state_model,
+        'current_state_name' => $current_state_name,
+        'state_id' => $state_id + 1
     ]) ?>
 </div>

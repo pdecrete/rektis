@@ -3,7 +3,6 @@
 use app\modules\finance\Module;
 use yii\helpers\Html;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKae */
 

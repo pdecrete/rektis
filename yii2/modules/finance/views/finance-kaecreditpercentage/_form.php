@@ -21,7 +21,7 @@ $kae->kae_id = sprintf('%04d', $kae->kae_id);
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'kaeperc_percentage')->textInput((['maxlength' => true,] )) ?>  
+    <?= $form->field($model, 'kaeperc_percentage')->textInput((['maxlength' => true])) ?>  
 
     <?= $form->field($model, 'kaeperc_decision')->textInput(['maxlength' => true]) ?>
     

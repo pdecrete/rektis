@@ -3,7 +3,6 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%finance_year}}".
@@ -76,7 +75,7 @@ class FinanceYear extends \yii\db\ActiveRecord
     {
         return FinanceYear::find()->select(['year_credit'])->where(['year' => $year])->one()->year_credit;
     }
-    
+
     /**
      * Returns true if $year is the currently working year, otherwise returns false.
      * @param integer $year

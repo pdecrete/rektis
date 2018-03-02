@@ -35,12 +35,12 @@ class FinanceKaecreditController extends Controller
                         'allow' => false,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
-                                                return Integrity::isLocked(Yii::$app->session["working_year"]);
-                                            },
+                            return Integrity::isLocked(Yii::$app->session["working_year"]);
+                        },
                         'denyCallback' => function ($rule, $action) {
-                                                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
-                                                return $this->redirect(['index']);
-                                            }
+                            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year you are working on is locked."));
+                            return $this->redirect(['index']);
+                        }
                         ],
                         [   'actions' =>['index'],
                             'allow' => true,
@@ -74,7 +74,7 @@ class FinanceKaecreditController extends Controller
                         ->select(['tblcredit.kae_id', 'kae_title', 'kaecredit_amount', 'kaecredit_date', 'kaecredit_updated'])
                         ->from([$prefix . 'finance_kae tblkae' , $prefix . 'finance_kaecredit tblcredit'])
                         ->where('tblcredit.kae_id = tblkae.kae_id')
-                        ->andWhere(['year' => Yii::$app->session["working_year"]])                        
+                        ->andWhere(['year' => Yii::$app->session["working_year"]])
                         ->all();
 
         return $this->render('index', [
@@ -82,7 +82,7 @@ class FinanceKaecreditController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     /**
      * Creates a new FinanceKaecredit model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -91,20 +91,21 @@ class FinanceKaecreditController extends Controller
     public function actionCreate()
     {
         $isYearKAEsSet = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->count("kae_id");
-        if($isYearKAEsSet)
+        if ($isYearKAEsSet) {
             return $this->redirect(['/finance/finance-kaecredit/update']);
-    
-        if(FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])){
+        }
+
+        if (FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])) {
             Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Your choices cannot be carried out, because the financial year is locked."));
             return $this->redirect(['/finance/finance-kaecredit/']);
         }
-    
+
         $allkaes = FinanceKae::find()->asArray()->all();
-        
-        $kaecredits = array();
-        $kaetitles = array();
+
+        $kaecredits = [];
+        $kaetitles = [];
         $i = 0;
-        foreach ($allkaes as $kae){
+        foreach ($allkaes as $kae) {
             $kaetitles[$i] = $kae['kae_title'];
             $kaecredits[$i] = new FinanceKaecredit();
             $kaecredits[$i]->kae_id = $kae['kae_id'];
@@ -112,12 +113,11 @@ class FinanceKaecreditController extends Controller
             $kaecredits[$i]->kaecredit_date = date("Y-m-d H:i:s");
             $kaecredits[$i++]->year = Yii::$app->session["working_year"];
         }
-    
-        if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
+
+        if (($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))) {
             $this->saveModels($kaecredits, false);
             return $this->redirect(['/finance/finance-kaecredit']);
-        } 
-        else {
+        } else {
             return $this->render('create', [
                 'model' => $kaecredits,
                 'kaetitles' => $kaetitles
@@ -125,55 +125,57 @@ class FinanceKaecreditController extends Controller
         }
     }
 
-    
+
     private function saveModels($kaecredits, $update = true)
-    {   
+    {
         //echo "<pre>"; print_r($kaecredits); echo "</pre>"; die();
-        foreach ($kaecredits as $kaecredit){
+        foreach ($kaecredits as $kaecredit) {
             $kaecredit->kaecredit_amount = Money::toCents($kaecredit->kaecredit_amount);
             $old_credit = FinanceKaecredit::find()->where(["kaecredit_id" => $kaecredit->kaecredit_id])->one();
-            
-            if(!is_null($old_credit) && !($old_credit->kaecredit_amount == $kaecredit->kaecredit_amount))
+
+            if (!is_null($old_credit) && !($old_credit->kaecredit_amount == $kaecredit->kaecredit_amount)) {
                 $kaecredit->kaecredit_updated = date("Y-m-d H:i:s");
+            }
         }
 
-        if(Model::validateMultiple($kaecredits)){
+        if (Model::validateMultiple($kaecredits)) {
             $transaction = Yii::$app->db->beginTransaction();
-            try{
-                foreach($kaecredits as $kaecredit){
-                    if($kaecredit->kaecredit_amount < FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id))
+            try {
+                foreach ($kaecredits as $kaecredit) {
+                    if ($kaecredit->kaecredit_amount < FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id)) {
                         throw new Exception(Module::t('modules/finance/app', "Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN."));
-                        
-                    if(!$kaecredit->save())
+                    }
+
+                    if (!$kaecredit->save()) {
                         throw new Exception(Module::t('modules/finance/app', "Your action did not complete succesfull. There was an error during saving in the database."));
+                    }
                 }
-                
+
                 $year = Yii::$app->session["working_year"];
-                if(FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year))
+                if (FinanceYear::getYearCredit($year) != FinanceKaecredit::getSumKaeCredits($year)) {
                     throw new Exception(Module::t('modules/finance/app', "The changes were not saved, because the sum of credits is not equal to the credit of the year. Please correct to continue."));
+                }
 
                 Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
-                    
+
                 $transaction->commit();
-                
+
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 $action = ($update == true)? "updated": "created";
                 Yii::info('User ' . $user . ' working in year ' . $year . ' ' .  $action . ' credits.', 'financial');
-                
+
                 return $this->redirect(['/finance/finance-kaecredit']);
-            
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->setFlash('danger', $e->getMessage());
-                $transaction->rollBack();   
+                $transaction->rollBack();
                 return $this->redirect(['/finance/finance-kaecredit']);
             }
-        }
-        else
+        } else {
             throw new Exception("Data validation failure.");
+        }
     }
-    
+
     /**
      * Updates an existing FinanceKaecredit model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -181,18 +183,19 @@ class FinanceKaecreditController extends Controller
      * @return mixed
      */
     public function actionUpdate()
-    {       
-        if(FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])){
+    {
+        if (FinanceYear::isLocked(['year' => Yii::$app->session["working_year"]])) {
             Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Your choices cannot be carried out, because the financial year is locked."));
             return $this->redirect(['/finance/finance-kaecredit/']);
         }
         $allkaes = FinanceKae::find()->asArray()->all();
-        foreach($allkaes as $index => $kae)
+        foreach ($allkaes as $index => $kae) {
             $kaes[$index] = $kae['kae_title'];
-        
+        }
+
         $kaecredits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
-        
-        if(($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))){
+
+        if (($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))) {
             $this->saveModels($kaecredits);
             return $this->redirect(['/finance/finance-kaecredit']);
         } else {
@@ -202,8 +205,8 @@ class FinanceKaecreditController extends Controller
             ]);
         }
     }
-    
-       
+
+
 
     /**
      * Deletes an existing FinanceKaecredit model.

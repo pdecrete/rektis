@@ -2,7 +2,6 @@
 
 use app\modules\finance\Module;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaecredit */
