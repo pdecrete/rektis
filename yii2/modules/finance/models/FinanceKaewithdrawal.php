@@ -37,6 +37,7 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             [['kaewithdr_amount', 'kaecredit_id'], 'integer'],
             [['kaewithdr_date'], 'safe'],
             [['kaewithdr_decision'], 'string', 'max' => 255],
+            [['kaewithdr_decisionfile'], 'string', 'max' => 200],
             [['kaecredit_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceKaecredit::className(), 'targetAttribute' => ['kaecredit_id' => 'kaecredit_id']],
         ];
     }
@@ -50,6 +51,7 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal'),
             'kaewithdr_amount' => Module::t('modules/finance/app', 'Withdrawal Amount'),
             'kaewithdr_decision' => Module::t('modules/finance/app', 'Withdrawal Decision'),
+            'kaewithdr_decisionfile' => Module::t('modules/finance/app', 'Decision File'),
             'kaewithdr_date' => Module::t('modules/finance/app', 'Created Date'),
             'kaecredit_id' => Module::t('modules/finance/app', 'Credit ID'),
         ];

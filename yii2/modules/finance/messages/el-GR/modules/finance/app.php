@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Decision File' => 'Αρχείο Απόφασης',
     'The deduction is already active.' => 'Η κράτηση είναι ήδη ενεργή.',
     'Failure in activating deduction.' => 'Αποτυχία ενεργοποίησης της κράτησης.',
     'The deduction was activated.' => 'Η κράτηση ενεργοποιήθηκε',
