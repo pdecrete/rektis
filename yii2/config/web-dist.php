@@ -8,6 +8,8 @@ $aliases = require(__DIR__ . '/aliases.php');
 $authmanager = require(__DIR__ . '/authmanager.php');
 $messages = require(__DIR__ . '/messages.php');
 
+\Yii::setAlias('@images', __DIR__ . '/../web/images');
+
 $config = [
     'id' => 'adm',
     'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
@@ -74,6 +76,13 @@ $config = [
                     'logFile' => '@runtime/logs/employee.log',
                     'logVars' => []
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['financial'],
+                    'logFile' => '@runtime/logs/financial.log',
+                    'logVars' => [],
+                ],
             // future use (or not?): log to db
             /*
               [
@@ -115,6 +124,9 @@ $config = [
     'modules' => [
         'SubstituteTeacher' => [
             'class' => 'app\modules\SubstituteTeacher\SubstituteTeacherModule',
+        ],
+        'finance' => [
+            'class' => 'app\modules\finance\Module',
         ],
         'datecontrol' => [
             'class' => 'kartik\datecontrol\Module',

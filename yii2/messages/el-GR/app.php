@@ -258,6 +258,7 @@ return [
     'Social Security Number' => 'Α.Μ.Κ.Α.',
     'SpecName' => 'Λεκτικό',
     'Specialisation' => 'Ειδικότητα',
+    'Specialisation label' => 'Ειδικότητα',
     'Specialisations' => 'Ειδικότητες',
     'Specialty' => '@@Ειδικότητα@@',
     'Start date' => 'Ημερομηνία έναρξης',

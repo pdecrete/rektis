@@ -6,7 +6,6 @@ use yii\base\Module;
 
 class SubstituteTeacherModule extends Module
 {
-
     public function init()
     {
         parent::init();

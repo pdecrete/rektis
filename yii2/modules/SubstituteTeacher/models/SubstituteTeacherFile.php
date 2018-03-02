@@ -20,7 +20,6 @@ use yii\db\Expression;
  */
 class SubstituteTeacherFile extends \yii\db\ActiveRecord
 {
-
     const SCENARIO_UPLOAD_FILE = 'UPLOAD_FILE';
     const FILE_ACTIVE = 0;
     const FILE_DELETED = 1;
@@ -99,7 +98,7 @@ class SubstituteTeacherFile extends \yii\db\ActiveRecord
         return $file;
     }
 
-    public function afterFind() 
+    public function afterFind()
     {
         parent::afterFind();
         $this->deleted_str = $this->deleted == self::FILE_ACTIVE ? 'Όχι' : 'NAI';

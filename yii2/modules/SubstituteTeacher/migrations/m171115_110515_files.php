@@ -4,7 +4,6 @@ use yii\db\Migration;
 
 class m171115_110515_files extends Migration
 {
-
     public function safeUp()
     {
         $tableOptions = null;
