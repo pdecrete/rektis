@@ -40,7 +40,13 @@ use app\modules\finance\components\Money;
                 label(Module::t('modules/finance/app', 'Date')); ?>
 
     <div class="form-group text-right">
-        <?= Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    	<?php   if(!$expenditures_return)
+                    echo Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']);
+                else
+                    echo Html::a(Yii::t('app', 'Return'), ['finance-expenditure/index'], ['class' => 'btn btn-default']);
+                
+                echo Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) 
+        ?>    	
     </div>
 
     <?php ActiveForm::end(); ?>

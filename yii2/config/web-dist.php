@@ -8,6 +8,8 @@ $aliases = require(__DIR__ . '/aliases.php');
 $authmanager = require(__DIR__ . '/authmanager.php');
 $messages = require(__DIR__ . '/messages.php');
 
+\Yii::setAlias('@images', __DIR__ . '/../web/images');
+
 $config = [
     'id' => 'adm',
     'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
@@ -73,6 +75,13 @@ $config = [
                     'categories' => ['employee'],
                     'logFile' => '@runtime/logs/employee.log',
                     'logVars' => []
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['financial'],
+                    'logFile' => '@runtime/logs/financial.log',
+                    'logVars' => [],
                 ],
             // future use (or not?): log to db
             /*

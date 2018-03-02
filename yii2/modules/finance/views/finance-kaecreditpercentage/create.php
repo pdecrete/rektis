@@ -11,6 +11,8 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'E
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Financial Year Administration'), 'url' => ['/finance/default/administeryear']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'RCN Credits Percentages'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
+
+
 ?>
 <?= $this->render('/default/infopanel'); ?>
 <div class="finance-kaecreditpercentage-update">
@@ -20,7 +22,8 @@ $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update');
     <?= $this->render('_form', [
         'model' => $model,
         'kae' => $kae,
-        'kaecredit' => $kaecredit
+        'kaecredit' => $kaecredit,
+        'kaecredit_sumpercentage' => $kaecredit_sumpercentage
     ]) ?>
 
 </div>

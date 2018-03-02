@@ -24,36 +24,52 @@ $this->params['breadcrumbs'][] = $this->title;
         'kaes' => $kaes,
         //'balances' => $balances, 
         'btnLiteral' => Module::t('modules/finance/app', 'New Withdrawal'),
-        'actionUrl' => '/index.php/finance/finance-kaewithdrawal/create']) 
+        'actionUrl' => '/finance/finance-kaewithdrawal/create']) 
 	?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\SerialColumn',
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
+            ],
             ['attribute' => 'kae_id', 
              'label' => Module::t('modules/finance/app', 'RCN'),
              'format' => 'html',
-             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}            
+             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title')],
+            ['attribute' => 'kae_title', 'label' => Module::t('modules/finance/app', 'RCN Title'),
+             'headerOptions' => ['class'=> 'text-center']
+            ],
             ['attribute' => 'kaecredit_amount', 
              'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Credit Amount'),
-             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaecredit_amount']);}
+             'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaecredit_amount']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'percentages', 
              'label' => Module::t('modules/finance/app', 'Spending Rate'),
-             'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);}
+             'value' => function ($dataProvider) {return Money::toPercentage($dataProvider['percentages']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'kaewithdr_amount', 
              'format' => 'currency',
              'label' => Module::t('modules/finance/app', 'Withdrawal Amount'),
              'value' => function ($dataProvider) {return Money::toCurrency($dataProvider['kaewithdr_amount']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'kaewithdr_decision', 'label' => Module::t('modules/finance/app', 'Withdrawal Decision')],
-            ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date')],
+            ['attribute' => 'kaewithdr_date', 'label' => Module::t('modules/finance/app', 'Withdrawal Date'),
+             'format' => ['date', 'php:d-m-Y (H:i:s)'],
+             'headerOptions' => ['class'=> 'text-center'],
+            ],
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{update}&nbsp;{delete}',
                 'buttons' =>   [   'update' => function ($url, $model) {

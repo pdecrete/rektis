@@ -26,6 +26,8 @@ use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceExpenddeduction;
 use app\modules\finance\models\FinanceState;
+use yii\web\User;
+use app\models\Employee;
 
 
 
@@ -43,7 +45,7 @@ class FinanceExpenditureController extends Controller
                                 'actions' => ['delete' => ['POST']]],
                 'access' => [   'class' => AccessControl::className(),
                                 'rules' =>  [
-                                            [   'actions' => ['create', 'delete', 'forwardstate', 'updatestate', 'backwardstate'],
+                                            [   'actions' => ['create', 'update', 'delete', 'forwardstate', 'updatestate', 'backwardstate'],
                                                 'allow' => false,
                                                 'roles' => ['@'],
                                                 'matchCallback' => function ($rule, $action) {                                                    
@@ -100,13 +102,9 @@ class FinanceExpenditureController extends Controller
                 ->where(['kaewithdr_id' => $kaewithdrawal['kaewithdr_id']])
                 ->one()['kaecredit_id']; 
                 
-                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];
-                
-                //$expendwithdrawals[$expend_model['exp_id']]['RELATEDKAE'] = 
-                //FinanceKaecredit::find()->where(['kaecredit_id' => $kaecredit_id])->one()['kae_id'];
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];                
             }
         }
-        //echo "<pre>"; print_r($expendwithdrawals); echo "</pre>";die();
         
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -119,8 +117,10 @@ class FinanceExpenditureController extends Controller
 
 
     /**
-     * Creates a new FinanceExpenditure model.
+     * Creates a new FinanceExpenditure model for the RCN with number $id.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * 
+     * @param integer $id
      * @return mixed
      */
     public function actionCreate($id)
@@ -129,10 +129,12 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
-        $suppliers = FinanceSupplier::find()->all();
+
+        $suppliers = FinanceSupplier::find()->orderBy('suppl_name')->all();
         $kaecredit_id = FinanceKaecredit::find()->where(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]])->one()->kaecredit_id;
-        $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
         
+        $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
+                
         $i = 0;
         $expendwithdrawals_models = array();
         foreach($kaewithdrawals as $key=>$kaewithdrawal){
@@ -143,16 +145,16 @@ class FinanceExpenditureController extends Controller
             else
                 unset($kaewithdrawals[$key]);
         }
-      
+        
         if(count($expendwithdrawals_models) == 0){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "There is no withdrawal for this RCN to create expenditure."));
             return $this->redirect(['index']);
         }
         
-        $deductions = FinanceDeduction::find()->all();
+        $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
         $expenddeduction_models = array();
-        for($i = 0; $i < count($deductions)-1; $i++)
-            $expenddeduction_models[$i] = new FinanceExpenddeduction();
+        for($i = 3; $i <= count($deductions); $i++) //3 for the first three deductions presented as radiolist
+            $expenddeduction_models[$i-3] = new FinanceExpenddeduction();
         
         $model = new FinanceExpenditure();
         $vat_levels = FinanceFpa::find()->all();
@@ -164,7 +166,19 @@ class FinanceExpenditureController extends Controller
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post()))
         {
-            $this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
+            //$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
+            if(!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models)){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the duplicate assigned withdrawals."));
+                return $this->render('update', [
+                    'model' => $model,
+                    'expendwithdrawals_models' => $expendwithdrawals_models,
+                    'vat_levels' => $vat_levels,
+                    'kaewithdrawals' => $kaewithdrawals,
+                    'suppliers' => $suppliers,
+                    'expenddeduction_models' => $expenddeduction_models,
+                    'deductions' => $deductions
+                ]);
+            }
         } 
         else 
         {
@@ -181,38 +195,75 @@ class FinanceExpenditureController extends Controller
     }
 
     /**
-     * Updates an existing FinanceExpenditure model.
+     * Updates an existing FinanceExpenditure model for the expenditure with id $id.
      * If update is successful, the browser will be redirected to the 'view' page.
+     * 
      * @param integer $id
      * @return mixed
      */
-    /*
+    
     public function actionUpdate($id)
-    {        
+    {   
         if(!isset($id) || !is_numeric($id)){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
-        $suppliers = FinanceSupplier::find()->all();
-        $kaecredit_id = FinanceKaecredit::find()->where(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]])->one()->kaecredit_id;
-        $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
         
-            $i = 0;
-            $expendwithdrawals_models = array();
-            foreach($kaewithdrawals as $key=>$kaewithdrawal){
-                if(FinanceExpendwithdrawal::getWithdrawalBalance($kaewithdrawal->kaewithdr_id) > 0){
-                    $expendwithdrawals_models[$i++] = new FinanceExpendwithdrawal();
-                }
-                else
-                    unset($kaewithdrawals[$key]);
-            }
+        $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $id])->count();        
+        if($statescount > 1){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure could not be updated because is not in initial state."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
         
-        $deductions = FinanceDeduction::find()->all();
-        $expenddeduction_models = array();
-        for($i = 0; $i < count($deductions)-1; $i++)
-            $expenddeduction_models[$i] = new FinanceExpenddeduction();
-            
         $model = $this->findModel($id);
+        //$model->exp_amount = Money::toCurrency($model->exp_amount);
+        
+        $suppliers = FinanceSupplier::find()->all();            
+       
+        $kaewithdr_id = FinanceExpendwithdrawal::find()->where(['exp_id' => $id])->all()[0]->kaewithdr_id;
+        $kaecredit_id = FinanceKaewithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->all()[0]->kaecredit_id;              
+        $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
+
+        $i = 0;
+        $expendwithdrawals_models = array();
+        foreach($kaewithdrawals as $key=>$kaewithdrawal){
+            $kaewithdrawal->kaewithdr_amount = Money::toCurrency($kaewithdrawal->kaewithdr_amount, true);
+            if(FinanceExpendwithdrawal::getWithdrawalBalance($kaewithdrawal->kaewithdr_id) > 0 || 
+                !is_null(FinanceExpendwithdrawal::findOne(['exp_id' => $id, 'kaewithdr_id' => $kaewithdrawal->kaewithdr_id]))){
+                
+                $exp_withdr_exists = FinanceExpendwithdrawal::find()->where(['exp_id' => $id])->andWhere(['kaewithdr_id' => $kaewithdrawal->kaewithdr_id])->one();
+                if(!is_null($exp_withdr_exists))
+                    $expendwithdrawals_models[$i] = $exp_withdr_exists;
+                else 
+                    $expendwithdrawals_models[$i] = new FinanceExpendwithdrawal();
+                $i++;
+            }
+            else
+                unset($kaewithdrawals[$key]);
+        }
+        
+        if(count($expendwithdrawals_models) == 0){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "There is no withdrawal for this RCN to create expenditure."));
+            return $this->redirect(['index']);
+        }  
+            
+        $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
+        
+        $expenddeduction_models = array();
+        $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['<=', 'deduct_id', 3])->one();
+
+        if(count($exp_deduction))
+            $expenddeduction_models[0] = $exp_deduction;
+        for($i = 3; $i < count($deductions); $i++){
+            $exp_deductions_checkbox = FinanceExpenddeduction::find()->where(['exp_id' => $id, 'deduct_id'=> $deductions[$i]->deduct_id])->one();
+            if(count($exp_deductions_checkbox))
+                $expenddeduction_models[$i-2] = $exp_deductions_checkbox;
+            else {    
+                $expenddeduction_models[$i-2] = new FinanceExpenddeduction();
+                $expenddeduction_models[$i-2]->exp_id = $id;
+            }
+        }
+        
         $vat_levels = FinanceFpa::find()->all();
         
         foreach ($vat_levels as $vat_level)
@@ -221,23 +272,34 @@ class FinanceExpenditureController extends Controller
         if ($model->load(Yii::$app->request->post())
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post()))
-        {
-            $this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
+        {            
+            if(!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models, false)){
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The changes were not saved. Please correct the duplicate assigned withdrawals."));
+                return $this->render('update', [
+                    'model' => $model,
+                    'expendwithdrawals_models' => $expendwithdrawals_models,
+                    'vat_levels' => $vat_levels,
+                    'kaewithdrawals' => $kaewithdrawals,
+                    'suppliers' => $suppliers,
+                    'expenddeduction_models' => $expenddeduction_models,
+                    'deductions' => $deductions
+                ]);
+            }
         }
         else
         {
-            return $this->render('create', [
-                'model' => $model,
-                'expendwithdrawals_models' => $expendwithdrawals_models,
-                'vat_levels' => $vat_levels,
-                'kaewithdrawals' => $kaewithdrawals,
-                'suppliers' => $suppliers,
-                'expenddeduction_models' => $expenddeduction_models,
-                'deductions' => $deductions
+            return $this->render('update', [
+                    'model' => $model,
+                    'expendwithdrawals_models' => $expendwithdrawals_models,
+                    'vat_levels' => $vat_levels,
+                    'kaewithdrawals' => $kaewithdrawals,
+                    'suppliers' => $suppliers,
+                    'expenddeduction_models' => $expenddeduction_models,
+                    'deductions' => $deductions
             ]);
         }
     }
-    */
+    
 
     /**
      * Updates an existing FinanceExpenditure model.
@@ -245,8 +307,8 @@ class FinanceExpenditureController extends Controller
      * @param integer $id
      * @return mixed
      */
-    private function saveModels($model, $expendwithdrawals_models, $expenddeduction_models)
-    {
+    private function saveModels($model, $expendwithdrawals_models, $expenddeduction_models, $new_expenditure = true)
+    {   
         try{
             $transaction = Yii::$app->db->beginTransaction();
             $model->exp_amount = Money::toCents($model->exp_amount); 
@@ -254,55 +316,102 @@ class FinanceExpenditureController extends Controller
             $model->exp_date = date("Y-m-d H:i:s");
             $model->exp_deleted = 0;
             $model->exp_lock = 0;
+
+            if(!$model->save()) throw new Exception("Error saving in the database.");
             
-            if(!$model->save()) throw new Exception();
-            
-            for($i = 0; $i < count($expenddeduction_models); $i++)
-                $expenddeduction_models[$i]->exp_id = $model->exp_id;
-                
-                if(!$expenddeduction_models[0]->save()) throw new Exception();
-                
-                for($i = 1; $i < count($expenddeduction_models); $i++){
-                    if(!($expenddeduction_models[$i]->deduct_id == 0)){
-                        if(!$expenddeduction_models[$i]->save()) throw new Exception();
-                    }
+            if(!$new_expenditure){
+                $old_expdeductions = FinanceExpenddeduction::find()->where(['exp_id' => $model->exp_id])
+                                                                   ->andWhere(['>', 'deduct_id', 3])->all();
+                foreach ($old_expdeductions as $old_expdeduction){                    
+                    $delete_it = false;
+                    foreach ($expenddeduction_models as $expenddeduction_model)
+                        if($expenddeduction_model->deduct_id == $old_expdeduction->deduct_id)
+                            $delete_it = true;
+
+                    if(!$delete_it)
+                        if(!$old_expdeduction->delete()) 
+                            throw new Exception("Error deleting previous deduction.");                        
                 }
-                
+            }
+            else {            
                 $expend_state_model = new FinanceExpenditurestate();
                 $expend_state_model->exp_id = $model->exp_id;
                 $expend_state_model->state_id = 1;
                 $expend_state_model->expstate_date = date("Y-m-d H:i:s");
-                //echo "<pre>"; print_r($expend_state_model->toArray()); echo "</pre>";
-                if(!$expend_state_model->save()) throw new Exception();
+                if(!$expend_state_model->save()) throw new Exception("Error in setting the state of the expenditure.");
+            }
+
+            $tmp_array = array();
+            for($i = 0; $i < count($expenddeduction_models); $i++){
+                $expenddeduction_models[$i]->exp_id = $model->exp_id;
+                $tmp = $expenddeduction_models[$i]->deduct_id;
                 
-                $partial_amount = $model->exp_amount;
-                foreach ($expendwithdrawals_models as $expendwithdrawals_model){
-                    $expendwithdrawals_model->exp_id = $model->exp_id;
-                    $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
-                    if($partial_amount > $withdrawal_balance){
-                        $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
-                        $partial_amount = $partial_amount - $withdrawal_balance;
-                    }
-                    else {
-                        $expendwithdrawals_model->expwithdr_amount = $partial_amount;
-                        $partial_amount = 0;
-                        
-                        if(!$expendwithdrawals_model->save())
-                            throw new Exception();
-                            break;
-                    }
-                    
-                    if(!$expendwithdrawals_model->save()) throw new Exception();
+                if(isset($tmp) && $tmp != 0 && $tmp != null){
+                    if(!$expenddeduction_models[$i]->save()) 
+                        throw new Exception("Error in assigning deductions to the expenditure.");
                 }
-                if($partial_amount > 0) throw new Exception();
+            }
+            
+            $withdrawals_ids_array = array();
+            foreach ($expendwithdrawals_models as $index=>$expendwithdrawals_model){
+                $withdrawals_ids_array[$index] = $expendwithdrawals_model->kaewithdr_id;
+            }
+            $withdrawals_uniqueids_array = array_unique($withdrawals_ids_array);
+            if(count($withdrawals_uniqueids_array) != count($withdrawals_ids_array)){
+                $transaction->rollBack();
+                return false;
+            }
+           
+           
+            if(!$new_expenditure){
+                $old_expendwithdrawals = FinanceExpendwithdrawal::findAll(['exp_id' => $model->exp_id]);
+                foreach ($old_expendwithdrawals as $old_expendwithdrawal){
+                    $old_expendwithdrawal->expwithdr_amount = 0;
+                    if(!$old_expendwithdrawal->save()) throw new Exception("Error in deleting old assignment of the expenditure with withdrawals");
+            
+                }
+            }
+            
+            $partial_amount = $model->exp_amount;
+            foreach ($expendwithdrawals_models as $expendwithdrawals_model){
+                $expendwithdrawals_model->exp_id = $model->exp_id;
+                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
+                if($partial_amount > $withdrawal_balance){
+                    $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
+                    $partial_amount = $partial_amount - $withdrawal_balance;
+                }
+                else {
+                    $expendwithdrawals_model->expwithdr_amount = $partial_amount;
+                    $partial_amount = 0;
+                    
+                    if(!$expendwithdrawals_model->save())
+                        throw new Exception("Error in assigning withdrawals to exceptions.");
+                    break;
+                }
                 
-                $transaction->commit();
+                if(!$expendwithdrawals_model->save()) 
+                    throw new Exception();
+                
+            }
+            if($partial_amount > 0) throw new Exception("Amount of the expenditure is to high for the available withdrawals.");
+            
+            $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            $action = ($new_expenditure == true)? "created new expenditure." : "updated expenditure with id " . $model->exp_id;
+            Yii::info('User ' . $user . ' working in year ' . $year . ' ' .  $action, 'financial');
+            
+            if($new_expenditure)
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was created successfully."));
-                return $this->redirect(['index']);
+            else
+                Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was updated successfully."));
+
+            return $this->redirect(['index']);
         }
         catch(Exception $e){
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create expenditure."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
             return $this->redirect(['index']);
         }
     }
@@ -319,6 +428,13 @@ class FinanceExpenditureController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The requested expenditure could not be found."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
+        
+        $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $id])->count();
+        if($statescount > 1){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure could not be deleted because is not in initial state."));
+            return $this->redirect(['/finance/finance-expenditure/index']);
+        }
+        
         $stopedhere = "";
         $expenditure = $this->findModel($id);        
         try{
@@ -335,6 +451,11 @@ class FinanceExpenditureController extends Controller
             if(!$expenditure->delete())
                 throw new Exception();
             $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' deleted expenditure with id ' . $id, 'financial');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure was deleted successfully."));
             return $this->redirect(['index']);
         }
@@ -368,21 +489,24 @@ class FinanceExpenditureController extends Controller
         
         $exp_model = $this->findModel($id);
         $current_state = FinanceExpenditurestate::find()->where(['exp_id' => $exp_model->exp_id, ])->max('state_id');
-        $current_state_name = FinanceState::findOne(['state_id' => $current_state])['state_name']; 
-        //echo "<pre>"; var_dump($current_state); echo "</pre>"; die();
+        $current_state_name = FinanceState::findOne(['state_id' => $current_state+1])['state_name']; 
+        
         $state_model = new FinanceExpenditurestate();
         $state_model->exp_id = $exp_model->exp_id;
-        //$supplier = FinanceSupplier::find()->where(['suppl_id' => $exp_model->suppl_id])->one()->suppl_name;
                 
         if ($state_model->load(Yii::$app->request->post())){
             try{
                 $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $state_model->exp_id])->count();
-                //echo $state_model->exp_id . "---" . $statescount; die();
                 if($statescount < 0 || $statescount >= 4) 
                     throw new Exception();
                 $state_model->state_id = $statescount + 1;
                 if(!$state_model->save())  
                     throw new Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' forwarded state of expenditure with id ' . $id, 'financial');
+                                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
                 return $this->redirect(['index']);
             }
@@ -394,6 +518,7 @@ class FinanceExpenditureController extends Controller
             return $this->render('forwardstate', [
                 'state_model' => $state_model,
                 'current_state_name' => $current_state_name,
+                'state_id' => $current_state
             ]);
         }
     }
@@ -419,7 +544,11 @@ class FinanceExpenditureController extends Controller
             if ($state_model->load(Yii::$app->request->post())){                
                 if(!$state_model->save()) 
                     throw new Exception();
-            
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' updated the details of state (state_id=' . $state_id . ') for the expenditure with id ' . $exp_id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state details were updated successfully."));
                 return $this->redirect(['index']);
             }
@@ -427,6 +556,7 @@ class FinanceExpenditureController extends Controller
                 return $this->render('updatestate', [
                     'state_model' => $state_model,
                     'current_state_name' => $current_state_name,
+                    'state_id' => $state_id
                 ]);                
             }            
         }
@@ -457,6 +587,11 @@ class FinanceExpenditureController extends Controller
             if(!FinanceExpenditureState::find()->
                 where(['exp_id' => $id, 'state_id' => $statescount])->one()->delete())
                 throw new Exception();
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' backwarded state of expenditure with id ' . $id, 'financial');
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The expenditure's state changed successfully."));
             return $this->redirect(['index']);           
         }
@@ -475,9 +610,9 @@ class FinanceExpenditureController extends Controller
     public function actionPaymentreport(){
         $models = array();
         $kae = "";
-        //echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
         $exp_ids = Yii::$app->request->post('selection');
-        
+        $first_expenditure = true;
+        $maxdate = null;
         try{
             if(is_null($exp_ids))
                 throw new Exception();
@@ -486,9 +621,28 @@ class FinanceExpenditureController extends Controller
                 $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model['suppl_id']]);
                 $invoice_model = FinanceInvoice::findOne(['exp_id' => $expenditure_model['exp_id']]);
                 
+                $expstate2_date = FinanceExpenditurestate::findOne(['exp_id' => $id, 'state_id' => 2])->expstate_date;
+                if($first_expenditure){
+                    $maxdate = $expstate2_date;
+                    $first_expenditure = false;
+                }
+                if($expstate2_date > $maxdate)
+                    $maxdate = $expstate2_date; 
+                    
+                //echo "<pre>"; print_r($maxdate); echo "</pre>"; die();
+                
+                $deductions = FinanceExpenddeduction::find()->where(['exp_id' => $id])->all();
+                $deductions_models = array();
+                foreach ($deductions as $deduct_index=>$deduction)
+                    $deductions_models[$deduct_index] = FinanceDeduction::findOne(['deduct_id' => $deduction->deduct_id]);
+                    
+                if(is_null($invoice_model))
+                    throw new Exception();
+                        
                 $models[$index]['EXPENDITURE'] = $expenditure_model;
                 $models[$index]['SUPPLIER'] = $supplier_model;
                 $models[$index]['INVOICE'] = $invoice_model;
+                $models[$index]['DEDUCTIONS'] = $deductions_models;
             
                 $kaewithdr_id = FinanceExpendwithdrawal::find()->
                                     where(['exp_id' => $expenditure_model['exp_id']])->all()[0]['kaewithdr_id'];
@@ -502,14 +656,20 @@ class FinanceExpenditureController extends Controller
             $year = Yii::$app->session["working_year"];
         }
         catch(Exception $e){
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher)."));
             return $this->redirect(['index']);
         }
+        
         $content = $this->renderPartial('paymentreport', [
             'models' => $models,
             'year' => $year,
             'kae' => $kae,
+            'maxdate' => $maxdate
         ]);
+
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' created payment report.', 'financial');
         
         $pdf = new Pdf([
             'mode' => Pdf::MODE_UTF8,
@@ -521,9 +681,52 @@ class FinanceExpenditureController extends Controller
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
             'cssInline' => '.kv-heading-1{font-size:18px}',
             'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
-
         ]);
         return $pdf->render();
+    }
+    
+    public function actionCoversheet(){                
+        try{
+            $exp_ids = Yii::$app->request->post('selection');
+            if(count($exp_ids) != 1)
+                throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select only one expenditure."));
+            
+            $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $exp_ids[0]]);
+            $exp_stateid = FinanceExpenditurestate::find()->where(['exp_id' => $exp_ids[0]])->max('state_id');
+            if($exp_stateid < 2)
+                throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. The selected expenditure is in initial state."));
+            
+            $expstate_model = FinanceExpenditurestate::findOne(['exp_id' => $exp_ids[0], 'state_id' => 2]);
+            $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
+                
+            $content = $this->renderPartial('coversheet', 
+                                            ['expenditure_model' => $expenditure_model, 
+                                             'expstate_model' => $expstate_model, 
+                                             'supplier_model' => $supplier_model,
+                                             'kae' => $expenditure_model->getKae()['kae_id']
+                                            ]);
+            
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' created cover sheet for expenditure with id ' . $exp_ids[0] , 'financial');
+            
+            $pdf = new Pdf([
+                'mode' => Pdf::MODE_UTF8,
+                'format' => Pdf::FORMAT_A4,
+                'orientation' => Pdf::ORIENT_PORTRAIT,
+                'filename' => 'aitisi.pdf',
+                'destination' => Pdf::DEST_DOWNLOAD,
+                'content' => $content,
+                'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+                'cssInline' => '.kv-heading-1{font-size:18px}',
+                'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
+            ]);
+            return $pdf->render();
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', $e->getMessage());
+            return $this->redirect(['index']);            
+        }
     }
     
     /**

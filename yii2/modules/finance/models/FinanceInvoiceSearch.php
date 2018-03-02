@@ -72,8 +72,10 @@ class FinanceInvoiceSearch extends FinanceInvoice
         //echo $query->createCommand()->getRawSql();die();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
+                                'query' => $query,
+                                'sort' => ['attributes' => ['inv_number', 'inv_date', 'inv_order'],
+                                'defaultOrder' => ['inv_date' => SORT_DESC,]]
+                                ]);
 
         $this->load($params);
         //echo "<pre>"; print_r($params); echo "</pre>"; die();

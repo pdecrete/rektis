@@ -72,7 +72,7 @@ class FinanceKaecreditpercentageController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         $kaesListModel = FinanceKae::find()->all();
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -98,6 +98,7 @@ class FinanceKaecreditpercentageController extends Controller
         $kae = FinanceKae::findOne(['kae_id' => $id]);
         $kaecredit = FinanceKaecredit::findOne(['kae_id' => $id, 'year' => Yii::$app->session["working_year"]]);
         $model->kaecredit_id = $kaecredit->kaecredit_id;
+        $kaecredit_sumpercentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($model->kaecredit_id);
 
         if ($model->load(Yii::$app->request->post())){
             try{
@@ -108,6 +109,11 @@ class FinanceKaecreditpercentageController extends Controller
                 //echo "<pre>"; print_r($model); echo "<pre>";
                 if(!$model->save()) 
                     throw new Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created new percentage for RCN (KAE) ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
@@ -119,7 +125,8 @@ class FinanceKaecreditpercentageController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'kae' => $kae,
-                'kaecredit' => $kaecredit
+                'kaecredit' => $kaecredit,
+                'kaecredit_sumpercentage' => $kaecredit_sumpercentage
             ]);
         }
     }
@@ -135,6 +142,7 @@ class FinanceKaecreditpercentageController extends Controller
         $model = $this->findModel($id);
         $kae = $model->getKae()->one();
         $kaecredit = $model->getKaecredit()->one();
+        $kaecredit_sumpercentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($model->kaecredit_id);
         
         if ($model->load(Yii::$app->request->post())){
             try{                
@@ -146,7 +154,13 @@ class FinanceKaecreditpercentageController extends Controller
                 //echo strval(((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit)); die();
                 if($model->kaeperc_percentage > 10000 || $model->kaeperc_percentage <= 0 || 
                     ((int)$model->kaeperc_percentage + (int)$currentPercentSum - (int)$oldmodelcredit) > 10000) throw new \Exception();
-                if(!$model->save()) throw new \Exception();
+                if(!$model->save()) 
+                    throw new \Exception();
+
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' udpated percentage with ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "Your changes were saved succesfully."));
                 return $this->redirect(['/finance/finance-kaecreditpercentage/index']);
             }
@@ -158,7 +172,8 @@ class FinanceKaecreditpercentageController extends Controller
             return $this->render('update', [
                 'model' => $model,
                 'kae' => $kae,
-                'kaecredit' => $kaecredit
+                'kaecredit' => $kaecredit,
+                'kaecredit_sumpercentage' => $kaecredit_sumpercentage
             ]);
         }
     }
@@ -189,6 +204,10 @@ class FinanceKaecreditpercentageController extends Controller
             return $this->redirect(['index']);
         }
         
+        $user = Yii::$app->user->identity->username;
+        $year = Yii::$app->session["working_year"];
+        Yii::info('User ' . $user . ' working in year ' . $year . ' deleted percentage with ' . $id, 'financial');
+        
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deletion of the percentage attributed to the RCN credit was completed successfully"));
         return $this->redirect(['index']);
     }
@@ -210,7 +229,7 @@ class FinanceKaecreditpercentageController extends Controller
                 
                 $default_percentage = FinanceKaecreditpercentage::find()->where(['kaecredit_id' => $kaecredit_id])->count();
                 if($default_percentage) {
-                    Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The default percentage for {$kaes[$i]} already exists."));
+                    Yii::$app->session->addFlash('info', Module::t('modules/finance/app', "The default percentage for {kae_name} already exists.", ['kae_name' => sprintf('%04d', $kaes[$i])]));
                     continue;
                 }
                                 

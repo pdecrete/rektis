@@ -25,13 +25,22 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            ['attribute' => 'kae_id',                
-                'format' => 'html',
-                'value' => function ($model) {return sprintf('%04d', $model['kae_id']);}
+            ['class' => 'yii\grid\SerialColumn',
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
             ],
-            'kae_title',
-            'kae_description',
+            ['attribute' => 'kae_id',                
+             'format' => 'html',
+             'value' => function ($model) {return sprintf('%04d', $model['kae_id']);},
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class' => 'text-center']
+            ],
+            ['attribute' => 'kae_title',
+             'headerOptions' => ['class'=> 'text-center']
+            ],
+            ['attribute' => 'kae_description',
+             'headerOptions' => ['class'=> 'text-center']
+            ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{update}'
             ],

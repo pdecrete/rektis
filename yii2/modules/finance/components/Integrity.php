@@ -66,10 +66,10 @@ class Integrity
      * @throws \Exception
      */  
    
-    public static function creditsIntegrity($year){
+    public static function creditsIntegrity($year){        
         if(Integrity::yearKaesCount($year) == 0) 
             return false;
-        
+            
         if(FinanceKae::find()->count() != Integrity::yearKaesCount($year)) 
             return false;
         

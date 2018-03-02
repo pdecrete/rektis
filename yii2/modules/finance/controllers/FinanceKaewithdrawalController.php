@@ -16,6 +16,7 @@ use app\modules\finance\models\FinanceKaecreditpercentage;
 use yii\base\Exception;
 use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
+use app\modules\finance\models\FinanceExpendwithdrawal;
 
 /**
  * FinanceKaewithdrawalController implements the CRUD actions for FinanceKaewithdrawal model.
@@ -121,6 +122,11 @@ class FinanceKaewithdrawalController extends Controller
                     throw new Exception();
                 if(!$model->save()) 
                     throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created withdrawal for RCN (KAE) ' . $id, 'financial');
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The withdrawal completed successfully."));
                 return $this->redirect(['index']);
             }
@@ -161,7 +167,9 @@ class FinanceKaewithdrawalController extends Controller
         $kaeWithdrwals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $model->kaecredit_id])->all();
 
         if ($model->load(Yii::$app->request->post())){ 
-            try{
+            try{                
+                if($model->kaewithdr_amount < FinanceExpendwithdrawal::getExpendituresSum($id))
+                    throw new Exception();
                 $oldModel = $this->findModel($id);
                 $available = ($kaeCredit->kaecredit_amount)*Money::toPercentage($kaeCreditSumPercentage, false);
                 $balance = $available - FinanceKaewithdrawal::getWithdrawsSum($kaeCredit->kaecredit_id);
@@ -169,13 +177,18 @@ class FinanceKaewithdrawalController extends Controller
                 $newBalance = $balance - $oldModel->kaewithdr_amount + $model->kaewithdr_amount;
                 
                 if($model->kaewithdr_amount <= 0 || ($newBalance < 0)) throw new Exception();
-                if(!$model->save()) throw new Exception();
+                if(!$model->save()) 
+                    throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                $year = Yii::$app->session["working_year"];
+                Yii::info('User ' . $user . ' working in year ' . $year . ' updated withdrawal with ' . $id, 'financial');
                 
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The update of the withdrawal completed successfully."));              
                 return $this->redirect(['index', 'id' => $model->kaewithdr_id]);
             }
             catch(Exception $e){
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the declared the validity of the withdraw amount or contact with the administrator."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in carrying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaewithdrawal/index']);
             }
         }
@@ -198,13 +211,23 @@ class FinanceKaewithdrawalController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete()){
+        try{
+            if(FinanceExpendwithdrawal::getExpendituresSum($id) > 0)
+                throw new Exception();
+            if(!$this->findModel($id)->delete())
+                throw new Exception();
+
+            $user = Yii::$app->user->identity->username;
+            $year = Yii::$app->session["working_year"];
+            Yii::info('User ' . $user . ' working in year ' . $year . ' deleted withdrawal with ' . $id, 'financial');
+                
+            Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN Withdraw was deleted successfylly."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $e){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the RCN withdrawal. Please try again or contact with the administrator."));
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
-        }
-            
-        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN Withdraw was deleted successfylly."));
-        return $this->redirect(['index']);
+        }        
     }
 
     /**

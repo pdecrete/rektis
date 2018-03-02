@@ -23,7 +23,8 @@ $this->params['breadcrumbs'][] = Module::t('modules/finance/app', 'Update Vouche
         'invoice_model' => $invoice_model,
         'expenditure_model' => $expenditure_model,
         'supplier_model' => $supplier_model,
-        'invoicetypes_model' => $invoicetypes_model
+        'invoicetypes_model' => $invoicetypes_model,
+        'expenditures_return' => $expenditures_return
     ]) ?>
 
 </div>
