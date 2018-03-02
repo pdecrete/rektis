@@ -39,7 +39,7 @@ class m180116_065653_teachers extends Migration
             'email' => $this->string(150)->notNull()->defaultValue(''),
             'birthdate' => $this->date()->defaultValue(null),
             'birthplace' => $this->string(100)->notNull()->defaultValue(''),
-            // 
+            //
             'aei' => $this->boolean()->notNull()->defaultValue(false)->comment('Πτυχίο ΑΕΙ'),
             'tei' => $this->boolean()->notNull()->defaultValue(false)->comment('Πτυχίο TΕΙ'),
             'epal' => $this->boolean()->notNull()->defaultValue(false)->comment('Απολυτήριο ΕΠΑΛ'),
@@ -74,7 +74,7 @@ class m180116_065653_teachers extends Migration
             'status' => $this->smallInteger()->unsigned()->notNull()->defaultValue(0)->comment('Service status, i.e. 1 for appointed'),
             'points' => $this->decimal(9, 3)->unsigned()->notNull()->defaultValue(0.0),
             'data' => $this->text()->defaultValue('')->comment('All of the rest teacher information')
-            // TODO: this should be expanded in later versions 
+            // TODO: this should be expanded in later versions
         ]);
         $this->addForeignKey('fk_teacher_registry_id', '{{%stteacher}}', 'registry_id', '{{%stteacher_registry}}', 'id', 'SET NULL', 'CASCADE');
         $this->createIndex('idx_stteacher_by_year', '{{%stteacher}}', ['year']);

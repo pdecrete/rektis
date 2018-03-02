@@ -65,22 +65,21 @@ class FinanceDeductionController extends Controller
         $model->deduct_date = date("Y-m-d H:i:s");
 
         if ($model->load(Yii::$app->request->post())) {
-            try{
+            try {
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
                 $model->deduct_uplimit = Money::toCents($model->deduct_uplimit);
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);
 
-                if(!$model->save())
+                if (!$model->save()) 
                     throw new Exception();
                 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' created new deduction.', 'financial');
-                
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was created successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating deduction."));
                 return $this->redirect(['index']);
             }
@@ -100,6 +99,7 @@ class FinanceDeductionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
         if($model->deduct_obsolete == 1){
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The deduction is obsolete and it cannot be edited."));
             return $this->redirect(['index']);            
@@ -108,22 +108,21 @@ class FinanceDeductionController extends Controller
         $model->deduct_date = date("Y-m-d H:i:s");
                 
         if ($model->load(Yii::$app->request->post())) {
-            try{
+            try {
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
                 $model->deduct_uplimit = Money::toCents($model->deduct_uplimit);
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);
 
-                if(!$model->save())
+                if (!$model->save())
                     throw new Exception();
-                
+
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated deduction with id ' . $id, 'financial');
-                
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The deduction was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating deduction."));
                 return $this->redirect(['index']);
             }

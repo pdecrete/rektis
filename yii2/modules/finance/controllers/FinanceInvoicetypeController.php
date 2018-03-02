@@ -62,8 +62,8 @@ class FinanceInvoicetypeController extends Controller
         $model = new FinanceInvoicetype();
 
         if ($model->load(Yii::$app->request->post())) {
-            try{
-                if(!$model->save())
+            try {
+                if (!$model->save())
                     throw new Exception();
 
                 $user = Yii::$app->user->identity->username;
@@ -72,13 +72,11 @@ class FinanceInvoicetypeController extends Controller
                     
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating voucher type."));
                 return $this->redirect(['index']);
             }
-        } 
-        else {
+        } else {
             return $this->render('create', [
                 'model' => $model,
             ]);
@@ -96,8 +94,8 @@ class FinanceInvoicetypeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            try{
-                if(!$model->save())
+            try {
+                if (!$model->save()) 
                     throw new Exception();
                     
                 $user = Yii::$app->user->identity->username;
@@ -126,7 +124,7 @@ class FinanceInvoicetypeController extends Controller
      */
     public function actionDelete($id)
     {
-        if(!$this->findModel($id)->delete())
+        if (!$this->findModel($id)->delete())
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting voucher type."));
         else {
             $user = Yii::$app->user->identity->username;

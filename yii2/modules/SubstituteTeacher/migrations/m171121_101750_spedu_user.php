@@ -5,12 +5,11 @@ use yii\helpers\Console;
 
 class m171121_101750_spedu_user extends Migration
 {
-
     public function safeUp()
     {
         $auth = Yii::$app->authManager;
 
-        // add core roles 
+        // add core roles
         Console::stdout("Creating role for substitute teacher module functions [spedu_user].\n", Console::FG_YELLOW);
         $spedu_user = $auth->createRole('spedu_user');
         $role = $auth->add($spedu_user);

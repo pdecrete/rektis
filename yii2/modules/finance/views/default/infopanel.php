@@ -88,8 +88,5 @@ if(Integrity::uniqueCurrentYear()):
                 
             </div>
         </div>
-    </div>
-    
-
-    
+    </div>   
 <?php endif;?>

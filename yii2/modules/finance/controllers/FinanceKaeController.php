@@ -4,12 +4,10 @@ namespace app\modules\finance\controllers;
 
 use Yii;
 use app\modules\finance\Module;
-use app\modules\finance\components\Integrity;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKaecredit;
@@ -66,7 +64,7 @@ class FinanceKaeController extends Controller
             'model' => $this->findModel($id),
         ]);
     }*/
-    
+
     /*
     public function actionDelete($id)
     {
@@ -78,7 +76,7 @@ class FinanceKaeController extends Controller
         return $this->redirect(['index']);
     }
     */
-    
+
     /**
      * Creates a new FinanceKae model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -88,19 +86,22 @@ class FinanceKaeController extends Controller
     {
         $model = new FinanceKae();
 
-        if ($model->load(Yii::$app->request->post())){ 
-            try{
+        if ($model->load(Yii::$app->request->post())) {
+            try {
                 $transaction = Yii::$app->db->beginTransaction();
-                if(!$model->save()) throw new \Exception();
+                if (!$model->save()) {
+                    throw new \Exception();
+                }
                 $financeYearCredits = FinanceKaecredit::find()->select('year')->distinct()->all();
-                foreach ($financeYearCredits as $financeYear)
-                {                    
+                foreach ($financeYearCredits as $financeYear) {
                     $newKAEcredit = new FinanceKaecredit();
                     $newKAEcredit->kae_id = $model->kae_id;
                     $newKAEcredit->kaecredit_amount = 0;
                     $newKAEcredit->kaecredit_date = date("Y-m-d H:i:s");
                     $newKAEcredit->year = $financeYear->year;
-                    if(!$newKAEcredit->save()) throw new \Exception();
+                    if (!$newKAEcredit->save()) {
+                        throw new \Exception();
+                    }
                 }
                 $transaction->commit();
 
@@ -110,8 +111,7 @@ class FinanceKaeController extends Controller
                 
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs."));
                 return $this->redirect(['index', 'id' => $model->kae_id]);
-            }
-            catch(\Exception $exc){
+            } catch (\Exception $exc) {
                 $transaction->rollBack();
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create new RCN"));
                 return $this->redirect(['index']);
@@ -134,7 +134,7 @@ class FinanceKaeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            if(!$model->save()){
+            if (!$model->save()) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to update the RCN {id}", ['id' => $id]));
                 return $this->redirect(['index', 'id' => $model->kae_id]);
             }
@@ -157,7 +157,7 @@ class FinanceKaeController extends Controller
     {
         try{
             $model = $this->findModel($id);
-            if(!$model->delete()) 
+            if(!$model->delete())
                 throw new Exception();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN was deleted succesfully."));
             return $this->redirect(['index']);

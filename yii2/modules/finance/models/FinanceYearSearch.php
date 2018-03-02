@@ -2,10 +2,8 @@
 
 namespace app\modules\finance\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\finance\models\FinanceYear;
 
 /**
  * FinanceYearSearch represents the model behind the search form about `app\modules\finance\models\FinanceYear`.

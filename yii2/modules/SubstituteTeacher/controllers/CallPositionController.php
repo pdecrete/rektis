@@ -97,8 +97,8 @@ class CallPositionController extends Controller
 
         if (!empty($all)) {
             $positionsDataProvider->query->andWhere(['not', ['id' => array_map(function ($m) {
-                            return $m->position_id;
-                        }, $all)]]);
+                return $m->position_id;
+            }, $all)]]);
         }
 
 //        //        echo '<pre>',
@@ -109,7 +109,7 @@ class CallPositionController extends Controller
 //        print_r($_POST, true),
 //        '</pre>';
 //        die();
-        // save url for coming back again 
+        // save url for coming back again
         Url::remember('', 'distribute');
 
         return $this->render('distribute', [
@@ -130,7 +130,7 @@ class CallPositionController extends Controller
         } else {
             $msg = '';
             $errors = $model->getErrors();
-            array_walk_recursive($errors, function($v) use (&$msg) {
+            array_walk_recursive($errors, function ($v) use (&$msg) {
                 $msg .= " {$v}";
             });
             Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'The position has not been added to the distribution.') .
@@ -142,7 +142,7 @@ class CallPositionController extends Controller
 
     /**
      * Deletes an existing CallPosition model.
-     * 
+     *
      * @param integer $id
      * @return mixed
      */
@@ -159,7 +159,7 @@ class CallPositionController extends Controller
      * Group a existing CallPositions together.
      * Locates the next group id (counter) and sets it for all models passed
      * via the group_ids parameter
-     * 
+     *
      * @param integer $id
      * @return mixed
      */
@@ -179,12 +179,12 @@ class CallPositionController extends Controller
             if (empty($models)) {
                 Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'No call positions located.'));
             } else {
-                // figure out next group id 
+                // figure out next group id
                 $max_group_id = CallPosition::find()
                     ->andWhere(['call_id' => $call])
                     ->max('[[group]]');
                 $group_id = (int) $max_group_id + 1;
-                // 
+                //
                 // TODO Add checks for grouping
                 //
                 $transaction = Yii::$app->db->beginTransaction();
@@ -211,7 +211,7 @@ class CallPositionController extends Controller
 
     /**
      * Place an existing CallPosition model out of groups
-     * 
+     *
      * @param integer $id
      * @return mixed
      */

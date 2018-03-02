@@ -54,7 +54,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * 
+     *
      * @return boolean whether the change (save) was succesful
      */
     protected function setStatus($id, $status)
@@ -69,12 +69,12 @@ class TeacherController extends Controller
     }
 
     /**
-     * Mark a teacher as appointed. 
-     * 
+     * Mark a teacher as appointed.
+     *
      * @param int $id The identity of the teacher to mark as appointed
-     * @return mixed 
+     * @return mixed
      */
-    public function actionAppoint($id) 
+    public function actionAppoint($id)
     {
         if ($this->setStatus($id, Teacher::TEACHER_STATUS_APPOINTED)) {
             Yii::$app->session->setFlash('success', 'Πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
@@ -85,10 +85,10 @@ class TeacherController extends Controller
     }
 
     /**
-     * Mark a teacher as negated. 
-     * 
+     * Mark a teacher as negated.
+     *
      * @param int $id The identity of the teacher to mark as negated
-     * @return mixed 
+     * @return mixed
      */
     public function actionNegate($id)
     {
@@ -101,10 +101,10 @@ class TeacherController extends Controller
     }
 
     /**
-     * Mark a teacher as eligible. 
-     * 
+     * Mark a teacher as eligible.
+     *
      * @param int $id The identity of the teacher to mark as eligible
-     * @return mixed 
+     * @return mixed
      */
     public function actionEligible($id)
     {

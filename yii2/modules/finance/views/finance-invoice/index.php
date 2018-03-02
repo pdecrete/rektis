@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]),
              'headerOptions' => ['class'=> 'text-center']
             ],
-            ['attribute' => 'inv_order', 
+            ['attribute' => 'inv_order',
              'label' => Module::t('modules/finance/app', 'Voucher Order'),
              'headerOptions' => ['class'=> 'text-center']
             ],

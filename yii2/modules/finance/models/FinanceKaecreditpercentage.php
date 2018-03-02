@@ -62,13 +62,15 @@ class FinanceKaecreditpercentage extends \yii\db\ActiveRecord
     {
         return $this->hasOne(FinanceKaecredit::className(), ['kaecredit_id' => 'kaecredit_id']);
     }
-    
+
     public function getKae()
     {
-        return $this->hasOne(FinanceKae::className(),
-            ['kae_id' => 'kae_id'])->viaTable(Yii::$app->db->tablePrefix . 'finance_kaecredit', ['kaecredit_id' => 'kaecredit_id']);
+        return $this->hasOne(
+            FinanceKae::className(),
+            ['kae_id' => 'kae_id']
+        )->viaTable(Yii::$app->db->tablePrefix . 'finance_kaecredit', ['kaecredit_id' => 'kaecredit_id']);
     }
-    
+
     /**
      * @inheritdoc
      * @return FinanceKaecreditpercentageQuery the active query used by this AR class.
@@ -77,7 +79,7 @@ class FinanceKaecreditpercentage extends \yii\db\ActiveRecord
     {
         return new FinanceKaecreditpercentageQuery(get_called_class());
     }
-    
+
     public static function getKaeCreditSumPercentage($kaecredit)
     {
         return FinanceKaecreditpercentage::find()->where(['kaecredit_id' => $kaecredit])->sum("kaeperc_percentage");

@@ -44,9 +44,10 @@ class FinanceFpaController extends Controller
     public function actionIndex()
     {
         $vatOptions = FinanceFpa::find()->all();
-        foreach($vatOptions as $vatOption)
+        foreach ($vatOptions as $vatOption) {
             $vatOption->fpa_value = Money::toPercentage($vatOption->fpa_value);
-        
+        }
+
         $dataProvider = new ArrayDataProvider([
             'allModels' => $vatOptions,
         ]);
@@ -62,8 +63,8 @@ class FinanceFpaController extends Controller
     {
         $model = new FinanceFpa();
 
-        if ($model->load(Yii::$app->request->post())){
-            try{
+        if ($model->load(Yii::$app->request->post())) {
+            try {
                 $model->fpa_value = Money::toDbPercentage($model->fpa_value);
                 if($model->fpa_value <= 0 || $model->fpa_value > 10000)  throw new \Exception();
                 if(!$model->save()) throw new \Exception();
@@ -74,13 +75,11 @@ class FinanceFpaController extends Controller
                 
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was created successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(\Exception $exc){
+            } catch (\Exception $exc) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating the requested item."));
                 return $this->redirect(['index']);
             }
-        } 
-        else {
+        } else {
             return $this->render('create', ['model' => $model]);
         }
     }
@@ -94,26 +93,25 @@ class FinanceFpaController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-                
-        if ($model->load(Yii::$app->request->post())){            
-            try{
+
+        if ($model->load(Yii::$app->request->post())) {
+            try {
                 $model->fpa_value = Money::toDbPercentage($model->fpa_value);
+
                 if($model->fpa_value <= 0 || $model->fpa_value > 10000)  throw new \Exception();
                 if(!$model->save()) throw new \Exception();
 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated VAT level with id ' . $id, 'financial');
-                
+               
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(\Exception $exc){
+            } catch (\Exception $exc) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating the requested item."));
                 return $this->redirect(['index']);
             }
-        } 
-        else {
+        } else {
             return $this->render('update', ['model' => $model]);
         }
     }
@@ -135,7 +133,7 @@ class FinanceFpaController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the item."));
             return $this->redirect(['index']);
         }
-        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was deleted successfully."));       
+        Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was deleted successfully."));
         return $this->redirect(['index']);
     }
 

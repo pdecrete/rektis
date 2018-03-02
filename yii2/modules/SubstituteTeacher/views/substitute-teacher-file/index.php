@@ -42,7 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'buttons' => [
                     'download' => function ($url, $model, $key) {
                         return Html::a(
-                                '<span class="glyphicon glyphicon-download"></span>', Url::to(['file-download', 'id' => $model->id]), [
+                                '<span class="glyphicon glyphicon-download"></span>',
+                            Url::to(['file-download', 'id' => $model->id]),
+                            [
                                 'title' => Yii::t('substituteteacher', 'Download'),
                                 'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to download this file?'),
                                 'data-method' => 'post',

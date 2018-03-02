@@ -30,7 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             [
                 'attribute' => 'teacher_id',
-                'value' => function ($m) { return $m->teacher ? $m->teacher->name : null; },
+                'value' => function ($m) {
+                    return $m->teacher ? $m->teacher->name : null;
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'teacher_id',
@@ -42,7 +44,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'year',
-                'value' => function ($m) { return $m->teacher ? $m->teacher->year : null; },
+                'value' => function ($m) {
+                    return $m->teacher ? $m->teacher->year : null;
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'year',
@@ -54,7 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'prefecture_id',
-                'value' => function ($m) { return $m->prefecture ? $m->prefecture->label : null; },
+                'value' => function ($m) {
+                    return $m->prefecture ? $m->prefecture->label : null;
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'prefecture_id',

@@ -9,7 +9,7 @@ use Yii;
  * from the multiplication of the percentage value with 100. Money class acts as
  * a bridge to transform the internal representation to what users expect i.e. amounts
  * in euros and percentages.
- * 
+ *
  * @author jhaniot
  */
 class Money
@@ -18,16 +18,20 @@ class Money
         //return intval(round($amount*100));
         return round($amount*100, 0);
     }
-    
-    public static function toCurrency($amount, $formatted = false){
-        if($formatted) 
-            return Yii::$app->formatter->asCurrency($amount/100);        
-        return $amount/100;        
+
+    public static function toCurrency($amount, $formatted = false)
+    {
+        if ($formatted) {
+            return Yii::$app->formatter->asCurrency($amount/100);
+        }
+        return $amount/100;
     }
-    
-    public static function toPercentage($dbPercentage, $formatted = true) {
-        if($formatted == false)
+
+    public static function toPercentage($dbPercentage, $formatted = true)
+    {
+        if ($formatted == false) {
             return round($dbPercentage/100, 4);
+        }
         return Yii::$app->formatter->asPercent(round($dbPercentage/10000, 4), 2);
     }
     
@@ -35,8 +39,9 @@ class Money
         //return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));
         return round(str_replace(',', '.', str_replace('%', '', $percentage))*100, 0);
     }
-    
-    public static function dbPercentagetoDecimal($percentage){
+
+    public static function dbPercentagetoDecimal($percentage)
+    {
         return $percentage/10000;
     }
 }

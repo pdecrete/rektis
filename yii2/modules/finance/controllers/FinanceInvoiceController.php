@@ -40,18 +40,19 @@ class FinanceInvoiceController extends Controller
                         'allow' => false,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
-                                                    return Integrity::isLocked(Yii::$app->session["working_year"]);
-                                                },
+                            return Integrity::isLocked(Yii::$app->session["working_year"]);
+                        },
                         'denyCallback' => function ($rule, $action) {
-                                                    Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
-                                                    if(Yii::$app->request->get('expenditures_return') == 1)
-                                                        return $this->redirect(['/finance/finance-expenditure']);
-                                                    return $this->redirect(['/finance/finance-invoice']);
-                                                }
+                            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The action is not permitted! The year is locked."));
+                            if (Yii::$app->request->get('expenditures_return') == 1) {
+                                return $this->redirect(['/finance/finance-expenditure']);
+                            }
+                            return $this->redirect(['/finance/finance-invoice']);
+                        }
                         ],
                     ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['financial_viewer']],
                     ['allow' => true, 'roles' => ['financial_editor']]
-                ]]            
+                ]]
         ];
     }
 
@@ -73,7 +74,7 @@ class FinanceInvoiceController extends Controller
     /**
      * Displays a single FinanceInvoice model.
      * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
-     * 
+     *
      * @param integer $id
      * @param integer $expenditures_return
      * @return mixed
@@ -81,7 +82,7 @@ class FinanceInvoiceController extends Controller
     public function actionView($id, $expenditures_return = 0)
     {
         $invoice_model = $this->findModel($id);
-       
+
         return $this->render('view', [
             'model' => $invoice_model,
             'expenditures_return' => $expenditures_return
@@ -92,7 +93,7 @@ class FinanceInvoiceController extends Controller
      * Creates a new FinanceInvoice model for the expenditure with id $id.
      * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
      * If creation is successful, the browser will be redirected to the expendinture 'index' page.
-     * 
+     *
      * @param integer $id
      * @param integer $expenditures_return
      * @return mixed
@@ -118,14 +119,15 @@ class FinanceInvoiceController extends Controller
                 Yii::info('User ' . $user . ' working in year ' . $year . ' created invoice with id ' . $id, 'financial');
                     
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was created successfully."));
-                if($expenditures_return == 1)
+                if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
-                return $this->redirect(['/finance/finance-invoice']);                
-            }
-            catch(Exception $e){
+                }
+                return $this->redirect(['/finance/finance-invoice']);
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in creating invoice."));
-                if($expenditures_return == 1)
+                if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
+                }
                 return $this->redirect(['/finance/finance-invoice']);
             }
         } else {
@@ -143,21 +145,21 @@ class FinanceInvoiceController extends Controller
      * Updates an existing FinanceInvoice model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
-     * 
+     *
      * @param integer $id
      * @param integer $expenditures_return
      * @return mixed
      */
     public function actionUpdate($id, $expenditures_return = 0)
-    {  
+    {
         $invoice_model = $this->findModel($id);
         $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $invoice_model->exp_id]);
         $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
         $invoicetypes_model = FinanceInvoicetype::find()->all();
-   
-        if ($invoice_model->load(Yii::$app->request->post())){
-            try{
-                if(!$invoice_model->save())
+
+        if ($invoice_model->load(Yii::$app->request->post())) {
+            try {
+                if (!$invoice_model->save())
                     throw new Exception();
                     
                 $user = Yii::$app->user->identity->username;
@@ -165,14 +167,15 @@ class FinanceInvoiceController extends Controller
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated invoice with id ' . $id, 'financial');
                     
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher was updated successfully."));
-                if($expenditures_return == 1)
+                if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
+                }
                 return $this->redirect(['/finance/finance-invoice']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in udpating voucher."));
-                if($expenditures_return == 1)
+                if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
+                }
                 return $this->redirect(['/finance/finance-invoice']);
             }
         } else {
@@ -190,19 +193,23 @@ class FinanceInvoiceController extends Controller
      * Deletes an existing FinanceInvoice model.
      * If deletion is successful, the browser will be redirected to the expenditures 'index' page.
      * $expenditures_return defines what will be the previous page in the breadcrumbs (expenditures or invoices)
-     * 
+     *
      * @param integer $id
-     * @param integer $expenditures_return 
+     * @param integer $expenditures_return
      * @return mixed
      */
     public function actionDelete($id, $expenditures_return = 0)
     {
-        try{
+        try {
             $invoice_model = FinanceInvoice::findOne(['inv_id' => $id]);
-            if(is_null($invoice_model)) throw new Exception();
+            if (is_null($invoice_model)) {
+                throw new Exception();
+            }
             $statescount = FinanceExpenditurestate::find()->where(['exp_id' => $invoice_model->exp_id])->count();
-            if($statescount > 1) throw new Exception();
-            if(!$this->findModel($id)->delete()) 
+            if ($statescount > 1) {
+                throw new Exception();
+            }
+            if (!$this->findModel($id)->delete())
                 throw new Exception();
 
             $user = Yii::$app->user->identity->username;
@@ -210,17 +217,17 @@ class FinanceInvoiceController extends Controller
             Yii::info('User ' . $user . ' working in year ' . $year . ' deleted invoice with id ' . $id, 'financial');
                 
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was deleted succesfully."));
-            if($expenditures_return == 1)
+            if ($expenditures_return == 1) {
                 return $this->redirect(['/finance/finance-expenditure']);
+            }
             return $this->redirect(['/finance/finance-invoice']);
-            
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting invoice."));
-            if($expenditures_return == 1)
+            if ($expenditures_return == 1) {
                 return $this->redirect(['/finance/finance-expenditure']);
+            }
             return $this->redirect(['/finance/finance-invoice']);
-        }    
+        }
     }
 
     /**

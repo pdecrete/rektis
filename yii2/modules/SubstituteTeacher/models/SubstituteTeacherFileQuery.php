@@ -8,7 +8,6 @@ namespace app\modules\SubstituteTeacher\models;
  */
 class SubstituteTeacherFileQuery extends \yii\db\ActiveQuery
 {
-
     public function active()
     {
         return $this->andWhere(['[[deleted]]' => SubstituteTeacherFile::FILE_ACTIVE]);

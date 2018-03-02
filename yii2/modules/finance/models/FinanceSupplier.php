@@ -3,7 +3,6 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%finance_supplier}}".
@@ -13,7 +12,7 @@ use Yii;
  * @property integer $suppl_vat
  * @property string $suppl_address
  * @property integer $suppl_phone
- * @property string $suppl_email 
+ * @property string $suppl_email
  * @property integer $suppl_fax
  * @property string $suppl_iban
  * @property string $suppl_employerid
