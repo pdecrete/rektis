@@ -127,11 +127,11 @@ class BridgeController extends \yii\web\Controller
             return $m->toApiJson();
         }, $placement_preferences);
 
-        echo "<pre>", print_r($placement_preferences, true), "</pre>";
-        echo "<pre>", print_r($teachers, true), "</pre>";
-        echo "<pre>", print_r($call_positions, true), "</pre>";
-        echo "<pre>", print_r($prefectures, true), "</pre>";
-        die();
+        // echo "<pre>", print_r($placement_preferences, true), "</pre>";
+        // echo "<pre>", print_r($teachers, true), "</pre>";
+        // echo "<pre>", print_r($call_positions, true), "</pre>";
+        // echo "<pre>", print_r($prefectures, true), "</pre>";
+        // die();
 
         return $this->render('send');
     }
