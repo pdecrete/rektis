@@ -1,10 +1,8 @@
 <?php
 namespace app\modules\SubstituteTeacher\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\SubstituteTeacher\models\Operation;
 
 /**
  * OperationSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Operation`.

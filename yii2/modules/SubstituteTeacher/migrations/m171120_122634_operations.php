@@ -4,7 +4,6 @@ use yii\db\Migration;
 
 class m171120_122634_operations extends Migration
 {
-
     public function safeUp()
     {
         $tableOptions = null;
@@ -15,7 +14,7 @@ class m171120_122634_operations extends Migration
 
         Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
 
-        // create core info table 
+        // create core info table
         $this->createTable('{{%stoperation}}', [
             'id' => $this->primaryKey(),
             'year' => $this->integer()->notNull(),

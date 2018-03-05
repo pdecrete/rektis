@@ -8,7 +8,6 @@ use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\models\FinanceKaecredit;

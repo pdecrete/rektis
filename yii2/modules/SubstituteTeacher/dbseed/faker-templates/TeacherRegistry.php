@@ -11,7 +11,7 @@ $edu_selection = $faker->randomElement(['aei', 'tei', 'epal', 'iek']);
 return [
     'gender' => $gender,
     'firstname' => $faker->firstName($gender_faker),
-    'surname' => $faker->lastName, 
+    'surname' => $faker->lastName,
     'fathername' => $faker->firstNameMale,
     'mothername' => $faker->firstNameFemale,
     'marital_status' => $faker->randomElement(['M','S','D']),

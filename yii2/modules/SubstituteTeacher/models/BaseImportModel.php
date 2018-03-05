@@ -12,17 +12,16 @@ use PHPExcel_Shared_Date;
  */
 class BaseImportModel extends Model
 {
-
     public $filename;
     public $phpexcelfile;
     public $fileinfo;
     public $worksheets;
-    private $by_class_subdirs = array(
+    private $by_class_subdirs = [
         'Import' => 'incident',
         'ImportThreat' => 'threat',
         'ImportXLS' => 'xlscellranges',
         '-' => '.',
-    );
+    ];
 
     public function rules()
     {
@@ -37,10 +36,10 @@ class BaseImportModel extends Model
     }
 
     /**
-     * Get file properties. 
-     * 
-     * @param string $file the filename of the file to open 
-     * @return boolean true if loading succeeds 
+     * Get file properties.
+     *
+     * @param string $file the filename of the file to open
+     * @return boolean true if loading succeeds
      */
     public function find($file = null)
     {
@@ -57,7 +56,7 @@ class BaseImportModel extends Model
             $this->phpexcelfile = $objReader->load($inputFileName);
             $properties = $this->phpexcelfile->getProperties();
 
-            $this->fileinfo = array(
+            $this->fileinfo = [
                 Yii::t('substituteteacher', "Title") => $properties->getTitle(),
                 Yii::t('substituteteacher', "Filename") => pathinfo($this->filename, PATHINFO_BASENAME),
                 Yii::t('substituteteacher', "Subject") => $properties->getSubject(),
@@ -65,7 +64,7 @@ class BaseImportModel extends Model
                 Yii::t('substituteteacher', "Created at") => date('d/m/Y H:i:s', $properties->getCreated()),
                 Yii::t('substituteteacher', "Modified at") => date('d/m/Y H:i:s', $properties->getModified()),
                 Yii::t('substituteteacher', "Number of worksheets") => $this->phpexcelfile->getSheetCount(),
-            );
+            ];
 
             $this->worksheets = $this->phpexcelfile->getSheetNames();
         } else {
