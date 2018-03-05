@@ -4,6 +4,7 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use app\modules\SubstituteTeacher\traits\Reference;
 
 /**
  * This is the model class for table "{{%stcall_position}}".
@@ -22,6 +23,10 @@ use yii\db\Expression;
  */
 class CallPosition extends \yii\db\ActiveRecord
 {
+
+    use Reference;
+
+    public $available_hours_label; // used to get a human readable one line description of what is offered at this position
 
     /**
      * @inheritdoc
@@ -106,6 +111,103 @@ class CallPosition extends \yii\db\ActiveRecord
     public function getPosition()
     {
         return $this->hasOne(Position::className(), ['id' => 'position_id']);
+    }
+
+    /**
+     * Define fields that should be returned when the model is exposed
+     * by or for an API call.
+     * 
+     * @param array $prefecture_substitutions an array mapping real prefecture id to the index that should be used for the api
+     */
+    public function toApiJson($prefecture_substitutions)
+    {
+        // TODO skip call_id and position_id
+        $fields = [
+            'title' => $this->position->title,
+            'group' => $this->group,
+            'call_id' => $this->call_id,
+            'position_id' => $this->position_id,
+            'teachers_count' => $this->teachers_count,
+            'hours_count' => $this->hours_count,
+            'prefecture' => array_search($this->position->prefecture->id, $prefecture_substitutions), // TODO check if error
+            'school_type' => $this->position->school_type,
+            'reference' => $this->buildSelfReference(['id', 'group'])
+        ];
+
+        if ($this->group != 0) {
+            // this is part of a group so gather rest of group's information
+            $all_group_models = CallPosition::find()
+                ->ofCall($this->call_id)
+                ->ofGroup($this->group)
+                ->joinWith(['position', 'position.prefecture'])
+                ->all();
+            $titles = [];
+            $teachers_count = 0;
+            $hours_count = 0;
+            $reference_ids = [];
+            foreach ($all_group_models as $key => $model) {
+                $titles[] = "{$model->position->title} ({$model->available_hours_label})";
+                $teachers_count += $model->teachers_count;
+                $hours_count += $model->hours_count;
+                $reference_ids[] = $model->id;
+            }
+
+            $fields['title'] = implode(" & ", $titles);
+            $fields['teachers_count'] = $teachers_count;
+            $fields['hours_count'] = $hours_count;
+            $fields['reference'] = $this->buildReference(['id' => $reference_ids, 'group' => $this->group]);
+        }
+
+        return $fields;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        if ($this->hours_count > 0) {
+            $this->available_hours_label = "{$this->hours_count} ώρες";
+        } else {
+            $this->available_hours_label = "ολόκληρο κενό";
+        }
+    }
+
+    /**
+     * Convinience method to get a single position per group (group == 0 is not considered as group)
+     * 
+     */
+    public static function findOnePreGroup($call_id)
+    {
+        // first, find all that do not belong in a group
+        $call_positions = CallPosition::find()
+            ->ofCall($call_id)
+            ->andWhere(['group' => 0])
+            ->joinWith(['call', 'position', 'position.prefecture'])
+            ->all();
+        // check for groups of positions
+        $groups = CallPosition::find()
+            ->ofCall($call_id)
+            ->andWhere(['<>', 'group', 0])
+            ->select(['group'])
+            ->distinct()
+            ->asArray()
+            ->all();
+        if (!empty($groups)) {
+            // foreach group, get the first position
+            foreach ($groups as $group) {
+                $first = CallPosition::find()
+                    ->ofCall($call_id)
+                    ->andWhere(['group' => $group])
+                    ->joinWith(['call', 'position', 'position.prefecture'])
+                    ->limit(1)
+                    ->one();
+                if (!empty($first)) {
+                    $call_positions[] = $first;
+                }
+            }
+        }
+
+        return $call_positions;
     }
 
     /**

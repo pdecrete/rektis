@@ -3,6 +3,7 @@ namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
 use app\modules\SubstituteTeacher\traits\Selectable;
+use app\modules\SubstituteTeacher\traits\Reference;
 
 /**
  * This is the model class for table "{{%stprefecture}}".
@@ -16,6 +17,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
 class Prefecture extends \yii\db\ActiveRecord
 {
     use Selectable;
+    use Reference;
 
     public $label;
 
@@ -92,6 +94,18 @@ class Prefecture extends \yii\db\ActiveRecord
         });
     }
 
+    /**
+     * Define fields that should be returned when the model is exposed
+     * by or for an API call.
+     */
+    public function toApiJson()
+    {
+        return [
+            'region' => $this->region,
+            'prefecture' => $this->prefecture,
+            'reference' => $this->buildSelfReference()
+        ];
+    }
 
     /**
      * @inheritdoc

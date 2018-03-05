@@ -3,6 +3,7 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use app\modules\SubstituteTeacher\traits\Reference;
 
 /**
  * This is the model class for table "{{%stplacement_preference}}".
@@ -21,6 +22,8 @@ use Yii;
  */
 class PlacementPreference extends \yii\db\ActiveRecord
 {
+    use Reference;
+
     const SCENARIO_MASS_UPDATE = 'MASS_UPDATE';
 
     const SCHOOL_TYPE_ANY = 0;
@@ -230,6 +233,21 @@ class PlacementPreference extends \yii\db\ActiveRecord
 
         $this->label_for_teacher = $this->order . ': ' . ($this->prefecture ? $this->prefecture->label : '-')  .
             ', ' . $this->school_type_label;
+    }
+
+    /**
+     * Define fields that should be returned when the model is exposed
+     * by or for an API call.
+     */
+    public function toApiJson()
+    {
+        return [
+            'teacher_id' => $this->teacher_id,
+            'prefecture_id' => $this->prefecture_id,
+            'school_type' => $this->school_type,
+            'order' => $this->order,
+            'reference' => $this->buildSelfReference()
+        ];
     }
 
     /**

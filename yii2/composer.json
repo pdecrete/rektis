@@ -40,7 +40,9 @@
         "wbraganca/yii2-dynamicform": "dev-master",
         "yiisoft/yii2-faker": "^2.0",
         "2amigos/yii2-chartjs-widget": "~2.0",
-        "kartik-v/yii2-mpdf": "*"
+        "kartik-v/yii2-mpdf": "*",
+        "yiisoft/yii2-httpclient": "*",
+        "defuse/php-encryption": "^2.1"
      },
     "require-dev": {
         "yiisoft/yii2-debug": "*",

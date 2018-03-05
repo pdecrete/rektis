@@ -261,6 +261,21 @@ AppAsset::register($this);
                         [
                             'label' => 'Κατανομή',
                         ],
+
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-export"></i> Διαλειτουργικότητα</li>',
+                        [
+                            'label' => 'Κατάσταση υπηρεσιών',
+                            'url' => [ '/SubstituteTeacher/bridge/remote-status' ]
+                        ],
+                        [
+                            'label' => 'Τροφοδότηση συστήματος αιτήσεων',
+                            'url' => [ '/SubstituteTeacher/bridge/send' ]
+                        ],
+                        [
+                            'label' => 'Λήψη αιτήσεων',
+                            'url' => [ '/SubstituteTeacher/bridge/receive' ]
+                        ]
                     ],
                 ],
 

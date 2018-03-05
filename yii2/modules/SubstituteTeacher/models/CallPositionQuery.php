@@ -9,10 +9,16 @@ namespace app\modules\SubstituteTeacher\models;
  */
 class CallPositionQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+
+    public function ofCall($call_id) 
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['[[call_id]]' => $call_id]);
+    }
+
+    public function ofGroup($group) 
+    {
+        return $this->andWhere(['[[group]]' => $group]);
+    }
 
     /**
      * @inheritdoc

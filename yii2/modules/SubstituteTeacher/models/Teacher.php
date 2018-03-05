@@ -4,6 +4,7 @@ namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
 use app\modules\SubstituteTeacher\traits\Selectable;
+use app\modules\SubstituteTeacher\traits\Reference;
 
 /**
  * This is the model class for table "{{%stteacher}}".
@@ -24,6 +25,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
 class Teacher extends \yii\db\ActiveRecord
 {
     use Selectable;
+    use Reference;
 
     const TEACHER_STATUS_ELIGIBLE = 0;
     const TEACHER_STATUS_APPOINTED = 1;
@@ -153,6 +155,32 @@ class Teacher extends \yii\db\ActiveRecord
                 $this->status_label = null;
                 break;
         }
+    }
+
+    /**
+     * Define fields that should be returned when the model is exposed
+     * by or for an API call.
+     */
+    public function toApiJson()
+    {
+        // TODO take multiple specialisation into account
+        return [
+            'name' => $this->registry->name,
+            'specialisation' => $this->registry->specialisations[0]->code,
+            'firstname' => $this->registry->firstname,
+            'surname' => $this->registry->surname,
+            'email' => $this->registry->email,
+            'mobile_phone' => $this->registry->mobile_phone,
+            'f1' => $this->registry->tax_identification_number,
+            'f2' => $this->registry->identity_number,
+            'reference' => $this->buildReference([
+                'id' => $this->id,
+                'firstname' => $this->registry->firstname,
+                'surname' => $this->registry->surname,
+                'email' => $this->registry->email,
+                'mobile_phone' => $this->registry->mobile_phone,
+            ])
+        ];
     }
 
     /**
