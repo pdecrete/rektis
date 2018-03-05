@@ -4,7 +4,6 @@ namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
 use app\modules\SubstituteTeacher\traits\Selectable;
-use app\modules\SubstituteTeacher\models\Prefecture;
 
 /**
  * This is the model class for table "{{%stteacher}}".
@@ -14,7 +13,7 @@ use app\modules\SubstituteTeacher\models\Prefecture;
  * @property integer $year
  * @property integer $status
  * @property string $points
- * 
+ *
  * @property string $name
  *
  * @property PlacementPreference[] $placementPreferences
@@ -119,8 +118,8 @@ class Teacher extends \yii\db\ActiveRecord
                 self::TEACHER_STATUS_APPOINTED => Yii::t('substituteteacher', 'Teacher appointed'),
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
             ];
-        } else if ($for === 'year') {
-            // one year before and 2 ahead... 
+        } elseif ($for === 'year') {
+            // one year before and 2 ahead...
             $year = (int)date('Y');
             $years = range($year - 1, $year + 2);
             $choices = array_combine($years, $years);

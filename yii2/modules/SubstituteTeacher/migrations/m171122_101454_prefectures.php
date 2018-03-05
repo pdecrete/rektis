@@ -4,7 +4,6 @@ use yii\db\Migration;
 
 class m171122_101454_prefectures extends Migration
 {
-
     public function safeUp()
     {
         $tableOptions = null;

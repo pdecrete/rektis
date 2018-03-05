@@ -12,9 +12,9 @@ class m180115_091711_position_school_type extends Migration
             'school_type',
         $this->smallInteger()
             ->notNull()
-            ->defaultValue(0)
+            ->defaultValue(1)
             ->after('[[title]]')
-            ->comment('1 for KEDDY')
+            ->comment('2 for KEDDY')
         );
     }
 

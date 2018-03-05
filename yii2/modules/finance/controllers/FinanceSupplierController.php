@@ -130,6 +130,7 @@ class FinanceSupplierController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting the supplier. Please try again."));
             return $this->redirect(['index', 'id' => $model->suppl_id]);
         }
+
         $user = Yii::$app->user->identity->username;
         $year = Yii::$app->session["working_year"];
         Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the supplier with id ' . $id, 'financial');
