@@ -66,7 +66,7 @@ use kartik\datecontrol\DateControl;
         ]);
         ?>
         <?= $form->field($model, 'specialisation')->widget(Select2::classname(), [
-          'data' => \app\models\Specialisation::find()->select(["CONCAT(name, ' (', code, ')')", 'id'])->indexBy('id')->orderby('name')->column(),
+          'data' => \app\models\Specialisation::selectables(),
           'options' => ['placeholder' => Yii::t('app', 'Choose...')],
           'pluginOptions' => [
               'allowClear' => true

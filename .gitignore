@@ -19,7 +19,7 @@ phpunit.phar
 # Visual studio code files 
 .vscode
 
-/.php_cs.cache
+.php_cs.cache
 
 # vendor files on repos
 /yii2/vendor/*
