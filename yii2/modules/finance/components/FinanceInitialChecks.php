@@ -31,8 +31,8 @@ class FinanceInitialChecks extends ActionFilter
 
         if (!Integrity::creditsIntegrity(Yii::$app->session["working_year"])) {
             Yii::$app->session->setFlash('danger', Module::t('modules/finance/app', "The sum of RCN credits is not equal to the credit of financial year {year}. Please correct to continue.", ['year' => Yii::$app->session["working_year"]]));
-            
-            if(!(Yii::$app->controller->id == 'finance-kaecredit' || Yii::$app->controller->id == 'finance-year')){
+
+            if (!(Yii::$app->controller->id == 'finance-kaecredit' || Yii::$app->controller->id == 'finance-year')) {
                 return Yii::$app->response->redirect(['/finance/finance-kaecredit']);
             }
         }

@@ -25,8 +25,9 @@ use app\modules\finance\components\Money;
     <?php $form = ActiveForm::begin(); ?>
 	
 	<?= $form->field($invoice_model, 'invtype_id')->dropDownList(
-                    ArrayHelper::map($invoicetypes_model,'invtype_id', 'invtype_title'),
-                                    ['prompt'=>Module::t('modules/finance/app', '---')])->
+                    ArrayHelper::map($invoicetypes_model, 'invtype_id', 'invtype_title'),
+                                    ['prompt'=>Module::t('modules/finance/app', '---')]
+)->
                                     label(Module::t('modules/finance/app', 'Voucher Type'));
     ?>
     
@@ -40,12 +41,13 @@ use app\modules\finance\components\Money;
                 label(Module::t('modules/finance/app', 'Date')); ?>
 
     <div class="form-group text-right">
-    	<?php   if(!$expenditures_return)
+    	<?php   if (!$expenditures_return) {
                     echo Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']);
-                else
+                } else {
                     echo Html::a(Yii::t('app', 'Return'), ['finance-expenditure/index'], ['class' => 'btn btn-default']);
-                
-                echo Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) 
+                }
+
+                echo Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary'])
         ?>    	
     </div>
 

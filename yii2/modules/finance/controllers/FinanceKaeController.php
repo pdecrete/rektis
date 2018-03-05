@@ -107,8 +107,8 @@ class FinanceKaeController extends Controller
 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
-                Yii::info('User ' . $user . ' working in year ' . $year . ' created new RCN (KAE).', 'financial');                
-                
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created new RCN (KAE).', 'financial');
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs."));
                 return $this->redirect(['index', 'id' => $model->kae_id]);
             } catch (\Exception $exc) {
@@ -138,11 +138,11 @@ class FinanceKaeController extends Controller
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to update the RCN {id}", ['id' => $id]));
                 return $this->redirect(['index', 'id' => $model->kae_id]);
             }
-            
+
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];
             Yii::info('User ' . $user . ' working in year ' . $year . ' updated RCN (KAE) with id ' . $id, 'financial');
-            
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The RCN {id} was updated successfully", ['id' => $id]));
             return $this->redirect(['index', 'id' => $model->kae_id]);
         } else {

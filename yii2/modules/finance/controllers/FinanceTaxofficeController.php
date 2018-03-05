@@ -96,7 +96,7 @@ class FinanceTaxofficeController extends Controller
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];
             Yii::info('User ' . $user . ' working in year ' . $year . ' updated the tax office with id ' . $id, 'financial');
-            
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was updated successfully."));
             return $this->redirect(['index']);
         } else {
@@ -121,7 +121,7 @@ class FinanceTaxofficeController extends Controller
         $user = Yii::$app->user->identity->username;
         $year = Yii::$app->session["working_year"];
         Yii::info('User ' . $user . ' working in year ' . $year . ' deleted the tax office with id ' . $id, 'financial');
-        
+
         Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The item was deleted successfully."));
         return $this->redirect(['index']);
     }

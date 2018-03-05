@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('/default/infopanel'); ?>
 <div class="finance-state-index">
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 
     <p class="text-right">
         <?= Html::a(Module::t('modules/finance/app', 'Create State'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'state_name', 'label' => Module::t('modules/finance/app', 'State')],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{update}&nbsp;{delete}',   
+             'template' => '{update}&nbsp;{delete}',
             ],
         ],
     ]); ?>

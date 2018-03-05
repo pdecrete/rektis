@@ -108,16 +108,17 @@ class FinanceInvoiceController extends Controller
         $invoice_model->suppl_id = $supplier_model->suppl_id;
         $invoice_model->exp_id = $expenditure_model->exp_id;
         $invoice_model->inv_deleted = 0;
-        
-        if ($invoice_model->load(Yii::$app->request->post())){
-            try{                
-                if(!$invoice_model->save()) 
+
+        if ($invoice_model->load(Yii::$app->request->post())) {
+            try {
+                if (!$invoice_model->save()) {
                     throw new Exception();
-                    
+                }
+
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' created invoice with id ' . $id, 'financial');
-                    
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was created successfully."));
                 if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
@@ -159,13 +160,14 @@ class FinanceInvoiceController extends Controller
 
         if ($invoice_model->load(Yii::$app->request->post())) {
             try {
-                if (!$invoice_model->save())
+                if (!$invoice_model->save()) {
                     throw new Exception();
-                    
+                }
+
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated invoice with id ' . $id, 'financial');
-                    
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher was updated successfully."));
                 if ($expenditures_return == 1) {
                     return $this->redirect(['/finance/finance-expenditure']);
@@ -209,13 +211,14 @@ class FinanceInvoiceController extends Controller
             if ($statescount > 1) {
                 throw new Exception();
             }
-            if (!$this->findModel($id)->delete())
+            if (!$this->findModel($id)->delete()) {
                 throw new Exception();
+            }
 
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];
             Yii::info('User ' . $user . ' working in year ' . $year . ' deleted invoice with id ' . $id, 'financial');
-                
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The invoice was deleted succesfully."));
             if ($expenditures_return == 1) {
                 return $this->redirect(['/finance/finance-expenditure']);

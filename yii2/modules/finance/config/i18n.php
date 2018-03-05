@@ -15,7 +15,7 @@ return [
     'translator' => 'Module::t',
     'sort' => false,
     'removeUnused' => true,
-    'only' => ['*.php',],
+    'only' => ['*.php'],
     'except' => [
         '.svn',
         '.git',

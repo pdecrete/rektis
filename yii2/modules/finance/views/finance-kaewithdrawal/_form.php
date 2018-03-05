@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
     	
-        <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")]) ?>
+        <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")])?>
     
         <div class="form-group pull-right">
         	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
@@ -33,7 +33,7 @@ use yii\widgets\ActiveForm;
         <?php ActiveForm::end(); ?>    
     </div>
     <div class="col-lg-6">
-        <?= 
+        <?=
         $this->render('/default/kaeinfo', [
             'model' => $model,
             'kae' => $kae,
@@ -41,7 +41,7 @@ use yii\widgets\ActiveForm;
             'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
             'kaeWithdrwals' => $kaeWithdrwals,
             'options' => ['showbutton' => 0, 'collapsed' => 1]
-        ]) 
+        ])
         ?>
     </div>
 </div>

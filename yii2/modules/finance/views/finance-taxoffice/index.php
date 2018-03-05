@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-taxoffice-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 
     <p style="text-align: right;">
         <?= Html::a(Module::t('modules/finance/app', 'Insert Tax Οffice'), ['create'], ['class' => 'btn btn-success']) ?>

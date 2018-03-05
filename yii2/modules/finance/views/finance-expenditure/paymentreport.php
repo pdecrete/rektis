@@ -17,21 +17,21 @@ $sum_taxes = 0;
 $sum_payable_amount = 0;
 $sum_expenditure_taxes = 0;
 
-$deductions_array = array();
-$deductions_array_sum = array();
+$deductions_array = [];
+$deductions_array_sum = [];
 $maxnum_deductions = 0;
-foreach ($models as $model){
-    if(count($model['DEDUCTIONS'] > $maxnum_deductions))
+foreach ($models as $model) {
+    if (count($model['DEDUCTIONS'] > $maxnum_deductions)) {
         $maxnum_deductions = count($model['DEDUCTIONS']);
-    foreach ($model['DEDUCTIONS'] as $deduction){
+    }
+    foreach ($model['DEDUCTIONS'] as $deduction) {
         $deductions_array[$model['EXPENDITURE']['exp_id']][$deduction['deduct_name']] = $deduction['deduct_percentage'];
-        if(!isset($deductions_array['SUM'][$deduction['deduct_name']])){
-            $deductions_array['SUM'][$deduction['deduct_name']] = array();
+        if (!isset($deductions_array['SUM'][$deduction['deduct_name']])) {
+            $deductions_array['SUM'][$deduction['deduct_name']] = [];
             $deductions_array['SUM'][$deduction['deduct_name']]['SUM_AMOUNT'] = 0;
             $deductions_array['SUM'][$deduction['deduct_name']]['PERCENTAGE'] = (Money::toPercentage($deduction['deduct_percentage'], true));
         }
         $deductions_array['SUM'][$deduction['deduct_name']]['SUM_AMOUNT'] += (Money::toPercentage($deduction['deduct_percentage'], false)/100)*Money::toCurrency($model['EXPENDITURE']['exp_amount']);
-        
     }
 }
 
@@ -49,8 +49,8 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 	</table>
 	<!--p><?= '<img src=' . $greek_logo . '>' ?></p-->
     <p><strong><?= Module::t('modules/finance/app', 'Expedinture Payment Report') ?> </strong>
-               <?= '(' . Module::t('modules/finance/app', 'RCN') . sprintf('%04d', $kae) 
-                    . ' - ' . Module::t('modules/finance/app', 'Financial Year')  
+               <?= '(' . Module::t('modules/finance/app', 'RCN') . sprintf('%04d', $kae)
+                    . ' - ' . Module::t('modules/finance/app', 'Financial Year')
                     . ' ' . $year . ')'
                 ?></p>
     <p><strong><?= Module::t('modules/finance/app', 'For the needs of the Regional Directorate of Primary & Secondary Education of Crete') ?></strong></p>
@@ -75,7 +75,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		<?php   endforeach;?>
 			<td <?= $inline_td_css_right?>></td>
 		</tr>
-		<?php   foreach($models as $model): 
+		<?php   foreach ($models as $model):
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
                     $vat = $net_value * (Money::toPercentage($model['EXPENDITURE']['fpa_value'])/100);
                     $taxes = 0;
@@ -90,8 +90,8 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
             			<td <?= $inline_td_css_right?>><?= number_format($net_value + $vat, 2, ',', '.') ?></td>
 
 		<?php           foreach ($deductions_array['SUM'] as $key=>$value):
-                            if(isset($deductions_array[$model['EXPENDITURE']['exp_id']][$key])):
-                                $tax = Money::toCurrency($model['EXPENDITURE']['exp_amount'],false)*Money::toPercentage($deductions_array[$model['EXPENDITURE']['exp_id']][$key], false)/100;
+                            if (isset($deductions_array[$model['EXPENDITURE']['exp_id']][$key])):
+                                $tax = Money::toCurrency($model['EXPENDITURE']['exp_amount'], false)*Money::toPercentage($deductions_array[$model['EXPENDITURE']['exp_id']][$key], false)/100;
                                 $sum_expenditure_taxes += $tax;?>
                                 <td <?= $inline_td_css_right?>><?= number_format($tax, 2, ',', '.'); ?></td>
 		<?php               else: ?>

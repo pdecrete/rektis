@@ -13,8 +13,9 @@ use Yii;
  * @author jhaniot
  */
 class Money
-{    
-    public static function toCents($amount) {
+{
+    public static function toCents($amount)
+    {
         //return intval(round($amount*100));
         return round($amount*100, 0);
     }
@@ -34,8 +35,9 @@ class Money
         }
         return Yii::$app->formatter->asPercent(round($dbPercentage/10000, 4), 2);
     }
-    
-    public static function toDbPercentage($percentage) {   
+
+    public static function toDbPercentage($percentage)
+    {
         //return intval(round(str_replace(',', '.', str_replace('%', '', $percentage))*100));
         return round(str_replace(',', '.', str_replace('%', '', $percentage))*100, 0);
     }

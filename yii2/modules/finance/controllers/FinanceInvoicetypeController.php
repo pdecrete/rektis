@@ -63,13 +63,14 @@ class FinanceInvoicetypeController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
-                if (!$model->save())
+                if (!$model->save()) {
                     throw new Exception();
+                }
 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
-                Yii::info('User ' . $user . ' working in year ' . $year . ' created new invoice type.', 'financial');                   
-                    
+                Yii::info('User ' . $user . ' working in year ' . $year . ' created new invoice type.', 'financial');
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was updated successfully."));
                 return $this->redirect(['index']);
             } catch (Exception $e) {
@@ -95,17 +96,17 @@ class FinanceInvoicetypeController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
-                if (!$model->save()) 
+                if (!$model->save()) {
                     throw new Exception();
-                    
+                }
+
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated invoice type with id ' . $id, 'financial');
-                    
+
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in updating voucher type."));
                 return $this->redirect(['index']);
             }
@@ -124,13 +125,13 @@ class FinanceInvoicetypeController extends Controller
      */
     public function actionDelete($id)
     {
-        if (!$this->findModel($id)->delete())
+        if (!$this->findModel($id)->delete()) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in deleting voucher type."));
-        else {
+        } else {
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];
             Yii::info('User ' . $user . ' working in year ' . $year . ' deleted invoice type with id ' . $id, 'financial');
-            
+
             Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The voucher type was deleted succesfully."));
         }
         return $this->redirect(['index']);

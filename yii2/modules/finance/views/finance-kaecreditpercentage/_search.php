@@ -27,8 +27,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'kaecredit_id') ?>
 
     <div class="form-group">
-        <?= Html::submitButton(Module::t('modules/finance/app',  'Search'), ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton(Module::t('modules/finance/app',  'Reset'), ['class' => 'btn btn-default']) ?>
+        <?= Html::submitButton(Module::t('modules/finance/app', 'Search'), ['class' => 'btn btn-primary']) ?>
+        <?= Html::resetButton(Module::t('modules/finance/app', 'Reset'), ['class' => 'btn btn-default']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

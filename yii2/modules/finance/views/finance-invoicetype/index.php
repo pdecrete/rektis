@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="finance-invoicetype-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 
     <p class="text-right">
         <?= Html::a(Module::t('modules/finance/app', 'Create Voucher Type'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -30,14 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{update}&nbsp;{delete}',
                 'urlCreator' => function ($action, $model) {
-                if ($action === 'update') {
-                    $url ='/finance/finance-invoicetype/update?id=' . $model->invtype_id;
-                    return $url;
-                }
-                if ($action === 'delete') {
-                    $url = '/finance/finance-invoicetype/delete?id=' . $model->invtype_id;
-                    return $url;
-                }
+                    if ($action === 'update') {
+                        $url ='/finance/finance-invoicetype/update?id=' . $model->invtype_id;
+                        return $url;
+                    }
+                    if ($action === 'delete') {
+                        $url = '/finance/finance-invoicetype/delete?id=' . $model->invtype_id;
+                        return $url;
+                    }
                 }
             ],
         ],

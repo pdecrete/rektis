@@ -25,11 +25,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'inv_deleted') ?>
 
-    <?php // echo $form->field($model, 'suppl_id') ?>
+    <?php // echo $form->field($model, 'suppl_id')?>
 
-    <?php // echo $form->field($model, 'exp_id') ?>
+    <?php // echo $form->field($model, 'exp_id')?>
 
-    <?php // echo $form->field($model, 'invtype_id') ?>
+    <?php // echo $form->field($model, 'invtype_id')?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

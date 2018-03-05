@@ -8,22 +8,22 @@ use app\modules\finance\models\FinanceKaecredit;
 use app\modules\finance\models\FinanceKaecreditpercentage;
 use app\modules\finance\models\FinanceKaewithdrawal;
 
-if(Integrity::uniqueCurrentYear()):
+if (Integrity::uniqueCurrentYear()):
 
     $credits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
-    $labels = array();
-    $data = array();
-    $available = array();
-    $withdrawals = array();
-    $withdrawalsbalance = array();
+    $labels = [];
+    $data = [];
+    $available = [];
+    $withdrawals = [];
+    $withdrawalsbalance = [];
 
     $index = 0;
-    foreach ($credits as $credit){
-        if($credit->kaecredit_amount != 0){
+    foreach ($credits as $credit) {
+        if ($credit->kaecredit_amount != 0) {
             $kaecredit_percentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($credit->kaecredit_id);
             $labels[$index] = sprintf('%04d', $credit->kae_id);
             $data[$index] = Money::toCurrency($credit->kaecredit_amount);
-            $available[$index] = Money::toCurrency($credit->kaecredit_amount*Money::dbPercentagetoDecimal($kaecredit_percentage));            
+            $available[$index] = Money::toCurrency($credit->kaecredit_amount*Money::dbPercentagetoDecimal($kaecredit_percentage));
             $withdrawals[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawsSum($credit->kaecredit_id));
             $withdrawalsbalance[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawalsBalance($credit->kaecredit_id));
             $index++;
@@ -33,7 +33,7 @@ if(Integrity::uniqueCurrentYear()):
     //if(count($data) <= 3)
         //$chart_height = 80;
     //else
-    //    $chart_height = count($data)*40;            
+    //    $chart_height = count($data)*40;
 ?>
     <div class="row">
     
@@ -54,12 +54,12 @@ if(Integrity::uniqueCurrentYear()):
 						<div class="row">
 						    <?= ChartJs::widget([
                                     'type' => 'bar',
-						            'options' => ['height' => $chart_height],
+                                    'options' => ['height' => $chart_height],
                                     'data' => [
                                         'labels' => $labels,
                                         'datasets' => [
                                             [
-                                                'label' => Module::t('modules/finance/app', "Initial Credit"),                                                
+                                                'label' => Module::t('modules/finance/app', "Initial Credit"),
                                                 'backgroundColor' => 'orange',// $colors,
                                                 'data' => $data
                                             ],

@@ -18,34 +18,37 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true, 
-                                					    'type' => 'number', 
-                                					    'min' => "0.00" , 
-                                					    'step' => '0.01', 
-                                					    'style' => 'text-align: left', 
-                                                        'value' => $model['exp_amount']]); 
+    <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true,
+                                                        'type' => 'number',
+                                                        'min' => "0.00" ,
+                                                        'step' => '0.01',
+                                                        'style' => 'text-align: left',
+                                                        'value' => $model['exp_amount']]);
     ?>
     
-    <?= $form->field($model, 'exp_description')->textInput(['maxlength' => true]); 
+    <?= $form->field($model, 'exp_description')->textInput(['maxlength' => true]);
     ?>
 
     <?= $form->field($model, 'suppl_id')->widget(Select2::classname(), [
-            'data' => ArrayHelper::map($suppliers,'suppl_id', 'suppl_name'),
+            'data' => ArrayHelper::map($suppliers, 'suppl_id', 'suppl_name'),
             'options' => ['placeholder' => Module::t('modules/finance/app', 'Select suppplier...')],
         ]);
     ?>
 
-    <?= $form->field($model, 'fpa_value')->dropDownList(ArrayHelper::map($vat_levels,'fpa_value', 'fpa_value'),
-                                                        ['prompt' => Module::t('modules/finance/app', 'VAT'), 
-                                                         'value'  => Money::toPercentage($model->fpa_value, true)]);
+    <?= $form->field($model, 'fpa_value')->dropDownList(
+        ArrayHelper::map($vat_levels, 'fpa_value', 'fpa_value'),
+                                                        ['prompt' => Module::t('modules/finance/app', 'VAT'),
+                                                         'value'  => Money::toPercentage($model->fpa_value, true)]
+    );
     ?>
     <hr />
     <h3><?= Module::t('modules/finance/app', 'Assign withdrawals');?></h3>
     <?php 
-        foreach($expendwithdrawals_models as $index => $expendwithdrawals_model){
+        foreach ($expendwithdrawals_models as $index => $expendwithdrawals_model) {
             echo $form->field($expendwithdrawals_model, "[{$index}]kaewithdr_id")->dropDownList(
                               ArrayHelper::map($kaewithdrawals, 'kaewithdr_id', 'kaewithdr_amount'),
-                              ['prompt' => Module::t('modules/finance/app', 'Assign Withdrawal')])->
+                              ['prompt' => Module::t('modules/finance/app', 'Assign Withdrawal')]
+            )->
                               label(false);
         }
     ?>
@@ -53,11 +56,11 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 	<hr />
 	<h3><?= Module::t('modules/finance/app', 'Assign deductions');?></h3>
     <?php 
-        
+
         //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>"; die();
-        
+
         $index = 0;
-        
+
         echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList(
         [
             $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'],
@@ -66,8 +69,8 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
         ],
         ['separator'=>'<br/>']
         )->label(false);
-    
-        for($i = 1; $i < count($expenddeduction_models); $i++){
+
+        for ($i = 1; $i < count($expenddeduction_models); $i++) {
             ++$index;
             echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$index]->deduct_name, 'value' => $deductions[$index]->deduct_id]);
         }

@@ -73,7 +73,7 @@ class FinanceInvoiceSearch extends FinanceInvoice
         $dataProvider = new ActiveDataProvider([
                                 'query' => $query,
                                 'sort' => ['attributes' => ['inv_number', 'inv_date', 'inv_order'],
-                                'defaultOrder' => ['inv_date' => SORT_DESC,]]
+                                'defaultOrder' => ['inv_date' => SORT_DESC]]
                                 ]);
 
         $this->load($params);
