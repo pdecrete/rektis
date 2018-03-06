@@ -18,6 +18,8 @@ use app\modules\finance\Module;
  */
 class FinanceKaewithdrawal extends \yii\db\ActiveRecord
 {
+                public $decisionfile; //----
+    
     /**
      * @inheritdoc
      */
@@ -38,6 +40,9 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             [['kaewithdr_decision'], 'string', 'max' => 255],
             [['kaewithdr_decisionfile'], 'string', 'max' => 200],
             [['kaecredit_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceKaecredit::className(), 'targetAttribute' => ['kaecredit_id' => 'kaecredit_id']],
+                //[['decisionfile'], 'safe'], //----
+                //[['decisionfile'], 'file', 'extensions'=>'pdf'], //----
+                //[['decisionfile'], 'file', 'maxSize'=>'10000000'], //----
         ];
     }
 
@@ -50,12 +55,29 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal'),
             'kaewithdr_amount' => Module::t('modules/finance/app', 'Withdrawal Amount'),
             'kaewithdr_decision' => Module::t('modules/finance/app', 'Withdrawal Decision'),
-            'kaewithdr_decisionfile' => Module::t('modules/finance/app', 'Decision File'),
+            //'kaewithdr_decisionfile' => Module::t('modules/finance/app', 'Decision File'),
             'kaewithdr_date' => Module::t('modules/finance/app', 'Created Date'),
             'kaecredit_id' => Module::t('modules/finance/app', 'Credit ID'),
         ];
     }
 
+    /*
+    public function upload()
+    {
+        if ($this->validate()) {
+            if(!isset($this->decisionfile)){
+                $this->kaewithdr_decisionfile = null;
+                return true;
+            }
+            $this->decisionfile->saveAs('uploads/withdrawals/' . $this->kaewithdr_id . '.' . $this->decisionfile->extension);
+            $this->kaewithdr_decisionfile = $this->kaewithdr_id . '.' . $this->decisionfile->extension;
+            return true;
+        } else {
+            return false;
+        }
+    }*/
+    
+    
     /**
      * @return \yii\db\ActiveQuery
      */

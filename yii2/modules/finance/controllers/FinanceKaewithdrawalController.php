@@ -17,6 +17,7 @@ use yii\base\Exception;
 use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceExpendwithdrawal;
+use yii\web\UploadedFile;
 
 /**
  * FinanceKaewithdrawalController implements the CRUD actions for FinanceKaewithdrawal model.
@@ -115,16 +116,22 @@ class FinanceKaewithdrawalController extends Controller
                 echo "<br />";
                 echo "Ypoloipo: " . $balance;
                 die();*/
+                
                 $model->kaecredit_id = $kaeCredit->kaecredit_id;
                 $model->kaewithdr_date = date("Y-m-d H:i:s");
                 $model->kaewithdr_amount = Money::toCents($model->kaewithdr_amount);
                 if ($model->kaewithdr_amount <= 0 || ($model->kaewithdr_amount > $balance)) {
                     throw new Exception();
                 }
+                /*
+                $model->decisionfile = UploadedFile::getInstance($model, 'decisionfile');
+                if(!$model->upload())
+                    throw new Exception();                    
+                */
                 if (!$model->save()) {
                     throw new Exception();
                 }
-
+                
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' created withdrawal for RCN (KAE) ' . $id, 'financial');
@@ -169,7 +176,7 @@ class FinanceKaewithdrawalController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
-                if ($model->kaewithdr_amount < FinanceExpendwithdrawal::getExpendituresSum($id)) {
+                if (Money::toCents($model->kaewithdr_amount) < FinanceExpendwithdrawal::getExpendituresSum($id)) {                    
                     throw new Exception();
                 }
                 $oldModel = $this->findModel($id);
@@ -181,10 +188,15 @@ class FinanceKaewithdrawalController extends Controller
                 if ($model->kaewithdr_amount <= 0 || ($newBalance < 0)) {
                     throw new Exception();
                 }
+                /*
+                $model->decisionfile = UploadedFile::getInstance($model, 'decisionfile');
+                if(!$model->upload())
+                    throw new Exception();
+                */    
                 if (!$model->save()) {
                     throw new Exception();
-                }
-
+                }                
+                  
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' updated withdrawal with ' . $id, 'financial');

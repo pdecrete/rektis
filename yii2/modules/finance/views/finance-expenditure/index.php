@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= $this->render('/default/kaeslist', [
         'kaes' => $kaes,
         'btnLiteral' => Module::t('modules/finance/app', 'Create Expenditure'),
-        'actionUrl' => '/finance/finance-expenditure/create',
+        'actionUrl' => 'finance-expenditure/create',
         'balances' => $balances,
         'otherbuttons' => [$paymentreportbutton, $coversheetbutton]
     ]) ?> 

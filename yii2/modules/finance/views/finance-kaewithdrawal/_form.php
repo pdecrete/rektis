@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 <div class="row">
     <div class="finance-kaewithdrawal-form col-lg-6">
     
-        <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin(['options'=>['enctype'=>'multipart/form-data']]); ?>
     
         <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true,
                                                         'type' => 'number',
@@ -22,6 +22,8 @@ use yii\widgets\ActiveForm;
                                                         'value' => $model['kaewithdr_amount']])->label(false); ?>
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
+    	
+    	<?php ;//$form->field($model, 'decisionfile')->fileInput() ?>
     	
         <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")])?>
     
