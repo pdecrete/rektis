@@ -94,24 +94,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'urlCreator' => function ($action, $dataProvider, $key, $index) {
                         if ($action === 'view') {
-                            $url ='/finance/finance-year/view?id='.$dataProvider->year;
+                            $url ='finance-year/view?id='.$dataProvider->year;
                             return $url;
                         }
 
                         if ($action === 'update') {
-                            $url ='/finance/finance-year/update?id='.$dataProvider->year;
+                            $url ='finance-year/update?id='.$dataProvider->year;
                             return $url;
                         }
                         if ($action === 'delete') {
-                            $url = ['/finance/finance-year/delete', 'id'=> $dataProvider->year];
+                            $url = ['finance-year/delete', 'id'=> $dataProvider->year];
                             return $url;
                         }
                         if ($action === 'lock') {
                             if ($dataProvider->year_lock == 0) {
-                                $url = ['/finance/finance-year/lock', 'id'=> $dataProvider->year];
+                                $url = ['finance-year/lock', 'id'=> $dataProvider->year];
                                 return $url;
                             } else {
-                                $url = ['/finance/finance-year/unlock', 'id'=> $dataProvider->year];
+                                $url = ['finance-year/unlock', 'id'=> $dataProvider->year];
                                 return $url;
                             }
                         }

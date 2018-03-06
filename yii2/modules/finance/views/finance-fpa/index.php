@@ -29,11 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
              'template' => '{update}&nbsp;{delete}',
              'urlCreator' => function ($action, $model) {
                  if ($action === 'update') {
-                     $url ='/finance/finance-fpa/update?id=' . Money::toDbPercentage($model['fpa_value']);
+                     $url ='finance-fpa/update?id=' . Money::toDbPercentage($model['fpa_value']);
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = '/finance/finance-fpa/delete?id=' . Money::toDbPercentage($model['fpa_value']);
+                     $url = 'finance-fpa/delete?id=' . Money::toDbPercentage($model['fpa_value']);
                      return $url;
                  }
              }

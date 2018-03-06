@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Invoice Types' => 'Τύποι Παραστατικών',
     'Decision File' => 'Αρχείο Απόφασης',
     'The deduction is already active.' => 'Η κράτηση είναι ήδη ενεργή.',
     'Failure in activating deduction.' => 'Αποτυχία ενεργοποίησης της κράτησης.',

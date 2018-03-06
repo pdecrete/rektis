@@ -113,11 +113,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'urlCreator' => function ($action, $model) {
                                 if ($action === 'update') {
-                                    $url ='/finance/finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
+                                    $url ='finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
                                     return $url;
                                 }
                                 if ($action === 'delete') {
-                                    $url = '/finance/finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
+                                    $url = 'finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
                                     return $url;
                                 }
                             },
