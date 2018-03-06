@@ -35,7 +35,8 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
     {
         return [
             [['kaewithdr_amount', 'kaewithdr_decision', 'kaewithdr_date', 'kaecredit_id'], 'required'],
-            [['kaewithdr_amount', 'kaecredit_id'], 'integer'],
+            [['kaecredit_id'], 'integer'],
+            [['kaewithdr_amount'], 'number'],
             [['kaewithdr_date'], 'safe'],
             [['kaewithdr_decision'], 'string', 'max' => 255],
             [['kaewithdr_decisionfile'], 'string', 'max' => 200],

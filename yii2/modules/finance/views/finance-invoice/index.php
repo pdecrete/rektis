@@ -52,16 +52,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
              'urlCreator' => function ($action, $model, $key, $index) {
                  if ($action === 'view') {
-                     $url ='/finance/finance-invoice/view?id='.$model['inv_id'];
+                     $url ='finance-invoice/view?id='.$model['inv_id'];
                      return $url;
                  }
 
                  if ($action === 'update') {
-                     $url ='/finance/finance-invoice/update?id='.$model['inv_id'];
+                     $url ='finance-invoice/update?id='.$model['inv_id'];
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = ['/finance/finance-invoice/delete', 'id'=> $model['inv_id']];
+                     $url = ['finance-invoice/delete', 'id'=> $model['inv_id']];
                      return $url;
                  }
              }

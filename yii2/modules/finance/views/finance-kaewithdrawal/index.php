@@ -99,11 +99,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
-                        $url ='/finance/finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
+                        $url ='finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
                     if ($action === 'delete') {
-                        $url = '/finance/finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
+                        $url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
                 },

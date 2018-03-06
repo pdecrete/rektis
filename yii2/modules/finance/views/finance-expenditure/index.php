@@ -187,7 +187,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     } else {
                         $retvalue = Html::a(
                                 '<span class="glyphicon glyphicon-eye-open"></span>',
-                                '/finance/finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                'finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                 ['title' => Module::t(
                                     'modules/finance/app',
                                     'View the invoice details for the expenditure.'
@@ -195,7 +195,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             );
                         $retvalue .= "&nbsp;" . Html::a(
                                     '<span class="glyphicon glyphicon-pencil"></span>',
-                                    '/finance/finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                    'finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                     ['title' => Module::t(
                                         'modules/finance/app',
                                         'Update the invoice details for the expenditure.'
@@ -237,19 +237,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'delete') {
-                        $url = '/finance/finance-expenditure/delete?id=' . $model['exp_id'];
+                        $url = 'finance-expenditure/delete?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'update') {
-                        $url = '/finance/finance-expenditure/update?id=' . $model['exp_id'];
+                        $url = 'finance-expenditure/update?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'backwardstate') {
-                        $url ='/finance/finance-expenditure/backwardstate?id=' . $model['exp_id'];
+                        $url ='finance-expenditure/backwardstate?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'forwardstate') {
-                        $url ='/finance/finance-expenditure/forwardstate?id=' . $model['exp_id'];
+                        $url ='finance-expenditure/forwardstate?id=' . $model['exp_id'];
                         return $url;
                     }
                 },
