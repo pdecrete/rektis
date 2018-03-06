@@ -97,15 +97,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
              'urlCreator' => function ($action, $model) {
                  if ($action === 'update') {
-                     $url ='/finance/finance-deduction/update?id=' . $model->deduct_id;
+                     $url ='finance-deduction/update?id=' . $model->deduct_id;
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = '/finance/finance-deduction/delete?id=' . $model->deduct_id;
+                     $url = 'finance-deduction/delete?id=' . $model->deduct_id;
                      return $url;
                  }
                  if ($action === 'activate') {
-                     $url = '/finance/finance-deduction/activate?id=' . $model->deduct_id;
+                     $url = 'finance-deduction/activate?id=' . $model->deduct_id;
                      return $url;
                  }
              },

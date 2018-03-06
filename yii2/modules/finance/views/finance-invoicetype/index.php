@@ -31,11 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{update}&nbsp;{delete}',
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
-                        $url ='/finance/finance-invoicetype/update?id=' . $model->invtype_id;
+                        $url ='finance-invoicetype/update?id=' . $model->invtype_id;
                         return $url;
                     }
                     if ($action === 'delete') {
-                        $url = '/finance/finance-invoicetype/delete?id=' . $model->invtype_id;
+                        $url = 'finance-invoicetype/delete?id=' . $model->invtype_id;
                         return $url;
                     }
                 }
