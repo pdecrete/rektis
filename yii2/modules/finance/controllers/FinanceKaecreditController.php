@@ -100,7 +100,7 @@ class FinanceKaecreditController extends Controller
             return $this->redirect(['/finance/finance-kaecredit/']);
         }
 
-        $allkaes = FinanceKae::find()->asArray()->all();
+        $allkaes = FinanceKae::find()->orderBy('kae_id')->asArray()->all();
 
         $kaecredits = [];
         $kaetitles = [];
@@ -115,8 +115,20 @@ class FinanceKaecreditController extends Controller
         }
 
         if (($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))) {
-            $this->saveModels($kaecredits, false);
-            return $this->redirect(['/finance/finance-kaecredit']);
+            try{
+                $transaction = Yii::$app->db->beginTransaction();
+                $this->saveModels($kaecredits, false);
+                $transaction->commit();
+                return $this->redirect(['/finance/finance-kaecredit']);
+            }
+            catch(Exception $exc){
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', $exc->getMessage());
+                return $this->render('create', [
+                    'model' => $kaecredits,
+                    'kaetitles' => $kaetitles
+                ]);
+            }
         } else {
             return $this->render('create', [
                 'model' => $kaecredits,
@@ -139,8 +151,8 @@ class FinanceKaecreditController extends Controller
         }
 
         if (Model::validateMultiple($kaecredits)) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
+            //$transaction = Yii::$app->db->beginTransaction();
+            //try {
                 foreach ($kaecredits as $kaecredit) {
                     if ($kaecredit->kaecredit_amount < FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id)) {
                         throw new Exception(Module::t('modules/finance/app', "Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN."));
@@ -158,19 +170,20 @@ class FinanceKaecreditController extends Controller
 
                 Yii::$app->session->setFlash('success', Module::t('modules/finance/app', "Your choices were succesfully saved."));
 
-                $transaction->commit();
+            //    $transaction->commit();
 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 $action = ($update == true)? "updated": "created";
                 Yii::info('User ' . $user . ' working in year ' . $year . ' ' .  $action . ' credits.', 'financial');
 
-                return $this->redirect(['/finance/finance-kaecredit']);
-            } catch (Exception $e) {
-                Yii::$app->session->setFlash('danger', $e->getMessage());
-                $transaction->rollBack();
-                return $this->redirect(['/finance/finance-kaecredit']);
-            }
+            //    return $this->redirect(['/finance/finance-kaecredit']);
+            //} catch (Exception $e) {
+            //    Yii::$app->session->setFlash('danger', $e->getMessage());
+            //    $transaction->rollBack();
+                
+            //    return $this->redirect(['/finance/finance-kaecredit']);
+            //}
         } else {
             throw new Exception("Data validation failure.");
         }
@@ -188,16 +201,28 @@ class FinanceKaecreditController extends Controller
             Yii::$app->session->setFlash('info', Module::t('modules/finance/app', "Your choices cannot be carried out, because the financial year is locked."));
             return $this->redirect(['/finance/finance-kaecredit/']);
         }
-        $allkaes = FinanceKae::find()->asArray()->all();
+        $allkaes = FinanceKae::find()->orderBy('kae_id')->asArray()->all();
         foreach ($allkaes as $index => $kae) {
             $kaes[$index] = $kae['kae_title'];
         }
 
-        $kaecredits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->all();
+        $kaecredits = FinanceKaecredit::find()->where(['year' => Yii::$app->session["working_year"]])->orderBy('kae_id')->all();
 
         if (($userdata = Model::loadMultiple($kaecredits, Yii::$app->request->post()))) {
-            $this->saveModels($kaecredits);
-            return $this->redirect(['/finance/finance-kaecredit']);
+            try{
+                $transaction = Yii::$app->db->beginTransaction();
+                $this->saveModels($kaecredits);
+                $transaction->commit();
+                return $this->redirect(['/finance/finance-kaecredit']);
+            }
+            catch(Exception $exc){
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', $exc->getMessage());
+                return $this->render('update', [
+                    'model' => $kaecredits,
+                    'kaetitles' => $kaes
+                ]);                
+            }
         } else {
             return $this->render('update', [
                 'model' => $kaecredits,

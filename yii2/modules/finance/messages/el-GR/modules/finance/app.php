@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs.' => 
+    'Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Ο νέος ΚΑΕ έχει προστεθεί με μηδενική πίστωση στα οικονομικά έτη για τα οποία έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ.',
     'Invoice Types' => 'Τύποι Παραστατικών',
     'Decision File' => 'Αρχείο Απόφασης',
     'The deduction is already active.' => 'Η κράτηση είναι ήδη ενεργή.',
