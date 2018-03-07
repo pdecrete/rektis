@@ -16,11 +16,13 @@ use app\modules\finance\models\FinanceYear;
 $script = "var oldvalue = 0;          
 
            function storeOldValue(element){
+                
                 checkValue = Number(element.value); 
                 if(isNaN(checkValue)) 
                     return;
-
+                
                 oldvalue = checkValue;
+                //alert('Stored ' + oldvalue);    
             }
 
            function updateSumCreditField(element, yearCredit){
@@ -31,7 +33,7 @@ $script = "var oldvalue = 0;
                 }
                 newSumCredit = Number(document.getElementById('sumCredits').innerHTML) - oldvalue + newValue;
                 oldvalue = 0;
-                document.getElementById('sumCredits').innerHTML = newSumCredit;
+                document.getElementById('sumCredits').innerHTML = newSumCredit.toFixed(2);
 
                 if(newSumCredit == Number(yearCredit))
                     document.getElementById('sumCreditTblRow').className = 'success';
@@ -70,7 +72,7 @@ $sumCredits = Money::toCurrency($sumCredits);
                                               'style' => 'text-align: right',
                                               'value' => $model[$index]->kaecredit_amount/100,
 						                      'onchange' => 'updateSumCreditField(this,' . $yearCredit .');',
-						                      'onclick' => 'storeOldValue(this);'
+						                      'onfocus' => 'storeOldValue(this);'
 						                     ])->label(false);
                         ?>
 				    </td>									

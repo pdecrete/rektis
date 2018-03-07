@@ -4,6 +4,7 @@ use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceKaewithdrawalSearch */
@@ -99,11 +100,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
-                        $url ='finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
+                        $url = Url::to(['/finance/finance-kaewithdrawal/update', 'id' =>$model['kaewithdr_id']]);
+                        //$url ='finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
                     if ($action === 'delete') {
-                        $url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
+                        $url = Url::to(['/finance/finance-kaewithdrawal/delete', 'id' =>$model['kaewithdr_id']]);
+                        //$url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
                 },

@@ -61,7 +61,7 @@ class FinanceKaewithdrawalSearch extends FinanceKaewithdrawal
                 'query' => $query,
                 'sort' => ['attributes' => ['kae_id', 'kae_title',
                     'kaecredit_amount', 'percentages', 'kaewithdr_amount', 'kaewithdr_decision', 'kaewithdr_date'],
-                    'defaultOrder' => ['kae_id'=>SORT_ASC]
+                    'defaultOrder' => ['kae_id'=>SORT_ASC, 'kaewithdr_date' => SORT_ASC]
                 ],
             ]);
         //var_dump($dataProvider); die();

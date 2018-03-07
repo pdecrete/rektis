@@ -54,7 +54,7 @@ return [
     'The changes were not saved. Please correct the duplicate assigned withdrawals.' => 'Οι αλλαγές δεν αποθηκεύτηκαν. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
     'Update Withdrawal' => 'Ενημέρωση Ανάληψης',
     'Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
-    'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η διαγραφή της συγκεκριμένης κράτησης.',
+    'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η κατάργηση της συγκεκριμένης κράτησης.',
     'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
     'Update Expenditure' => 'Ενημέρωση Δαπάνης',
     'The expenditure was deleted successfully.' => 'Η δαπάνη διαγράφηκε επιτυχώς',
