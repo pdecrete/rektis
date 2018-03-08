@@ -5,6 +5,7 @@ use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceSupplier;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 use app\modules\finance\models\FinanceExpenditurestate;
 use kartik\datecontrol\DateControl;
@@ -151,19 +152,52 @@ $this->params['breadcrumbs'][] = $this->title;
                                                   " (" . $tmp4['expstate_comment'] . ")";
                  $retvalue = 'UNDEFINED STATE';
                  if ($model['statescount'] == 1) {
-                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>';
+                     $url = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                     $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>',
+                                         $url,
+                                         ['title' => Module::t('modules/finance/app', 'Forward to next state')]
+                                        );                     
+                     //$retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>';
                  } elseif ($model['statescount'] == 2) {
-                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>';
+                     $url1 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                     $url2 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 2, 'exp_id' =>$model['exp_id']]);
+                     $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>',
+                                         $url1
+                                        );
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>',
+                                          $url2
+                                         );
+                     //$retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+                     //                       <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>';
                  } elseif ($model['statescount'] == 3) {
-                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>';
+                     $url1 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                     $url2 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 2, 'exp_id' =>$model['exp_id']]);
+                     $url3 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 3, 'exp_id' =>$model['exp_id']]);
+                     $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>', $url1);
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>', $url2);
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>', $url3);
+//                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+//                                            <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
+//                                            <a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>';
                  } elseif ($model['statescount'] == 4) {
-                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>
-                                            <a href="/finance/finance-expenditure/updatestate?state_id=4&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span></a>';
+                     $url1 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                     $url2 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 2, 'exp_id' =>$model['exp_id']]);
+                     $url3 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 3, 'exp_id' =>$model['exp_id']]);
+                     $url4 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 4, 'exp_id' =>$model['exp_id']]);
+                     $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span>', $url1);
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span>', $url2);
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span>', $url3);
+                     $retvalue .= '&nbsp;';
+                     $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span>', $url4);                     
+//                     $retvalue = '<a href="/finance/finance-expenditure/updatestate?state_id=1&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:blue;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[1] . '"></span></a>
+//                                            <a href="/finance/finance-expenditure/updatestate?state_id=2&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:red; data-toggle="tooltip" data-html="true" title="' . $state_commnents[2] . '"></span></a>
+//                                            <a href="/finance/finance-expenditure/updatestate?state_id=3&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:orange;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[3] . '"></span></a>
+//                                            <a href="/finance/finance-expenditure/updatestate?state_id=4&exp_id=' . $model['exp_id'] . '"><span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents[4] . '"></span></a>';
                  }
                  return $retvalue;
              },
@@ -176,26 +210,32 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) use ($expendwithdrawals) {
                     $retvalue = "";
                     if (is_null($expendwithdrawals[$model['exp_id']]['INVOICE'])) {
-                        $retvalue = Html::a(
-                        '<span class="glyphicon glyphicon-list-alt"></span>',
-                        '/finance/finance-invoice/create?expenditures_return=1&id=' . $model['exp_id'],
-                        ['title' => Module::t(
-                            'modules/finance/app',
-                            'Create invoice for the expenditure.'
-                        )]
-                    );
-                    } else {
+                        $url = Url::to(['/finance/finance-invoice/create', 'expenditures_return' => 1, 'id' =>$model['exp_id']]);
+                        $retvalue = Html::a('<span class="glyphicon glyphicon-list-alt"></span>', 
+                                            $url,
+                                            //'finance-invoice/create?expenditures_return=1&id=' . $model['exp_id'],
+                                            ['title' => Module::t(
+                                                'modules/finance/app',
+                                                'Create invoice for the expenditure.'
+                                            )]
+                                            );
+                    } 
+                    else {
+                        $url1 = Url::to(['/finance/finance-invoice/view', 'expenditures_return' => 1, 'id' => $expendwithdrawals[$model['exp_id']]['INVOICE']]);
                         $retvalue = Html::a(
                                 '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                $url1,
+                                //'finance-invoice/view?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                 ['title' => Module::t(
                                     'modules/finance/app',
                                     'View the invoice details for the expenditure.'
                                 )]
                             );
+                        $url2 = Url::to(['/finance/finance-invoice/update', 'expenditures_return' => 1, 'id' => $expendwithdrawals[$model['exp_id']]['INVOICE']]);
                         $retvalue .= "&nbsp;" . Html::a(
                                     '<span class="glyphicon glyphicon-pencil"></span>',
-                                    'finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
+                                    $url2,
+                                    //'finance-invoice/update?expenditures_return=1&id=' . $expendwithdrawals[$model['exp_id']]['INVOICE'],
                                     ['title' => Module::t(
                                         'modules/finance/app',
                                         'Update the invoice details for the expenditure.'
@@ -237,19 +277,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'delete') {
-                        $url = 'finance-expenditure/delete?id=' . $model['exp_id'];
+                        $url = Url::to(['/finance/finance-expenditure/delete', 'id' =>$model['exp_id']]);
+                        //$url = 'finance-expenditure/delete?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'update') {
-                        $url = 'finance-expenditure/update?id=' . $model['exp_id'];
+                        $url = Url::to(['/finance/finance-expenditure/update', 'id' =>$model['exp_id']]);
+                        //$url = 'finance-expenditure/update?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'backwardstate') {
-                        $url ='finance-expenditure/backwardstate?id=' . $model['exp_id'];
+                        $url = Url::to(['/finance/finance-expenditure/backwardstate', 'id' =>$model['exp_id']]);
+                        //$url ='finance-expenditure/backwardstate?id=' . $model['exp_id'];
                         return $url;
                     }
                     if ($action === 'forwardstate') {
-                        $url ='finance-expenditure/forwardstate?id=' . $model['exp_id'];
+                        $url = Url::to(['/finance/finance-expenditure/forwardstate', 'id' =>$model['exp_id']]);
+                        //$url ='finance-expenditure/forwardstate?id=' . $model['exp_id'];
                         return $url;
                     }
                 },
