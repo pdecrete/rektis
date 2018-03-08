@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator.' =>
+    'Αποτυχία πραγματοποίησης της ανάληψης. Παρακαλώ ελέγξτε την εγκυρότητα του ποσού ανάληψης.',
     'The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs.' => 
     'Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Ο νέος ΚΑΕ έχει προστεθεί με μηδενική πίστωση στα οικονομικά έτη για τα οποία έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ.',
     'Invoice Types' => 'Τύποι Παραστατικών',
@@ -53,7 +55,7 @@ return [
     'The expenditure was not saved. Please correct the duplicate withdrawals.' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
     'The changes were not saved. Please correct the duplicate assigned withdrawals.' => 'Οι αλλαγές δεν αποθηκεύτηκαν. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
     'Update Withdrawal' => 'Ενημέρωση Ανάληψης',
-    'Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
+    'Failure in saving your changes. The sum of the existing withdrawals is larger than the available credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
     'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η κατάργηση της συγκεκριμένης κράτησης.',
     'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
     'Update Expenditure' => 'Ενημέρωση Δαπάνης',
@@ -64,7 +66,7 @@ return [
     'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
     'The RCN was deleted succesfully.' => 'Ο ΚΑΕ διαγράφηκε επιτυχώς.',
-    'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ και να έχει δημιουργηθεί τιμολόγιο για αυτές).',
+    'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN, to have an assigned voucher and not be in initial state).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ, να έχει δημιουργηθεί τιμολόγιο για αυτές και να μην είναι σε αρχική κατάσταση).',
     'Available for Usage' => 'Διαθέσιμο για Χρήση',
     'Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων',
     'Available Credit Amount' => 'Διαθέσιμο ποσό πίστωσης',

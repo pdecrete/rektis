@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
     
         <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true,
                                                         'type' => 'number',
-                                                        'min' => "0.00" ,
+                                                        //'min' => "0.00" ,
                                                         'step' => '0.01',
                                                         'style' => 'text-align: left',
                                                         'value' => $model['kaewithdr_amount']])->label(false); ?>

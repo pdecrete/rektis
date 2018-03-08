@@ -120,7 +120,7 @@ class FinanceKaewithdrawalController extends Controller
                 $model->kaecredit_id = $kaeCredit->kaecredit_id;
                 $model->kaewithdr_date = date("Y-m-d H:i:s");
                 $model->kaewithdr_amount = Money::toCents($model->kaewithdr_amount);
-                if ($model->kaewithdr_amount <= 0 || ($model->kaewithdr_amount > $balance)) {
+                if ($model->kaewithdr_amount > $balance) {
                     throw new Exception();
                 }
                 /*
@@ -139,7 +139,7 @@ class FinanceKaewithdrawalController extends Controller
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The withdrawal completed successfully."));
                 return $this->redirect(['index']);
             } catch (Exception $e) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the declared the validity of the withdraw amount or contact with the administrator."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaewithdrawal/index']);
             }
         } else {
@@ -185,7 +185,7 @@ class FinanceKaewithdrawalController extends Controller
                 $model->kaewithdr_amount = Money::toCents($model->kaewithdr_amount);
                 $newBalance = $balance - $oldModel->kaewithdr_amount + $model->kaewithdr_amount;
 
-                if ($model->kaewithdr_amount <= 0 || ($newBalance < 0)) {
+                if ($newBalance < 0) {
                     throw new Exception();
                 }
                 /*
@@ -204,7 +204,7 @@ class FinanceKaewithdrawalController extends Controller
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The update of the withdrawal completed successfully."));
                 return $this->redirect(['index', 'id' => $model->kaewithdr_id]);
             } catch (Exception $e) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in carrying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaewithdrawal/index']);
             }
         } else {
