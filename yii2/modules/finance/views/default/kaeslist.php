@@ -3,6 +3,7 @@
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceKaecredit;
+use yii\helpers\Url;
 
 $columnsNum = 3;
 $kaesCount = count($kaes);
@@ -40,7 +41,7 @@ if ($kaesCount != 0):
       							<?php foreach ($kaeList as $kaeListItem):
                                           if (FinanceKaecredit::findOne(['kae_id' => $kaeListItem->kae_id])['kaecredit_amount'] != 0):
                                   ?>
-                                        <p><a href='<?php echo $actionUrl; ?>?id=<?php echo $kaeListItem->kae_id; ?>' 
+                                        <p><a href='<?php echo Url::to([$actionUrl, 'id' => $kaeListItem->kae_id]); ?>' 
                                         <?php if (isset($balances)) {
                                       ?>data-toggle="tooltip" title="<?= Module::t('modules/finance/app', 'Available for Usage') . ": " . Money::toCurrency($balances[$kaeListItem->kae_id], true) ?><?php
                                   }?>"><span class="label label-primary"><?= sprintf('%04d', $kaeListItem->kae_id); ?></span>
