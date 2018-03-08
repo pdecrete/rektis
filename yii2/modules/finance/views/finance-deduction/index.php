@@ -3,6 +3,7 @@
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -97,15 +98,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
              'urlCreator' => function ($action, $model) {
                  if ($action === 'update') {
-                     $url ='finance-deduction/update?id=' . $model->deduct_id;
+                     $url = Url::to(['/finance/finance-deduction/update', 'id' => $model->deduct_id]);
+                     //$url ='finance-deduction/update?id=' . $model->deduct_id;
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = 'finance-deduction/delete?id=' . $model->deduct_id;
+                     $url = Url::to(['/finance/finance-deduction/delete', 'id' => $model->deduct_id]);
+                     //$url = 'finance-deduction/delete?id=' . $model->deduct_id;
                      return $url;
                  }
                  if ($action === 'activate') {
-                     $url = 'finance-deduction/activate?id=' . $model->deduct_id;
+                     $url = Url::to(['/finance/finance-deduction/activate', 'id' => $model->deduct_id]);
+                     //$url = 'finance-deduction/activate?id=' . $model->deduct_id;
                      return $url;
                  }
              },

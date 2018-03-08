@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
@@ -113,11 +114,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'urlCreator' => function ($action, $model) {
                                 if ($action === 'update') {
-                                    $url ='finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
+                                    $url = Url::to(['/finance/finance-kaecreditpercentage/update', 'id' =>$model['kaeperc_id']]);
+                                    //$url ='finance-kaecreditpercentage/update?id=' . $model['kaeperc_id'];
                                     return $url;
                                 }
                                 if ($action === 'delete') {
-                                    $url = 'finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
+                                    $url = Url::to(['/finance/finance-kaecreditpercentage/delete', 'id' =>$model['kaeperc_id']]);
+                                    //$url = 'finance-kaecreditpercentage/delete?id=' . $model['kaeperc_id'];
                                     return $url;
                                 }
                             },

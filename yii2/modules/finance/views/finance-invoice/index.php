@@ -3,6 +3,7 @@
 use app\modules\finance\Module;
 use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 use yii\grid\GridView;
 
@@ -52,16 +53,19 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\ActionColumn',
              'urlCreator' => function ($action, $model, $key, $index) {
                  if ($action === 'view') {
-                     $url ='finance-invoice/view?id='.$model['inv_id'];
+                     $url = Url::to(['/finance/finance-invoice/view', 'id' => $model['inv_id']]);
+                     //$url ='finance-invoice/view?id='.$model['inv_id'];
                      return $url;
                  }
 
                  if ($action === 'update') {
-                     $url ='finance-invoice/update?id='.$model['inv_id'];
+                     $url = Url::to(['/finance/finance-invoice/update', 'id' => $model['inv_id']]);
+                     //$url ='finance-invoice/update?id='.$model['inv_id'];
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = ['finance-invoice/delete', 'id'=> $model['inv_id']];
+                     $url = Url::to(['/finance/finance-invoice/update', 'id' => $model['inv_id']]);
+                     //$url = ['finance-invoice/delete', 'id'=> $model['inv_id']];
                      return $url;
                  }
              }

@@ -3,6 +3,7 @@
 use app\modules\finance\Module;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\finance\models\FinanceYearSearch */
@@ -94,29 +95,35 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'urlCreator' => function ($action, $dataProvider, $key, $index) {
                         if ($action === 'view') {
-                            $url ='finance-year/view?id='.$dataProvider->year;
+                            $url = Url::to(['/finance/finance-year/view', 'id' =>$dataProvider->year]);
+                            //$url ='finance-year/view?id='.$dataProvider->year;
                             return $url;
                         }
 
                         if ($action === 'update') {
-                            $url ='finance-year/update?id='.$dataProvider->year;
+                            $url = Url::to(['/finance/finance-year/update', 'id' =>$dataProvider->year]);
+                            //$url ='finance-year/update?id='.$dataProvider->year;
                             return $url;
                         }
                         if ($action === 'delete') {
-                            $url = ['finance-year/delete', 'id'=> $dataProvider->year];
+                            $url = Url::to(['/finance/finance-year/delete', 'id' =>$dataProvider->year]);
+                            //$url = ['finance-year/delete', 'id'=> $dataProvider->year];
                             return $url;
                         }
                         if ($action === 'lock') {
                             if ($dataProvider->year_lock == 0) {
-                                $url = ['finance-year/lock', 'id'=> $dataProvider->year];
+                                $url = Url::to(['/finance/finance-year/lock', 'id' =>$dataProvider->year]);
+                                //$url = ['finance-year/lock', 'id'=> $dataProvider->year];
                                 return $url;
                             } else {
-                                $url = ['finance-year/unlock', 'id'=> $dataProvider->year];
+                                $url = Url::to(['/finance/finance-year/unlock', 'id' =>$dataProvider->year]);
+                                //$url = ['finance-year/unlock', 'id'=> $dataProvider->year];
                                 return $url;
                             }
                         }
                         if ($action === 'currentyear') {
-                            $url = ['/finance/finance-year/current-year', 'id'=> $dataProvider->year];
+                            $url = Url::to(['/finance/finance-year/current-year', 'id' =>$dataProvider->year]);
+                            //$url = ['/finance/finance-year/current-year', 'id'=> $dataProvider->year];
                             return $url;
                         }
                     }

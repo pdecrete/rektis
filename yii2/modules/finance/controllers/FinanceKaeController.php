@@ -90,7 +90,7 @@ class FinanceKaeController extends Controller
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 if (!$model->save()) {
-                    throw new \Exception();
+                    throw new \Exception(Module::t('modules/finance/app', "Failed to create new RCN"));
                 }
                 $financeYearCredits = FinanceKaecredit::find()->select('year')->distinct()->all();
                 foreach ($financeYearCredits as $financeYear) {
@@ -100,7 +100,7 @@ class FinanceKaeController extends Controller
                     $newKAEcredit->kaecredit_date = date("Y-m-d H:i:s");
                     $newKAEcredit->year = $financeYear->year;
                     if (!$newKAEcredit->save()) {
-                        throw new \Exception();
+                        throw new \Exception(Module::t('modules/finance/app', "Failed to create new RCN"));
                     }
                 }
                 $transaction->commit();
@@ -113,7 +113,7 @@ class FinanceKaeController extends Controller
                 return $this->redirect(['index', 'id' => $model->kae_id]);
             } catch (\Exception $exc) {
                 $transaction->rollBack();
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create new RCN"));
+                Yii::$app->session->addFlash('danger', $exc->getMessage());
                 return $this->redirect(['index']);
             }
         } else {

@@ -42,9 +42,9 @@ use app\modules\finance\components\Money;
 
     <div class="form-group text-right">
     	<?php   if (!$expenditures_return) {
-                    echo Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']);
+                    echo Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) . '&nbsp;';
                 } else {
-                    echo Html::a(Yii::t('app', 'Return'), ['finance-expenditure/index'], ['class' => 'btn btn-default']);
+                    echo Html::a(Yii::t('app', 'Return'), ['finance-expenditure/index'], ['class' => 'btn btn-default']) . '&nbsp;';
                 }
 
                 echo Html::submitButton($invoice_model->isNewRecord ? Module::t('modules/finance/app', 'Create') : Module::t('modules/finance/app', 'Update'), ['class' => $invoice_model->isNewRecord ? 'btn btn-success' : 'btn btn-primary'])
