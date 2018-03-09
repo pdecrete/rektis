@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
             ],
             ['class' => 'yii\grid\ActionColumn',
-                'template' => '{update}&nbsp;{delete}',//&nbsp{download}',
+                'template' => '{update}&nbsp;{delete}&nbsp{download}',
                 'buttons' =>   [    'update' => function ($url, $model) {
                                                     return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
                                                                   ['title' => Module::t('modules/finance/app', 'Update')]);
@@ -91,27 +91,28 @@ $this->params['breadcrumbs'][] = $this->title;
                                                                     'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?"),
                                                                     'method' => "post"]]);
                                                 },
-                                    /*'download' => function ($url, $model) {
-                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
-                                                                   ['title' => Module::t('modules/finance/app', 'Download Decision')]);
-                                                },*/
+                                    'download' => function ($url, $model) {
+                                                    if(!is_null($model['kaewithdr_decisionfile'])){
+                                                        return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
+                                                                       ['title' => Module::t('modules/finance/app', 'Download Decision'),
+                                                                        'data-method' => 'post'
+                                                                       ]);
+                                                    }
+                                                },
                 ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
                         $url = Url::to(['/finance/finance-kaewithdrawal/update', 'id' =>$model['kaewithdr_id']]);
-                        //$url ='finance-kaewithdrawal/update?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
                     if ($action === 'delete') {
                         $url = Url::to(['/finance/finance-kaewithdrawal/delete', 'id' =>$model['kaewithdr_id']]);
-                        //$url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
-                    /*if ($action === 'download') {
+                    if ($action === 'download') {
                         $url = Url::to(['/finance/finance-kaewithdrawal/download', 'id' =>$model['kaewithdr_id']]);
-                        //$url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                         return $url;
-                    }*/
+                    }
                 },
                 'contentOptions' => ['class' => 'text-nowrap'],
            ],

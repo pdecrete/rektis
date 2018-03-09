@@ -72,8 +72,8 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
                 return true;
             }
             //echo Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . '10.' . $this->decisionfile->extension; die();
-            $this->decisionfile->saveAs(Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . $this->decisionfile->extension);
-            $this->kaewithdr_decisionfile = '11.' . $this->decisionfile->extension;
+            $this->decisionfile->saveAs(Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . '.' . $this->decisionfile->extension);
+            $this->kaewithdr_decisionfile = $this->kaewithdr_id . '.' . $this->decisionfile->extension;
             return true;
         } else {
             return false;
