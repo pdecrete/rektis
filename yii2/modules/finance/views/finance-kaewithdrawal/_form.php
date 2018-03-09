@@ -16,14 +16,14 @@ use yii\widgets\ActiveForm;
     
         <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true,
                                                         'type' => 'number',
-                                                        'min' => "0.00" ,
+                                                        //'min' => "0.00" ,
                                                         'step' => '0.01',
                                                         'style' => 'text-align: left',
                                                         'value' => $model['kaewithdr_amount']])->label(false); ?>
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
     	
-    	<?php ;//$form->field($model, 'decisionfile')->fileInput() ?>
+    	<?php ;// $form->field($model, 'decisionfile')->fileInput()->label(Module::t('modules/finance/app', 'Decision File')) ?>
     	
         <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")])?>
     

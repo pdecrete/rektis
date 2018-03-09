@@ -636,7 +636,11 @@ class FinanceExpenditureController extends Controller
                 $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model['suppl_id']]);
                 $invoice_model = FinanceInvoice::findOne(['exp_id' => $expenditure_model['exp_id']]);
 
-                $expstate2_date = FinanceExpenditurestate::findOne(['exp_id' => $id, 'state_id' => 2])->expstate_date;
+                $expstate2 = FinanceExpenditurestate::findOne(['exp_id' => $id, 'state_id' => 2]);
+                if(is_null($expstate2))
+                    throw new Exception();                                  
+                $expstate2_date = $expstate2->expstate_date;
+                
                 if ($first_expenditure) {
                     $maxdate = $expstate2_date;
                     $first_expenditure = false;
@@ -674,7 +678,7 @@ class FinanceExpenditureController extends Controller
             }
             $year = Yii::$app->session["working_year"];
         } catch (Exception $e) {
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher)."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN, to have an assigned voucher and not be in initial state)."));
             return $this->redirect(['index']);
         }
 
