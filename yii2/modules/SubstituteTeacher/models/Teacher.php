@@ -161,19 +161,19 @@ class Teacher extends \yii\db\ActiveRecord
      * Define fields that should be returned when the model is exposed
      * by or for an API call.
      */
-    public function toApiJson()
+    public function toApi()
     {
         // TODO take multiple specialisation into account
         return [
-            'name' => $this->registry->name,
-            'specialisation' => $this->registry->specialisations[0]->code,
-            'firstname' => $this->registry->firstname,
-            'surname' => $this->registry->surname,
-            'email' => $this->registry->email,
-            'mobile_phone' => $this->registry->mobile_phone,
-            'f1' => $this->registry->tax_identification_number,
-            'f2' => $this->registry->identity_number,
-            'reference' => $this->buildReference([
+            'specialty' => $this->registry->specialisations[0]->code, // TODO TAKE CARE OF MULTIPLE 
+            'vat' => $this->registry->tax_identification_number,
+            'identity' => $this->registry->identity_number,
+            'name' => $this->registry->name, // TODO REMOVE 
+            'firstname' => $this->registry->firstname, // TODO REMOVE 
+            'surname' => $this->registry->surname, // TODO REMOVE 
+            'email' => $this->registry->email, // TODO REMOVE 
+            'mobile_phone' => $this->registry->mobile_phone, // TODO REMOVE 
+            'ref' => $this->buildReference([
                 'id' => $this->id,
                 'firstname' => $this->registry->firstname,
                 'surname' => $this->registry->surname,

@@ -119,19 +119,20 @@ class CallPosition extends \yii\db\ActiveRecord
      * 
      * @param array $prefecture_substitutions an array mapping real prefecture id to the index that should be used for the api
      */
-    public function toApiJson($prefecture_substitutions)
+    public function toApi($prefecture_substitutions)
     {
         // TODO skip call_id and position_id
         $fields = [
-            'title' => $this->position->title,
-            'group' => $this->group,
-            'call_id' => $this->call_id,
-            'position_id' => $this->position_id,
-            'teachers_count' => $this->teachers_count,
-            'hours_count' => $this->hours_count,
-            'prefecture' => array_search($this->position->prefecture->id, $prefecture_substitutions), // TODO check if error
+            'label' => $this->position->title,
+            'specialty' => $this->position->specialisation->code,
             'school_type' => $this->position->school_type,
-            'reference' => $this->buildSelfReference(['id', 'group'])
+            'prefecture' => array_search($this->position->prefecture->id, $prefecture_substitutions), // TODO check if error
+            'group' => $this->group, // TODO REMOVE 
+            'call_id' => $this->call_id, // TODO REMOVE 
+            'position_id' => $this->position_id, // TODO REMOVE 
+            'teachers_count' => $this->teachers_count, // TODO REMOVE 
+            'hours_count' => $this->hours_count, // TODO REMOVE 
+            'ref' => $this->buildSelfReference(['id', 'group'])
         ];
 
         if ($this->group != 0) {
@@ -152,10 +153,10 @@ class CallPosition extends \yii\db\ActiveRecord
                 $reference_ids[] = $model->id;
             }
 
-            $fields['title'] = implode(" & ", $titles);
-            $fields['teachers_count'] = $teachers_count;
-            $fields['hours_count'] = $hours_count;
-            $fields['reference'] = $this->buildReference(['id' => $reference_ids, 'group' => $this->group]);
+            $fields['label'] = implode(" & ", $titles);
+            $fields['teachers_count'] = $teachers_count; // TODO REMOVE 
+            $fields['hours_count'] = $hours_count; // TODO REMOVE 
+            $fields['ref'] = $this->buildReference(['id' => $reference_ids, 'group' => $this->group]);
         }
 
         return $fields;
