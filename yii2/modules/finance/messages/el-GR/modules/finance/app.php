@@ -17,6 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'There is no uploaded decision file.' => 'Δεν υπάρχει αρχείο απόφασης.',
+    'Download Decision' => 'Κατέβασμα Απόφασης',
     'Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator.' =>
     'Αποτυχία πραγματοποίησης της ανάληψης. Παρακαλώ ελέγξτε την εγκυρότητα του ποσού ανάληψης.',
     'The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs.' => 

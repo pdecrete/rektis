@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
     	
-    	<?php ;//$form->field($model, 'decisionfile')->fileInput() ?>
+    	<?php ;// $form->field($model, 'decisionfile')->fileInput()->label(Module::t('modules/finance/app', 'Decision File')) ?>
     	
         <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")])?>
     

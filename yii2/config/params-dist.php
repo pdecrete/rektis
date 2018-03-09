@@ -36,5 +36,6 @@ return [
     'finance_logo_literal' => 'ΑΥΤΟΤΕΛΗΣ ΔΙΕΥΘΥΝΣΗ ΔΙΟΙΚΗΤΙΚΗΣ,
                                ΟΙΚΟΝΟΜΙΚΗΣ ΚΑΙ ΠΑΙΔΑΓΩΓΙΚΗΣ ΥΠΟΣΤΗΡΙΞΗΣ<br />ΤΜΗΜΑ Β\' - ΟΙΚΟΝΟΜΙΚΩΝ ΥΠΟΘΕΣΕΩΝ',
     'director_name' => 'Γεώργιος Τερζάκης',
-    'finance_code' => 'ΕΙΔΙΚΟΣ ΦΟΡΕΑΣ: 90-21/185'
+    'finance_code' => 'ΕΙΔΙΚΟΣ ΦΟΡΕΑΣ: 90-21/185',
+    'finance_uploadfolder' => '@vendor/admapp/uploads/financial/'
 ];
