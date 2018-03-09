@@ -80,23 +80,21 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
             ],
             ['class' => 'yii\grid\ActionColumn',
-                'template' => '{update}&nbsp;{delete}',
-                'buttons' =>   [   'update' => function ($url, $model) {
-                    return Html::a(
-                    '<span class="glyphicon glyphicon-pencil"></span>',
-                    $url,
-                    ['title' => Module::t('modules/finance/app', 'Update')]
-                );
-                },
-                'delete' => function ($url, $model) {
-                    return Html::a(
-                    '<span class="glyphicon glyphicon-trash"></span>',
-                    $url,
-                    ['title' => Module::t('modules/finance/app', 'Delete'),
-                        'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?"),
-                            'method' => "post"]]
-                );
-                },
+                'template' => '{update}&nbsp;{delete}',//&nbsp{download}',
+                'buttons' =>   [    'update' => function ($url, $model) {
+                                                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+                                                                  ['title' => Module::t('modules/finance/app', 'Update')]);
+                                                },
+                                    'delete' => function ($url, $model) {
+                                                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+                                                                   ['title' => Module::t('modules/finance/app', 'Delete'),
+                                                                    'data'=>['confirm'=>Module::t('modules/finance/app', "The deletion of the withdrawal is irreversible action. Are you sure you want to delete this item?"),
+                                                                    'method' => "post"]]);
+                                                },
+                                    /*'download' => function ($url, $model) {
+                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
+                                                                   ['title' => Module::t('modules/finance/app', 'Download Decision')]);
+                                                },*/
                 ],
                 'urlCreator' => function ($action, $model) {
                     if ($action === 'update') {
@@ -109,6 +107,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         //$url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
                         return $url;
                     }
+                    /*if ($action === 'download') {
+                        $url = Url::to(['/finance/finance-kaewithdrawal/download', 'id' =>$model['kaewithdr_id']]);
+                        //$url = 'finance-kaewithdrawal/delete?id=' . $model['kaewithdr_id'];
+                        return $url;
+                    }*/
                 },
                 'contentOptions' => ['class' => 'text-nowrap'],
            ],
