@@ -99,9 +99,6 @@ class BridgeController extends \yii\web\Controller
 
         // collect positions, prefectures, teachers and placement preferences
         $prefectures = Prefecture::find()->all();
-        // $prefecture_substitutions = array_map(function ($m) {
-        //     return $m->id;
-        // }, $prefectures);
         $prefecture_substitutions = [];
         $prefectures = array_map(function ($k) use ($prefectures, &$prefecture_substitutions) {
             $index = $k + 1;
@@ -120,9 +117,6 @@ class BridgeController extends \yii\web\Controller
             ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
             ->joinWith(['registry', 'registry.specialisations'])
             ->all();
-        // $teacher_substitutions = array_map(function ($m) {
-        //     return $m->id;
-        // }, $teachers);
         $placement_preferences = [];
         $walk = array_walk($teachers, function ($m, $k) use (&$placement_preferences) {
             $placement_preferences = array_merge($placement_preferences, $m->placementPreferences);
@@ -138,12 +132,6 @@ class BridgeController extends \yii\web\Controller
             return array_merge(['index' => $index], $placement_preferences[$k]->toApi($prefecture_substitutions, $teacher_substitutions));
         }, array_keys($placement_preferences));
 
-        // echo "<pre>", print_r($placement_preferences, true), "</pre>";
-        // echo "<pre>", print_r($teachers, true), "</pre>";
-        // echo "<pre>", print_r($call_positions, true), "</pre>";
-        // echo "<pre>", print_r($prefectures, true), "</pre>";
-        // die();
-
         // GET request displays "dry-run" results
         // POST does the actual sending of data
         $data = [
@@ -158,27 +146,22 @@ class BridgeController extends \yii\web\Controller
         $count_call_positions = count($call_positions);
         $count_placement_preferences = count($placement_preferences);
 
-        $status = null;
-        // echo "<pre>", print_r($data, true), "</pre>";
-        // die();
+        $status_clear = null;
+        $status_load = null;
 
         if (\Yii::$app->request->isPost) {
             // first issue a clear command
             $status_response = $this->client->delete('clear', null, $this->getHeaders())->send();
-            $status = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
-            $response_data = $status_response->getData();
-            echo "<pre>", var_export($response_data, true), "</pre>";
-            // TODO display BOTH responses 
-            if ($status === true) {
+            $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+            $response_data_clear = $status_response->getData();
+            if ($status_clear === true) {
                 // then post data
                 $status_response = $this->client->post('load', $data, $this->getHeaders())->send();
-                $status = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
-                $response_data = $status_response->getData();
-                echo "<pre>", var_export($response_data, true), "</pre>";
-                die();
+                $status_load = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+                $response_data_load = $status_response->getData();
             }
         }
 
-        return $this->render('send', compact('status', 'response_data', 'data', 'count_prefectures', 'count_teachers', 'count_call_positions', 'count_placement_preferences'));
+        return $this->render('send', compact('call_id', 'year', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'count_call_positions', 'count_placement_preferences'));
     }
 }
