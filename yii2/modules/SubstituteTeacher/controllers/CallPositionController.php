@@ -101,14 +101,6 @@ class CallPositionController extends Controller
             }, $all)]]);
         }
 
-//        //        echo '<pre>',
-//        print_r(array_map(function ($m) {
-//                return $m->id;
-//            }, $all), true),
-//        '<br/>',
-//        print_r($_POST, true),
-//        '</pre>';
-//        die();
         // save url for coming back again
         Url::remember('', 'distribute');
 

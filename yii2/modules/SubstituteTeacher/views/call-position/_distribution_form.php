@@ -167,8 +167,22 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'value' => 'position.school_type_label',
                 'label' => Yii::t('substituteteacher', 'Sch.Type')
             ],
-            'teachers_count',
-            'hours_count',
+            [
+                'attribute' => 'position.operation_id',
+                'value' => 'position.operation.label',
+            ],
+            [
+                'attribute' => 'teachers_count',
+                'contentOptions' => [
+                    'class' => 'col-sm-1'
+                ],
+            ],
+            [
+                'attribute' => 'hours_count',
+                'contentOptions' => [
+                    'class' => 'col-sm-1'
+                ],
+            ],
             [
                 'attribute' => 'group',
                 'value' => function ($m) {
@@ -179,7 +193,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                         . '</span>';
                 },
                 'contentOptions' => [
-                    'class' => 'text-center'
+                    'class' => 'text-center col-sm-1'
                 ],
                 'format' => 'html'
             ],
@@ -216,7 +230,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                     }
                 ],
                 'contentOptions' => [
-                    'class' => 'text-right'
+                    'class' => 'text-right col-sm-1'
                 ]
             ],
             [

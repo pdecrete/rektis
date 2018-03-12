@@ -27,6 +27,7 @@ class Operation extends \yii\db\ActiveRecord
 
     public $specialisation_ids; // associated specialisations
     public $specialisation_labels;
+    public $label;
 
     /**
      * @inheritdoc
@@ -135,6 +136,8 @@ class Operation extends \yii\db\ActiveRecord
     public function afterFind()
     {
         parent::afterFind();
+
+        $this->label = "{$this->title} ({$this->year})";
         if ($this->specialisations) {
             $this->specialisation_ids = array_map(function ($m) {
                 return $m->id;
