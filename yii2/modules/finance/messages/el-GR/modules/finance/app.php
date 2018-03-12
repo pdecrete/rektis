@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Error in uploading file. The action did not complete succesfully.' => 'Σφάλμα στη μεταφόρτωση του αρχείου. Η ενέργεια δεν ολοκληρώθηκε επιτυχώς.',
     'The decision file cannot be found.' => 'Το αρχείο δεν μπορεί να βρεθεί.',
     'There is no uploaded withdrawal decision file.' => 'Δεν υπάρχει αρχείο απόφασης ανάληψης.',
     'Download Decision' => 'Κατέβασμα Απόφασης',
