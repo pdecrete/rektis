@@ -263,8 +263,8 @@ class m171115_101126_finance_init extends Migration
         $insert_command = "INSERT INTO " . $dbFinTables['table_deduction'] .
                           "(deduct_id, deduct_name, deduct_date, deduct_percentage, deduct_downlimit, deduct_uplimit) VALUES ";
         Yii::$app->db->createCommand($insert_command . "(1, 'Παροχή υπηρεσιών ή αγορά υλικών αγαθών κάτω των 150 ευρώ', NOW(), 0, 0, 15000)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(2, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 400, 15000, NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(3, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 800, 15000, NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(2, 'Παροχή υπηρεσιών άνω των 150 ευρώ', NOW(), 800, 15000, NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(3, 'Αγορά υλικών αγαθών άνω των 150 ευρώ', NOW(), 400, 15000, NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "(4, 'Δαπάνη καθαριότητας', NOW(), 10, 0, NULL)")->execute();
 
         /* CREATE TABLE admapp_finance_expenddeduction */

@@ -17,7 +17,9 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'There is no uploaded decision file.' => 'Δεν υπάρχει αρχείο απόφασης.',
+    'Error in uploading file. The action did not complete succesfully.' => 'Σφάλμα στη μεταφόρτωση του αρχείου. Η ενέργεια δεν ολοκληρώθηκε επιτυχώς.',
+    'The decision file cannot be found.' => 'Το αρχείο δεν μπορεί να βρεθεί.',
+    'There is no uploaded withdrawal decision file.' => 'Δεν υπάρχει αρχείο απόφασης ανάληψης.',
     'Download Decision' => 'Κατέβασμα Απόφασης',
     'Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator.' =>
     'Αποτυχία πραγματοποίησης της ανάληψης. Παρακαλώ ελέγξτε την εγκυρότητα του ποσού ανάληψης.',

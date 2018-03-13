@@ -4,6 +4,7 @@ namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
 use Yii;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "{{%finance_kaewithdrawal}}".
@@ -71,9 +72,11 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
                 $this->kaewithdr_decisionfile = null;
                 return true;
             }
-            //echo Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . '10.' . $this->decisionfile->extension; die();
-            $this->decisionfile->saveAs(Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . $this->decisionfile->extension);
-            $this->kaewithdr_decisionfile = '11.' . $this->decisionfile->extension;
+            if(!is_writeable(Yii::getAlias(Yii::$app->params['finance_uploadfolder'])))
+                return false;
+            if(empty($this->decisionfile->saveAs(Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . '.' . $this->decisionfile->extension)))
+                return false;
+            $this->kaewithdr_decisionfile = $this->kaewithdr_id . '.' . $this->decisionfile->extension;
             return true;
         } else {
             return false;

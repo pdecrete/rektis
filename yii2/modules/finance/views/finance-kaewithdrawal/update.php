@@ -22,7 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'kae' => $kae,
         'kaeCredit' => $kaeCredit,
         'kaeCreditSumPercentage' => $kaeCreditSumPercentage,
-        'kaeWithdrwals' => $kaeWithdrwals
+        'kaeWithdrwals' => $kaeWithdrwals,
+        'updateFlag' => 1
     ]) ?>
 
 </div>

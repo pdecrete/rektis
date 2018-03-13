@@ -33,9 +33,9 @@ return [
     'finance_telephone' => '2810-302442, 2810-347288',
     'pde_logo_literal' => 'ΕΛΛΗΝΙΚΗ ΔΗΜΟΚΡΑΤΙΑ<br />ΥΠΟΥΡΓΕΙΟ ΠΑΙΔΕΙΑΣ, ΕΡΕΥΝΑΣ ΚΑΙ ΘΡΗΣΚΕΥΜΑΤΩΝ<br />
                            ΠΕΡΙΦΕΡΕΙΑΚΗ ΔΙΕΥΘΥΝΣΗ<br />Π/ΘΜΙΑΣ & Δ/ΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ ΚΡΗΤΗΣ',
-    'finance_logo_literal' => 'ΑΥΤΟΤΕΛΗΣ ΔΙΕΥΘΥΝΣΗ ΔΙΟΙΚΗΤΙΚΗΣ,
+    'finance_logo_literal' => 'ΑΥΤΟΤΕΛΗΣ ΔΙΕΥΘΥΝΣΗ ΔΙΟΙΚΗΤΙΚΗΣ,<br />
                                ΟΙΚΟΝΟΜΙΚΗΣ ΚΑΙ ΠΑΙΔΑΓΩΓΙΚΗΣ ΥΠΟΣΤΗΡΙΞΗΣ<br />ΤΜΗΜΑ Β\' - ΟΙΚΟΝΟΜΙΚΩΝ ΥΠΟΘΕΣΕΩΝ',
     'director_name' => 'Γεώργιος Τερζάκης',
     'finance_code' => 'ΕΙΔΙΚΟΣ ΦΟΡΕΑΣ: 90-21/185',
-    'finance_uploadfolder' => '@vendor/admapp/uploads/financial/'
+    'finance_uploadfolder' => '@vendor/admapp/uploads/financial/withdrawals/'
 ];

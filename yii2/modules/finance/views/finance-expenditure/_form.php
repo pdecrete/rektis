@@ -63,16 +63,16 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 
         echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList(
         [
-            $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'],
-            $deductions[++$index]['deduct_id'] => $deductions[1]['deduct_name'],
-            $deductions[++$index]['deduct_id'] => $deductions[2]['deduct_name'],
+            $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
+            $deductions[++$index]['deduct_id'] => $deductions[1]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
+            $deductions[++$index]['deduct_id'] => $deductions[2]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
         ],
         ['separator'=>'<br/>']
         )->label(false);
 
         for ($i = 1; $i < count($expenddeduction_models); $i++) {
             ++$index;
-            echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$index]->deduct_name, 'value' => $deductions[$index]->deduct_id]);
+            echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$index]->deduct_name . ' (' . Money::toPercentage($deductions[$index]->deduct_percentage) . ')', 'value' => $deductions[$index]->deduct_id]);
         }
     ?>
     <div class="form-group pull-right">
