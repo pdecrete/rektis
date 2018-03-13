@@ -8,8 +8,6 @@ $aliases = require(__DIR__ . '/aliases.php');
 $authmanager = require(__DIR__ . '/authmanager.php');
 $messages = require(__DIR__ . '/messages.php');
 
-\Yii::setAlias('@images', __DIR__ . '/../web/images');
-
 $config = [
     'id' => 'adm',
     'name' => 'Εφαρμογή υποστήριξης διοικητικού έργου',
