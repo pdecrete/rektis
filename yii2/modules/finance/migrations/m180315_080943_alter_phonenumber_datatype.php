@@ -29,18 +29,4 @@ class m180315_080943_alter_phonenumber_datatype extends Migration
         Yii::$app->db->createCommand($alter_command2)->execute();
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m180315_080943_alter_phonenumber_datatype cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
