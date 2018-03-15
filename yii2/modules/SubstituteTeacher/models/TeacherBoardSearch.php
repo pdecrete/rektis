@@ -2,13 +2,15 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
- * TeacherSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Teacher`.
+ * TeacherBoardSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\TeacherBoard`.
  */
-class TeacherSearch extends Teacher
+class TeacherBoardSearch extends TeacherBoard
 {
     /**
      * @inheritdoc
@@ -16,7 +18,8 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year', 'status'], 'integer'],
+            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order'], 'integer'],
+            [['points'], 'number'],
         ];
     }
 
@@ -38,7 +41,7 @@ class TeacherSearch extends Teacher
      */
     public function search($params)
     {
-        $query = Teacher::find();
+        $query = TeacherBoard::find();
 
         // add conditions that should always apply here
 
@@ -57,9 +60,11 @@ class TeacherSearch extends Teacher
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'registry_id' => $this->registry_id,
-            'year' => $this->year,
-            'status' => $this->status,
+            'teacher_id' => $this->teacher_id,
+            'specialisation_id' => $this->specialisation_id,
+            'board_type' => $this->board_type,
+            'points' => $this->points,
+            'order' => $this->order,
         ]);
 
         return $dataProvider;

@@ -13,7 +13,6 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $registry_id
  * @property integer $year
  * @property integer $status
- * @property string $points
  *
  * @property string $name
  *
@@ -49,9 +48,7 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['registry_id', 'year', 'status'], 'integer'],
-            [['points'], 'default', 'value' => 0],
             [['registry_id', 'year', 'status'], 'required'],
-            [['points'], 'number'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
         ];
@@ -67,7 +64,6 @@ class Teacher extends \yii\db\ActiveRecord
             'registry_id' => Yii::t('substituteteacher', 'Registry ID'),
             'year' => Yii::t('substituteteacher', 'Year'),
             'status' => Yii::t('substituteteacher', 'Status'),
-            'points' => Yii::t('substituteteacher', 'Points'),
         ];
     }
 
@@ -104,6 +100,14 @@ class Teacher extends \yii\db\ActiveRecord
     public function getTeacherStatusAudits()
     {
         return $this->hasMany(TeacherStatusAudit::className(), ['teacher_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBoards()
+    {
+        return $this->hasMany(TeacherBoard::className(), ['teacher_id' => 'id']);
     }
 
     /**

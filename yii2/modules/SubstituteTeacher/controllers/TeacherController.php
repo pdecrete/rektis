@@ -15,6 +15,7 @@ use yii\web\UnprocessableEntityHttpException;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
  * TeacherController implements the CRUD actions for Teacher model.
@@ -212,7 +213,35 @@ class TeacherController extends Controller
         $model = $this->findModel($id);
         $modelsPlacementPreferences = ($model->placementPreferences ? $model->placementPreferences : [new PlacementPreference]);
 
+        $specialisations = array_map(function ($m) {
+            return $m->id;
+        }, $model->registry->specialisations);
+        $specialisations_boards = array_map(function ($m) {
+            return $m->specialisation_id;
+        }, $model->boards);
+        $missing_specialisations = array_diff($specialisations, $specialisations_boards);
+
+        $modelsBoards = $model->boards;
+        if (!empty($missing_specialisations)) {
+            $modelsBoards = array_merge($modelsBoards, array_map(function ($spec_id) use ($id) {
+                $new_entry = new TeacherBoard;
+                $new_entry->id = - $spec_id;
+                $new_entry->teacher_id = $id;
+                $new_entry->specialisation_id = $spec_id;
+                return $new_entry;
+            }, $missing_specialisations));
+        }
+
         if ($model->load(Yii::$app->request->post())) {
+            $modelsBoards = Model::createMultiple(TeacherBoard::classname(), $modelsBoards);
+            // need to feed the teacher id 
+            array_walk($modelsBoards, function (&$m, $k) use ($id) {
+                if ($m->id == null) {
+                    $m->teacher_id = $id;
+                }
+            });
+            Model::loadMultiple($modelsBoards, Yii::$app->request->post());
+
             $oldIDs = ArrayHelper::map($modelsPlacementPreferences, 'id', 'id');
             $modelsPlacementPreferences = Model::createMultiple(PlacementPreference::classname(), $modelsPlacementPreferences);
             Model::loadMultiple($modelsPlacementPreferences, Yii::$app->request->post());
@@ -234,6 +263,23 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        foreach ($modelsBoards as $modelBoard) {
+                            // those with empty values are considered not existant in the board
+                            if (empty($modelBoard->board_type) 
+                                && empty($modelBoard->points)
+                                && empty($modelBoard->order)) {
+                                // remove if already existed or else ignore and skip it 
+                                if (!empty($modelBoard->id) && $modelBoard->id > 0) {
+                                    $modelBoard->delete();
+                                }
+                                continue;
+                            }
+                            if (! ($flag = $modelBoard->save(false))) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+
                         if (! empty($deletedIDs)) {
                             PlacementPreference::deleteAll(['id' => $deletedIDs]);
                         }
@@ -259,7 +305,8 @@ class TeacherController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
+            'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference],
+            'modelsBoards' => $modelsBoards ? $modelsBoards : [ new TeacherBoard ],
         ]);
     }
 

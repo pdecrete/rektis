@@ -84,12 +84,25 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
+            'id',
             'year',
             [
                 'attribute' => 'status',
                 'value' => 'status_label',
             ],
-            'points',
+            [
+                'attribute' => '',
+                'header' => Yii::t('substituteteacher', 'Teacher boards'),
+                'value' => function ($m) {
+                    return $m->boards ? implode(
+                        '<br>',
+                        array_map(function ($model) {
+                            return $model->label;
+                        }, $m->boards)
+                    ) : null;
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => '',
                 'header' => Yii::t('substituteteacher', 'Placement preferences'),
