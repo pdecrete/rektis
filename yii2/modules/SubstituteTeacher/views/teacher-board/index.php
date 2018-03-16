@@ -31,6 +31,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             // 'id',
             [
+                'attribute' => 'year',
+                'value' => function ($m) {
+                    return $m->teacher ? $m->teacher->year : null;
+                },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'year',
+                    'data' => Teacher::selectables('year', 'year'),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+            ],
+            [
                 'attribute' => 'teacher_id',
                 'value' => 'teacher.name',
                 'filter' => Select2::widget([

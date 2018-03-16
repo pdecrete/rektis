@@ -63,10 +63,11 @@ class TeacherBoard extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
             'teacher_id' => Yii::t('substituteteacher', 'Teacher ID'),
-            'specialisation_id' => Yii::t('substituteteacher', 'Specialisation ID'),
+            'specialisation_id' => Yii::t('substituteteacher', 'Specialisation'),
             'board_type' => Yii::t('substituteteacher', 'Board Type'),
             'points' => Yii::t('substituteteacher', 'Points'),
             'order' => Yii::t('substituteteacher', 'Order'),
+            'year' => Yii::t('substituteteacher', 'Year'),
         ];
     }
 

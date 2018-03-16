@@ -12,13 +12,15 @@ use app\modules\SubstituteTeacher\models\TeacherBoard;
  */
 class TeacherBoardSearch extends TeacherBoard
 {
+    public $year; // to filter teachers by year 
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order'], 'integer'],
+            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year'], 'integer'],
             [['points'], 'number'],
         ];
     }
@@ -41,13 +43,20 @@ class TeacherBoardSearch extends TeacherBoard
      */
     public function search($params)
     {
-        $query = TeacherBoard::find();
+        $query = TeacherBoard::find()
+            ->joinWith('teacher');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->sort->attributes['year'] = [
+            'label' => Yii::t('substituteteacher', 'Year'),
+            'asc' => ['{{%stteacher}}.year' => SORT_ASC],
+            'desc' => ['{{%stteacher}}.year' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -65,6 +74,7 @@ class TeacherBoardSearch extends TeacherBoard
             'board_type' => $this->board_type,
             'points' => $this->points,
             'order' => $this->order,
+            '{{%stteacher}}.year' => $this->year,
         ]);
 
         return $dataProvider;
