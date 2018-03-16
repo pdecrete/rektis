@@ -39,11 +39,11 @@ class FinanceSupplier extends \yii\db\ActiveRecord
     {
         return [
             [['suppl_name', 'suppl_vat', 'suppl_iban', 'suppl_employerid', 'taxoffice_id'], 'required'],
-            [['suppl_vat', 'taxoffice_id'], 'integer'],
+            [['taxoffice_id'], 'integer'],
             [['suppl_name', 'suppl_address', 'suppl_email'], 'string', 'max' => 255],
             [['suppl_email'], 'email'],
             [['suppl_iban'], 'string', 'max' => 27],
-            [['suppl_phone', 'suppl_fax'], 'string', 'max' => 30],
+            [['suppl_vat','suppl_phone', 'suppl_fax'], 'string', 'max' => 30],
             [['suppl_employerid'], 'string', 'max' => 100],
             [['taxoffice_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceTaxoffice::className(), 'targetAttribute' => ['taxoffice_id' => 'taxoffice_id']],
         ];
