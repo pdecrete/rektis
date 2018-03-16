@@ -312,6 +312,26 @@ AppAsset::register($this);
                         ]
                     ],
                 ],
+                [
+                    'label' => 'Μετακινήσεις Σχολείων',
+                    'visible' => !Yii::$app->user->isGuest,
+                    'items' => [
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Ενότητες</li>',
+                        [
+                            'label' => 'Νέα Μετακίνηση',
+                            'url' => ['/schooltransport/schtransport-transport/create'],
+                        ],
+                        [
+                            'label' => 'Προβολή Μετακινήσεων',
+                            'url' => ['/schooltransport/schtransport-transport'],
+                        ],
+                        [
+                            'label' => 'Σχολικές Μονάδες',
+                            'url' => ['/schooltransport/default']
+                        ],
+                        
+                    ],
+                ],
                 Yii::$app->user->isGuest ? [
                     'label' => 'Σχετικά',
                     'url' => ['/site/about']
