@@ -38,7 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'year',
-                    'data' => Teacher::selectables('year', 'year'),
+                    'data' => Teacher::selectables('year', 'year', null, function ($aq) {
+                        return $aq->orderBy(['year' => SORT_DESC]);
+                    }),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],

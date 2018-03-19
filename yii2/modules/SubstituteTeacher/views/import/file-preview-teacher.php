@@ -5,9 +5,14 @@ use yii\bootstrap\Modal;
 use yii\bootstrap\ActiveForm;
 use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Teacher;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
+use app\models\Specialisation;
+use kartik\select2\Select2;
+use yii\web\View;
+use app\modules\SubstituteTeacher\models\Operation;
 
 $this->title = Yii::t('substituteteacher', 'Import information');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Positions'), 'url' => ['position/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Teachers'), 'url' => ['teacher/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -16,13 +21,28 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?></h1>
     <h1><small>Οι επιλογές παρακάτω αφορούν στοιχεία <strong>πινάκων αναπληρωτών</strong></small></h1>
     <p>
-        <?= Html::a(Yii::t('substituteteacher', 'Validate data'), [Yii::$app->controller->id . '/' . Yii::$app->controller->action->id, 'file_id' => $file_id, 'sheet' => $sheet, 'action' => 'validate'], ['class' => 'btn btn-success']) ?>
+        <?=
+        Html::button(Yii::t('substituteteacher', 'Validate data'), [
+            'class' => 'btn btn-success',
+            'data' => [
+                'toggle' => 'modal',
+                'target' => '#choose-year-modal',
+                'daction' => 'validate',
+                'dbtnlabel' => Yii::t('substituteteacher', 'Validate'),
+                'dbtnconfirm' => Yii::t('substituteteacher', 'Validate import data?')
+            ],
+        ])
+
+        ?>
         <?=
         Html::button(Yii::t('substituteteacher', 'Import data'), [
             'class' => 'btn btn-primary',
             'data' => [
                 'toggle' => 'modal',
                 'target' => '#choose-year-modal',
+                'daction' => 'import',
+                'dbtnlabel' => Yii::t('substituteteacher', 'Import'),
+                'dbtnconfirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?')
             ],
         ])
 
@@ -97,16 +117,43 @@ $form = ActiveForm::begin([
         'options' => ['class' => 'form-horizontal'],
         'enableClientValidation' => false,
     ]);
+echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
 
 ?>
 <div class="container-fluid">
-    <div class="row">
+    <div class="row form-group">
         <div class="col-sm-4">
             <?= Yii::t('substituteteacher', 'Years') ?>
         </div>
         <div class="col-sm-8">
-            <?= Html::dropDownList('year', null, Teacher::getChoices('year'), ['class' => 'form-control']) ?>
-            <?= Html::hiddenInput('action', 'import') ?>
+            <?= Html::dropDownList('year', null, Operation::selectables('year', 'year', null, function ($aq) {
+                    return $aq->orderBy(['year' => SORT_DESC]);
+                }), ['class' => 'form-control']) ?>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-sm-4">
+            <?= Yii::t('substituteteacher', 'Teacher board') ?>
+        </div>
+        <div class="col-sm-8">
+            <?= Html::dropDownList('board_type', null, TeacherBoard::getChoices('board_type'), ['class' => 'form-control']) ?>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-sm-4">
+            <?= Yii::t('substituteteacher', 'Specialisation') ?>
+        </div>
+        <div class="col-sm-8">
+            <?= 
+                Select2::widget([
+                    'name' => 'specialisation_id',
+                    'data' => Specialisation::selectables(),
+                    'options' => [
+                        'placeholder' => Yii::t('substituteteacher', 'Choose...'),
+                        'multiple' => false
+                    ],
+                ]);
+            ?>
         </div>
     </div>
     <div class="row">
@@ -129,6 +176,7 @@ $form = ActiveForm::begin([
                 ?>
                 <?=
                 Html::submitButton(Yii::t('substituteteacher', 'Import'), [
+                    'id' => 'action-submit-btn',
                     'class' => 'btn btn-primary',
                     'data-confirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?'),
                 ])
@@ -141,3 +189,29 @@ $form = ActiveForm::begin([
 <?php
 ActiveForm::end();
 Modal::end();
+
+$fix_modal_select2 = '$("#choose-year-modal").removeAttr("tabindex");';
+$this->registerJs($fix_modal_select2, View::POS_READY);
+
+$modal_worker = <<< MODALACTIONS
+$('#choose-year-modal').on('show.bs.modal', function (event) {
+  var modal = $(this)
+  var button = $(event.relatedTarget);
+  var daction = button.data('daction');
+  var dbtnlabel = button.data('dbtnlabel');
+  var dbtnconfirm = button.data('dbtnconfirm');
+
+  modal.find('.modal-body #action-input-container').val(daction);
+  btn_container = modal.find('.modal-body #action-submit-btn');
+  btn_container.text(dbtnlabel);
+  btn_container.attr('data-confirm', dbtnconfirm);
+  if ('validate' === daction) {
+    btn_container.removeClass('btn-primary').addClass('btn-success');
+  } else {
+    btn_container.removeClass('btn-success').addClass('btn-primary');
+  }
+  console.log(daction);
+  console.log(daction === 'validate');  
+})
+MODALACTIONS;
+$this->registerJs($modal_worker, View::POS_END);
