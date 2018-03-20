@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use app\modules\schooltransport\Module;
 use Yii;
 
 /**
@@ -9,6 +10,7 @@ use Yii;
  *
  * @property integer $directorate_id
  * @property string $directorate_name
+ * @property string $directorate_shortname
  *
  * @property Schoolunit[] $schoolunits
  */
@@ -30,6 +32,7 @@ class Directorate extends \yii\db\ActiveRecord
         return [
             [['directorate_name'], 'required'],
             [['directorate_name'], 'string', 'max' => 200],
+            [['directorate_shortname'], 'string', 'max' => 100],
         ];
     }
 
@@ -39,8 +42,9 @@ class Directorate extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'directorate_id' => Yii::t('app', 'Directorate ID'),
-            'directorate_name' => Yii::t('app', 'Directorate Name'),
+            'directorate_id' => Module::t('modules/schooltransport/app', 'Directorate ID'),
+            'directorate_name' => Module::t('modules/schooltransport/app', 'Directorate of Education'),
+            'directorate_shortname' => Module::t('modules/schooltransport/app', 'Directorate of Education'),
         ];
     }
 

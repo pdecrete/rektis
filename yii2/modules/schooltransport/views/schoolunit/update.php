@@ -1,16 +1,15 @@
 <?php
 
+use app\modules\schooltransport\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\schooltransport\models\Schoolunit */
+$this->title = Module::t('modules/schooltransport/app', 'Update school unit');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Units'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Schoolunit',
-]) . $model->school_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Schoolunits'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->school_id, 'url' => ['view', 'id' => $model->school_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="schoolunit-update">
 
@@ -18,6 +17,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'directorates' => $directorates
     ]) ?>
 
 </div>

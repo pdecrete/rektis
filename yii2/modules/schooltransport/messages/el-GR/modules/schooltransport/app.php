@@ -24,4 +24,13 @@ return [
     'View/edit/delete transportations' => 'Προβολή/επεξεργασία/διαγραφή μετακινήσεων',
     'Create a new transportation for a school unit' => 'Δημιουργία νέας μετακίνησης σχολικής μονάδας',
     'View/edit/delete school units' => 'Προβολή/επεξεργασία/διαγραφή σχολικών μονάδων',
+    'Create School Unit' => 'Δημιουργία Σχολικής Μονάδας',
+    'Directorate of Education' => 'Διεύθυνση Εκπαίδευσης',
+    'Failure in creating school unit' => 'Αποτυχία δημιουργίας σχολικής μονάδας',
+    'The school unit was created successfully' => 'Η σχολική μονάδα δημιουργήθηκε επιτυχώς',
+    'Update school unit' => 'Ενημέρωση σχολικής μονάδας',
+    'The school unit was updated successfully' => 'Η σχολική μονάδα ενημερώθηκε επιτυχώς',
+    'Failure in updating school unit' => 'Αποτυχία ενημέρωσης σχολικής μονάδας',
+    'Failure in deleting school unit' => 'Αποτυχία διαγραφής της σχολικής μονάδας',
+    'The school unit was deleted successfully' => 'Η σχολική μονάδα διαγράφηκε επιτυχώς'
 ];

@@ -19,7 +19,7 @@ class SchtransportProgramSearch extends SchtransportProgram
     {
         return [
             [['program_id', 'programcategory_id'], 'integer'],
-            [['program_code', 'program_title'], 'safe'],
+            [['program_title', 'program_code'], 'safe'],
         ];
     }
 
@@ -63,8 +63,8 @@ class SchtransportProgramSearch extends SchtransportProgram
             'programcategory_id' => $this->programcategory_id,
         ]);
 
-        $query->andFilterWhere(['like', 'program_code', $this->program_code])
-            ->andFilterWhere(['like', 'program_title', $this->program_title]);
+        $query->andFilterWhere(['like', 'program_title', $this->program_title])
+            ->andFilterWhere(['like', 'program_code', $this->program_code]);
 
         return $dataProvider;
     }

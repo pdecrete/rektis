@@ -17,9 +17,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'program_id') ?>
 
-    <?= $form->field($model, 'program_code') ?>
-
     <?= $form->field($model, 'program_title') ?>
+
+    <?= $form->field($model, 'program_code') ?>
 
     <?= $form->field($model, 'programcategory_id') ?>
 

@@ -29,9 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'programcategory_id',
-            'programcategory_actioncode',
-            'programcategory_actiontitle',
-            'programcategory_actionsubcateg',
+            'programcategory_programtitle',
+            'programcategory_programdescription',
+            'programcategory_programparent',
         ],
     ]) ?>
 

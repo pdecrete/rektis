@@ -18,8 +18,8 @@ class SchtransportProgramcategorySearch extends SchtransportProgramcategory
     public function rules()
     {
         return [
-            [['programcategory_id'], 'integer'],
-            [['programcategory_actioncode', 'programcategory_actiontitle', 'programcategory_actionsubcateg'], 'safe'],
+            [['programcategory_id', 'programcategory_programparent'], 'integer'],
+            [['programcategory_programtitle', 'programcategory_programdescription'], 'safe'],
         ];
     }
 
@@ -60,11 +60,11 @@ class SchtransportProgramcategorySearch extends SchtransportProgramcategory
         // grid filtering conditions
         $query->andFilterWhere([
             'programcategory_id' => $this->programcategory_id,
+            'programcategory_programparent' => $this->programcategory_programparent,
         ]);
 
-        $query->andFilterWhere(['like', 'programcategory_actioncode', $this->programcategory_actioncode])
-            ->andFilterWhere(['like', 'programcategory_actiontitle', $this->programcategory_actiontitle])
-            ->andFilterWhere(['like', 'programcategory_actionsubcateg', $this->programcategory_actionsubcateg]);
+        $query->andFilterWhere(['like', 'programcategory_programtitle', $this->programcategory_programtitle])
+            ->andFilterWhere(['like', 'programcategory_programdescription', $this->programcategory_programdescription]);
 
         return $dataProvider;
     }

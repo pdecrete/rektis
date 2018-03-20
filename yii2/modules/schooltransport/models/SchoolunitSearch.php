@@ -2,16 +2,16 @@
 
 namespace app\modules\schooltransport\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\schooltransport\models\Schoolunit;
+
 
 /**
  * SchoolunitSearch represents the model behind the search form about `app\modules\schooltransport\models\Schoolunit`.
  */
 class SchoolunitSearch extends Schoolunit
 {
+    public $directorate_name;
     /**
      * @inheritdoc
      */
@@ -19,7 +19,7 @@ class SchoolunitSearch extends Schoolunit
     {
         return [
             [['school_id', 'directorate_id'], 'integer'],
-            [['school_name'], 'safe'],
+            [['school_name', 'directorate_name'], 'safe'],
         ];
     }
 
@@ -41,9 +41,11 @@ class SchoolunitSearch extends Schoolunit
      */
     public function search($params)
     {
-        $query = Schoolunit::find();
-
-        // add conditions that should always apply here
+        $query = (new \yii\db\Query())
+                    ->select('admapp_schoolunit.*, admapp_directorate.*')
+                    ->from('admapp_schoolunit, admapp_directorate')
+                    ->where('admapp_schoolunit.directorate_id = admapp_directorate.directorate_id');
+        
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -57,13 +59,8 @@ class SchoolunitSearch extends Schoolunit
             return $dataProvider;
         }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'school_id' => $this->school_id,
-            'directorate_id' => $this->directorate_id,
-        ]);
-
         $query->andFilterWhere(['like', 'school_name', $this->school_name]);
+        $query->andFilterWhere(['like', 'directorate_name', $this->directorate_name]);
 
         return $dataProvider;
     }

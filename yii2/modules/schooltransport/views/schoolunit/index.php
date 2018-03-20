@@ -2,6 +2,7 @@
 
 use app\modules\schooltransport\Module;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
@@ -12,26 +13,52 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->title = Module::t('modules/schooltransport/app', 'School Units');
 $this->params['breadcrumbs'][] = $this->title;
 
+//echo "<pre>" . print_r($dataProvider)  . "</pre>"; die();
+
 ?>
 <div class="schoolunit-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Schoolunit'), ['create'], ['class' => 'btn btn-success']) ?>
+    <p class="text-right">
+        <?= Html::a(Module::t('modules/schooltransport/app', 'Create School Unit'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-<?php Pjax::begin(); ?>    <?= GridView::widget([
+<?php Pjax::begin(); ?>    
+	<?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'school_id',
+            //'school_id',
             'school_name',
-            'directorate_id',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            //'directorate_id',
+            ['attribute' => 'directorate_name',
+             'label' => Module::t('modules/schooltransport/app', 'Directorate of Education')
+            ],
+            /*
+            ['attribute' => 'directorate_id',
+                'label' => Module::t('modules/finance/app', 'Educational Directorate'),
+                'value' => function ($dataProvider) {
+                    return $dataProvider
+                },
+                'headerOptions' => ['class'=> 'text-center'],
+                'contentOptions' => ['class' => 'text-right']
+            ],*/                
+            ['class' => 'yii\grid\ActionColumn',
+             'contentOptions' => ['class' => 'text-nowrap'],
+             'template' => '{update} {delete}',
+             'urlCreator' => function ($action, $model) {
+                                 if ($action === 'delete') {
+                                     $url = Url::to(['/schooltransport/schoolunit/delete', 'id' =>$model['school_id']]);
+                                     return $url;
+                                 }
+                                 if ($action === 'update') {
+                                     $url = Url::to(['/schooltransport/schoolunit/update', 'id' =>$model['school_id']]);
+                                     return $url;
+                                 }
+                             }
+            ],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

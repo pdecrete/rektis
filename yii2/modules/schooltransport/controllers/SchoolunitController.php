@@ -3,11 +3,14 @@
 namespace app\modules\schooltransport\controllers;
 
 use Yii;
+use app\modules\schooltransport\Module;
 use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\SchoolunitSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\base\Exception;
 use yii\filters\VerbFilter;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * SchoolunitController implements the CRUD actions for Schoolunit model.
@@ -64,13 +67,22 @@ class SchoolunitController extends Controller
     public function actionCreate()
     {
         $model = new Schoolunit();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->school_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        $directorates = Directorate::find()->all();
+        
+        try{                
+            if ($model->load(Yii::$app->request->post())){
+                if(!$model->save())
+                    throw new Exception("Failure in creating school unit.");
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school unit was created successfully"));
+                return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('create', ['model' => $model, 'directorates' => $directorates]);
+            }
+        }
+        catch (Exception $exc){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);            
         }
     }
 
@@ -83,13 +95,24 @@ class SchoolunitController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->school_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        $directorates = Directorate::find()->all();
+        
+        try{
+            if ($model->load(Yii::$app->request->post())){
+                
+                if(!$model->save()) {
+                    throw new Exception("Failure in updating school unit");
+                }
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school unit was updated successfully"));
+                return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('update', ['model' => $model, 'directorates' => $directorates]);
+            }
+        }
+        catch(Exception $exc){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);            
         }
     }
 
@@ -101,9 +124,17 @@ class SchoolunitController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        try{
+            if(!$this->findModel($id)->delete())
+                throw new Exception("Failure in deleting school unit");
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school unit was deleted successfully"));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            return $this->redirect('index');            
+        }
+        
     }
 
     /**
