@@ -20,10 +20,18 @@ class TeacherSpecialisationFixture extends ActiveFixture
 
         return [
             ['registry_id' => 1, 'specialisation_id' => $pe2300],
-            ['registry_id' => 1, 'specialisation_id' => $pe2500],
             ['registry_id' => 2, 'specialisation_id' => $pe2300],
             ['registry_id' => 3, 'specialisation_id' => $ebp],
             ['registry_id' => 4, 'specialisation_id' => $ebp],
+            ['registry_id' => 5, 'specialisation_id' => $pe2300],
+            ['registry_id' => 6, 'specialisation_id' => $pe2300],
+            ['registry_id' => 7, 'specialisation_id' => $pe2300],
+            ['registry_id' => 8, 'specialisation_id' => $pe2300],
+            ['registry_id' => 9, 'specialisation_id' => $pe2300],
+            ['registry_id' => 10, 'specialisation_id' => $pe2300],
+
+            ['registry_id' => 1, 'specialisation_id' => $pe2500],
+            ['registry_id' => 5, 'specialisation_id' => $ebp],
         ];
     }
 }
