@@ -16,10 +16,38 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a(Module::t('modules/schooltransport/app',  'Create Transportation'), ['create'], ['class' => 'btn btn-success']) ?>
+	<p class="text-right">
+    	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">
+        	<?php echo Module::t('modules/schooltransport/app',  'Create Transportation'); ?>
+        </button>
     </p>
-<?php Pjax::begin(); ?>    <?= GridView::widget([
+    
+    <div id="programsCategs" class="collapse">
+        <div class="container-fluid well">
+      		<div class="row">
+				<?php 
+				    foreach ($programcategs as $key=>$programcateg){
+				        echo "<ul>";
+				        if(count($programcateg) == 0)
+				            echo "<li><strong><a href=''>{$key}</a></strong></li>";
+				        else {
+ 				            echo "<li><strong>" . $key . "</strong></li>";
+				            echo "<ul>";
+				            foreach ($programcateg as $subcateg)
+				                echo "<li><a href=''>" . $subcateg['programcategory_programtitle']  . "</a></li>";
+			                echo "</ul>";				                
+				        }
+				        echo "</ul>";
+				    }
+				?>
+    		</div>
+    	</div>
+    </div>
+    <!--  <p class="pull-right">
+        <?= Html::a(Module::t('modules/schooltransport/app',  'Create Transportation'), ['create'], ['class' => 'btn btn-success']) ?>
+    </p>-->
+<?php Pjax::begin(); ?>    
+	<?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

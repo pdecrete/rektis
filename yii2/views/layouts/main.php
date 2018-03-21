@@ -316,7 +316,7 @@ AppAsset::register($this);
                     'label' => 'Μετακινήσεις Σχολείων',
                     'visible' => !Yii::$app->user->isGuest,
                     'items' => [
-                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Ενότητες</li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-road"></i></li>',
                         [
                             'label' => 'Νέα Μετακίνηση',
                             'url' => ['/schooltransport/schtransport-transport/create'],

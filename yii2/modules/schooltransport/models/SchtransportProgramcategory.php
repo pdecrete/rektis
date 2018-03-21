@@ -8,9 +8,9 @@ use Yii;
  * This is the model class for table "{{%schtransport_programcategory}}".
  *
  * @property integer $programcategory_id
- * @property string $programcategory_actioncode
- * @property string $programcategory_actiontitle
- * @property string $programcategory_actionsubcateg
+ * @property string $programcategory_programtitle
+ * @property string $programcategory_programdescription
+ * @property integer $programcategory_programparent
  *
  * @property SchtransportProgram[] $schtransportPrograms
  */
@@ -30,9 +30,10 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['programcategory_actioncode', 'programcategory_actiontitle', 'programcategory_actionsubcateg'], 'required'],
-            [['programcategory_actioncode'], 'string', 'max' => 50],
-            [['programcategory_actiontitle', 'programcategory_actionsubcateg'], 'string', 'max' => 200],
+            [['programcategory_programtitle'], 'required'],
+            [['programcategory_programparent'], 'integer'],
+            [['programcategory_programtitle'], 'string', 'max' => 200],
+            [['programcategory_programdescription'], 'string', 'max' => 400],
         ];
     }
 
@@ -43,9 +44,9 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
     {
         return [
             'programcategory_id' => Yii::t('app', 'Programcategory ID'),
-            'programcategory_actioncode' => Yii::t('app', 'Κωδικός Δράσης'),
-            'programcategory_actiontitle' => Yii::t('app', 'Τίτλος Δράσης'),
-            'programcategory_actionsubcateg' => Yii::t('app', 'Κατηγορία Δράσης'),
+            'programcategory_programtitle' => Yii::t('app', 'Τίτλος Δράσης'),
+            'programcategory_programdescription' => Yii::t('app', 'Κωδικός Δράσης'),
+            'programcategory_programparent' => Yii::t('app', 'Programcategory Programparent'),
         ];
     }
 

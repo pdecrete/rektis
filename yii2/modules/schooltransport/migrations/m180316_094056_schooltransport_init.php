@@ -26,7 +26,7 @@ class m180316_094056_schooltransport_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_programcategory'] .
                           " (`programcategory_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `programcategory_programtitle` VARCHAR(200) NOT NULL COMMENT 'Τίτλος Δράσης',
-                             `programcategory_programdescription` VARCHAR(400) COMMENT 'Κωδικός Δράσης',
+                             `programcategory_programdescription` VARCHAR(400) COMMENT 'Περιγραφή Δράσης',
                              `programcategory_programparent` INTEGER,
                               PRIMARY KEY (`programcategory_id`)
                             ) " . $tableOptions;

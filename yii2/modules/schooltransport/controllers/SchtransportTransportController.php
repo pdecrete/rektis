@@ -3,11 +3,14 @@
 namespace app\modules\schooltransport\controllers;
 
 use Yii;
+use app\modules\schooltransport\Module;
 use app\modules\schooltransport\models\SchtransportTransport;
 use app\modules\schooltransport\models\SchtransportTransportSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\base\Exception;
 use yii\filters\VerbFilter;
+use app\modules\schooltransport\models\SchtransportProgramcategory;
 
 /**
  * SchtransportTransportController implements the CRUD actions for SchtransportTransport model.
@@ -38,9 +41,18 @@ class SchtransportTransportController extends Controller
         $searchModel = new SchtransportTransportSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $programcategs = array();
+        $program_parentcategs = SchtransportProgramcategory::findAll(['programcategory_programparent' => NULL]);
+        foreach ($program_parentcategs as $index=>$parentcateg){
+            $programcategs[$parentcateg['programcategory_programtitle']] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_id']]);
+        }
+        //echo "<pre>"; print_r($programcategs); echo "</pre>";
+        //die();
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'programcategs' => $programcategs
         ]);
     }
 
@@ -65,12 +77,20 @@ class SchtransportTransportController extends Controller
     {
         $model = new SchtransportTransport();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transport_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        try{
+            if ($model->load(Yii::$app->request->post())){ 
+                if(!$model->save())
+                    throw new Exception("Failure in creating the transportation");                
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school unit was created successfully"));
+                return $this->redirect(['index']);                
+            } 
+            else {
+                return $this->render('create', ['model' => $model]);
+            }
+        }
+        catch(Exception $exc){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            //return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);
         }
     }
 

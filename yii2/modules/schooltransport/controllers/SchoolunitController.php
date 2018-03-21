@@ -82,7 +82,7 @@ class SchoolunitController extends Controller
         }
         catch (Exception $exc){
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);            
+            return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);
         }
     }
 
