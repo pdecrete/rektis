@@ -3,15 +3,15 @@
 namespace app\modules\SubstituteTeacher\models;
 
 /**
- * This is the ActiveQuery class for [[Call]].
+ * This is the ActiveQuery class for [[CallTeacherSpecialisation]].
  *
- * @see Call
+ * @see CallTeacherSpecialisation
  */
-class CallQuery extends \yii\db\ActiveQuery
+class CallTeacherSpecialisationQuery extends \yii\db\ActiveQuery
 {
     /**
      * @inheritdoc
-     * @return Call[]|array
+     * @return CallTeacherSpecialisation[]|array
      */
     public function all($db = null)
     {
@@ -20,7 +20,7 @@ class CallQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Call|array|null
+     * @return CallTeacherSpecialisation|array|null
      */
     public function one($db = null)
     {

@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Teacher;
-use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /* @var $this yii\web\View */

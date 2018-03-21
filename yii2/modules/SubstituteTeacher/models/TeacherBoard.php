@@ -3,7 +3,6 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
-use app\models\Specialisation;
 
 /**
  * This is the model class for table "{{%stteacher_board}}".

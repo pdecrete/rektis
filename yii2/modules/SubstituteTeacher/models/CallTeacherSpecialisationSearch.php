@@ -2,13 +2,15 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\SubstituteTeacher\models\CallTeacherSpecialisation;
 
 /**
- * CallSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Call`.
+ * CallTeacherSpecialisationSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\CallTeacherSpecialisation`.
  */
-class CallSearch extends Call
+class CallTeacherSpecialisationSearch extends CallTeacherSpecialisation
 {
     /**
      * @inheritdoc
@@ -16,8 +18,8 @@ class CallSearch extends Call
     public function rules()
     {
         return [
-            [['id', 'year'], 'integer'],
-            [['title', 'description', 'application_start', 'application_end', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'call_id', 'specialisation_id', 'teachers'], 'integer'],
+            [['teachers_called'], 'safe'],
         ];
     }
 
@@ -39,7 +41,7 @@ class CallSearch extends Call
      */
     public function search($params)
     {
-        $query = Call::find();
+        $query = CallTeacherSpecialisation::find();
 
         // add conditions that should always apply here
 
@@ -58,15 +60,12 @@ class CallSearch extends Call
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'year' => $this->year,
-            'application_start' => $this->application_start,
-            'application_end' => $this->application_end,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'call_id' => $this->call_id,
+            'specialisation_id' => $this->specialisation_id,
+            'teachers' => $this->teachers,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'teachers_called', $this->teachers_called]);
 
         return $dataProvider;
     }

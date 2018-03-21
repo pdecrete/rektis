@@ -2,7 +2,6 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
-use app\models\Specialisation;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\modules\SubstituteTeacher\traits\Selectable;

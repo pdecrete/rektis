@@ -177,7 +177,7 @@ class CallPosition extends \yii\db\ActiveRecord
      * Convinience method to get a single position per group (group == 0 is not considered as group)
      * 
      */
-    public static function findOnePreGroup($call_id)
+    public static function findOnePerGroup($call_id)
     {
         // first, find all that do not belong in a group
         $call_positions = CallPosition::find()

@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use app\modules\SubstituteTeacher\models\Specialisation;
 use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
@@ -19,7 +20,7 @@ use kartik\datecontrol\DateControl;
             <div class="col-md-6">
                 <?=
                 $form->field($model, 'specialisation_ids')->widget(Select2::classname(), [
-                    'data' => \app\models\Specialisation::selectables(),
+                    'data' => Specialisation::selectables(),
                     'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
                     'pluginOptions' => [
                         'multiple' => true,

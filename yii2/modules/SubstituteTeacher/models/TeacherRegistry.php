@@ -3,7 +3,6 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
-use app\models\Specialisation;
 use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**

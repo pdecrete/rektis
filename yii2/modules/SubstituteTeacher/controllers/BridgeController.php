@@ -96,6 +96,7 @@ class BridgeController extends \yii\web\Controller
     {
         $call_id = 2;
         $year = 2017;
+        // TODO ADD HOW MANY TEACHERS FROM WHICH TEACHER BOARDS ?
 
         // collect positions, prefectures, teachers and placement preferences
         $prefectures = Prefecture::find()->all();
@@ -106,12 +107,13 @@ class BridgeController extends \yii\web\Controller
             return array_merge(['index' => $index], $prefectures[$k]->toApi());
         }, array_keys($prefectures));
 
-        $call_positions = CallPosition::findOnePreGroup($call_id);
+        $call_positions = CallPosition::findOnePerGroup($call_id);
         $call_positions = array_map(function ($k) use ($call_positions, $prefecture_substitutions) {
             $index = $k + 1;
             return array_merge(['index' => $index], $call_positions[$k]->toApi($prefecture_substitutions));
         }, array_keys($call_positions));
 
+        // TODO must incorporate teacher board into logic... 
         $teachers = Teacher::find()
             ->year($year)
             ->status(Teacher::TEACHER_STATUS_ELIGIBLE)

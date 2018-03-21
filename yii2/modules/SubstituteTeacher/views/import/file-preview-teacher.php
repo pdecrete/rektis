@@ -6,7 +6,7 @@ use yii\bootstrap\ActiveForm;
 use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
-use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\Specialisation;
 use kartik\select2\Select2;
 use yii\web\View;
 use app\modules\SubstituteTeacher\models\Operation;

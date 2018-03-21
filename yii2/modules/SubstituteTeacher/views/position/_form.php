@@ -34,7 +34,7 @@ use yii\web\View;
     
     <?=
     $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
-        'data' => app\models\Specialisation::selectables(),
+        'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
         'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
         'pluginOptions' => [
             'allowClear' => false

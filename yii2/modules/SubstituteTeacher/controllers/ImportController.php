@@ -357,7 +357,7 @@ class ImportController extends Controller
         $located_count_prefectures = \app\modules\SubstituteTeacher\models\Prefecture::find()
             ->andWhere(['prefecture' => $prefectures])
             ->count();
-        $located_count_specialisations = \app\models\Specialisation::find()
+        $located_count_specialisations = Specialisation::find()
             ->andWhere(['code' => $specialisations])
             ->count();
 

@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\Teacher;
-use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\Specialisation;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherBoard */

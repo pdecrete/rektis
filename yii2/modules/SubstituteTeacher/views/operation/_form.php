@@ -22,7 +22,7 @@ use kartik\select2\Select2;
 
     <?=
     $form->field($model, 'specialisation_ids')->widget(Select2::classname(), [
-        'data' => \app\models\Specialisation::selectables(),
+        'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
         'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
         'pluginOptions' => [
             'multiple' => true,

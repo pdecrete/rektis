@@ -60,11 +60,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'specialisation_id',
                 'value' => 'specialisation.code',
-//                'filter' => app\models\Specialisation::selectables(),
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'specialisation_id',
-                    'data' => app\models\Specialisation::selectables(),
+                    'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
