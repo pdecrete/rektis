@@ -2,6 +2,7 @@
 
 use yii\bootstrap\Html;
 use yii\helpers\VarDumper;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 ?>
@@ -15,7 +16,8 @@ use yii\helpers\VarDumper;
                 'class' => 'btn btn-info'
         ]);
         ?>
-        <?php echo Html::a('<span class="glyphicon glyphicon-arrow-up"></span> Αποστολή', ['send'], [
+        <?php if (!empty($call_model)) : ?>
+        <?php echo Html::a('<span class="glyphicon glyphicon-arrow-up"></span> Αποστολή', ['send', 'call_id' => $call_model->id], [
                 'data' => [
                     'method' => 'post',
                     'confirm' => 'Είστε σίγουροι;'
@@ -23,21 +25,60 @@ use yii\helpers\VarDumper;
                 'class' => 'btn btn-primary'
         ]);
         ?>
+        <?php endif; ?>
     </p>
 
-    <h2>Στοιχεία για αποστολή</h2>
-    <p>CALL:
-        <strong>TODO
-            <?php echo $call_id; ?>
-        </strong>
-    </p>
-    <p>YEAR:
-        <strong>TODO
-            <?php echo $year; ?>
-        </strong>
-    </p>
+    <div class="well">
+    <?php 
+    $form = ActiveForm::begin([
+            'id' => 'call-choose-form',
+            'method' => 'GET',
+            'action' => [
+                'send',
+            ],
+            'options' => ['class' => 'form-horizontal'],
+            'enableClientValidation' => false,
+        ]);
+    ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <?= Yii::t('substituteteacher', 'Calls') ?>
+            </div>
+            <div class="col-sm-6">
+                <?= Html::dropDownList('call_id', $call_model ? $call_model->id : null, \app\modules\SubstituteTeacher\models\Call::defaultSelectables(), ['class' => 'form-control']) ?>
+            </div>
+            <div class="col-sm-3">
+                    <?=
+                    Html::submitButton(Yii::t('substituteteacher', 'Choose'), [
+                        'class' => 'btn btn-primary',
+                    ])
+                    ?>
+            </div>
+        </div>
+    </div>
+    <?php ActiveForm::end(); ?>
+    </div>
+
+
+    <?php if (!empty($call_model)) : ?>
+    <h2>Στοιχεία για αποστολή
+        <small>
+            <em>Πρόσκληση:</em> <?php echo $call_model->title; ?> /
+            <em>Έτος:</em> <?php echo $call_model->year; ?>
+        </small>
+    </h2>
     <table class="table table-bordered table-hover">
         <tbody>
+            <tr>
+                <th class="col-sm-6">Ζητούμενες προσλήψεις αναπληρωτών</th>
+                <td>
+                    <?= implode('<br/>', array_map(function ($m) {
+                            return "{$m->teachers}, {$m->specialisation->label}";
+                        }, $call_model->callTeacherSpecialisations))
+                    ?>
+                </td>
+            </tr>
             <tr>
                 <th>Κενά</th>
                 <td>
@@ -150,3 +191,5 @@ use yii\helpers\VarDumper;
         <?php echo VarDumper::dumpAsString($response_data_load) ?>
     </div>
     <?php endif; ?>
+    <?php endif; ?>
+    
