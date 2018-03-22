@@ -20,6 +20,7 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property TeacherRegistry $registry
  * @property TeacherStatusAudit[] $teacherStatusAudits
  * @property Prefecture[] $placementPreferencePrefectures
+ * @property TeacherBoard[] $boards
  */
 class Teacher extends \yii\db\ActiveRecord
 {

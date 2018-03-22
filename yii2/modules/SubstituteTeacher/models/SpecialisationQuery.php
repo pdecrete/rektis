@@ -11,7 +11,7 @@ class SpecialisationQuery extends \app\models\SpecialisationQuery
     {
         parent::init();
 
-        $this->andWhere(['[[code]]' => \Yii::$app->controller->module->params['applicable_specialisation_codes']]);
+        $this->andWhere(['[[code]]' => \Yii::$app->controller->module->params['applicable-specialisation-codes']]);
         return $this;
     }
 }

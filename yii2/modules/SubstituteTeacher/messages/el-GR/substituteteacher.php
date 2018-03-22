@@ -51,6 +51,7 @@ return [
     'Calls' => 'Προσκλήσεις προσλήψεων',
     'Cancel' => 'Άκυρο',
     'Cannot locate the corresponding position.' => 'Δεν εντοπίστηκε το κενό',
+    'Choose call' => 'Επιλογή πρόσκλησης',
     'Choose...' => 'Επιλέξτε...',
     'City' => 'Πόλη',
     'Clear all data and import? Are you certain?' => 'Καθάρισμα όλων των δεδομένων και εισαγωγή; Είστε βέβαιοι;',

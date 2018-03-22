@@ -9,6 +9,9 @@ use app\modules\SubstituteTeacher\models\Prefecture;
 use app\modules\SubstituteTeacher\models\CallPosition;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\Call;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
+use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
+use yii\db\Expression;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -89,19 +92,14 @@ class BridgeController extends \yii\web\Controller
     /**
      * Choose a call and send relevant data to applications frontend.
      *
-     * TODO: param int call_id for the selection of positions
-     * TODO: param int year for the selection of teachers OR add year to call!
-     *      REAL SCENARIO : The operator will select the teachers that should be applicable!!!
+     * @param int|null call_id 
      */
     public function actionSend($call_id = 0)
     {
         $call_model = Call::findOne(['id' => $call_id]);
+        // if call is selected, collect positions, prefectures, teachers and placement preferences
         if (!empty($call_model)) {
-            $call_id = 2;
-            $year = 2017;
-            // TODO ADD HOW MANY TEACHERS FROM WHICH TEACHER BOARDS ?
-
-            // collect positions, prefectures, teachers and placement preferences
+            // no filtering on prefectures; catalogue only
             $prefectures = Prefecture::find()->all();
             $prefecture_substitutions = [];
             $prefectures = array_map(function ($k) use ($prefectures, &$prefecture_substitutions) {
@@ -110,18 +108,56 @@ class BridgeController extends \yii\web\Controller
                 return array_merge(['index' => $index], $prefectures[$k]->toApi());
             }, array_keys($prefectures));
 
+            // collect the call positions of the specific call
             $call_positions = CallPosition::findOnePerGroup($call_id);
             $call_positions = array_map(function ($k) use ($call_positions, $prefecture_substitutions) {
                 $index = $k + 1;
                 return array_merge(['index' => $index], $call_positions[$k]->toApi($prefecture_substitutions));
             }, array_keys($call_positions));
 
-            // TODO must incorporate teacher board into logic...
-            $teachers = Teacher::find()
-                ->year($year)
-                ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
-                ->joinWith(['registry', 'registry.specialisations'])
-                ->all();
+            // get the teachers that meet the following criteria:
+            // - they belong to the relevant boards (year / specialisation)
+            // - they are eligible for appointment 
+            // - they have priority for appointment (top X in board) 
+            // To avoid huge joins, get the list of applicable specialisations prior to selecting teachers 
+            $teachers = [];
+            $teacherboard_table = TeacherBoard::tableName();
+            $call_teacher_specialisations = $call_model->callTeacherSpecialisations;
+            if (empty($call_teacher_specialisations)) {
+                // no teachers wanted...
+                $call_teacher_specialisations = [];
+            }
+            // keep track of specialisations and counts of teachers
+            $teacher_counts = [];
+            // $call_specialisations = array_map(function ($m) {
+            //     return $m->specialisation_id;
+            // }, $call_model->callTeacherSpecialisations);
+            // Get the list per specialisation and combine all teachers 
+            foreach ($call_teacher_specialisations as $call_teacher_specialisation) {
+                $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
+                $call_specialisation_teachers = Teacher::find()
+                    ->year($call_model->year)
+                    ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
+                    ->joinWith(['boards', 'registry', 'registry.specialisations'])
+                    ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => $call_teacher_specialisation->specialisation_id])
+                    ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => new Expression(TeacherRegistrySpecialisation::tableName() . '.[[specialisation_id]]')])
+                    ->orderBy([
+                        "{$teacherboard_table}.[[board_type]]" => SORT_ASC,
+                        "{$teacherboard_table}.[[order]]" => SORT_DESC,
+                        "{$teacherboard_table}.[[points]]" => SORT_DESC, // in case order is not used
+                    ])
+                    ->limit($extra_wanted)
+                    ->all();
+                    // keep track of specialisations and counts of teachers
+                    $teacher_counts[] = [
+                        'specialisation' => $call_teacher_specialisation->specialisation->label,
+                        'wanted' => $call_teacher_specialisation->teachers,
+                        'extra_wanted' => $extra_wanted,
+                        'available' => count($call_specialisation_teachers)
+                    ];
+                    $teachers = array_merge($teachers, $call_specialisation_teachers);
+            }
+
             $placement_preferences = [];
             $walk = array_walk($teachers, function ($m, $k) use (&$placement_preferences) {
                 $placement_preferences = array_merge($placement_preferences, $m->placementPreferences);
@@ -168,6 +204,6 @@ class BridgeController extends \yii\web\Controller
             }
         }
 
-        return $this->render('send', compact('call_model', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'count_call_positions', 'count_placement_preferences'));
+        return $this->render('send', compact('call_model', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences'));
     }
 }

@@ -46,11 +46,11 @@ use yii\widgets\ActiveForm;
                 <?= Yii::t('substituteteacher', 'Calls') ?>
             </div>
             <div class="col-sm-6">
-                <?= Html::dropDownList('call_id', $call_model ? $call_model->id : null, \app\modules\SubstituteTeacher\models\Call::defaultSelectables(), ['class' => 'form-control']) ?>
+                <?= Html::dropDownList('call_id', $call_model ? $call_model->id : null, \app\modules\SubstituteTeacher\models\Call::defaultSelectables(), ['class' => 'form-control', 'prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
             </div>
             <div class="col-sm-3">
                     <?=
-                    Html::submitButton(Yii::t('substituteteacher', 'Choose'), [
+                    Html::submitButton(Yii::t('substituteteacher', 'Choose call'), [
                         'class' => 'btn btn-primary',
                     ])
                     ?>
@@ -91,6 +91,20 @@ use yii\widgets\ActiveForm;
                     <?= $count_teachers ?>
                 </td>
             </tr>
+            <?php foreach ($teacher_counts as $tc) : ?>
+            <tr>
+                <td><?php echo $tc['specialisation']; ?>: θέσεις αναπληρωτών</td>
+                <td><?= $tc['wanted'] ?></td>
+            </tr>
+            <tr>
+                <td><?php echo $tc['specialisation']; ?>: αναζητήθηκαν</td>
+                <td><?= $tc['extra_wanted'] ?></td>
+            </tr>
+            <tr class="<?= intval($tc['available']) < intval($tc['extra_wanted']) ? 'danger' : 'success' ?>">
+                <td><?php echo $tc['specialisation']; ?>: εντοπίστηκαν</td>
+                <td><?= $tc['available'] ?></td>
+            </tr>
+            <?php endforeach; ?>
             <tr>
                 <th>Προτιμήσεις τοποθέτησης</th>
                 <td>
