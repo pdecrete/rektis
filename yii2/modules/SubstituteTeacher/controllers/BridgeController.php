@@ -13,6 +13,8 @@ use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
 use yii\db\Expression;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
+use yii\web\NotFoundHttpException;
+use yii\data\ArrayDataProvider;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -56,9 +58,13 @@ class BridgeController extends \yii\web\Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['remote-status', 'receive', 'send'],
+                        'actions' => ['remote-status', 'receive', 'send', 'fetch'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
@@ -88,6 +94,28 @@ class BridgeController extends \yii\web\Controller
     public function actionReceive()
     {
         return $this->render('receive');
+    }
+
+    /**
+     * @throws NotFoundHttpException if the fetch data cannot be found
+     */
+    public function actionFetch($what)
+    {
+        switch ($what) {
+            case 'teacher':
+                $ids = array_filter(explode(',', \Yii::$app->request->post('ids', '')));
+                $dataProvider = new ArrayDataProvider([
+                    'allModels' => Teacher::find()
+                        ->where(['id' => $ids])
+                        ->all(),
+                    'pagination' => false,
+                ]);
+                return $this->renderAjax('_teacher_list', compact('dataProvider'));
+                break;
+            default:
+                throw new NotFoundHttpException();
+                break;
+        }
     }
 
     /**
@@ -175,6 +203,9 @@ class BridgeController extends \yii\web\Controller
                 $placement_preferences = array_merge($placement_preferences, $m->placementPreferences);
             });
             $teacher_substitutions = [];
+            $teacher_ids = array_map(function ($m) {
+                return $m->id;
+            }, $teachers);
             $teachers = array_map(function ($k) use ($teachers, &$teacher_substitutions) {
                 $index = $k + 1;
                 $teacher_substitutions[$index] = $teachers[$k]->id;
@@ -216,6 +247,6 @@ class BridgeController extends \yii\web\Controller
             }
         }
 
-        return $this->render('send', compact('call_model', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences'));
+        return $this->render('send', compact('call_model', 'teacher_ids', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences'));
     }
 }

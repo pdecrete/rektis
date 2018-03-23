@@ -3,8 +3,8 @@
 use yii\bootstrap\Html;
 use yii\helpers\VarDumper;
 use yii\widgets\ActiveForm;
+use yii\web\View;
 
-/* @var $this yii\web\View */
 ?>
     <h1>Αποστολή στοιχείων</h1>
 
@@ -71,7 +71,7 @@ use yii\widgets\ActiveForm;
     <table class="table table-bordered table-hover">
         <tbody>
             <tr>
-                <th class="col-sm-6">Ζητούμενες προσλήψεις αναπληρωτών</th>
+                <th class="col-sm-4">Ζητούμενες προσλήψεις αναπληρωτών</th>
                 <td>
                     <?= implode('<br/>', array_map(function ($m) {
                             return "{$m->teachers}, {$m->specialisation->label}";
@@ -88,7 +88,50 @@ use yii\widgets\ActiveForm;
             <tr>
                 <th>Αναπληρωτές</th>
                 <td>
-                    <?= $count_teachers ?>
+                <?= $count_teachers ?>
+                <?php if (!empty($teacher_ids)) : ?>
+                <?= 
+                    Html::a(Yii::t('substituteteacher', 'Display teachers list'), '#', [
+                        'class' => 'btn btn-sm btn-info',
+                        'id' => 'teachers-list-btn'
+                    ])
+                ?>
+                <div id="teachers-list-placeholder" style="padding-top: 1em;">
+                    <?php
+                        $options = [
+                            'title' => Yii::t('substituteteacher', 'List of teachers'),
+                            'subtitle' => Yii::t('substituteteacher', 'Selected for call'),
+                            'type' => 'info',
+                            'toolsTemplate' => '{myclose}',
+                            'toolsButtons' => [
+                                'myclose' => function() {
+                                    $options = [
+                                        'class' => 'btn btn-box-tool',
+                                        'data' => [
+                                            'widget' => 'remove',
+                                        ],
+                                    ];
+                                    return Html::button('X', $options);
+                                },
+                            ],
+                            'invisible' => false,
+                            'bodyLoad' => ['fetch', 'what' => 'teacher'],
+                            'autoload' => false,
+                            'hidden' => true,
+                            'data' => [
+                                'ids' => implode(',', $teacher_ids)
+                            ],
+                            // 'clientOptions' => [
+                            //    'autoload' => true, // modify this with the general option not here though
+                            //    'onerror' => new \yii\web\JsExpression('function(response, box, xhr) {console.log(response,box,xhr)}'), // loads the error message in the box by default
+                            //    'onload' => new \yii\web\JsExpression('function(box, status) { console.log(box,status); }'), // nothing by default
+                            // ],
+                            'classes' => ['box', 'box-flat', 'box-init'],
+                        ];
+                    ?>
+                    <?= marekpetras\yii2ajaxboxwidget\Box::widget($options); ?>
+                </div>
+                <?php endif; ?>
                 </td>
             </tr>
             <?php foreach ($teacher_counts as $tc) : ?>
@@ -206,4 +249,15 @@ use yii\widgets\ActiveForm;
     </div>
     <?php endif; ?>
     <?php endif; ?>
-    
+
+<?php 
+$teachers_load_btn_js = <<< TEACHERS_LOAD_BTN
+$('#teachers-list-btn').on('click', function(e) {
+    e.preventDefault();
+    $('#teachers-list-placeholder .box-init').each(function(){
+        $(this).box('hide').box('reload').box('show');
+    });
+});
+TEACHERS_LOAD_BTN;
+$this->registerJs($teachers_load_btn_js, View::POS_READY, 'teachers-list-display');
+?>
