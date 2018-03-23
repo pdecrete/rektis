@@ -12,6 +12,7 @@ use app\modules\SubstituteTeacher\models\Call;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
 use yii\db\Expression;
+use app\modules\SubstituteTeacher\models\PlacementPreference;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -108,12 +109,16 @@ class BridgeController extends \yii\web\Controller
                 return array_merge(['index' => $index], $prefectures[$k]->toApi());
             }, array_keys($prefectures));
 
-            // collect the call positions of the specific call
+            // collect the call positions of the specific call; 
+            // also get prefectures that will be used to filter teachers
+            $call_positions_prefectures = [];
             $call_positions = CallPosition::findOnePerGroup($call_id);
-            $call_positions = array_map(function ($k) use ($call_positions, $prefecture_substitutions) {
+            $call_positions = array_map(function ($k) use (&$call_positions_prefectures, $call_positions, $prefecture_substitutions) {
                 $index = $k + 1;
+                $call_positions_prefectures[] = $call_positions[$k]->position->prefecture_id;
                 return array_merge(['index' => $index], $call_positions[$k]->toApi($prefecture_substitutions));
             }, array_keys($call_positions));
+            $call_positions_prefectures = array_unique($call_positions_prefectures);
 
             // get the teachers that meet the following criteria:
             // - they belong to the relevant boards (year / specialisation)
@@ -129,35 +134,42 @@ class BridgeController extends \yii\web\Controller
             }
             // keep track of specialisations and counts of teachers
             $teacher_counts = [];
-            // $call_specialisations = array_map(function ($m) {
-            //     return $m->specialisation_id;
-            // }, $call_model->callTeacherSpecialisations);
             // Get the list per specialisation and combine all teachers 
             foreach ($call_teacher_specialisations as $call_teacher_specialisation) {
                 $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
-                $call_specialisation_teachers = Teacher::find()
+                $call_specialisation_teachers_pool = Teacher::find()
                     ->year($call_model->year)
                     ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
-                    ->joinWith(['boards', 'registry', 'registry.specialisations'])
+                    ->joinWith(['boards', 'registry', 'registry.specialisations', 'placementPreferences'])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => $call_teacher_specialisation->specialisation_id])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => new Expression(TeacherRegistrySpecialisation::tableName() . '.[[specialisation_id]]')])
+                    ->andWhere([PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_positions_prefectures])
                     ->orderBy([
                         "{$teacherboard_table}.[[board_type]]" => SORT_ASC,
-                        "{$teacherboard_table}.[[order]]" => SORT_DESC,
-                        "{$teacherboard_table}.[[points]]" => SORT_DESC, // in case order is not used
+                        "{$teacherboard_table}.[[order]]" => SORT_ASC,
+                        "{$teacherboard_table}.[[points]]" => SORT_ASC, // in case order is not used
                     ])
-                    ->limit($extra_wanted)
+                    ->select([Teacher::tableName() . ".[[id]]"]);
+                $call_specialisation_teachers = Teacher::find()
+                    ->where(['id' => (new \yii\db\Query())
+                        ->select(['id'])
+                        ->distinct()
+                        ->from(['au' => $call_specialisation_teachers_pool])
+                    ])
+                    ->limit($extra_wanted) // only get the number of teachers wanted
                     ->all();
-                    // keep track of specialisations and counts of teachers
-                    $teacher_counts[] = [
-                        'specialisation' => $call_teacher_specialisation->specialisation->label,
-                        'wanted' => $call_teacher_specialisation->teachers,
-                        'extra_wanted' => $extra_wanted,
-                        'available' => count($call_specialisation_teachers)
-                    ];
-                    $teachers = array_merge($teachers, $call_specialisation_teachers);
-            }
 
+                // keep track of specialisations and counts of teachers
+                $teacher_counts[] = [
+                    'specialisation' => $call_teacher_specialisation->specialisation->label,
+                    'wanted' => $call_teacher_specialisation->teachers,
+                    'extra_wanted' => $extra_wanted,
+                    'available' => count($call_specialisation_teachers)
+                ];
+                // TODO make list unique in case of duplicates due to other specialisations ? 
+                // TODO what happens when a teacher is selected from one board but not from anothr where he also is eligible?
+                $teachers = array_merge($teachers, $call_specialisation_teachers);
+            }
             $placement_preferences = [];
             $walk = array_walk($teachers, function ($m, $k) use (&$placement_preferences) {
                 $placement_preferences = array_merge($placement_preferences, $m->placementPreferences);

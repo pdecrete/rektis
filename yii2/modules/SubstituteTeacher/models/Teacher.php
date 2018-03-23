@@ -74,7 +74,7 @@ class Teacher extends \yii\db\ActiveRecord
     public function getPlacementPreferences()
     {
         return $this->hasMany(PlacementPreference::className(), ['teacher_id' => 'id'])
-            ->orderBy(['[[order]]' => SORT_ASC]);
+            ->orderBy([PlacementPreference::tableName() . '.[[order]]' => SORT_ASC]);
     }
 
     /**
