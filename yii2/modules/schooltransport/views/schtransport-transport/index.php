@@ -4,6 +4,7 @@ use app\modules\schooltransport\Module;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -29,12 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
 				    foreach ($programcategs as $key=>$programcateg){
 				        echo "<ul>";
 				        if(count($programcateg) == 0)
-				            echo "<li><strong><a href=''>{$key}</a></strong></li>";
+				            echo "<li><strong><a href=" . Url::to('create', $key) . ">{$programcateg['TITLE']}</a></strong></li>";
 				        else {
- 				            echo "<li><strong>" . $key . "</strong></li>";
+				            echo "<li><strong>{$programcateg['TITLE']}</strong></li>";
 				            echo "<ul>";
-				            foreach ($programcateg as $subcateg)
-				                echo "<li><a href=''>" . $subcateg['programcategory_programtitle']  . "</a></li>";
+				            foreach ($programcateg['SUBCATEGS'] as $subcateg)
+				                echo "<li><a href=" . Url::to(['create', 'id' => $subcateg['programcategory_id']]) . ">" . $subcateg['programcategory_programtitle']  . "</a></li>";
 			                echo "</ul>";				                
 				        }
 				        echo "</ul>";

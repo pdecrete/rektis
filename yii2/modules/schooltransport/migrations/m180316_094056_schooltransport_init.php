@@ -28,7 +28,8 @@ class m180316_094056_schooltransport_init extends Migration
                              `programcategory_programtitle` VARCHAR(200) NOT NULL COMMENT 'Τίτλος Δράσης',
                              `programcategory_programdescription` VARCHAR(400) COMMENT 'Περιγραφή Δράσης',
                              `programcategory_programparent` INTEGER,
-                              PRIMARY KEY (`programcategory_id`)
+                              PRIMARY KEY (`programcategory_id`),
+                              UNIQUE KEY (`programcategory_programtitle`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_programcategory'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -52,7 +53,8 @@ class m180316_094056_schooltransport_init extends Migration
                              `program_code` VARCHAR(100) COMMENT 'Κωδικός Προγράμματος',
                              `programcategory_id` INTEGER NOT NULL,
                               FOREIGN KEY (`programcategory_id`) REFERENCES " . $dbTrnsprtTables['table_programcategory'] . "(`programcategory_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              PRIMARY KEY (`program_id`)
+                              PRIMARY KEY (`program_id`),
+                              UNIQUE KEY (`program_code`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_programcategory'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -81,7 +83,9 @@ class m180316_094056_schooltransport_init extends Migration
                           " (`directorate_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `directorate_name` VARCHAR(200) NOT NULL,
                              `directorate_shortname` VARCHAR(100),
-                              PRIMARY KEY (`directorate_id`)
+                              PRIMARY KEY (`directorate_id`),
+                              UNIQUE KEY (`directorate_name`),
+                              UNIQUE KEY (`directorate_shortname`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_directorate'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -103,7 +107,8 @@ class m180316_094056_schooltransport_init extends Migration
                              `school_name` VARCHAR(200) NOT NULL COMMENT 'Σχολείο',
                              `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Σχολείου',
                               FOREIGN KEY (`directorate_id`) REFERENCES " . $dbTrnsprtTables['table_directorate'] . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              PRIMARY KEY (`school_id`)
+                              PRIMARY KEY (`school_id`),
+                              UNIQUE KEY (`school_name`, `directorate_id`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_school'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -115,7 +120,7 @@ class m180316_094056_schooltransport_init extends Migration
         /* CREATE TABLE admapp_trnsprt_transport */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_transport'] .
                           " (`transport_id` INTEGER NOT NULL AUTO_INCREMENT,
-                             `transport_submissiondate` DATE NOT NULL COMMENT 'Ημερομηνία Αίτησης Έγκρισης',
+                             `transport_submissiondate` DATE COMMENT 'Ημερομηνία Αίτησης Έγκρισης',
                              `transport_startdate` DATE NOT NULL COMMENT 'Έναρξη Μετακίνησης',
                              `transport_enddate` DATE NOT NULL COMMENT 'Λήξη Μετακίνησης',
                              `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι Εκπαιδευτικοί',

@@ -327,7 +327,7 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Σχολικές Μονάδες',
-                            'url' => ['/schooltransport/default']
+                            'url' => ['/schooltransport/schoolunit']
                         ],
                         
                     ],

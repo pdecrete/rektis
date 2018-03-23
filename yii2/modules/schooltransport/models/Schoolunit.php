@@ -33,6 +33,7 @@ class Schoolunit extends \yii\db\ActiveRecord
             [['school_name', 'directorate_id'], 'required'],
             [['directorate_id'], 'integer'],
             [['school_name'], 'string', 'max' => 200],
+            [['school_name', 'directorate_id'], 'unique', 'targetAttribute' => ['school_name', 'directorate_id'], 'message' => 'The combination of Σχολείο and Διεύθυνση Εκπαίδευσης Σχολείου has already been taken.'],
             [['directorate_id'], 'exist', 'skipOnError' => true, 'targetClass' => Directorate::className(), 'targetAttribute' => ['directorate_id' => 'directorate_id']],
         ];
     }
@@ -63,5 +64,14 @@ class Schoolunit extends \yii\db\ActiveRecord
     public function getSchtransportTransports()
     {
         return $this->hasMany(SchtransportTransport::className(), ['school_id' => 'school_id']);
+    }
+
+    /**
+     * @inheritdoc
+     * @return SchoolunitQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new SchoolunitQuery(get_called_class()); 
     }
 }

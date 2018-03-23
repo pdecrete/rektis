@@ -11,13 +11,17 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'View Transportations'), 'url' => ['/schooltransport/schtransport-transport']];
 $this->title = Module::t('modules/schooltransport/app', 'Create Transportation');
 $this->params['breadcrumbs'][] = $this->title;
+
+//echo "<pre>"; print_r($schools); echo "</pre>";die();
 ?>
 <div class="schtransport-transport-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+    <?= $this->render('_form', ['model' => $model,
+                                'meeting_model' => $meeting_model,
+                                'program_model' => $program_model,
+                                'meetings' => $meetings,
+                                'schools' => $schools]) ?>
 
 </div>

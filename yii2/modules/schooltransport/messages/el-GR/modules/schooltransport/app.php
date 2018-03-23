@@ -32,5 +32,7 @@ return [
     'The school unit was updated successfully' => 'Η σχολική μονάδα ενημερώθηκε επιτυχώς',
     'Failure in updating school unit' => 'Αποτυχία ενημέρωσης σχολικής μονάδας',
     'Failure in deleting school unit' => 'Αποτυχία διαγραφής της σχολικής μονάδας',
-    'The school unit was deleted successfully' => 'Η σχολική μονάδα διαγράφηκε επιτυχώς'
+    'The school unit was deleted successfully' => 'Η σχολική μονάδα διαγράφηκε επιτυχώς',
+    'Failure in creating the school transportation.' => 'Αποτυχία δημιουργίας της σχολικής μετακίνησης.',
+    'The school transport was created successfully.' => 'Η σχολική μετακίνησης δημιουργήθηκε επιτυχώς.'
 ];

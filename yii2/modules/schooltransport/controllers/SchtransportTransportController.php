@@ -11,6 +11,9 @@ use yii\web\NotFoundHttpException;
 use yii\base\Exception;
 use yii\filters\VerbFilter;
 use app\modules\schooltransport\models\SchtransportProgramcategory;
+use app\modules\schooltransport\models\SchtransportMeeting;
+use app\modules\schooltransport\models\SchtransportProgram;
+use app\modules\schooltransport\models\Schoolunit;
 
 /**
  * SchtransportTransportController implements the CRUD actions for SchtransportTransport model.
@@ -44,7 +47,8 @@ class SchtransportTransportController extends Controller
         $programcategs = array();
         $program_parentcategs = SchtransportProgramcategory::findAll(['programcategory_programparent' => NULL]);
         foreach ($program_parentcategs as $index=>$parentcateg){
-            $programcategs[$parentcateg['programcategory_programtitle']] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_id']]);
+            $programcategs[$parentcateg['programcategory_id']]['TITLE'] = $parentcateg['programcategory_programtitle'];
+            $programcategs[$parentcateg['programcategory_id']]['SUBCATEGS'] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_id']]);
         }
         //echo "<pre>"; print_r($programcategs); echo "</pre>";
         //die();
@@ -73,24 +77,58 @@ class SchtransportTransportController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
-        $model = new SchtransportTransport();
+        $model = new SchtransportTransport();     
+        $tblprogram = Yii::$app->db->tablePrefix . 'schtransport_program';
+        $tblmeeting = Yii::$app->db->tablePrefix . 'schtransport_meeting';
+        $meetings = SchtransportMeeting::find()->all();//->innerJoin($tblprogram, $tblprogram . 'program_id' . '='. $tblmeeting . 'program_id')->andWhere([$tblprogram . 'programcategory_id' => $id]);
+        $schools = Schoolunit::find()->all();
+        $meeting_model = new SchtransportMeeting();
+        $program_model = new SchtransportProgram();
+        $program_model->programcategory_id = $id;
+        
+        try{                        
+            if ($model->load(Yii::$app->request->post())
+                && $meeting_model->load(Yii::$app->request->post())
+                && $program_model->load(Yii::$app->request->post())){
 
-        try{
-            if ($model->load(Yii::$app->request->post())){ 
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code]) == 0));
+                if(!$program_exists){
+                    if(!$program_model->save()) 
+                        throw new Exception("Failure in creating the transportation");
+                }
+                
+                $meeting_model->program_id = $program_model->program_id;                
+                if(!$meeting_model->save())
+                    throw new Exception("Failure in creating the transportation");
+                                    
+                $model->meeting_id = $meeting_model->meeting_id;                              
                 if(!$model->save())
-                    throw new Exception("Failure in creating the transportation");                
-                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school unit was created successfully"));
+                    throw new Exception("Failure in creating the school transportation.");
+                        
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
                 return $this->redirect(['index']);                
             } 
             else {
-                return $this->render('create', ['model' => $model]);
+                return $this->render('create', ['model' => $model, 
+                                                'meeting_model' => $meeting_model, 
+                                                'program_model' => $program_model, 
+                                                'meetings' => $meetings, 
+                                                'schools' => $schools]);
             }
         }
         catch(Exception $exc){
+            $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            //return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);
+            return $this->redirect('create', [  'model' => $model,
+                                                'meeting_model' => $meeting_model,
+                                                'program_model' => $program_model,
+                                                'meetings' => $meetings,
+                                                'schools' => $schools]);
         }
     }
 

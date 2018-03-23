@@ -35,7 +35,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_teachers', 'meeting_id', 'school_id'], 'required'],
+            [['transport_startdate', 'transport_enddate', 'transport_teachers', 'meeting_id', 'school_id'], 'required'],
             [['transport_submissiondate', 'transport_startdate', 'transport_enddate'], 'safe'],
             [['meeting_id', 'school_id'], 'integer'],
             [['transport_teachers'], 'string', 'max' => 1000],
