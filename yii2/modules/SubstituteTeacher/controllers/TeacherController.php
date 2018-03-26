@@ -157,17 +157,16 @@ class TeacherController extends Controller
         $modelsPlacementPreferences = [new PlacementPreference];
 
         if ($model->load(Yii::$app->request->post())) {
-            //  && $model->save()) {
+            $post = \Yii::$app->request->post();
+
+            if (isset($post['PlacementPreference'])) {
+                $post['PlacementPreference'] = array_values($post['PlacementPreference']);
+            }
             $modelsPlacementPreferences = Model::createMultiple(PlacementPreference::classname(), $modelsPlacementPreferences);
             Model::loadMultiple($modelsPlacementPreferences, Yii::$app->request->post());
 
-            array_walk($modelsPlacementPreferences, function ($m) {
-                $m->setScenario(PlacementPreference::SCENARIO_MASS_UPDATE);
-            });
-
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
             $valid = PlacementPreference::checkRules($modelsPlacementPreferences) && $valid;
@@ -176,8 +175,16 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        $id = $model->id;
+                        array_walk($modelsPlacementPreferences, function ($m) use ($id) {
+                            $m->setScenario(PlacementPreference::SCENARIO_MASS_UPDATE);
+                            $m->teacher_id = $id;
+                        });
+
+                        // $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
+
                         foreach ($modelsPlacementPreferences as $modelPlacementPreference) {
-                            if (! ($flag = $modelPlacementPreference->save(false))) {
+                            if (! ($flag = $modelPlacementPreference->save())) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -195,23 +202,18 @@ class TeacherController extends Controller
                 }
             }
         }
-
+// dd(array_map(function ($m) {
+//     return $m->getAttributes();
+// }, $modelsPlacementPreferences));
         return $this->render('create', [
             'model' => $model,
             'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
         ]);
     }
 
-    /**
-     * Updates an existing Teacher model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
+    protected function getModelsBoards($model)
     {
-        $model = $this->findModel($id);
-        $modelsPlacementPreferences = ($model->placementPreferences ? $model->placementPreferences : [new PlacementPreference]);
+        $id = $model->id; 
 
         $specialisations = array_map(function ($m) {
             return $m->id;
@@ -232,7 +234,23 @@ class TeacherController extends Controller
             }, $missing_specialisations));
         }
 
+        return $modelsBoards;
+    }
+    /**
+     * Updates an existing Teacher model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $modelsPlacementPreferences = ($model->placementPreferences ? $model->placementPreferences : [new PlacementPreference]);
+
+        $modelsBoards = $this->getModelsBoards($model);
+
         if ($model->load(Yii::$app->request->post())) {
+            $post = \Yii::$app->request->post();
             $modelsBoards = Model::createMultiple(TeacherBoard::classname(), $modelsBoards);
             // need to feed the teacher id 
             array_walk($modelsBoards, function (&$m, $k) use ($id) {
@@ -240,11 +258,14 @@ class TeacherController extends Controller
                     $m->teacher_id = $id;
                 }
             });
-            Model::loadMultiple($modelsBoards, Yii::$app->request->post());
+            Model::loadMultiple($modelsBoards, $post);
 
+            if (isset($post['PlacementPreference'])) {
+                $post['PlacementPreference'] = array_values($post['PlacementPreference']);
+            }
             $oldIDs = ArrayHelper::map($modelsPlacementPreferences, 'id', 'id');
             $modelsPlacementPreferences = Model::createMultiple(PlacementPreference::classname(), $modelsPlacementPreferences);
-            Model::loadMultiple($modelsPlacementPreferences, Yii::$app->request->post());
+            Model::loadMultiple($modelsPlacementPreferences, $post);
             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsPlacementPreferences, 'id', 'id')));
 
             array_walk($modelsPlacementPreferences, function ($m) use ($id) {
@@ -274,7 +295,8 @@ class TeacherController extends Controller
                                 }
                                 continue;
                             }
-                            if (! ($flag = $modelBoard->save(false))) {
+
+                            if (! ($flag = $modelBoard->save())) {
                                 $transaction->rollBack();
                                 break;
                             }

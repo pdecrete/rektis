@@ -10,20 +10,16 @@ use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 
-/* @var $this yii\web\View */
-/* @var $model app\modules\SubstituteTeacher\models\Teacher */
-/* @var $form yii\widgets\ActiveForm */
-
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-    jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+    jQuery(".dynamicform_wrapper .panel-serial-number").each(function(index) {
+        jQuery(this).html("" + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
-    jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+    jQuery(".dynamicform_wrapper .panel-serial-number").each(function(index) {
+        jQuery(this).html("" + (index + 1))
     });
 });
 ';
@@ -61,13 +57,16 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
             <?php echo Yii::t('substituteteacher', 'Teacher boards'); ?>
         </div>
         <div class="panel-body">
-            <?php if (empty($modelsBoards)) : ?>
+            <?php if (!isset($modelsBoards)) : ?>
+            <p>Μπορείτε να προσθέσετε στοιχεία πινάκων διορισμών <strong>μετά την δημιουργία</strong>.</p>
+            <?php elseif (empty($modelsBoards)) : ?>
             <p>Δεν υπάρχουν στοιχεία.</p>
             <?php else: ?>
             <?php 
             $firstModelBoard = reset($modelsBoards);
             ?>
             <table class="table table-striped table-hover">
+                <caption>Εάν ο καθηγητής δεν υπάγεται σε πίνακα κάποιας ειδικότητας, εισάγετε κενό στην αντίστοιχη σειρά κατάταξης στον πίνακα και στα μόρια και αφαιρέστε την επιλογή τύπου πίνακα διορισμού.</caption>
                 <thead>
                     <tr>
                         <th><?php echo Yii::t('substituteteacher', 'Order in board'); ?></th>
@@ -117,7 +116,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
         'widgetContainer' => 'dynamicform_wrapper',
         'widgetBody' => '.container-items',
         'widgetItem' => '.item',
-        'min' => 0,
+        'min' => 1,
         'insertButton' => '.add-item',
         'deleteButton' => '.remove-item',
         'model' => $firstModelPlacementPreference,
@@ -140,6 +139,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <th class="col-xs-1">#</th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('prefecture_id'); ?></th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('school_type'); ?></th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('order'); ?></th>
@@ -149,6 +149,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                 <tbody class="container-items">
                 <?php foreach ($modelsPlacementPreferences as $index => $modelPlacementPreference): ?>
                     <tr class="item">
+                        <td><span class="badge panel-serial-number"><?php echo $index + 1; ?></span></td>
                         <td>
                             <?php
                                 // necessary for update action.
