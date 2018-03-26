@@ -10,7 +10,8 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\modules\schooltransport\models\SchtransportTransport */
 /* @var $form yii\widgets\ActiveForm */
-//echo "<pre>"; print_r($schools); echo "</pre>";die();
+//echo "<pre>"; print_r($model); echo "</pre>";die();
+//echo "I am here"; die();
 ?>
 
 <div class="schtransport-transport-form col-lg-6">

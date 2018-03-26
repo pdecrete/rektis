@@ -88,50 +88,51 @@ class SchtransportTransportController extends Controller
         $program_model = new SchtransportProgram();
         $program_model->programcategory_id = $id;
         
-        try{                        
+        try{
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
-
+            
                 $transaction = Yii::$app->db->beginTransaction();
-
-                $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code]) == 0));
+                
+                $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if(!$program_exists){
-                    if(!$program_model->save()) 
+                    if(!$program_model->save())
                         throw new Exception("Failure in creating the transportation");
                 }
                 
-                $meeting_model->program_id = $program_model->program_id;                
+                $meeting_model->program_id = $program_model->program_id;
                 if(!$meeting_model->save())
                     throw new Exception("Failure in creating the transportation");
-                                    
-                $model->meeting_id = $meeting_model->meeting_id;                              
+                    
+                $model->meeting_id = $meeting_model->meeting_id;
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
-                        
+                    
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
-                return $this->redirect(['index']);                
-            } 
+                return $this->redirect(['index']); 
+            }
             else {
-                return $this->render('create', ['model' => $model, 
-                                                'meeting_model' => $meeting_model, 
-                                                'program_model' => $program_model, 
-                                                'meetings' => $meetings, 
-                                                'schools' => $schools]);
+                return $this->render('create', [ 'model' => $model,
+                    'meeting_model' => $meeting_model,
+                    'program_model' => $program_model,
+                    'meetings' => $meetings,
+                    'schools' => $schools]);
             }
         }
         catch(Exception $exc){
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('create', [  'model' => $model,
-                                                'meeting_model' => $meeting_model,
-                                                'program_model' => $program_model,
-                                                'meetings' => $meetings,
-                                                'schools' => $schools]);
+            return $this->redirect('create', [   'model' => $model,
+                'meeting_model' => $meeting_model,
+                'program_model' => $program_model,
+                'meetings' => $meetings,
+                'schools' => $schools]);
         }
     }
-
+    
+    
     /**
      * Updates an existing SchtransportTransport model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -141,13 +142,52 @@ class SchtransportTransportController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);
+        $schools = Schoolunit::find()->all();
+        $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
+        $meetings = SchtransportMeeting::find()->all();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transport_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        try{
+            if ($model->load(Yii::$app->request->post())
+                && $meeting_model->load(Yii::$app->request->post())
+                && $program_model->load(Yii::$app->request->post())){
+                    
+                $transaction = Yii::$app->db->beginTransaction();
+                
+                $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
+                if(!$program_exists){
+                    if(!$program_model->save())
+                        throw new Exception("Failure in creating the transportation");
+                }
+                
+                $meeting_model->program_id = $program_model->program_id;
+                if(!$meeting_model->save())
+                    throw new Exception("Failure in creating the transportation");
+                
+                $model->meeting_id = $meeting_model->meeting_id;
+                if(!$model->save())
+                    throw new Exception("Failure in creating the school transportation.");
+                    
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
+                return $this->redirect(['index']); 
+            }
+            else {
+                return $this->render('update', [ 'model' => $model,
+                    'meeting_model' => $meeting_model,
+                    'program_model' => $program_model,
+                    'meetings' => $meetings,
+                    'schools' => $schools]);
+            }
+        }
+        catch(Exception $exc){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            return $this->redirect('update', [   'model' => $model,
+                'meeting_model' => $meeting_model,
+                'program_model' => $program_model,
+                'meetings' => $meetings,
+                'schools' => $schools]);
         }
     }
 
@@ -159,8 +199,28 @@ class SchtransportTransportController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $meeting_model = $model->getMeeting()->one();
+         
+        try{
+            $transaction = Yii::$app->db->beginTransaction();
 
+            if(!$model->delete())
+                throw new Exception('Failure in deleting the school transport.');
+
+            if(!$meeting_model->delete())
+                throw new Exception('Failure in deleting the school transport.');
+                
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was deleted successfully."));
+            return $this->redirect(['index']); 
+        }
+        catch (Exception $exc){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
+            return $this->redirect('index');
+        }
+        
         return $this->redirect(['index']);
     }
 

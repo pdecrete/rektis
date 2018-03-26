@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use app\modules\schooltransport\Module;
 use Yii;
 
 /**
@@ -51,14 +52,14 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'transport_id' => Yii::t('app', 'Transport ID'),
-            'transport_submissiondate' => Yii::t('app', 'Ημερομηνία Αίτησης Έγκρισης'),
-            'transport_startdate' => Yii::t('app', 'Έναρξη Μετακίνησης'),
-            'transport_enddate' => Yii::t('app', 'Λήξη Μετακίνησης'),
-            'transport_teachers' => Yii::t('app', 'Μετακινούμενοι Εκπαιδευτικοί'),
-            'transport_students' => Yii::t('app', 'Μετακινούμενοι Μαθητές'),
-            'meeting_id' => Yii::t('app', 'Meeting ID'),
-            'school_id' => Yii::t('app', 'School ID'),
+            'transport_id' => Module::t('modules/schooltransport/app', 'Transport ID'),
+            'transport_submissiondate' => Module::t('modules/schooltransport/app', 'Application Date'),
+            'transport_startdate' => Module::t('modules/schooltransport/app', 'Transportation Start Date'),
+            'transport_enddate' => Module::t('modules/schooltransport/app', 'Transportation End Date'),
+            'transport_teachers' => Module::t('modules/schooltransport/app', 'Transportation Teachers'),
+            'transport_students' => Module::t('modules/schooltransport/app', 'Transportation Students'),
+            'meeting_id' => Module::t('modules/schooltransport/app', 'Meeting ID'),
+            'school_id' => Module::t('modules/schooltransport/app', 'School ID'),
         ];
     }
 

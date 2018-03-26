@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use app\modules\schooltransport\Module;
 use Yii;
 
 /**
@@ -44,9 +45,9 @@ class Schoolunit extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'school_id' => Yii::t('app', 'School ID'),
-            'school_name' => Yii::t('app', 'Σχολείο'),
-            'directorate_id' => Yii::t('app', 'Διεύθυνση Εκπαίδευσης Σχολείου'),
+            'school_id' => Module::t('modules/schooltransport/app', 'School ID'),
+            'school_name' => Module::t('modules/schooltransport/app', 'School'),
+            'directorate_id' => Module::t('modules/schooltransport/app', 'Directorate of Education'),
         ];
     }
 

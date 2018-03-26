@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\schooltransport\Module;
+use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -52,18 +53,62 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'transport_id',
-            'transport_submissiondate',
-            'transport_startdate',
-            'transport_enddate',
-            'transport_teachers',
+            ['class' => 'yii\grid\SerialColumn'],              
+            ['attribute' => 'school_name',
+             'label' => Module::t('modules/schooltransport/app', 'School Unit'), 
+            ],
+            ['attribute' => 'meeting_country',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation Country')],
+            ['attribute' => 'meeting_city',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation City')
+            ],
+            ['attribute' => 'transport_startdate',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation Start'),
+             'format' => ['date', 'php:d-m-Y'],
+             'filter' => DateControl::widget([  'model' => $searchModel,
+                                                'attribute' => 'transport_startdate',
+                                                'type' => DateControl::FORMAT_DATE,
+                                                'widgetOptions' => ['layout' => '{remove}{input}'],
+                                            ])
+            ],
+            ['attribute' => 'transport_enddate',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation End'),
+             'format' => ['date', 'php:d-m-Y'],
+             'filter' => DateControl::widget([  'model' => $searchModel,
+                                                'attribute' => 'transport_enddate',
+                                                'type' => DateControl::FORMAT_DATE,
+                                                'widgetOptions' => ['layout' => '{remove}{input}'],
+                                            ])
+            ],
+            ['attribute' => 'meeting_startdate',
+             'label' => Module::t('modules/schooltransport/app', 'Meeting Start'),
+             'format' => ['date', 'php:d-m-Y'],
+             'filter' => DateControl::widget([  'model' => $searchModel,
+                                                'attribute' => 'meeting_startdate',
+                                                'type' => DateControl::FORMAT_DATE,
+                                                'widgetOptions' => ['layout' => '{remove}{input}'],
+                ])
+            ],
+            ['attribute' => 'meeting_enddate',
+             'label' => Module::t('modules/schooltransport/app', 'Meeting End'),
+             'format' => ['date', 'php:d-m-Y'],
+             'filter' => DateControl::widget([  'model' => $searchModel,
+                                                'attribute' => 'meeting_enddate',
+                                                'type' => DateControl::FORMAT_DATE,
+                                                'widgetOptions' => ['layout' => '{remove}{input}'],
+                ])
+            ],
+/*            ['attribute' => 'transport_teachers',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation Teachers')],
+            ['attribute' => 'transport_students',
+             'label' => Module::t('modules/schooltransport/app', 'Transportation Students')],*/
             // 'transport_students',
             // 'meeting_id',
             // 'school_id',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',
+             'contentOptions' => ['class' => 'text-nowrap'],
+            ],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

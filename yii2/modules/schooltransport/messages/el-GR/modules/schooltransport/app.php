@@ -20,6 +20,7 @@ return [
     'School Transportations' => 'Μετακινήσεις Σχολείων',
     'View Transportations' => 'Προβολή Μετακινήσεων',
     'Create Transportation' => 'Δημιουργία Μετακίνησης',
+    'Update Transportation' => 'Επεξεργασία Μετακίνησης',
     'School Units' => 'Σχολικές Μονάδες',
     'View/edit/delete transportations' => 'Προβολή/επεξεργασία/διαγραφή μετακινήσεων',
     'Create a new transportation for a school unit' => 'Δημιουργία νέας μετακίνησης σχολικής μονάδας',
@@ -34,5 +35,16 @@ return [
     'Failure in deleting school unit' => 'Αποτυχία διαγραφής της σχολικής μονάδας',
     'The school unit was deleted successfully' => 'Η σχολική μονάδα διαγράφηκε επιτυχώς',
     'Failure in creating the school transportation.' => 'Αποτυχία δημιουργίας της σχολικής μετακίνησης.',
-    'The school transport was created successfully.' => 'Η σχολική μετακίνησης δημιουργήθηκε επιτυχώς.'
+    'The school transport was created successfully.' => 'Η σχολική μετακίνησης δημιουργήθηκε επιτυχώς.',
+    'The school transport was deleted successfully.' => 'Η σχολική μετακίνηση διαγράφηκε επιτυχώς.',
+    'Failure in deleting the school transport.' => 'Αποτυχία διαγραφής της σχολικής μετακίνησης.',
+    'School Unit' => 'Σχολική Μονάδα',
+    'Transportation Country' => 'Χώρα Μετακίνησης',
+    'Transportation City' => 'Πόλη Μετακίνησης',
+    'Transportation Start' => 'Έναρξη Μετακίνησης',
+    'Transportation End' => 'Λήξη Μετακίνησης',
+    'Meeting Start' => 'Έναρξη Μετακίνησης',
+    'Meeting End' => 'Λήξη Μετακίνησης',
+    'Transportation Teachers' => 'Μετακινούμενοι Εκπαιδευτικοί',
+    'Transportation Students' => 'Μετακινούμενοι Μαθητές'
 ];

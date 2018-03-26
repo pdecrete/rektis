@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -41,12 +42,12 @@ class SchoolunitSearch extends Schoolunit
      */
     public function search($params)
     {
+        $tblprefix = Yii::$app->db->tablePrefix;
         $query = (new \yii\db\Query())
-                    ->select('admapp_schoolunit.*, admapp_directorate.*')
-                    ->from('admapp_schoolunit, admapp_directorate')
-                    ->where('admapp_schoolunit.directorate_id = admapp_directorate.directorate_id');
+                    ->select($tblprefix . 'schoolunit.*,' . $tblprefix . 'directorate.*')
+                    ->from($tblprefix . 'schoolunit,' . $tblprefix . 'directorate')
+                    ->where($tblprefix . 'schoolunit.directorate_id =' . $tblprefix . 'directorate.directorate_id');
         
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
