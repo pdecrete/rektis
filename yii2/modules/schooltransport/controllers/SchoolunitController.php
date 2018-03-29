@@ -137,6 +137,86 @@ class SchoolunitController extends Controller
         
     }
 
+    
+    public function actionMassupdate(){
+        $edu_admins = [ [3, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ"], [5, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ"], [7, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ"], [9, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ"],
+            [2, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ"], [4, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ"], [6, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ"], [8, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ"],
+        ];
+        
+        try{
+            $params = array(
+                "region_edu_admin" => 6,
+                "pagesize" => 500,
+                "page" => 1
+            );
+                        
+            $curl = curl_init();        
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");            
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            
+            $api_url = "https://mm.sch.gr/api/units";
+            curl_setopt($curl, CURLOPT_URL, $api_url); 
+
+            $transaction = Yii::$app->db->beginTransaction();
+            /***************** Περιφερειακή Διεύθυνση ********************/
+            /*
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+            $data = curl_exec($curl);
+            $data = json_decode($data);
+            
+            if(curl_error($curl))
+                throw new \Exception(curl_error($curl));
+                
+            $school_names = $data->data;
+            foreach ($school_names as $school){
+                $school_model = new Schoolunit();
+                $school_model->directorate_id = 1;
+                $school_model->school_mm_id = $school->mm_id;
+                $school_model->school_name = $school->name;
+                $school_model->save();
+            } */          
+            
+            /**************** Διευθύνσεις Α/θμιας & Β/θμιας **************/
+            unset($params['region_edu_admin']);
+            foreach($edu_admins as $edu_admin){
+                $params['edu_admin'] = $edu_admin[1];
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode( $params ));
+                $data = curl_exec($curl);        
+                $data = json_decode($data);
+                
+                //echo $data->pagination->maxPage;
+                
+                if(curl_error($curl))
+                    throw new \Exception(curl_error($curl));
+        
+                $school_names = $data->data;
+                foreach ($school_names as $school){
+                    $school_model = new Schoolunit();
+                    $school_model->directorate_id = $edu_admin[0];
+                    $school_model->school_mm_id = $school->mm_id;
+                    $school_model->school_name = $school->name;
+                    $school_model->save();
+                }
+            }            
+            curl_close($curl);
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The schools' details were updated in the database."));
+            return $this->redirect(['index']);
+        }
+        catch(\Exception $exc){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', $exc->getMessage());
+            return $this->redirect(['index']);
+        }
+    }
+    
+    private function curlUpdate($api_url, $curl_params, $directorate_id){
+        
+    }
+    
+    
     /**
      * Finds the Schoolunit model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

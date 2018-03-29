@@ -19,7 +19,7 @@ class m180316_094056_schooltransport_init extends Migration
             'table_meeting' => $this->db->tablePrefix . 'schtransport_meeting',
             'table_directorate' => $this->db->tablePrefix . 'directorate',
             'table_school' => $this->db->tablePrefix . 'schoolunit',
-            'table_transport' => $this->db->tablePrefix . 'schtransport_transport',            
+            'table_transport' => $this->db->tablePrefix . 'schtransport_transport',
         ];
         $i = 1;
         /* CREATE TABLE admapp_trnsprt_programcategory */
@@ -44,6 +44,7 @@ class m180316_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(7, 'Εκπαιδευτικές Επισκέψεις', '', 3)")->execute();
         Yii::$app->db->createCommand($insert_command . "(8, 'Εκπαιδευτικές Εκδρομές', '', 3)")->execute();
         Yii::$app->db->createCommand($insert_command . "(9, 'Σχολικοί Περίπατοι', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(10, 'Πολυήμερες Εκδρομές στο εξωτερικό', '', NULL)")->execute();
         
         
         /* CREATE TABLE admapp_trnsprt_program */
@@ -105,6 +106,7 @@ class m180316_094056_schooltransport_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_school'] .
                           " (`school_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `school_name` VARCHAR(200) NOT NULL COMMENT 'Σχολείο',
+                             `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
                              `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Σχολείου',
                               FOREIGN KEY (`directorate_id`) REFERENCES " . $dbTrnsprtTables['table_directorate'] . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               PRIMARY KEY (`school_id`),
@@ -113,8 +115,6 @@ class m180316_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_school'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_school'] . "(school_name, directorate_id) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "('Σχολείο Ευρωπαϊκής Παιδείας', 1)")->execute();
         
 
         /* CREATE TABLE admapp_trnsprt_transport */
@@ -133,7 +133,8 @@ class m180316_094056_schooltransport_init extends Migration
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_transport'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
-        Yii::$app->db->createCommand($create_command)->execute();                
+        Yii::$app->db->createCommand($create_command)->execute();
+        
     }
     
     public function safeDown()

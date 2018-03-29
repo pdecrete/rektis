@@ -54,8 +54,8 @@ class SchtransportTransport extends \yii\db\ActiveRecord
         return [
             'transport_id' => Module::t('modules/schooltransport/app', 'Transport ID'),
             'transport_submissiondate' => Module::t('modules/schooltransport/app', 'Application Date'),
-            'transport_startdate' => Module::t('modules/schooltransport/app', 'Transportation Start Date'),
-            'transport_enddate' => Module::t('modules/schooltransport/app', 'Transportation End Date'),
+            'transport_startdate' => Module::t('modules/schooltransport/app', 'Transportation Start'),
+            'transport_enddate' => Module::t('modules/schooltransport/app', 'Transportation End'),
             'transport_teachers' => Module::t('modules/schooltransport/app', 'Transportation Teachers'),
             'transport_students' => Module::t('modules/schooltransport/app', 'Transportation Students'),
             'meeting_id' => Module::t('modules/schooltransport/app', 'Meeting ID'),

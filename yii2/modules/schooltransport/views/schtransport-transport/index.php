@@ -6,12 +6,16 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\helpers\Url;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
 $this->title = Module::t('modules/schooltransport/app', 'School Transportations');
 $this->params['breadcrumbs'][] = $this->title;
+
+//echo "<pre>"; print_r($programcategs); echo "</pre>";die();
+
 ?>
 <div class="schtransport-transport-index">
 
@@ -29,14 +33,15 @@ $this->params['breadcrumbs'][] = $this->title;
       		<div class="row">
 				<?php 
 				    foreach ($programcategs as $key=>$programcateg){
+				        $sep = ($programcateg['PROGRAMCATEG_ID'] == 3);
 				        echo "<ul>";
-				        if(count($programcateg) == 0)
-				            echo "<li><strong><a href=" . Url::to('create', $key) . ">{$programcateg['TITLE']}</a></strong></li>";
+				        if(count($programcateg['SUBCATEGS']) == 0)
+				            echo "<li><strong><a href=" . Url::to(['create', 'id' => $programcateg['PROGRAMCATEG_ID'], 'sep' => $sep]) . ">{$programcateg['TITLE']}</a></strong></li>";
 				        else {
 				            echo "<li><strong>{$programcateg['TITLE']}</strong></li>";
 				            echo "<ul>";
 				            foreach ($programcateg['SUBCATEGS'] as $subcateg)
-				                echo "<li><a href=" . Url::to(['create', 'id' => $subcateg['programcategory_id']]) . ">" . $subcateg['programcategory_programtitle']  . "</a></li>";
+				                echo "<li><a href=" . Url::to(['create', 'id' => $subcateg['programcategory_id'], 'sep' => $sep]) . ">" . $subcateg['programcategory_programtitle']  . "</a></li>";
 			                echo "</ul>";				                
 				        }
 				        echo "</ul>";
@@ -107,6 +112,20 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'school_id',
 
             ['class' => 'yii\grid\ActionColumn',
+            'urlCreator' => function ($action, $model) {
+                if ($action === 'delete') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/delete', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'update') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/update', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'view') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/view', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+            },
              'contentOptions' => ['class' => 'text-nowrap'],
             ],
         ],

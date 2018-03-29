@@ -38,13 +38,15 @@ return [
     'The school transport was created successfully.' => 'Η σχολική μετακίνησης δημιουργήθηκε επιτυχώς.',
     'The school transport was deleted successfully.' => 'Η σχολική μετακίνηση διαγράφηκε επιτυχώς.',
     'Failure in deleting the school transport.' => 'Αποτυχία διαγραφής της σχολικής μετακίνησης.',
-    'School Unit' => 'Σχολική Μονάδα',
+    'School Unit' => 'Σχολείο',
     'Transportation Country' => 'Χώρα Μετακίνησης',
-    'Transportation City' => 'Πόλη Μετακίνησης',
+    'Transportation City' => 'Πόλη',
     'Transportation Start' => 'Έναρξη Μετακίνησης',
     'Transportation End' => 'Λήξη Μετακίνησης',
-    'Meeting Start' => 'Έναρξη Μετακίνησης',
-    'Meeting End' => 'Λήξη Μετακίνησης',
+    'Meeting Start' => 'Έναρξη Συνάντησης',
+    'Meeting End' => 'Λήξη Συνάντησης',
     'Transportation Teachers' => 'Μετακινούμενοι Εκπαιδευτικοί',
-    'Transportation Students' => 'Μετακινούμενοι Μαθητές'
+    'Transportation Students' => 'Μετακινούμενοι Μαθητές',
+    'The schools\' details were updated in the database.' => 'Τα στοιχεία των σχολείων ενημερώθηκαν στη βάση δεδομένων.',
+    'Update School Units Details' => 'Ενημέρωση Στοιχείων Σχολείων'
 ];

@@ -48,6 +48,7 @@ class SchtransportTransportController extends Controller
         $program_parentcategs = SchtransportProgramcategory::findAll(['programcategory_programparent' => NULL]);
         foreach ($program_parentcategs as $index=>$parentcateg){
             $programcategs[$parentcateg['programcategory_id']]['TITLE'] = $parentcateg['programcategory_programtitle'];
+            $programcategs[$parentcateg['programcategory_id']]['PROGRAMCATEG_ID'] = $parentcateg['programcategory_id'];
             $programcategs[$parentcateg['programcategory_id']]['SUBCATEGS'] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_id']]);
         }
         //echo "<pre>"; print_r($programcategs); echo "</pre>";
@@ -77,23 +78,30 @@ class SchtransportTransportController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($id)
+    public function actionCreate($id, $sep = 0)
     {
         $model = new SchtransportTransport();     
         $tblprogram = Yii::$app->db->tablePrefix . 'schtransport_program';
         $tblmeeting = Yii::$app->db->tablePrefix . 'schtransport_meeting';
-        $meetings = SchtransportMeeting::find()->all();//->innerJoin($tblprogram, $tblprogram . 'program_id' . '='. $tblmeeting . 'program_id')->andWhere([$tblprogram . 'programcategory_id' => $id]);
-        $schools = Schoolunit::find()->all();
+        if($sep == 1)
+            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
+        else
+            $schools = Schoolunit::find()->all();
+        
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
         $program_model->programcategory_id = $id;
+        $typeahead_data = array();
+        $typeahead_data['COUNTRIES'] = SchtransportMeeting::find()->select('meeting_country')->column();
+        $typeahead_data['CITIES'] = SchtransportMeeting::find()->select('meeting_city')->column();
+        $typeahead_data['PROGRAMCODES'] = SchtransportProgram::find()->select('program_code')->column();
+        $typeahead_data['PROGRAMTITLES'] = SchtransportProgram::find()->select('program_title')->column();
         
         try{
+            $transaction = Yii::$app->db->beginTransaction();
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
-            
-                $transaction = Yii::$app->db->beginTransaction();
                 
                 $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if(!$program_exists){
@@ -117,18 +125,20 @@ class SchtransportTransportController extends Controller
                 return $this->render('create', [ 'model' => $model,
                     'meeting_model' => $meeting_model,
                     'program_model' => $program_model,
-                    'meetings' => $meetings,
-                    'schools' => $schools]);
+                    'schools' => $schools,
+                    'typeahead_data' => $typeahead_data,
+                    'sep' => $sep]);
             }
         }
         catch(Exception $exc){
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('create', [   'model' => $model,
-                'meeting_model' => $meeting_model,
-                'program_model' => $program_model,
-                'meetings' => $meetings,
-                'schools' => $schools]);
+            return $this->redirect('create', [  'model' => $model,
+                                                'meeting_model' => $meeting_model,
+                                                'program_model' => $program_model,                
+                                                'schools' => $schools,
+                                                'typeahead_data' => $typeahead_data,
+                                                'sep' => $sep]);
         }
     }
     
@@ -142,17 +152,31 @@ class SchtransportTransportController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);
-        $schools = Schoolunit::find()->all();
+        $meeting = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
+        $program = SchtransportProgram::findOne(['program_id' => $meeting->program_id]);        
+        $programcateg = SchtransportProgramcategory::findOne(['programcategory_id' => $program->program_id]);
+        
+        $pr_categ = $programcateg->programcategory_id;
+        $sep = ($pr_categ == 3 || $programcateg->programcategory_programparent == 3) ? 1: 0;
+        
+        if($sep == 1)
+            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
+        else
+            $schools = Schoolunit::find()->all();
+        
+        $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
-        $meetings = SchtransportMeeting::find()->all();
+        $typeahead_data = array();
+        $typeahead_data['COUNTRIES'] = SchtransportMeeting::find()->select('meeting_country')->column();
+        $typeahead_data['CITIES'] = SchtransportMeeting::find()->select('meeting_city')->column();
+        $typeahead_data['PROGRAMCODES'] = SchtransportProgram::find()->select('program_code')->column();
+        $typeahead_data['PROGRAMTITLES'] = SchtransportProgram::find()->select('program_title')->column();
 
         try{
+            $transaction = Yii::$app->db->beginTransaction();
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
-                    
-                $transaction = Yii::$app->db->beginTransaction();
                 
                 $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if(!$program_exists){
@@ -176,8 +200,9 @@ class SchtransportTransportController extends Controller
                 return $this->render('update', [ 'model' => $model,
                     'meeting_model' => $meeting_model,
                     'program_model' => $program_model,
-                    'meetings' => $meetings,
-                    'schools' => $schools]);
+                    'schools' => $schools,
+                    'typeahead_data' => $typeahead_data,
+                    'sep' => $sep]);
             }
         }
         catch(Exception $exc){
@@ -186,8 +211,9 @@ class SchtransportTransportController extends Controller
             return $this->redirect('update', [   'model' => $model,
                 'meeting_model' => $meeting_model,
                 'program_model' => $program_model,
-                'meetings' => $meetings,
-                'schools' => $schools]);
+                'schools' => $schools,
+                'typeahead_data' => $typeahead_data,
+                'sep' => $sep]);
         }
     }
 

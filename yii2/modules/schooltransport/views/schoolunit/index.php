@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->title = Module::t('modules/schooltransport/app', 'School Units');
 $this->params['breadcrumbs'][] = $this->title;
 
-//echo "<pre>" . print_r($dataProvider)  . "</pre>"; die();
 
 ?>
 <div class="schoolunit-index">
@@ -22,6 +21,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
+        <?= Html::a(Module::t('modules/schooltransport/app', 'Update School Units Details'), ['massupdate'], 
+            ['id' =>'massUpdateButton', 'class' => 'btn btn-success', 
+             'onclick' => '(function () { document.getElementById("massUpdateButton").innerHTML = "Τα στοιχεία ενημερώνονται..."; })();']) ?>
         <?= Html::a(Module::t('modules/schooltransport/app', 'Create School Unit'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 <?php Pjax::begin(); ?>    

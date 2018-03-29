@@ -10,6 +10,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'View Transportations'), 'url' => ['/schooltransport/schtransport-transport']];
 $this->title = Module::t('modules/schooltransport/app', 'Update Transportation');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="schtransport-transport-update">
 
@@ -19,8 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'meeting_model' => $meeting_model,
         'program_model' => $program_model,
-        'meetings' => $meetings,
-        'schools' => $schools
-    ]) ?>
+        'schools' => $schools,
+        'typeahead_data' => $typeahead_data,
+        'sep' => $sep]);
+    ?>
 
 </div>
