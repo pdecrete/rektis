@@ -165,8 +165,8 @@ class FinanceExpenditureController extends Controller
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
             //$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models)) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the duplicate assigned withdrawals."));
-                return $this->render('update', [
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates)."));
+                return $this->render('create', [
                     'model' => $model,
                     'expendwithdrawals_models' => $expendwithdrawals_models,
                     'vat_levels' => $vat_levels,
@@ -270,7 +270,7 @@ class FinanceExpenditureController extends Controller
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models, false)) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The changes were not saved. Please correct the duplicate assigned withdrawals."));
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates)."));
                 return $this->render('update', [
                     'model' => $model,
                     'expendwithdrawals_models' => $expendwithdrawals_models,
@@ -303,8 +303,33 @@ class FinanceExpenditureController extends Controller
      */
     private function saveModels($model, $expendwithdrawals_models, $expenddeduction_models, $new_expenditure = true)
     {
+        //echo "<pre>"; print_r($expendwithdrawals_models); echo "</pre>"; die();
         try {
+            $no_withdrawals_selected = true;
+            for($i = 0; $i < count($expendwithdrawals_models); $i++){
+                if($expendwithdrawals_models[$i]->kaewithdr_id == null)
+                    continue;
+                    $no_withdrawals_selected = false;
+                    for($j = $i + 1; $j < count($expendwithdrawals_models); $j++){
+                        if($expendwithdrawals_models[$i]->kaewithdr_id == $expendwithdrawals_models[$j]->kaewithdr_id)
+                            return false;
+                    }
+            }
+            if($no_withdrawals_selected)
+                return false;
+            
+            
             $transaction = Yii::$app->db->beginTransaction();
+            if (!$new_expenditure) {
+                $old_expendwithdrawals = FinanceExpendwithdrawal::findAll(['exp_id' => $model->exp_id]);
+                foreach ($old_expendwithdrawals as $old_expendwithdrawal) {
+                    $old_expendwithdrawal->expwithdr_amount = 0;
+                    if (!$old_expendwithdrawal->save()) {
+                        throw new Exception("Error in deleting old assignment of the expenditure withdrawals");
+                    }
+                }
+            }            
+            
             $model->exp_amount = Money::toCents($model->exp_amount);
             $model->fpa_value = Money::toDbPercentage($model->fpa_value);
             $model->exp_date = date("Y-m-d H:i:s");
@@ -353,53 +378,60 @@ class FinanceExpenditureController extends Controller
                     }
                 }
             }
-
-            $withdrawals_ids_array = [];
-            foreach ($expendwithdrawals_models as $index=>$expendwithdrawals_model) {
-                $withdrawals_ids_array[$index] = $expendwithdrawals_model->kaewithdr_id;
-            }
-            $withdrawals_uniqueids_array = array_unique($withdrawals_ids_array);
-            if (count($withdrawals_uniqueids_array) != count($withdrawals_ids_array)) {
-                $transaction->rollBack();
-                return false;
-            }
-
-
-            if (!$new_expenditure) {
-                $old_expendwithdrawals = FinanceExpendwithdrawal::findAll(['exp_id' => $model->exp_id]);
-                foreach ($old_expendwithdrawals as $old_expendwithdrawal) {
-                    $old_expendwithdrawal->expwithdr_amount = 0;
-                    if (!$old_expendwithdrawal->save()) {
-                        throw new Exception("Error in deleting old assignment of the expenditure with withdrawals");
-                    }
-                }
-            }
-
+           
+            
             $partial_amount = $model->exp_amount;
+
             foreach ($expendwithdrawals_models as $expendwithdrawals_model) {
+                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
+                //echo "withdrawal_balance111 for " . $expendwithdrawals_model->kaewithdr_id . " = {$withdrawal_balance} <br />"; 
+                //echo $partial_amount . "<br />";
+                if($expendwithdrawals_model->kaewithdr_id == null)
+                    continue;
                 $expendwithdrawals_model->exp_id = $model->exp_id;
                 $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
+                echo "withdrawal_balance = {$withdrawal_balance} <br />"; 
                 if ($partial_amount > $withdrawal_balance) {
                     $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
                     $partial_amount = $partial_amount - $withdrawal_balance;
-                } else {
-                    $expendwithdrawals_model->expwithdr_amount = $partial_amount;
-                    $partial_amount = 0;
-
-                    if (!$expendwithdrawals_model->save()) {
+                    if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
+                        $exist_model->expwithdr_amount = $expendwithdrawals_model['expwithdr_amount'];
+                        //echo "I am coming here and partial amount is {$exist_model->expwithdr_amount}"; $transaction->rollBack(); die();
+                        if(!$exist_model->save())
+                            throw new Exception("Error in assigning withdrawals to exceptions.");
+                    }
+                    else if (!$expendwithdrawals_model->save()) {
                         throw new Exception("Error in assigning withdrawals to exceptions.");
                     }
+                } 
+                else {
+                    $expendwithdrawals_model->expwithdr_amount = $partial_amount;
+                    
+                    if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
+                        $exist_model->expwithdr_amount = $partial_amount;
+                        
+                        if(!$exist_model->save())
+                            throw new Exception("Error in assigning withdrawals to exceptions.");
+                    }
+                    else if (!$expendwithdrawals_model->save()) {
+                        throw new Exception("Error in assigning withdrawals to exceptions.");
+                    }
+                    $partial_amount = 0;
                     break;
                 }
-
-                if (!$expendwithdrawals_model->save()) {
-                    throw new Exception();
+            }
+           // echo $transaction->rollBack(); die();
+            $zeroamount_expendwithdrawals = FinanceExpendwithdrawal::findAll(['exp_id' => $model->exp_id, 'expwithdr_amount' => 0]);
+            foreach ($zeroamount_expendwithdrawals as $zeroamount_expendwithdrawal){
+                if(!$zeroamount_expendwithdrawal->delete()){
+                    throw new Exception("Error in deleting old assignment of the expenditure withdrawals");
                 }
             }
+            
             if ($partial_amount > 0) {
-                throw new Exception("Amount of the expenditure is to high for the available withdrawals.");
+                throw new Exception("Amount of the expenditure is too high for the available withdrawals.");
             }
-
+            
             $transaction->commit();
 
             $user = Yii::$app->user->identity->username;
@@ -415,7 +447,7 @@ class FinanceExpenditureController extends Controller
 
             return $this->redirect(['index']);
         } catch (Exception $e) {
-            $transaction->rollBack();
+            $transaction->rollBack();  
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
             return $this->redirect(['index']);
         }
