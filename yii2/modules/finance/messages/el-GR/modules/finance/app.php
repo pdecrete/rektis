@@ -56,7 +56,7 @@ return [
     'Failure in updating deduction.' => 'Αποτυχία ενημέρωσης της κράτησης.',
     'Failure in creating deduction.' => 'Αποτυχία δημιουργίας της κράτησης.',
     'The deduction was set to obsolete.' => 'Η κράτηση καταργήθηκε.',
-    'The expenditure was not saved. Please correct the duplicate withdrawals.' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
+    'The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates).' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις (τουλάχιστον μία και όχι διπλές).',
     'The changes were not saved. Please correct the duplicate assigned withdrawals.' => 'Οι αλλαγές δεν αποθηκεύτηκαν. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
     'Update Withdrawal' => 'Ενημέρωση Ανάληψης',
     'Failure in saving your changes. The sum of the existing withdrawals is larger than the available credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
@@ -293,4 +293,6 @@ return [
     'Your action did not complete succesfull. There was an error during saving in the database.' => 'H ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.',
     'Your choices cannot be carried out, because the financial year is locked.' => 'Οι επιλογές σας δεν μπορούν να πραγματοποιηθούν επειδή το έτος είναι κλειδωμένο.',
     'Your choices were succesfully saved.' => 'Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.',
+    'Failure in creating the requested item.' => 'Αποτυχία δημιουργίας του ζητουμένου στοιχείου.',
+    'Amount of the expenditure is too high for the available withdrawals.' => 'Το ποσό της δαπάνης είναι μεγαλύτερο από το διαθέσιμο των επιλεχθέντων αναλήψεων.'
 ];
