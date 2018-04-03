@@ -137,7 +137,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function getKae()
     {
         $kaewithdrs = $this->getKaewithdrs()->all();
-        return FinanceKae::findOne(['kae_id' => FinanceKaecredit::findOne(['kaecredit_id' => $kaewithdrs[0]->kaewithdr_id])]);
+        return FinanceKae::findOne(['kae_id' => FinanceKaecredit::findOne(['kaecredit_id' => $kaewithdrs[0]->kaecredit_id])]);
     }
 
     /**

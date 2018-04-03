@@ -738,42 +738,55 @@ class FinanceExpenditureController extends Controller
     {
         try {
             $exp_ids = Yii::$app->request->post('selection');
+            //echo "<pre>"; print_r($exp_ids); echo "</pre>"; die();
             $supplier = null;
+            $expenditures_model = array();
+            $kae = null;
+            $exp_state = null;
             
             foreach ($exp_ids as $key=>$exp_id)
             {
-                $curr_supplier = FinanceExpenditure::find()->where(['exp_id' => $exp_id])->one()['suppl_id'];
+                $expenditure = FinanceExpenditure::find()->where(['exp_id' => $exp_id])->one();
+                $expenditures_model[$key] = $expenditure;
+                $curr_expstate = FinanceExpenditurestate::find()->where(['exp_id' => $exp_id]);
+
+                $demanded_state = 2;
+                if($curr_expstate->max('state_id') != $demanded_state)
+                    throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. At least one expenditure is not in the proper state."));
+                else {
+                    $curr_expstate = $curr_expstate->andWhere(['state_id' => $demanded_state])->one();
+                    if($exp_state == null)
+                        $exp_state = $curr_expstate;
+                    else if(($exp_state['expstate_date'] != $curr_expstate['expstate_date']) ||
+                            ($exp_state['expstate_protocol'] != $curr_expstate['expstate_protocol']))
+                            throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. The demand dates of expenditures do not have the same date or protocol."));
+                }
+                                
+                $curr_supplier = $expenditure['suppl_id'];
                 if($supplier == null){
                     $supplier = $curr_supplier;
-                    continue;
                 }
                 else if($curr_supplier != $supplier)
-                    throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select expenditures of the same supplier."));
-            }
-            //echo "<pre>"; print_r($exp_ids); echo "</pre>";die();
-            //if (count($exp_ids) != 1) {
-            //    throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select only one expenditure."));
-            //}
-
-            $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $exp_ids[0]]);
-            $exp_stateid = FinanceExpenditurestate::find()->where(['exp_id' => $exp_ids[0]])->max('state_id');
-            if ($exp_stateid < 2) {
-                throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. The selected expenditure is in initial state."));
+                    throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select expenditures of the same supplier."));                               
+            
+                $curr_kae = $expenditure->getKae();                
+                if($kae == null){                    
+                    $kae = $curr_kae;
+                }
+                else if($curr_kae['kae_id'] != $kae['kae_id']){                     
+                    throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select expenditures of the same RCN."));
+                }
             }
 
-            $expstate_model = FinanceExpenditurestate::findOne(['exp_id' => $exp_ids[0], 'state_id' => 2]);
-            $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model->suppl_id]);
+            $expstate_model = $curr_expstate;            
+            $supplier_model = FinanceSupplier::findOne(['suppl_id' => $supplier]);
 
-            $content = $this->renderPartial(
-
-                'coversheet',
-                                            ['expenditure_model' => $expenditure_model,
+            $content = $this->renderPartial('coversheet',
+                                            ['expenditures_model' => $expenditures_model,
                                              'expstate_model' => $expstate_model,
                                              'supplier_model' => $supplier_model,
-                                             'kae' => $expenditure_model->getKae()['kae_id']
-                                            ]
-
-            );
+                                             'kae' => $curr_kae['kae_id']
+                                            ]);
 
             $user = Yii::$app->user->identity->username;
             $year = Yii::$app->session["working_year"];

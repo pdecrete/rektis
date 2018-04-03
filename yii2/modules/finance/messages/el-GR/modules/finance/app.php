@@ -294,5 +294,10 @@ return [
     'Your choices cannot be carried out, because the financial year is locked.' => 'Οι επιλογές σας δεν μπορούν να πραγματοποιηθούν επειδή το έτος είναι κλειδωμένο.',
     'Your choices were succesfully saved.' => 'Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.',
     'Failure in creating the requested item.' => 'Αποτυχία δημιουργίας του ζητουμένου στοιχείου.',
-    'Amount of the expenditure is too high for the available withdrawals.' => 'Το ποσό της δαπάνης είναι μεγαλύτερο από το διαθέσιμο των επιλεχθέντων αναλήψεων.'
+    'Amount of the expenditure is too high for the available withdrawals.' => 'Το ποσό της δαπάνης είναι μεγαλύτερο από το διαθέσιμο των επιλεχθέντων αναλήψεων.',
+    'Failed to create cover sheet. There is no invoice in at least one of the expenditures.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Τουλάχιστον μία δαπάνη δεν έχει τιμολόγιο.',
+    'Failed to create cover sheet. At least one expenditure is not in the proper state.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Τουλάχιστον μία δαπάνη δεν βρίσκεται σε κατάσταση δημιουργίας διαβιβαστικού.',
+    'Failed to create cover sheet. Please select expenditures of the same supplier.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Παρακαλώ επιλέξτε δαπάνες ίδιου προμηθευτή.',
+    'Failed to create cover sheet. Please select expenditures of the same RCN.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Παρακαλώ επιλέξτε δαπάνες ίδιου ΚΑΕ.',
+    'Failed to create cover sheet. The demand dates of expenditures do not have the same date or protocol.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Οι ημερομηνίες απαίτησεις των δαπανών ή οι αριθμοί πρωτοκόλλου δεν συμφωνούν.',
 ];
