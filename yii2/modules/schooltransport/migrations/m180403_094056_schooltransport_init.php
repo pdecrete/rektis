@@ -3,7 +3,7 @@
 use yii\db\Migration;
 use yii\helpers\Console;
 
-class m180316_094056_schooltransport_init extends Migration
+class m180403_094056_schooltransport_init extends Migration
 {
     public function safeUp()
     {
@@ -125,6 +125,13 @@ class m180316_094056_schooltransport_init extends Migration
                              `transport_enddate` DATE NOT NULL COMMENT 'Λήξη Μετακίνησης',
                              `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι Εκπαιδευτικοί',
                              `transport_students` VARCHAR(2000) COMMENT 'Μετακινούμενοι Μαθητές',
+                             `transport_localdirectorate_protocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διαβιβαστικού Δ/νσης Σχολείου',
+                             `transport_pde_protocol` VARCHAR(100) COMMENT 'Πρωτόκολλο Έγκρισης',
+                             `transport_remarks` VARCHAR(500) COMMENT 'Παρατηρήσεις',
+                             `transport_datesentapproval` DATE COMMENT 'Ημερομηνία Αποστολής της Έγκρισης Μετακίνησης',
+                             `transport_dateprotocolcompleted` VARCHAR(100) COMMENT 'Ημερομηνία Ξεχρέωσης στο Πρωτόκολλο',
+                             `transport_approvalfile` VARCHAR(200) COMMENT 'Αρχείο Έγκρισης',
+                             `transport_signedapprovalfile` VARCHAR(200) COMMENT 'Αρχείο Ψηφιακά Υπογεγραμμένο',
                              `meeting_id` INTEGER NOT NULL,
                              `school_id` INTEGER NOT NULL,
                               FOREIGN KEY (`meeting_id`) REFERENCES " . $dbTrnsprtTables['table_meeting'] . "(`meeting_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",

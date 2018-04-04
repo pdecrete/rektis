@@ -27,6 +27,20 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'transport_students') ?>
 
+    <?php // echo $form->field($model, 'transport_localdirectorate_protocol') ?>
+
+    <?php // echo $form->field($model, 'transport_pde_protocol') ?>
+
+    <?php // echo $form->field($model, 'transport_remarks') ?>
+
+    <?php // echo $form->field($model, 'transport_datesentapproval') ?>
+
+    <?php // echo $form->field($model, 'transport_dateprotocolcompleted') ?>
+
+    <?php // echo $form->field($model, 'transport_approvalfile') ?>
+
+    <?php // echo $form->field($model, 'transport_signedapprovalfile') ?>
+
     <?php // echo $form->field($model, 'meeting_id') ?>
 
     <?php // echo $form->field($model, 'school_id') ?>

@@ -48,5 +48,12 @@ return [
     'Transportation Teachers' => 'Μετακινούμενοι Εκπαιδευτικοί',
     'Transportation Students' => 'Μετακινούμενοι Μαθητές',
     'The schools\' details were updated in the database.' => 'Τα στοιχεία των σχολείων ενημερώθηκαν στη βάση δεδομένων.',
-    'Update School Units Details' => 'Ενημέρωση Στοιχείων Σχολείων'
+    'Update School Units Details' => 'Ενημέρωση Στοιχείων Σχολείων',
+    'Digital Signed File' => 'Αρχείο Ψηφιακά Υπογεγραμμένο',
+    'Approval File' => 'Αρχείο Έγκρισης',
+    'Registration Completion Protocol' => 'Ξεχρέωση Πρωτοκόλλου',
+    'Approval Sent Date' => 'Αποστολή Έγκρισης',
+    'Remarks' => 'Παρατηρήσεις',
+    'Approval Document Protocol' => 'Πρωτόκολλο Έγκρισης',
+    'School Directorate Protocol' => 'Πρωτόκολλο Διεύθυνσης Σχολείου'    
 ];

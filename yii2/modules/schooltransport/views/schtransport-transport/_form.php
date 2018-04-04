@@ -43,6 +43,16 @@ use yii\widgets\ActiveForm;
 	                                                       ]); 
            endif;
     ?>
+
+	<?php  if(empty($typeahead_data['COUNTRIES'])): 
+	           echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true]);
+	       else:
+	           echo $form->field($meeting_model, 'meeting_country')->widget(Typeahead::classname(), 
+	                                                       ['pluginOptions' => ['highlight'=>true],
+	                                                        'dataset' => [['local' => $typeahead_data['COUNTRIES'], 'limit' => 10]]
+	                                                       ]); 
+           endif;
+    ?>      
         
 	<?php  if(empty($typeahead_data['CITIES'])): 
 	           echo $form->field($meeting_model, 'meeting_city')->textInput(['maxlength' => true]);
@@ -52,17 +62,7 @@ use yii\widgets\ActiveForm;
 	                                                        'dataset' => [['local' => $typeahead_data['CITIES'], 'limit' => 10]]
 	                                                       ]);            
            endif;
-    ?>
-    
-	<?php  if(empty($typeahead_data['COUNTRIES'])): 
-	           echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true]);
-	       else:
-	           echo $form->field($meeting_model, 'meeting_country')->widget(Typeahead::classname(), 
-	                                                       ['pluginOptions' => ['highlight'=>true],
-	                                                        'dataset' => [['local' => $typeahead_data['COUNTRIES'], 'limit' => 10]]
-	                                                       ]); 
-           endif;
-    ?>
+    ?>    
 	           
     <?= $form->field($meeting_model, 'meeting_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?>
     <?= $form->field($meeting_model, 'meeting_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?>
@@ -76,10 +76,12 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'transport_teachers')->textarea(['rows' => '6']) ?>
 
-    <?= $form->field($model, 'transport_students')->textarea(['rows' => '6']) ?>
+	<?= $form->field($model, 'transport_students')->textarea(['rows' => '6']) ?>
    
+	<?= $form->field($model, 'transport_localdirectorate_protocol')->textInput(['maxlength' => true]) ?>
    
-
+	<?= $form->field($model, 'transport_pde_protocol')->textInput(['maxlength' => true]) ?>
+		
     <div class="form-group pull-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

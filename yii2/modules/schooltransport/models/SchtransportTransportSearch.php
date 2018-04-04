@@ -22,10 +22,12 @@ class SchtransportTransportSearch extends SchtransportTransport
      * @inheritdoc
      */
     public function rules()
-    {
+    {    
         return [[['transport_id', 'meeting_id', 'school_id'], 'integer'],
-            [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'meeting_startdate', 'meeting_enddate',
-                  'transport_teachers', 'transport_students', 'meeting_country', 'meeting_city', 'school_name'], 'safe']];
+                [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_teachers', 
+                'transport_students', 'transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_remarks', 
+                'transport_datesentapproval', 'transport_dateprotocolcompleted', 'transport_approvalfile',                     
+                'transport_signedapprovalfile'], 'safe']];
     }
 
     /**
@@ -76,16 +78,11 @@ class SchtransportTransportSearch extends SchtransportTransport
         // grid filtering conditions
         $query->andFilterWhere([
             'transport_id' => $this->transport_id,
-            'transport_submissiondate' => $this->transport_submissiondate,
             'transport_startdate' => $this->transport_startdate,
-            'transport_enddate' => $this->transport_enddate,
-            'meeting_id' => $this->meeting_id,
-            'school_id' => $this->school_id,
+            'transport_enddate' => $this->transport_enddate
         ]);
 
-        $query->andFilterWhere(['like', 'transport_teachers', $this->transport_teachers])
-                ->andFilterWhere(['like', 'transport_students', $this->transport_students])
-                ->andFilterWhere(['like', 'meeting_country', $this->meeting_country])
+        $query->andFilterWhere(['like', 'meeting_country', $this->meeting_country])
                 ->andFilterWhere(['like', 'meeting_city', $this->meeting_city])
                 ->andFilterWhere(['like', 'school_name', $this->school_name]);
 

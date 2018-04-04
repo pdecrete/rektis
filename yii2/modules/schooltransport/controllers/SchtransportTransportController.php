@@ -114,6 +114,7 @@ class SchtransportTransportController extends Controller
                     throw new Exception("Failure in creating the transportation");
                     
                 $model->meeting_id = $meeting_model->meeting_id;
+                //echo "<pre>"; print_r($model); echo "</pre>";die();
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
                     
@@ -250,6 +251,15 @@ class SchtransportTransportController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Prints an existing SchtransportTransport model.     
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionPrint($id){
+        
+    }
+    
     /**
      * Finds the SchtransportTransport model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

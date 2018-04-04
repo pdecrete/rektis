@@ -103,16 +103,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
                 ])
             ],
-/*            ['attribute' => 'transport_teachers',
-             'label' => Module::t('modules/schooltransport/app', 'Transportation Teachers')],
-            ['attribute' => 'transport_students',
-             'label' => Module::t('modules/schooltransport/app', 'Transportation Students')],*/
-            // 'transport_students',
-            // 'meeting_id',
-            // 'school_id',
-
             ['class' => 'yii\grid\ActionColumn',
-            'urlCreator' => function ($action, $model) {
+             'template' => '{view} {update} {delete} {print}',
+             'buttons' => ['print' => function ($url, $model) {
+                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>',
+                                                                    $url
+                                                                   );
+                                              }],
+             'urlCreator' => function ($action, $model) {
                 if ($action === 'delete') {
                     $url = Url::to(['/schooltransport/schtransport-transport/delete', 'id' =>$model['transport_id']]);
                     return $url;
@@ -123,6 +121,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 if ($action === 'view') {
                     $url = Url::to(['/schooltransport/schtransport-transport/view', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'print') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/print', 'id' =>$model['transport_id']]);
                     return $url;
                 }
             },
