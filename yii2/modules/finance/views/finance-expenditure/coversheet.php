@@ -36,7 +36,10 @@ foreach ($expenditures_model as $expenditure_model){
     <ul>
     <?php  
         foreach ($expenditures_model as $expenditure_model ):
-            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($expenditure_model['EXPENDITURE']['exp_amount'], true). "</li>";
+            $exp_payvalue = $expenditure_model['EXPENDITURE']['exp_amount'] 
+                            + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']))
+                            - $expenditure_model['DEDUCTIONS'];
+            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($exp_payvalue, true) . "</li>";
     	endforeach;
 	?>
 	</ul>
