@@ -747,7 +747,9 @@ class FinanceExpenditureController extends Controller
             foreach ($exp_ids as $key=>$exp_id)
             {
                 $expenditure = FinanceExpenditure::find()->where(['exp_id' => $exp_id])->one();
-                $expenditures_model[$key] = $expenditure;
+                $expenditures_model[$key]['EXPENDITURE'] = $expenditure;
+                $expenditures_model[$key]['DEDUCTIONS'] = $expenditure->getDeductsSumAmount();                   
+                
                 $curr_expstate = FinanceExpenditurestate::find()->where(['exp_id' => $exp_id]);
 
                 $demanded_state = 2;

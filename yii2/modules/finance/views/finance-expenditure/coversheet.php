@@ -3,8 +3,10 @@ use app\modules\finance\components\Money;
 
 $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 $sum_amount = 0;
-foreach ($expenditures_model as $expenditure_model)
-    $sum_amount += $expenditure_model['exp_amount'];
+foreach ($expenditures_model as $expenditure_model){
+    $sum_amount += $expenditure_model['EXPENDITURE']['exp_amount'] + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']));
+    $sum_amount -= $expenditure_model['DEDUCTIONS'];
+}
 
 ?>
 <table style="width: 100%; border: 0px; padding: 5 5 5 5px;">
@@ -34,7 +36,7 @@ foreach ($expenditures_model as $expenditure_model)
     <ul>
     <?php  
         foreach ($expenditures_model as $expenditure_model ):
-            echo "<li>" . $expenditure_model['exp_description'] . " αξίας " . Money::toCurrency($expenditure_model['exp_amount'], true). "</li>";
+            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($expenditure_model['EXPENDITURE']['exp_amount'], true). "</li>";
     	endforeach;
 	?>
 	</ul>
