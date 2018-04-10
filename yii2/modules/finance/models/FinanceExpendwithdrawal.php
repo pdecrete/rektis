@@ -30,8 +30,8 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['kaewithdr_id', 'exp_id', 'expwithdr_amount'], 'required'],
-            [['kaewithdr_id', 'exp_id', 'expwithdr_amount'], 'integer'],
+            [['kaewithdr_id', 'exp_id', 'expwithdr_amount', 'expwithdr_order'], 'safe'],
+            [['kaewithdr_id', 'exp_id', 'expwithdr_amount', 'expwithdr_order'], 'integer'],
             [['exp_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceExpenditure::className(), 'targetAttribute' => ['exp_id' => 'exp_id']],
             [['kaewithdr_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceKaewithdrawal::className(), 'targetAttribute' => ['kaewithdr_id' => 'kaewithdr_id']],
         ];
@@ -99,7 +99,7 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
     public static function getWithdrawalBalance($kaewithdr_id)
     {
         $expenditures_sum = FinanceExpendwithdrawal::getExpendituresSum($kaewithdr_id);
-        $withdrawal_amount = FinanceKaewithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->one()->kaewithdr_amount;
+        $withdrawal_amount = FinanceKaewithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->one()['kaewithdr_amount'];
         return $withdrawal_amount - $expenditures_sum;
     }
 }

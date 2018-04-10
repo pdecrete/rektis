@@ -66,7 +66,7 @@ class FinanceFpaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $model->fpa_value = Money::toDbPercentage($model->fpa_value);
-                if ($model->fpa_value <= 0 || $model->fpa_value > 10000) {
+                if ($model->fpa_value < 0 || $model->fpa_value > 10000) {
                     throw new \Exception();
                 }
                 if (!$model->save()) {
@@ -101,7 +101,7 @@ class FinanceFpaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $model->fpa_value = Money::toDbPercentage($model->fpa_value);
-                if ($model->fpa_value <= 0 || $model->fpa_value > 10000) {
+                if ($model->fpa_value < 0 || $model->fpa_value > 10000) {
                     throw new \Exception();
                 }
                 if (!$model->save()) {

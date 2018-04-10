@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = Url::to(['/finance/finance-invoice/update', 'id' => $model['inv_id']]);
+                     $url = Url::to(['/finance/finance-invoice/delete', 'id' => $model['inv_id']]);
                      //$url = ['finance-invoice/delete', 'id'=> $model['inv_id']];
                      return $url;
                  }
