@@ -2,7 +2,12 @@
 use app\modules\finance\components\Money;
 
 $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
-//echo "<pre>"; print_r($expstate_model); echo "</pre>";die();
+$sum_amount = 0;
+foreach ($expenditures_model as $expenditure_model){
+    $sum_amount += $expenditure_model['EXPENDITURE']['exp_amount'] + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']));
+    $sum_amount -= $expenditure_model['DEDUCTIONS'];
+}
+
 ?>
 <table style="width: 100%; border: 0px; padding: 5 5 5 5px;">
 	<tr><td colspan="2" style="text-align:center"><?= '<img src=' . $greek_logo . '>' ?><h5><strong><?= Yii::$app->params['pde_logo_literal']; ?><br />
@@ -12,7 +17,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
     		<strong>
     				<?= Yii::$app->params['city']; ?>, 
     				<?= date('d/m/Y', strtotime($expstate_model['expstate_date'])); ?><br />
-					Αρ. Πρωτ.: <?= $expstate_model['expstate_protocol'] ?>   
+					Αρ. Πρωτ.: <?= $expstate_model['expstate_protocol'] ?>
 			</strong>
     	</td></tr>
 	<tr><td style="text-align:right">Πληροφορίες:</td><td><?= Yii::$app->user->identity->surname . " " . Yii::$app->user->identity->name ?></td></tr>
@@ -27,18 +32,30 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 <h5><strong>Θέμα: "Αποστολή Δικαιολογητικών Πληρωμής"</strong></h5>
 <br />
 <p>
-Σας στέλνουμε συνημμένα δικαιολογητικά δαπάνης που αφορούν σε <?= $expenditure_model['exp_description'] ?> της υπηρεσίας 
-μας <strong>(<?= Yii::$app->params['finance_code']; ?>, KAE <?= sprintf('%04d', $kae); ?>)</strong> συνολικού ποσού: <strong><?= Money::toCurrency($expenditure_model['exp_amount'], true); ?></strong>, στο όνομα του δικαιούχου "<strong><?= $supplier_model['suppl_name'] ?></strong>" και παρακαλούμε για τις δικές σας ενέργειες. 
+    Σας στέλνουμε συνημμένα δικαιολογητικά δαπανών που αφορούν σε:
+    <ul>
+    <?php  
+        foreach ($expenditures_model as $expenditure_model ):
+            $exp_payvalue = $expenditure_model['EXPENDITURE']['exp_amount'] 
+                            + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']))
+                            - $expenditure_model['DEDUCTIONS'];
+            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($exp_payvalue, true) . "</li>";
+    	endforeach;
+	?>
+	</ul>
+    της υπηρεσίας μας <strong>(<?= Yii::$app->params['finance_code']; ?>, KAE <?= sprintf('%04d', $kae); ?>)</strong> 
+    συνολικού ποσού: <strong><?= Money::toCurrency($sum_amount, true); ?></strong>, 
+    στο όνομα του δικαιούχου "<strong><?= $supplier_model['suppl_name'] ?></strong>" και παρακαλούμε για τις δικές σας ενέργειες. 
 </p>
 <p>
-Ημερομηνία Έναρξης Απαίτησης: <?= date('d/m/Y', strtotime($expstate_model['expstate_date'])); ?>
+    Ημερομηνία Έναρξης Απαίτησης: <?= date('d/m/Y', strtotime($expstate_model['expstate_date'])); ?>
 </p>
 <p>
-Στοιχεία Δικαιούχου:<br />
-ΑΦΜ: <?= $supplier_model['suppl_vat'] ?><br />
-ΑΜΕ: <?= $supplier_model['suppl_employerid'] ?><br />
-ΙΒΑΝ: <?= $supplier_model['suppl_iban'] ?><br />
-Email: <?= $supplier_model['suppl_email'] ?><br />
+    Στοιχεία Δικαιούχου:<br />
+    ΑΦΜ: <?= $supplier_model['suppl_vat'] ?><br />
+    ΑΜΕ: <?= $supplier_model['suppl_employerid'] ?><br />
+    ΙΒΑΝ: <?= $supplier_model['suppl_iban'] ?><br />
+    Email: <?= $supplier_model['suppl_email'] ?><br />
 </p>
 <table>    
     <tr>

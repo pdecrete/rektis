@@ -3,6 +3,7 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
+use app\modules\finance\components\Money;
 
 /**
  * This is the model class for table "{{%finance_expenditure}}".
@@ -80,6 +81,15 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     {
         return $this->hasMany(FinanceDeduction::className(), ['deduct_id' => 'deduct_id'])->viaTable('{{%finance_expenddeduction}}', ['exp_id' => 'exp_id']);
     }
+    
+    public function getDeductsSumAmount(){
+        $deductions = $this->getDeducts()->all();
+        
+        $deductions_sumamount = 0;
+        foreach ($deductions as $deduction)
+            $deductions_sumamount += $this->exp_amount*Money::toDecimalPercentage($deduction['deduct_percentage']);
+        return $deductions_sumamount;            
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -137,7 +147,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
     public function getKae()
     {
         $kaewithdrs = $this->getKaewithdrs()->all();
-        return FinanceKae::findOne(['kae_id' => FinanceKaecredit::findOne(['kaecredit_id' => $kaewithdrs[0]->kaewithdr_id])]);
+        return FinanceKae::findOne(['kae_id' => FinanceKaecredit::findOne(['kaecredit_id' => $kaewithdrs[0]->kaecredit_id])]);
     }
 
     /**
