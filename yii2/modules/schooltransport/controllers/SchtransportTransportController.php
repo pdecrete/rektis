@@ -3,6 +3,7 @@
 namespace app\modules\schooltransport\controllers;
 
 use Yii;
+use PhpOffice\PhpWord\TemplateProcessor;
 use app\modules\schooltransport\Module;
 use app\modules\schooltransport\models\SchtransportTransport;
 use app\modules\schooltransport\models\SchtransportTransportSearch;
@@ -110,14 +111,22 @@ class SchtransportTransportController extends Controller
                 }
                 
                 $meeting_model->program_id = $program_model->program_id;
-                if(!$meeting_model->save())
-                    throw new Exception("Failure in creating the transportation");
-                    
+                
+                //echo "<pre>"; print_r($meeting_model); echo "</pre>";die();
+                //$meeting_model->program_id = 4;
+                
+                if($meeting_model->isNewRecord){
+                    if(!$meeting_model->save())
+                        throw new Exception("Failure in creating the transportation");
+                }
                 $model->meeting_id = $meeting_model->meeting_id;
-                //echo "<pre>"; print_r($model); echo "</pre>";die();
+                
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
-                    
+                
+                if(!$this->createApprovalFile($model, $meeting_model, $program_model))
+                    throw new Exception("Failure in creating the school transportation.");
+                
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
                 return $this->redirect(['index']); 
@@ -192,6 +201,9 @@ class SchtransportTransportController extends Controller
                 $model->meeting_id = $meeting_model->meeting_id;
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
+                
+                if(!$this->createApprovalFile($model, $meeting_model, $program_model))
+                        throw new Exception("Failure in creating the school transportation.");
                     
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
@@ -250,14 +262,101 @@ class SchtransportTransportController extends Controller
         
         return $this->redirect(['index']);
     }
+    
+    
+    
+    
+    private function createApprovalFile($transport_model, $meeting_model, $program_model)
+    {
+        $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
+        $directorate_model = $school_model->getDirectorate()->one();
+        
+        $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
+        //echo "<pre>"; print_r($programcateg_model);  echo "</pre>";die();
+        
+        $program_action = "";
+        if($programcateg_model->programcategory_id == 4)
+            $program_action = "KA1";
+        else if($programcateg_model->programcategory_id == 5)
+            $program_action = "KA2";
+                
+        //echo $program_action; die();
+        $fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
+                                    str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .
+                                    $transport_model['transport_id'] . ".docx");
+            
+        $template_path = "@vendor/admapp/resources/schooltransports/" . $program_action . ".docx";
+        
+        //echo $template_path; die();
+        $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
+        if($programcateg_model->programcategory_id == 5)
+            $templateProcessor->setValue('students', $transport_model['transport_students']);            
+        $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
+        $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
+        $templateProcessor->setValue('phonenumber', Yii::$app->params['schooltransport_telephone']);
+        $templateProcessor->setValue('fax', Yii::$app->params['fax']);
+        $templateProcessor->setValue('email', Yii::$app->params['email']);
+        $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
+        $templateProcessor->setValue('date', date('d/m/Y'));
+        $templateProcessor->setValue('protocol', $transport_model['transport_pde_protocol']);
+        $templateProcessor->setValue('school', $school_model->school_name);
+        $templateProcessor->setValue('teachers', $transport_model['transport_teachers']);        
+        $templateProcessor->setValue('country', $meeting_model['meeting_country']);
+        $templateProcessor->setValue('local_directorate_protocol', $transport_model['transport_localdirectorate_protocol']);
+        $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
+        $templateProcessor->setValue('programcateg_title', $programcateg_model->programcategory_programtitle);
+        $templateProcessor->setValue('programcateg_description', $programcateg_model->programcategory_programdescription);
+        $templateProcessor->setValue('program_title', $program_model['program_title']);
+        $templateProcessor->setValue('program_code', $program_model['program_code']);
+        $templateProcessor->setValue('transport_start', date_format(date_create($transport_model['transport_startdate']), 'd-m-Y'));
+        $templateProcessor->setValue('transport_end', date_format(date_create($transport_model['transport_enddate']), 'd-m-Y'));
+        $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);
+        $templateProcessor->saveAs($fileName);
+        return true;
+    }
+    
+    
+    
 
     /**
      * Prints an existing SchtransportTransport model.     
      * @param integer $id
      * @return mixed
      */
-    public function actionPrint($id){
-        
+    public function actionDownload($id){
+        try{
+            $transport_model = $this->findModel($id);
+            
+            if(is_null($transport_model))
+                throw new Exception("The requested transport could not be found.");
+            
+            $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
+            $meeting_model = $transport_model->getMeeting()->one();//->getProgram();
+            $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
+            $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
+            
+            $program_action = "";
+            if($programcateg_model->programcategory_id == 4)
+                $program_action = "KA1";
+            else if ($programcateg_model->programcategory_id == 5)
+                $program_action = "KA2";           
+                
+            $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
+                                    str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .
+                                    $transport_model['transport_id'] . ".docx");
+            //echo $file; die();
+            if(!is_readable($file))
+                throw new Exception("The decision file cannot be found.");
+                    
+            return Yii::$app->response->SendFile($file);
+                                        
+            return $this->redirect(['/schooltransport/schtransport-transport/index']);
+                    
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+        }
     }
     
     /**

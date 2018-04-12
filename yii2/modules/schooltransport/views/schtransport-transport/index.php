@@ -104,11 +104,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {print}',
-             'buttons' => ['print' => function ($url, $model) {
+             'template' => '{view} {update} {delete} {download}',
+             'buttons' => ['download' => function ($url, $model) {
                                                     return Html::a('<span class="glyphicon glyphicon-download"></span>',
-                                                                    $url
-                                                                   );
+                                                                    $url,
+                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
+                                                                     'data-method' => 'post'
+                                                                    ]);
                                               }],
              'urlCreator' => function ($action, $model) {
                 if ($action === 'delete') {
@@ -123,8 +125,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     $url = Url::to(['/schooltransport/schtransport-transport/view', 'id' =>$model['transport_id']]);
                     return $url;
                 }
-                if ($action === 'print') {
-                    $url = Url::to(['/schooltransport/schtransport-transport/print', 'id' =>$model['transport_id']]);
+                if ($action === 'download') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/download', 'id' =>$model['transport_id']]);
                     return $url;
                 }
             },
