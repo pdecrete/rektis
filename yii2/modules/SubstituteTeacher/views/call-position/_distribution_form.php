@@ -29,7 +29,14 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             // 'id',
-            'title',
+            // 'title',
+            [
+                'attribute' => 'title',
+                'value' => function ($m) {
+                    return $m->title . $m->getSignLanguageLabelHtml();
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => 'school_type',
                 'value' => 'school_type_label',
@@ -161,7 +168,14 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
             // 'id',
             // 'call_id',
             // 'position_id',
-            'position.title',
+            // 'position.title',
+            [
+                'attribute' => 'position.title',
+                'value' => function ($m) {
+                    return $m->position->title . $m->position->getSignLanguageLabelHtml();
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => 'position.school_type',
                 'value' => 'position.school_type_label',

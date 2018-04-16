@@ -189,6 +189,7 @@ return [
     'Select year to import teachers to' => 'Επιλέξτε έτος για εισαγωγή αναπληρωτών',
     'Selected for call' => 'Επιλεγμένοι για την πρόσκληση προσλήψεων',
     'Sign Language' => 'Νοηματική γλώσσα',
+    'Sign language preference' => 'Προτίμηση νοηματικής γλώσσας',
     'Single' => 'Ανύπαντρος/η',
     'Size' => 'Μέγεθος',
     'Social Security Number' => 'Α.Μ.Κ.Α.',

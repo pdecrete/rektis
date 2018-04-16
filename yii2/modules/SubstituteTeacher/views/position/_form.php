@@ -19,42 +19,53 @@ use yii\web\View;
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'school_type')->dropDownList(Position::getSchoolTypeChoices(), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'school_type')->dropDownList(Position::getSchoolTypeChoices(), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
+        </div>
+        <div class="col-sm-6">
+            <?=
+            $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
+                'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
+                'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+                'pluginOptions' => [
+                    'allowClear' => false
+                ],
+            ]);
 
-    <?=
-    $form->field($model, 'operation_id')->widget(Select2::classname(), [
-        'data' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
-        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-        'pluginOptions' => [
-            'allowClear' => false
-        ],
-    ]);
-
-    ?>
-    
-    <?=
-    $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
-        'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
-        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-        'pluginOptions' => [
-            'allowClear' => false
-        ],
-    ]);
-
-    ?>
-    <?=
-    $form->field($model, 'prefecture_id')->widget(Select2::classname(), [
-        'data' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
-        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-        'pluginOptions' => [
-            'allowClear' => false
-        ],
-    ]);
-
-    ?>
+            ?>
+        </div>
+    </div>
 
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-6">
+            <?=
+            $form->field($model, 'operation_id')->widget(Select2::classname(), [
+                'data' => \app\modules\SubstituteTeacher\models\Operation::defaultSelectables(),
+                'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+                'pluginOptions' => [
+                    'allowClear' => false
+                ],
+            ]);
+
+            ?>
+        </div>
+        <div class="col-sm-6">
+            <?=
+            $form->field($model, 'prefecture_id')->widget(Select2::classname(), [
+                'data' => app\modules\SubstituteTeacher\models\Prefecture::defaultSelectables(),
+                'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+                'pluginOptions' => [
+                    'allowClear' => false
+                ],
+            ]);
+
+            ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3">
             <?=
             $form->field($model, 'position_has_type')->widget(SwitchBox::className(), [
                 'options' => [
@@ -102,23 +113,42 @@ JS;
 
             ?>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <?= $form->field($model, 'teachers_count')->textInput(['type' => 'number']) ?>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <?= $form->field($model, 'hours_count')->textInput(['type' => 'number']) ?>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-4 col-sm-offset-4">
+        <div class="col-sm-3 col-sm-offset-3">
             <?= $form->field($model, 'covered_teachers_count')->textInput(['type' => 'number']) ?>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <?= $form->field($model, 'covered_hours_count')->textInput(['type' => 'number']) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'whole_teacher_hours')->textInput(['type' => 'number']) ?>
         </div>
     </div>
 
-    <?= $form->field($model, 'whole_teacher_hours')->textInput(['type' => 'number']) ?>
+    <div class="row">
+        <div class="col-sm-3">
+            <?=
+            $form->field($model, 'sign_language')->widget(SwitchBox::className(), [
+                'options' => [
+                    'label' => '',
+                ],
+                'clientOptions' => [
+                    'onColor' => 'primary',
+                    'onText' => Yii::t('substituteteacher', 'Ναι'),
+                    'offColor' => 'default',
+                    'offText' => Yii::t('substituteteacher', 'Όχι'),
+                ]
+            ]);
+            ?>
+        </div>
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

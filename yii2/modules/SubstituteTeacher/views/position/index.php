@@ -30,7 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             // 'id',
-            'title',
+            [
+                'attribute' => 'title',
+                'value' => function ($m) {
+                    return $m->title . $m->getSignLanguageLabelHtml();
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => 'school_type',
                 'value' => 'school_type_label',
@@ -101,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'whole_teacher_hours',
             // 'created_at',
             // 'updated_at',
-            ['class' => 'yii\grid\ActionColumn'],
+            [ 'class' => 'yii\grid\ActionColumn' ],
         ],
     ]);
 

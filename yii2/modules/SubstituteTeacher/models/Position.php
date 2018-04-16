@@ -24,6 +24,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property integer $covered_hours_count
  * @property string $created_at
  * @property string $updated_at
+ * @property boolean $sign_language
  *
  * @property CallPosition[] $callPositions
  * @property Prefecture $prefecture
@@ -64,7 +65,7 @@ class Position extends \yii\db\ActiveRecord
             ['school_type', 'filter', 'filter' => 'intval'],
             [['operation_id', 'title', 'whole_teacher_hours', 'school_type'], 'required'],
             ['school_type', 'in', 'range' => [self::SCHOOL_TYPE_DEFAULT, self::SCHOOL_TYPE_KEDDY]],
-            [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count'], 'default', 'value' => 0],
+            [['teachers_count', 'covered_teachers_count', 'hours_count', 'covered_hours_count', 'sign_language'], 'default', 'value' => 0],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
 //                'if' => '0', 'replace' => true, 'otherAttributeValue' => 0, 'otherAttribute' => 'teachers_count'],
 //            [['position_has_type'], DefaultOnOtherAttributeValidator::className(),
@@ -149,6 +150,7 @@ class Position extends \yii\db\ActiveRecord
             'position_has_type' => Yii::t('substituteteacher', 'Position has...'),
             'covered' => Yii::t('substituteteacher', 'Covered'),
             'remaining' => Yii::t('substituteteacher', 'Remaining'),
+            'sign_language' => Yii::t('substituteteacher', 'Sign language preference'),
         ];
     }
 
@@ -206,6 +208,10 @@ class Position extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getSignLanguageLabelHtml()
+    {
+        return ($this->sign_language ? ' <span class="label label-primary">Νοηματική</span>' : '');
+    }
     /**
      * @inheritdoc
      *
