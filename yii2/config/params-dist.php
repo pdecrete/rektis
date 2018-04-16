@@ -18,6 +18,7 @@ return [
     'transportPerson' => 'Όνομα υπ. μετακινήσεων',
     'transportPhone' => 'τηλέφωνο επικοινωνίας για τις μετακινήσεις',
     'transportFax' => 'τηλέφωνο fax για τις άδειες',
+    'trans_related_docs_default' => 7, // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
     'trans_year_limit' => 60,
     'trans_day_limit1' => 0.25,
     'trans_day_limit2' => 0.50,
