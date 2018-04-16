@@ -52,11 +52,14 @@ class SchtransportTransportSearch extends SchtransportTransport
         
         $tblprefix = Yii::$app->db->tablePrefix;
         $query = (new \yii\db\Query())
-                    ->select($tblprefix . 'schtransport_transport.*,' . $tblprefix . 'schtransport_meeting.*,' . $tblprefix . 'schoolunit.*')
-                    ->from($tblprefix . 'schtransport_transport,' . $tblprefix . 'schtransport_meeting,' . $tblprefix . 'schoolunit')
+                    ->select($tblprefix . 'schtransport_transport.*,' . $tblprefix . 'schtransport_meeting.*,' . 
+                             $tblprefix . 'schoolunit.*,'. $tblprefix . 'schtransport_program.*')
+                    ->from($tblprefix . 'schtransport_transport,' . $tblprefix . 'schtransport_meeting,' . 
+                           $tblprefix . 'schoolunit,' . $tblprefix . 'schtransport_program')
                     ->where($tblprefix . 'schtransport_transport.meeting_id  = ' . $tblprefix . 'schtransport_meeting.meeting_id')
-                    ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id');
-        
+                    ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
+                    ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id');
+        //echo $query->createCommand()->rawSql; die();
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

@@ -64,6 +64,7 @@ class SchoolunitController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+    /*
     public function actionCreate()
     {
         $model = new Schoolunit();
@@ -84,7 +85,7 @@ class SchoolunitController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);
         }
-    }
+    }*/
 
     /**
      * Updates an existing Schoolunit model.
@@ -92,6 +93,7 @@ class SchoolunitController extends Controller
      * @param integer $id
      * @return mixed
      */
+    /*
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -114,7 +116,7 @@ class SchoolunitController extends Controller
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect('create', ['model' => $model, 'directorates' => $directorates]);            
         }
-    }
+    }*/
 
     /**
      * Deletes an existing Schoolunit model.
@@ -122,6 +124,7 @@ class SchoolunitController extends Controller
      * @param integer $id
      * @return mixed
      */
+    /*
     public function actionDelete($id)
     {
         try{
@@ -135,7 +138,7 @@ class SchoolunitController extends Controller
             return $this->redirect('index');            
         }
         
-    }
+    }*/
 
     
     public function actionMassupdate(){

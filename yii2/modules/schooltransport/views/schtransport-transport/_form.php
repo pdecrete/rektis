@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\modules\schooltransport\models\SchtransportTransport */
 /* @var $form yii\widgets\ActiveForm */
 
-//echo "<pre>"; print_r($typeahead_data); echo "</pre>"; die();
+//echo "<pre>"; echo $programcateg_id; echo "</pre>"; die();
 ?>
 
 <div class="schtransport-transport-form col-lg-6">
@@ -74,9 +74,23 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'transport_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?>
 
+	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+	               echo $form->field($model, 'transport_headteacher')->textInput(['maxlength' => true]);
+	?>
+
     <?= $form->field($model, 'transport_teachers')->textarea(['rows' => '6']) ?>
 
-	<?= $form->field($model, 'transport_students')->textarea(['rows' => '6']) ?>
+	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+	               echo $form->field($model, 'transport_class')->textInput(['maxlength' => true]);
+	?>
+
+	<?php  if($programcateg_id != 4)
+               echo $form->field($model, 'transport_students')->textarea(['rows' => '6']);
+	?>	
+   
+   	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+	               echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true]);
+	?>
    
 	<?= $form->field($model, 'transport_localdirectorate_protocol')->textInput(['maxlength' => true]) ?>
    

@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->title = Module::t('modules/schooltransport/app', 'School Transportations');
 $this->params['breadcrumbs'][] = $this->title;
 
-//echo "<pre>"; print_r($programcategs); echo "</pre>";die();
+//echo "<pre>"; print_r($dataProvider); echo "</pre>";die();
 
 ?>
 <div class="schtransport-transport-index">
@@ -102,6 +102,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'type' => DateControl::FORMAT_DATE,
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
                 ])
+            ],
+            ['attribute' => 'program_title',
+                'label' => Module::t('modules/schooltransport/app', 'Program'),                
             ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{view} {update} {delete} {download}',

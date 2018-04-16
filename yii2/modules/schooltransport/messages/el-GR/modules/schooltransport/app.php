@@ -45,7 +45,8 @@ return [
     'Transportation End' => 'Λήξη Μετακίνησης',
     'Meeting Start' => 'Έναρξη Συνάντησης',
     'Meeting End' => 'Λήξη Συνάντησης',
-    'Transportation Teachers' => 'Μετακινούμενοι Εκπαιδευτικοί',
+    'Head Teacher' => 'Αρχηγός Συνοδός',
+    'Transportation Teachers' => 'Μετακινούμενοι/Συνοδοί Εκπαιδευτικοί',
     'Transportation Students' => 'Μετακινούμενοι Μαθητές',
     'The schools\' details were updated in the database.' => 'Τα στοιχεία των σχολείων ενημερώθηκαν στη βάση δεδομένων.',
     'Update School Units Details' => 'Ενημέρωση Στοιχείων Σχολείων',
@@ -54,6 +55,8 @@ return [
     'Registration Completion Protocol' => 'Ξεχρέωση Πρωτοκόλλου',
     'Approval Sent Date' => 'Αποστολή Έγκρισης',
     'Remarks' => 'Παρατηρήσεις',
-    'Approval Document Protocol' => 'Πρωτόκολλο Έγκρισης',
-    'School Directorate Protocol' => 'Πρωτόκολλο Διεύθυνσης Σχολείου'    
+    'Approval Document Protocol' => 'Πρωτόκολλο Έγκρισης ΠΔΕ',
+    'School Directorate Protocol' => 'Πρωτόκολλο Διεύθυνσης Σχολείου',
+    'School Record' => 'Πρακτικό Συλλόγου',
+    'Class' => 'Τάξη ή Τμήμα'
 ];

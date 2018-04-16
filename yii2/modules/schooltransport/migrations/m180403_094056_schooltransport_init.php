@@ -20,11 +20,12 @@ class m180403_094056_schooltransport_init extends Migration
             'table_directorate' => $this->db->tablePrefix . 'directorate',
             'table_school' => $this->db->tablePrefix . 'schoolunit',
             'table_transport' => $this->db->tablePrefix . 'schtransport_transport',
+            'table_country' => $this->db->tablePrefix . 'schtransport_country'
         ];
         $i = 1;
         /* CREATE TABLE admapp_trnsprt_programcategory */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_programcategory'] .
-                          " (`programcategory_id` INTEGER NOT NULL AUTO_INCREMENT,
+                          " (`programcategory_id` INTEGER,
                              `programcategory_programtitle` VARCHAR(200) NOT NULL COMMENT 'Τίτλος Δράσης',
                              `programcategory_programdescription` VARCHAR(400) COMMENT 'Περιγραφή Δράσης',
                              `programcategory_programparent` INTEGER,
@@ -123,8 +124,11 @@ class m180403_094056_schooltransport_init extends Migration
                              `transport_submissiondate` DATE COMMENT 'Ημερομηνία Αίτησης Έγκρισης',
                              `transport_startdate` DATE NOT NULL COMMENT 'Έναρξη Μετακίνησης',
                              `transport_enddate` DATE NOT NULL COMMENT 'Λήξη Μετακίνησης',
-                             `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι Εκπαιδευτικοί',
+                             `transport_headteacher` VARCHAR(100) COMMENT 'Αρχηγός Συνοδός',
+                             `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι/Συνοδοί Εκπαιδευτικοί',
                              `transport_students` VARCHAR(2000) COMMENT 'Μετακινούμενοι Μαθητές',
+                             `transport_class` VARCHAR(10) COMMENT 'Τμήμα Σχολείου',
+                             `transport_schoolrecord` VARCHAR(200) COMMENT 'Πρακτικό Συλλόγου',
                              `transport_localdirectorate_protocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διαβιβαστικού Δ/νσης Σχολείου',
                              `transport_pde_protocol` VARCHAR(100) COMMENT 'Πρωτόκολλο Έγκρισης',
                              `transport_remarks` VARCHAR(500) COMMENT 'Παρατηρήσεις',
@@ -142,6 +146,19 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         
+
+        /* CREATE TABLE admapp_country */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_country'] .
+        " (`country_id` INTEGER NOT NULL AUTO AUTO_INCREMENT,
+           `country_name` VARCHAR(100) NOT NULL,
+           `country_name_genitive` VARHCAR(100)
+          )" . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_country'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_country'] . "(country_name, country_name_genitive) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('Βέ', '')")->execute();
+        
     }
     
     public function safeDown()
@@ -153,6 +170,7 @@ class m180403_094056_schooltransport_init extends Migration
             'table_directorate' => $this->db->tablePrefix . 'directorate',
             'table_school' => $this->db->tablePrefix . 'schoolunit',
             'table_transport' => $this->db->tablePrefix . 'schtransport_transport',
+            'table_country' => $this->db->tablePrefix . 'schtransport_country'
         ];
         
         $dbTrnsprtTables = array_reverse($dbTrnsprtTables);

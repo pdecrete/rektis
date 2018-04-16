@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(Module::t('modules/schooltransport/app', 'Update School Units Details'), ['massupdate'], 
             ['id' =>'massUpdateButton', 'class' => 'btn btn-success', 
              'onclick' => '(function () { document.getElementById("massUpdateButton").innerHTML = "Τα στοιχεία ενημερώνονται..."; })();']) ?>
-        <?= Html::a(Module::t('modules/schooltransport/app', 'Create School Unit'), ['create'], ['class' => 'btn btn-success']) ?>
+        <!--<?= Html::a(Module::t('modules/schooltransport/app', 'Create School Unit'), ['create'], ['class' => 'btn btn-success']) ?>-->
     </p>
 <?php Pjax::begin(); ?>    
 	<?= GridView::widget([
@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'headerOptions' => ['class'=> 'text-center'],
                 'contentOptions' => ['class' => 'text-right']
-            ],*/                
+            ],                
             ['class' => 'yii\grid\ActionColumn',
              'contentOptions' => ['class' => 'text-nowrap'],
              'template' => '{update} {delete}',
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                      return $url;
                                  }
                              }
-            ],
+            ],*/
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

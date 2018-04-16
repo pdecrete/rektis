@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'program_model' => $program_model,
         'schools' => $schools,
         'typeahead_data' => $typeahead_data,
+        'programcateg_id' => $programcateg_id,
         'sep' => $sep]);
     ?>
 

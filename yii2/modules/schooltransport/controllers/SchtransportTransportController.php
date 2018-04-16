@@ -76,7 +76,10 @@ class SchtransportTransportController extends Controller
 
     /**
      * Creates a new SchtransportTransport model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the 'view' page. 
+     * Parameter $id is the program category id and $sep denotes whether the transport is related to the European School.
+     * @param integer $id
+     * @param integer $sep
      * @return mixed
      */
     public function actionCreate($id, $sep = 0)
@@ -137,6 +140,7 @@ class SchtransportTransportController extends Controller
                     'program_model' => $program_model,
                     'schools' => $schools,
                     'typeahead_data' => $typeahead_data,
+                    'programcateg_id' => $id,
                     'sep' => $sep]);
             }
         }
@@ -148,6 +152,7 @@ class SchtransportTransportController extends Controller
                                                 'program_model' => $program_model,                
                                                 'schools' => $schools,
                                                 'typeahead_data' => $typeahead_data,
+                                                'programcateg_id' => $id,
                                                 'sep' => $sep]);
         }
     }
@@ -156,17 +161,19 @@ class SchtransportTransportController extends Controller
     /**
      * Updates an existing SchtransportTransport model.
      * If update is successful, the browser will be redirected to the 'view' page.
+     * Parameter $id is the program category id and $sep denotes whether the transport is related to the European School.
      * @param integer $id
+     * @param integer $sep
      * @return mixed
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $meeting = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
-        $program = SchtransportProgram::findOne(['program_id' => $meeting->program_id]);        
-        $programcateg = SchtransportProgramcategory::findOne(['programcategory_id' => $program->program_id]);
-        
+        $program = SchtransportProgram::findOne(['program_id' => $meeting->program_id]);
+        $programcateg = SchtransportProgramcategory::findOne(['programcategory_id' => $program->programcategory_id]);
         $pr_categ = $programcateg->programcategory_id;
+        
         $sep = ($pr_categ == 3 || $programcateg->programcategory_programparent == 3) ? 1: 0;
         
         if($sep == 1)
@@ -215,6 +222,7 @@ class SchtransportTransportController extends Controller
                     'program_model' => $program_model,
                     'schools' => $schools,
                     'typeahead_data' => $typeahead_data,
+                    'programcateg_id' => $pr_categ,
                     'sep' => $sep]);
             }
         }
@@ -226,6 +234,7 @@ class SchtransportTransportController extends Controller
                 'program_model' => $program_model,
                 'schools' => $schools,
                 'typeahead_data' => $typeahead_data,
+                'programcateg_id' => $pr_categ,
                 'sep' => $sep]);
         }
     }
@@ -279,7 +288,9 @@ class SchtransportTransportController extends Controller
             $program_action = "KA1";
         else if($programcateg_model->programcategory_id == 5)
             $program_action = "KA2";
-                
+        else if($programcateg_model->programcategory_id == 10)
+                $program_action = "Polyhmerh";
+            
         //echo $program_action; die();
         $fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
                                     str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .
@@ -289,8 +300,15 @@ class SchtransportTransportController extends Controller
         
         //echo $template_path; die();
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
-        if($programcateg_model->programcategory_id == 5)
-            $templateProcessor->setValue('students', $transport_model['transport_students']);            
+        if(in_array($programcateg_model->programcategory_id, [5, 6, 7, 8, 9, 10])){
+            $templateProcessor->setValue('students', $transport_model['transport_students']);
+            $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
+        }
+        if(in_array($programcateg_model->programcategory_id, [6, 7, 8, 9, 10])){
+            $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
+            $templateProcessor->setValue('class', $transport_model['transport_class']);
+        }
+        
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
         $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
         $templateProcessor->setValue('phonenumber', Yii::$app->params['schooltransport_telephone']);
@@ -340,7 +358,9 @@ class SchtransportTransportController extends Controller
                 $program_action = "KA1";
             else if ($programcateg_model->programcategory_id == 5)
                 $program_action = "KA2";           
-                
+            else if($programcateg_model->programcategory_id == 10)
+                $program_action = "Polyhmerh";
+            
             $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
                                     str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .
                                     $transport_model['transport_id'] . ".docx");
@@ -354,8 +374,8 @@ class SchtransportTransportController extends Controller
                     
         }
         catch(Exception $e){
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
-            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $e->getMessage()));
+            return $this->redirect(['/schooltransport/schtransport-transport/index']);
         }
     }
     
