@@ -222,6 +222,7 @@ return [
     'Teachers to appoint' => 'Αναπληρωτές που θα κληθούν',
     'Tei' => 'Τ.Ε.Ι.',
     'The file was not deleted.' => 'Το αρχείο δεν διαγράφηκε',
+    'The information for sign language is wrong for the position at line {n}' => 'Η πληροφορία για προτίμηση νοηματικής γλώσσας είναι λανθασμένη για το κενό στη γραμμή {n}',
     'The placement preferences order is not unique.' => 'Η σειρά των προτιμήσεων τοποθέτησης δεν είναι μοναδική.',
     'The placement preferences order must start at number 1 and increment by one.' => 'Η σειρά των προτιμήσεων τοποθέτησης πρέπει να ξεκινά από το 1 και να αυξάνεται κατά ένα.',
     'The position has been added to the distribution.' => 'Το κενό προστέθηκε στην κατανομή.',

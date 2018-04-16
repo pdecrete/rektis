@@ -38,6 +38,10 @@ class Position extends \yii\db\ActiveRecord
     const POSITION_TYPE_TEACHER = 1;
     const POSITION_TYPE_HOURS = 0;
 
+    const NO_PREFERENCES = 0;
+    const SIGN_LANGUAGE_PREFER = 1;
+    const SIGN_LANGUAGE_INDIFFERENT = 0;
+
     const SCHOOL_TYPE_DEFAULT = 1;
     const SCHOOL_TYPE_KEDDY = 2;
 

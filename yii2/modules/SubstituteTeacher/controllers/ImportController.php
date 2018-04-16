@@ -40,6 +40,7 @@ class ImportController extends Controller
             'E' => 'hours_count',
             'F' => 'whole_teacher_hours',
             'G' => 'school_type',
+            'H' => 'sign_language'
         ],
         'teacher' => [
             'A' => 'vat_number',
@@ -258,6 +259,11 @@ class ImportController extends Controller
             } else {
                 $data['school_type'] = Position::SCHOOL_TYPE_DEFAULT;
             }
+            if (intval($data['sign_language']) === Position::SIGN_LANGUAGE_PREFER || $data['sign_language'] === 'ΝΑΙ') {
+                $data['sign_language'] = Position::SIGN_LANGUAGE_PREFER;
+            } else {
+                $data['sign_language'] = Position::SIGN_LANGUAGE_INDIFFERENT;
+            }
             // now try to do the trick
             $position = new Position();
             $position->title = $data['title'];
@@ -269,6 +275,7 @@ class ImportController extends Controller
             $position->hours_count = intval($data['hours_count']);
             $position->whole_teacher_hours = intval($data['whole_teacher_hours']);
             $position->position_has_type = ($position->teachers_count > 0) ? Position::POSITION_TYPE_TEACHER : Position::POSITION_TYPE_HOURS;
+            $position->sign_language = intval($data['sign_language']);
 
             if (!$position->validate()) {
                 $errors[] = $this->extractErrorMessages($position->getErrors());
@@ -348,6 +355,11 @@ class ImportController extends Controller
             // $teachers_count and $hours_count are set via $$data_key
             if ((int) $teachers_count + (int) $hours_count == 0) {
                 $errors[] = Yii::t('substituteteacher', 'There is no information about either teachers or hours for the position at line {n}', ['n' => $row_index]);
+            }
+            $textual_sign_language = empty($sign_language) || ctype_digit($sign_language);
+            if (($textual_sign_language && intval($sign_language) !== Position::SIGN_LANGUAGE_PREFER && intval($sign_language) !== Position::SIGN_LANGUAGE_INDIFFERENT)
+                || (!$textual_sign_language && $sign_language !== 'ΝΑΙ')) {
+                    $errors[] = Yii::t('substituteteacher', 'The information for sign language is wrong for the position at line {n}', ['n' => $row_index]);
             }
         }
 
