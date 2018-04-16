@@ -579,7 +579,7 @@ class TransportController extends Controller
             $funds = array_unique($funds);
             $fund_str = '';
             $kae_str = '';
-            $k = 6; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
+            $k = Yii::$app->params['trans_related_docs_default']; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
 
             $num = count($funds);
             if ($num > 0) {
