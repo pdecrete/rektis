@@ -19,10 +19,11 @@ use yii\data\ArrayDataProvider;
 class BridgeController extends \yii\web\Controller
 {
     private $client = null; // http client for calls to the applications frontend
+    private $options = [];
 
     public function init()
     {
-        $this->client = new Client([
+        $this->options = array_merge($this->options, [
             'baseUrl' => $this->module->params['applications-baseurl'],
             // 'transport' => 'yii\httpclient\CurlTransport',
             // 'timeout' => 20,
@@ -33,6 +34,7 @@ class BridgeController extends \yii\web\Controller
                 'format' => Client::FORMAT_JSON
             ],
         ]);
+        $this->client = new Client($this->options);
     }
 
     protected function getHeaders()
@@ -88,12 +90,14 @@ class BridgeController extends \yii\web\Controller
             $data = $status_response->getData();
             $services_status = array_merge($services_status, $data['services']);
         }
-        return $this->render('remote-status', compact('status', 'services_status', 'data'));
+        $connection_options = $this->options;
+        return $this->render('remote-status', compact('status', 'services_status', 'data', 'connection_options'));
     }
 
     public function actionReceive()
     {
-        return $this->render('receive');
+        $connection_options = $this->options;        
+        return $this->render('receive', compact('connection_options'));
     }
 
     /**
@@ -247,6 +251,7 @@ class BridgeController extends \yii\web\Controller
             }
         }
 
-        return $this->render('send', compact('call_model', 'teacher_ids', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences'));
+        $connection_options = $this->options;        
+        return $this->render('send', compact('call_model', 'teacher_ids', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences', 'connection_options'));
     }
 }

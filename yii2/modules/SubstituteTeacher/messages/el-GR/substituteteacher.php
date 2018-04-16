@@ -58,6 +58,7 @@ return [
     'City' => 'Πόλη',
     'Clear all data and import? Are you certain?' => 'Καθάρισμα όλων των δεδομένων και εισαγωγή; Είστε βέβαιοι;',
     'Comments' => 'Σχόλια',
+    'Connection options' => 'Παράμετροι σύνδεσης',
     'Continue' => 'Συνέχεια',
     'Covered' => 'Καλυφθέντα',
     'Covered Hours Count' => 'Καλυφθείσες ώρες',

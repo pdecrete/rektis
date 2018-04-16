@@ -17,6 +17,7 @@ use yii\bootstrap\Html;
         ]);
         ?>
     </p>
+    <?= $this->render('_connection_information', ['connection_options' => $connection_options]) ?>
 
     <?php if ($status === null) : ?>
 

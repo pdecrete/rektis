@@ -28,6 +28,8 @@ use yii\web\View;
         <?php endif; ?>
     </p>
 
+    <?= $this->render('_connection_information', ['connection_options' => $connection_options]) ?>
+
     <div class="well">
     <?php 
     $form = ActiveForm::begin([

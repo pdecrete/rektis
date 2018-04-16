@@ -4,14 +4,16 @@ use yii\bootstrap\Html;
 
 /* @var $this yii\web\View */
 ?>
-    <h1>bridge/receive</h1>
+<h1>bridge/receive</h1>
 
-    <p>
-        <?= Html::a('<span class="glyphicon glyphicon-refresh"></span> Κατάσταση υπηρεσιών', ['remote-status'], [
+<p>
+    <?= Html::a('<span class="glyphicon glyphicon-refresh"></span> Κατάσταση υπηρεσιών', ['remote-status'], [
                 'data' => [
                     'method' => 'post',
                 ],
                 'class' => 'btn btn-primary'
         ]);
         ?>
-    </p>
+</p>
+
+<?= $this->render('_connection_information', ['connection_options' => $connection_options]) ?>
