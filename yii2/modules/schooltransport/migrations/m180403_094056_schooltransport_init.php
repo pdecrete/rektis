@@ -20,7 +20,9 @@ class m180403_094056_schooltransport_init extends Migration
             'table_directorate' => $this->db->tablePrefix . 'directorate',
             'table_school' => $this->db->tablePrefix . 'schoolunit',
             'table_transport' => $this->db->tablePrefix . 'schtransport_transport',
-            'table_country' => $this->db->tablePrefix . 'schtransport_country'
+            'table_country' => $this->db->tablePrefix . 'schtransport_country',
+            'table_state' => $this->db->tablePrefix . 'schtransport_state',
+            'table_transportstate' => $this->db->tablePrefix . 'schtransport_transportstate'
         ];
         $i = 1;
         /* CREATE TABLE admapp_trnsprt_programcategory */
@@ -126,6 +128,7 @@ class m180403_094056_schooltransport_init extends Migration
                              `transport_enddate` DATE NOT NULL COMMENT 'Λήξη Μετακίνησης',
                              `transport_headteacher` VARCHAR(100) COMMENT 'Αρχηγός Συνοδός',
                              `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι/Συνοδοί Εκπαιδευτικοί',
+                             `transport_substituteteachers` VARCHAR(1000) COMMENT 'Αναπληρωτές Συνοδοί Εκπαιδευτικοί',
                              `transport_students` VARCHAR(2000) COMMENT 'Μετακινούμενοι Μαθητές',
                              `transport_class` VARCHAR(10) COMMENT 'Τμήμα Σχολείου',
                              `transport_schoolrecord` VARCHAR(200) COMMENT 'Πρακτικό Συλλόγου',
@@ -149,16 +152,80 @@ class m180403_094056_schooltransport_init extends Migration
 
         /* CREATE TABLE admapp_country */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_country'] .
-        " (`country_id` INTEGER NOT NULL AUTO AUTO_INCREMENT,
-           `country_name` VARCHAR(100) NOT NULL,
-           `country_name_genitive` VARHCAR(100)
-          )" . $tableOptions;
+                          " (`country_id` INTEGER NOT NULL AUTO_INCREMENT,
+                             `country_name` VARCHAR(100) NOT NULL,
+                              PRIMARY KEY (`country_id`)    
+                            )" . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_country'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_country'] . "(country_name, country_name_genitive) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "('Βέ', '')")->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_country'] . " (country_name) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('Βέλγιο')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ελλάδα')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λιθουανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πορτογαλία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βουλγαρία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ισπανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λουξεμβούργο')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ρουμανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τσεχία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Γαλλία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ουγγαρία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σλοβενία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Δανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Κροατία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Μάλτα')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σλοβακία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Γερμανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ιταλία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ολλανδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Φινλανδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Εσθονία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Κύπρος')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Αυστρία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σουηδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ιρλανδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λετονία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πολωνία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βρετανία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Αγγλία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σκωτία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βόρεια Ιρλανδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ουαλία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ΠΓΔΜ')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ισλανδία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Νορβηγία')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λιχτενστάιν')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τουρκία')")->execute();
+       
+        /* CREATE TABLE admapp_schtrnsport_state */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_state'] .
+                          "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
+                            `state_name` VARCHAR(100),
+                             PRIMARY KEY (`state_id`)
+                           ) " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_state'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_state'] . "(state_name) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('Υπογραφή Σχεδίου')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πρωτοκολλήθηκε/Ξεχρεώθηκε')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Διεκπεραιώθηκε')")->execute();
         
+        
+        /* CREATE TABLE admapp_schtrnsport_transportstate */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_transportstate'] .
+                          "(`transport_id` INTEGER NOT NULL,
+                            `state_id` INTEGER NOT NULL,
+                            `transportstate_date` DATE NOT NULL,
+                            `transportstate_comment` VARCHAR(200),
+                             PRIMARY KEY (`transport_id`, `state_id`),
+                             FOREIGN KEY (`transport_id`) REFERENCES " . $dbTrnsprtTables['table_transport'] . "(`transport_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                             FOREIGN KEY (`state_id`) REFERENCES " . $dbTrnsprtTables['table_state'] . "(`state_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                           ) " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_transportstate'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
     }
     
     public function safeDown()
@@ -170,7 +237,9 @@ class m180403_094056_schooltransport_init extends Migration
             'table_directorate' => $this->db->tablePrefix . 'directorate',
             'table_school' => $this->db->tablePrefix . 'schoolunit',
             'table_transport' => $this->db->tablePrefix . 'schtransport_transport',
-            'table_country' => $this->db->tablePrefix . 'schtransport_country'
+            'table_country' => $this->db->tablePrefix . 'schtransport_country',
+            'table_state' => $this->db->tablePrefix . 'schtransport_state',
+            'table_transportstate' => $this->db->tablePrefix . 'schtransport_transportstate'
         ];
         
         $dbTrnsprtTables = array_reverse($dbTrnsprtTables);

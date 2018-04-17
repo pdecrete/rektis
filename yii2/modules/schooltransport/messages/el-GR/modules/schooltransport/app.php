@@ -58,5 +58,6 @@ return [
     'Approval Document Protocol' => 'Πρωτόκολλο Έγκρισης ΠΔΕ',
     'School Directorate Protocol' => 'Πρωτόκολλο Διεύθυνσης Σχολείου',
     'School Record' => 'Πρακτικό Συλλόγου',
-    'Class' => 'Τάξη ή Τμήμα'
+    'Class' => 'Τάξη ή Τμήμα',
+    'Program' => 'Πρόγραμμα'
 ];

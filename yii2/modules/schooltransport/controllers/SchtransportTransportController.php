@@ -15,6 +15,8 @@ use app\modules\schooltransport\models\SchtransportProgramcategory;
 use app\modules\schooltransport\models\SchtransportMeeting;
 use app\modules\schooltransport\models\SchtransportProgram;
 use app\modules\schooltransport\models\Schoolunit;
+use app\modules\schooltransport\models\SchtransportCountry;
+use app\modules\schooltransport\models\SchtransportState;
 
 /**
  * SchtransportTransportController implements the CRUD actions for SchtransportTransport model.
@@ -95,11 +97,12 @@ class SchtransportTransportController extends Controller
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
         $program_model->programcategory_id = $id;
+        $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data = array();
-        $typeahead_data['COUNTRIES'] = SchtransportMeeting::find()->select('meeting_country')->column();
+        $typeahead_data['COUNTRIES'] = array_merge(SchtransportMeeting::find()->select('meeting_country')->column(), $countries);
         $typeahead_data['CITIES'] = SchtransportMeeting::find()->select('meeting_city')->column();
         $typeahead_data['PROGRAMCODES'] = SchtransportProgram::find()->select('program_code')->column();
-        $typeahead_data['PROGRAMTITLES'] = SchtransportProgram::find()->select('program_title')->column();
+        $typeahead_data['PROGRAMTITLES'] = SchtransportProgram::find()->select('program_title')->column();        
         
         try{
             $transaction = Yii::$app->db->beginTransaction();

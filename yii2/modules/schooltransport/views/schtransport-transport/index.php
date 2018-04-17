@@ -103,20 +103,34 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
                 ])
             ],
-            ['attribute' => 'program_title',
-                'label' => Module::t('modules/schooltransport/app', 'Program'),                
+            ['attribute' => 'programcategory_programtitle',
+             'label' => Module::t('modules/schooltransport/app', 'Program'),                
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download}',
-             'buttons' => ['download' => function ($url, $model) {
-                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>',
-                                                                    $url,
-                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
-                                                                     'data-method' => 'post'
+             'template' => '{view} {update} {delete} {download} {forwardstate} {backwardstate}',
+             'buttons' => ['download' =>    function ($url, $model) { 
+                                                return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
+                                                                ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
+                                                                 'data-method' => 'post']);
+                                            },
+                           'forwardstate' => function ($url, $model) {
+                                                if ($model['statescount'] < 3) {
+                                                    return Html::a('<span class="glyphicon glyphicon-arrow-right"></span>', $url,
+                                                                    ['title' => Module::t('modules/schooltransport/app', 'Forward to next state')]);
+                                                }
+                                            },
+                           'backwardstate' => function ($url, $model) {
+                                                if ($model['statescount'] == 0) {
+                                                    return Html::a('<span class="glyphicon glyphicon-arrow-left"></span>', $url,
+                                                                    ['title' => Module::t('modules/schooltransport/app', 'Backward to previous state'),
+                                                                     'data'=>['confirm'=>Module::t('modules/schooltransport/app', "Are you sure you want to change the state of the expenditure?"),
+                                                                     'method' => "post"]
                                                                     ]);
-                                              }],
+                                                }
+                                              }
+                          ],
              'urlCreator' => function ($action, $model) {
-                if ($action === 'delete') {
+                if ($action === 'delete') {                    
                     $url = Url::to(['/schooltransport/schtransport-transport/delete', 'id' =>$model['transport_id']]);
                     return $url;
                 }
@@ -130,6 +144,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 if ($action === 'download') {
                     $url = Url::to(['/schooltransport/schtransport-transport/download', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'backwardstate') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/backwardstate', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'forwardstate') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/forwardstate', 'id' =>$model['transport_id']]);
                     return $url;
                 }
             },
