@@ -6,6 +6,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\helpers\Url;
+use app\modules\schooltransport\models\SchtransportTransportstate;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
@@ -60,12 +61,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],              
             ['attribute' => 'school_name',
-             'label' => Module::t('modules/schooltransport/app', 'School Unit'), 
+             'label' => Module::t('modules/schooltransport/app', 'School Unit'),
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'meeting_country',
-             'label' => Module::t('modules/schooltransport/app', 'Transportation Country')],
+             'label' => Module::t('modules/schooltransport/app', 'Transportation Country'),
+             'headerOptions' => ['class'=> 'text-center']
+            ],
             ['attribute' => 'meeting_city',
-             'label' => Module::t('modules/schooltransport/app', 'Transportation City')
+             'label' => Module::t('modules/schooltransport/app', 'Transportation City'),
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'transport_startdate',
              'label' => Module::t('modules/schooltransport/app', 'Transportation Start'),
@@ -74,7 +79,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'attribute' => 'transport_startdate',
                                                 'type' => DateControl::FORMAT_DATE,
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
-                                            ])
+                                            ]),
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'transport_enddate',
              'label' => Module::t('modules/schooltransport/app', 'Transportation End'),
@@ -83,7 +89,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'attribute' => 'transport_enddate',
                                                 'type' => DateControl::FORMAT_DATE,
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
-                                            ])
+                                            ]),    
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'meeting_startdate',
              'label' => Module::t('modules/schooltransport/app', 'Meeting Start'),
@@ -92,7 +99,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'attribute' => 'meeting_startdate',
                                                 'type' => DateControl::FORMAT_DATE,
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
-                ])
+                ]),
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'meeting_enddate',
              'label' => Module::t('modules/schooltransport/app', 'Meeting End'),
@@ -101,13 +109,64 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'attribute' => 'meeting_enddate',
                                                 'type' => DateControl::FORMAT_DATE,
                                                 'widgetOptions' => ['layout' => '{remove}{input}'],
-                ])
+                ]),
+             'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'programcategory_programtitle',
-             'label' => Module::t('modules/schooltransport/app', 'Program'),                
+             'label' => Module::t('modules/schooltransport/app', 'Program'),
+             'headerOptions' => ['class'=> 'text-center'],
+            ],
+            ['attribute' => 'statescount',
+             'label' => Module::t('modules/schooltransport/app', 'State'),
+             'format' => 'html',
+             'headerOptions' => ['class'=> 'text-center'],
+             'contentOptions' => ['class'=> 'text-center'],
+             'value' => function($model){
+                            $tmp1 = SchtransportTransportstate::findOne(['transport_id' => $model['transport_id'], 'state_id' => 1]);
+                            $tmp2 = SchtransportTransportstate::findOne(['transport_id' => $model['transport_id'], 'state_id' => 2]);
+                            $tmp3 = SchtransportTransportstate::findOne(['transport_id' => $model['transport_id'], 'state_id' => 3]);
+             
+                            $state_commnents1 = " ";
+                            $state_commnents2 = " ";
+                            $state_commnents3 = " ";
+                            
+                            $url1 = Url::to(['/schooltransport/schtransport-transport/updatestate', 'state_id' => 1, 'transport_id' =>$model['transport_id']]);
+                            $url2 = Url::to(['/schooltransport/finance-transport/updatestate', 'state_id' => 2, 'transport_id' =>$model['transport_id']]);
+                            $url3 = Url::to(['/schooltransport/finance-transport/updatestate', 'state_id' => 3, 'transport_id' =>$model['transport_id']]);
+                            $retvalue = ' ';                            
+                                                                   
+                            if ($model['statescount'] == 1) {
+                                $url = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                                $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red;" data-toggle="tooltip" data-html="true" title="' . $state_commnents1 . '"></span>',
+                                    $url,
+                                    ['title' => Module::t('modules/finance/app', 'Forward to next state')]
+                                    );
+                            } elseif ($model['statescount'] == 2) {
+                                $url1 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                                $url2 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 2, 'exp_id' =>$model['exp_id']]);
+                                $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red;" data-toggle="tooltip" data-html="true" title="' . $state_commnents1 . '"></span>',
+                                    $url1
+                                    );
+                                $retvalue .= '&nbsp;';
+                                $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:orange; data-toggle="tooltip" data-html="true" title="' . $state_commnents2 . '"></span>',
+                                    $url2
+                                    );
+                            } elseif ($model['statescount'] == 3) {
+                                $url1 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 1, 'exp_id' =>$model['exp_id']]);
+                                $url2 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 2, 'exp_id' =>$model['exp_id']]);
+                                $url3 = Url::to(['/finance/finance-expenditure/updatestate', 'state_id' => 3, 'exp_id' =>$model['exp_id']]);
+                                $retvalue = Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:red;" data-toggle="tooltip" data-html="true" title="' . $state_commnents1 . '"></span>', $url1);
+                                $retvalue .= '&nbsp;';
+                                $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:orange; data-toggle="tooltip" data-html="true" title="' . $state_commnents2 . '"></span>', $url2);
+                                $retvalue .= '&nbsp;';
+                                $retvalue .= Html::a('<span class="glyphicon glyphicon-ok-sign" style="color:green;" data-toggle="tooltip" data-html="true" title="' . $state_commnents3 . '"></span>', $url3);
+                            }
+
+                            return $retvalue;
+                        }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download} {forwardstate} {backwardstate}',
+             'template' => '{view} {update} {delete} {download}<br/>{backwardstate} {forwardstate}',
              'buttons' => ['download' =>    function ($url, $model) { 
                                                 return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
                                                                 ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
@@ -155,7 +214,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $url;
                 }
             },
-             'contentOptions' => ['class' => 'text-nowrap'],
+            'contentOptions' => ['class'=> 'text-center text-nowrap'],
             ],
         ],
     ]); ?>

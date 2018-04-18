@@ -94,6 +94,22 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Schoolunit::className(), ['school_id' => 'school_id']);
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTransportstates()
+    {
+        return $this->hasMany(SchtransportTransportstate::className(), ['transport_id' => 'transport_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStates()
+    {
+        return $this->hasMany(SchtransportState::className(), ['state_id' => 'state_id'])->viaTable('{{%schtransport_transportstate}}', ['transport_id' => 'transport_id']);
+    } 
 
     /**
      * @inheritdoc

@@ -39,7 +39,7 @@ return [
     'The school transport was deleted successfully.' => 'Η σχολική μετακίνηση διαγράφηκε επιτυχώς.',
     'Failure in deleting the school transport.' => 'Αποτυχία διαγραφής της σχολικής μετακίνησης.',
     'School Unit' => 'Σχολείο',
-    'Transportation Country' => 'Χώρα Μετακίνησης',
+    'Transportation Country' => 'Χώρα',
     'Transportation City' => 'Πόλη',
     'Transportation Start' => 'Έναρξη Μετακίνησης',
     'Transportation End' => 'Λήξη Μετακίνησης',
@@ -59,5 +59,6 @@ return [
     'School Directorate Protocol' => 'Πρωτόκολλο Διεύθυνσης Σχολείου',
     'School Record' => 'Πρακτικό Συλλόγου',
     'Class' => 'Τάξη ή Τμήμα',
-    'Program' => 'Πρόγραμμα'
+    'Program' => 'Πρόγραμμα',
+    'Date' => 'Ημερομηνία'
 ];

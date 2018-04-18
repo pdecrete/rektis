@@ -382,6 +382,39 @@ class SchtransportTransportController extends Controller
         }
     }
     
+    
+    
+    /**
+     * Sets the transport state to the next state (e.g. if it is in the "Digital Signature" state, then the
+     * state is set to "Protocol")
+     * If the action is successful, the next visual indicator will be shown.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionForwardstate($id)
+    {
+        try {
+            $trnsprt_model = $this->findModel($id);
+            $trnsportstate_model = $trnsprt_model->getTransportstates();
+            
+            if ($state_model->load(Yii::$app->request->post())) {
+                ;
+            }
+            else{
+                return $this->render('forwardstate', [
+                    'state_model' => $state_model,
+                    'current_state_name' => $current_state_name,
+                    'state_id' => $state_id
+                ]);
+            }
+            
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport's state details."));
+            return $this->redirect(['index']);
+        }
+    }
+    
     /**
      * Finds the SchtransportTransport model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
