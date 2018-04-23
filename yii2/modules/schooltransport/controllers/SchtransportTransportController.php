@@ -17,6 +17,7 @@ use app\modules\schooltransport\models\SchtransportProgram;
 use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\SchtransportCountry;
 use app\modules\schooltransport\models\SchtransportState;
+use app\modules\schooltransport\models\SchtransportTransportstate;
 
 /**
  * SchtransportTransportController implements the CRUD actions for SchtransportTransport model.
@@ -70,10 +71,8 @@ class SchtransportTransportController extends Controller
      * @return mixed
      */
     public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+    {//echo "Hallo"; die();
+       return $this->actionUpdate($id, true);        
     }
 
     /**
@@ -169,7 +168,7 @@ class SchtransportTransportController extends Controller
      * @param integer $sep
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $readonly_mode = false)
     {
         $model = $this->findModel($id);
         $meeting = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
@@ -220,19 +219,27 @@ class SchtransportTransportController extends Controller
                 return $this->redirect(['index']); 
             }
             else {
-                return $this->render('update', [ 'model' => $model,
-                    'meeting_model' => $meeting_model,
-                    'program_model' => $program_model,
-                    'schools' => $schools,
-                    'typeahead_data' => $typeahead_data,
-                    'programcateg_id' => $pr_categ,
-                    'sep' => $sep]);
+                $view_file = 'update';
+                if($readonly_mode)
+                    $view_file = 'view';
+                
+                return $this->render($view_file, [ 'model' => $model,
+                        'meeting_model' => $meeting_model,
+                        'program_model' => $program_model,
+                        'schools' => $schools,
+                        'typeahead_data' => $typeahead_data,
+                        'programcateg_id' => $pr_categ,
+                        'sep' => $sep]);
             }
         }
         catch(Exception $exc){
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('update', [   'model' => $model,
+            $view_file = 'update';
+            if($readonly_mode)
+                $view_file = 'view';
+            
+            return $this->redirect($view_file, [   'model' => $model,
                 'meeting_model' => $meeting_model,
                 'program_model' => $program_model,
                 'schools' => $schools,
@@ -392,28 +399,100 @@ class SchtransportTransportController extends Controller
      * @return mixed
      */
     public function actionForwardstate($id)
-    {
-        try {
+    {        
+        try {            
             $trnsprt_model = $this->findModel($id);
-            $trnsportstate_model = $trnsprt_model->getTransportstates();
+            $existing_trnsportstate_models = $trnsprt_model->getTransportstates()->all();
+            //$states =
+            $count_transportstates = count($existing_trnsportstate_models);
             
-            if ($state_model->load(Yii::$app->request->post())) {
-                ;
+            if($count_transportstates >= 3){
+                throw new Exception();
+            }
+            $transportstate_model = new SchtransportTransportstate();
+            $transportstate_model->state_id = $count_transportstates + 1;
+            $transportstate_model->transport_id = $id;
+            $state_name = SchtransportState::find()->where(['state_id' => $count_transportstates+1])->one()['state_name'];
+            
+            if ($transportstate_model->load(Yii::$app->request->post())) {
+                
+                //echo "<pre>"; print_r($transportstate_model); echo "</pre>"; die(); 
+                if(!$transportstate_model->save())
+                    throw new Exception();
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
+                return $this->redirect(['index']);
             }
             else{
-                return $this->render('forwardstate', [
-                    'state_model' => $state_model,
-                    'current_state_name' => $current_state_name,
-                    'state_id' => $state_id
+                return $this->render('createstate', [
+                    'transportstate_model' => $transportstate_model,                    
+                    'state_name' => $state_name
                 ]);
-            }
-            
+            }            
         }
         catch(Exception $e){
-            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport's state details."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport state."));
             return $this->redirect(['index']);
         }
     }
+    
+    
+    /**
+     * Backwards the transport state to the previous state (e.g. if it is in the "Protocol" state, then the
+     * state is set to "Digital Signature")
+     * If the action is successful, the proper visual indicators will be shown.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionBackwardstate($id)
+    {
+        try {
+            $states_count = SchtransportTransportstate::findAll(['transport_id' => $id]);
+            if($states_count == 0)
+                throw new Exception();
+            
+            if(!SchtransportTransportstate::findOne(['state_id' => $states_count])->delete())
+                throw new Exception();
+            
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to backward transport state."));
+            return $this->redirect(['index']);
+        }
+    }
+    
+    
+    /**
+     * Update the details of the transport's approval state.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdatestate($state_id, $transport_id)
+    {
+        try {
+            $transportstate_model = SchtransportTransportstate::find()->where(['transport_id' => $transport_id])->andWhere(['state_id' => $state_id])->one();
+            $state_name = SchtransportState::find()->where(['state_id' => $state_id])->one()['state_name'];
+            
+            if ($transportstate_model->load(Yii::$app->request->post())) {                
+                if(!$transportstate_model->save())
+                    throw new Exception();
+                    Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
+                    return $this->redirect(['index']);
+            }
+            else{
+                return $this->render('createstate', [
+                    'transportstate_model' => $transportstate_model,
+                    'state_name' => $state_name
+                ]);
+            }
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport state."));
+            return $this->redirect(['index']);
+        }
+    }
+    
     
     /**
      * Finds the SchtransportTransport model based on its primary key value.
