@@ -2,11 +2,21 @@
 
 use app\modules\finance\Module;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceKaewithdrawal */
 /* @var $form yii\widgets\ActiveForm */
+$existingFileUrl = "";
+if($updateFlag && !is_null($model->kaewithdr_decisionfile)){
+    $existingFile = Url::to(['/finance/finance-kaewithdrawal/download', 'id' =>$model['kaewithdr_id']]);
+    $existingFileUrl = ' (<i>' . Html::a(Module::t('modules/finance/app', 'Download Decision') . '&nbsp;<span class="glyphicon glyphicon-download"></span>', $existingFile,
+        ['title' => Module::t('modules/finance/app', 'Download Decision'),
+            'data-method' => 'post',
+            'target' => '_blank'
+        ]). '</i>)';
+}
 ?>
 
 <div class="row">
@@ -16,14 +26,14 @@ use yii\widgets\ActiveForm;
     
         <?= $form->field($model, 'kaewithdr_amount')->textInput(['maxlength' => true,
                                                         'type' => 'number',
-                                                        'min' => "0.00" ,
+                                                        //'min' => "0.00" ,
                                                         'step' => '0.01',
                                                         'style' => 'text-align: left',
                                                         'value' => $model['kaewithdr_amount']])->label(false); ?>
     
         <?= $form->field($model, 'kaewithdr_decision')->textInput(['maxlength' => true]) ?>
     	
-    	<?php ;//$form->field($model, 'decisionfile')->fileInput() ?>
+    	<?= $form->field($model, 'decisionfile')->fileInput()->label(Module::t('modules/finance/app', 'Decision File') . $existingFileUrl) ?>
     	
         <?php ;// $form->field($model, 'kaewithdr_date')->textInput(['value' => date("Y-m-d H:i:s")])?>
     

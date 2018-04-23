@@ -16,6 +16,7 @@ use yii\base\Exception;
 use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
 use app\modules\finance\models\FinanceKaewithdrawal;
+use app\modules\finance\models\FinanceKaecreditpercentage;
 
 /**
  * FinanceKaecreditController implements the CRUD actions for FinanceKaecredit model.
@@ -154,8 +155,9 @@ class FinanceKaecreditController extends Controller
             //$transaction = Yii::$app->db->beginTransaction();
             //try {
                 foreach ($kaecredits as $kaecredit) {
-                    if ($kaecredit->kaecredit_amount < FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id)) {
-                        throw new Exception(Module::t('modules/finance/app', "Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN."));
+                    //echo $kaecredit->kaecredit_amount*FinanceKaecreditpercentage::getKaeCreditSumPercentage($kaecredit)/10000 . "    " . FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id); die();
+                    if ($kaecredit->kaecredit_amount*FinanceKaecreditpercentage::getKaeCreditSumPercentage($kaecredit)/10000 < FinanceKaewithdrawal::getWithdrawsSum($kaecredit->kaecredit_id)) {
+                        throw new Exception(Module::t('modules/finance/app', "Failure in saving your changes. The sum of the existing withdrawals is larger than the available credits of the RCN."));
                     }
 
                     if (!$kaecredit->save()) {

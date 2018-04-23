@@ -12,6 +12,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\finance\components\Money;
+use app\modules\finance\models\FinanceExpenditurestate;
+use app\modules\finance\models\FinanceExpenddeduction;
 
 /**
  * FinanceDeductionController implements the CRUD actions for FinanceDeduction model.
@@ -109,6 +111,13 @@ class FinanceDeductionController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
+                /*if there is an expenditure on at least state 2 (sent for approval) with such deduction assigned, then throw Exception*/
+                $expenditures = FinanceExpenddeduction::findAll(['deduct_id' => $id]);
+                foreach ($expenditures as $expenditure){
+                    if(FinanceExpenditurestate::findOne(['state_id' => 2, 'exp_id' => $expenditure->exp_id]))
+                        throw new Exception();
+                }
+                
                 $model->deduct_downlimit = Money::toCents($model->deduct_downlimit);
                 $model->deduct_uplimit = Money::toCents($model->deduct_uplimit);
                 $model->deduct_percentage = Money::toDbPercentage($model->deduct_percentage);

@@ -3,6 +3,8 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
+use Yii;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "{{%finance_kaewithdrawal}}".
@@ -41,9 +43,9 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             [['kaewithdr_decision'], 'string', 'max' => 255],
             [['kaewithdr_decisionfile'], 'string', 'max' => 200],
             [['kaecredit_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceKaecredit::className(), 'targetAttribute' => ['kaecredit_id' => 'kaecredit_id']],
-                //[['decisionfile'], 'safe'], //----
-                //[['decisionfile'], 'file', 'extensions'=>'pdf'], //----
-                //[['decisionfile'], 'file', 'maxSize'=>'10000000'], //----
+                [['decisionfile'], 'safe'], //----
+                [['decisionfile'], 'file', 'extensions'=>'pdf'], //----
+                [['decisionfile'], 'file', 'maxSize'=>'10000000'], //----
         ];
     }
 
@@ -56,27 +58,30 @@ class FinanceKaewithdrawal extends \yii\db\ActiveRecord
             'kaewithdr_id' => Module::t('modules/finance/app', 'Withdrawal'),
             'kaewithdr_amount' => Module::t('modules/finance/app', 'Withdrawal Amount'),
             'kaewithdr_decision' => Module::t('modules/finance/app', 'Withdrawal Decision'),
-            //'kaewithdr_decisionfile' => Module::t('modules/finance/app', 'Decision File'),
+            'kaewithdr_decisionfile' => Module::t('modules/finance/app', 'Decision File'),
             'kaewithdr_date' => Module::t('modules/finance/app', 'Created Date'),
             'kaecredit_id' => Module::t('modules/finance/app', 'Credit ID'),
         ];
     }
 
-    /*
+    
     public function upload()
-    {
+    {   //echo Yii::getAlias(Yii::$app->params['finance_uploadfolder']); die();
         if ($this->validate()) {
             if(!isset($this->decisionfile)){
                 $this->kaewithdr_decisionfile = null;
                 return true;
             }
-            $this->decisionfile->saveAs('uploads/withdrawals/' . $this->kaewithdr_id . '.' . $this->decisionfile->extension);
+            if(!is_writeable(Yii::getAlias(Yii::$app->params['finance_uploadfolder'])))
+                return false;
+            if(empty($this->decisionfile->saveAs(Yii::getAlias(Yii::$app->params['finance_uploadfolder']) . $this->kaewithdr_id . '.' . $this->decisionfile->extension)))
+                return false;
             $this->kaewithdr_decisionfile = $this->kaewithdr_id . '.' . $this->decisionfile->extension;
             return true;
         } else {
             return false;
         }
-    }*/
+    }
     
     
     /**

@@ -29,6 +29,7 @@ use yii\db\Expression;
  * @property string $create_ts
  * @property string $update_ts
  * @property integer $deleted
+ * @property string $accompanying_document_number
  *
  * @property Employee $employeeObj
  * @property LeaveType $typeObj
@@ -37,6 +38,9 @@ use yii\db\Expression;
  */
 class Leave extends \yii\db\ActiveRecord
 {
+    const ACCOMPANYING_DOCUMENT_DECISION_PATTERN = '/(Φ\.1[\.\/0-9\-]+)/msu';
+
+    public $accompanying_document_number; // hold the decision number only
 
     /**
      * @inheritdoc
@@ -279,6 +283,15 @@ class Leave extends \yii\db\ActiveRecord
             $query_params
         )->queryScalar();
         return $total;
+    }
+
+    public function afterFind()
+    {
+        $this->accompanying_document_number = $this->accompanying_document; // failover 
+        $match = [];
+        if (1 === preg_match(Leave::ACCOMPANYING_DOCUMENT_DECISION_PATTERN, $this->accompanying_document_number, $match)) {
+            $this->accompanying_document_number = $match[0];
+        }
     }
 
     /**

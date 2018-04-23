@@ -3,6 +3,7 @@
 namespace app\modules\finance\controllers;
 
 use Yii;
+use app\models\TransportPrint;
 use app\modules\finance\Module;
 use app\modules\finance\models\FinanceKae;
 use app\modules\finance\models\FinanceKaewithdrawal;
@@ -33,7 +34,7 @@ class FinanceKaewithdrawalController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    [   'actions' => ['create', 'update', 'delete'],
+                    [   'actions' => ['create', 'update', 'delete', 'download'],
                         'allow' => false,
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
@@ -44,7 +45,7 @@ class FinanceKaewithdrawalController extends Controller
                             return $this->redirect(['index']);
                         }
                         ],
-                        [   'actions' =>['index'],
+                        [   'actions' =>['index', 'download'],
                             'allow' => true,
                             'roles' => ['financial_viewer'],
                         ],
@@ -106,6 +107,7 @@ class FinanceKaewithdrawalController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
+                $transaction = Yii::$app->db->beginTransaction();
                 $available = ($kaeCredit->kaecredit_amount)*(Money::toPercentage($kaeCreditSumPercentage, false)/100);
                 $balance = $available - FinanceKaewithdrawal::getWithdrawsSum($kaeCredit->kaecredit_id);
                 /*echo "Demanded: " . Money::toCents($model->kaewithdr_amount);
@@ -120,26 +122,34 @@ class FinanceKaewithdrawalController extends Controller
                 $model->kaecredit_id = $kaeCredit->kaecredit_id;
                 $model->kaewithdr_date = date("Y-m-d H:i:s");
                 $model->kaewithdr_amount = Money::toCents($model->kaewithdr_amount);
-                if ($model->kaewithdr_amount <= 0 || ($model->kaewithdr_amount > $balance)) {
+                if ($model->kaewithdr_amount > $balance) {
                     throw new Exception();
                 }
-                /*
+                
+                if (!$model->save()) {                    
+                    throw new Exception();
+                }
+                
                 $model->decisionfile = UploadedFile::getInstance($model, 'decisionfile');
-                if(!$model->upload())
+                if(!$model->upload()){
+                    //echo "I am coming here"; die();
                     throw new Exception();                    
-                */
-                if (!$model->save()) {
-                    throw new Exception();
                 }
+                
+                if (!$model->save(false)) {
+                    throw new Exception();
+                }                
                 
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
                 Yii::info('User ' . $user . ' working in year ' . $year . ' created withdrawal for RCN (KAE) ' . $id, 'financial');
 
+                $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The withdrawal completed successfully."));
                 return $this->redirect(['index']);
             } catch (Exception $e) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the declared the validity of the withdraw amount or contact with the administrator."));
+                $transaction->rollBack();
+                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
                 return $this->redirect(['/finance/finance-kaewithdrawal/index']);
             }
         } else {
@@ -185,17 +195,23 @@ class FinanceKaewithdrawalController extends Controller
                 $model->kaewithdr_amount = Money::toCents($model->kaewithdr_amount);
                 $newBalance = $balance - $oldModel->kaewithdr_amount + $model->kaewithdr_amount;
 
-                if ($model->kaewithdr_amount <= 0 || ($newBalance < 0)) {
-                    throw new Exception();
+                if ($newBalance < 0) {
+                    throw new Exception(Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
                 }
-                /*
-                $model->decisionfile = UploadedFile::getInstance($model, 'decisionfile');
-                if(!$model->upload())
-                    throw new Exception();
-                */    
+
                 if (!$model->save()) {
-                    throw new Exception();
-                }                
+                    throw new Exception(Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
+                }
+                
+                if(($model->decisionfile = UploadedFile::getInstance($model, 'decisionfile')) == null)
+                    throw new Exception("Error in uploading file. The action did not complete succesfully.");
+
+                if(!$model->upload())
+                    throw new Exception(Module::t('modules/finance/app', "Error in uploading file. The action did not complete succesfully."));
+                    
+                if (!$model->save(false)) {
+                    throw new Exception(Module::t('modules/finance/app', "Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
+                }
                   
                 $user = Yii::$app->user->identity->username;
                 $year = Yii::$app->session["working_year"];
@@ -204,7 +220,7 @@ class FinanceKaewithdrawalController extends Controller
                 Yii::$app->session->addFlash('success', Module::t('modules/finance/app', "The update of the withdrawal completed successfully."));
                 return $this->redirect(['index', 'id' => $model->kaewithdr_id]);
             } catch (Exception $e) {
-                Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failure in carrying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator."));
+                Yii::$app->session->addFlash('danger', $e->getMessage());
                 return $this->redirect(['/finance/finance-kaewithdrawal/index']);
             }
         } else {
@@ -245,6 +261,39 @@ class FinanceKaewithdrawalController extends Controller
             return $this->redirect(['/finance/finance-kaewithdrawal/index']);
         }
     }
+    
+    
+    /**
+     * Downloads the decision file of the withdrawals. 
+     * If no file has been uploaded yet, an appropriate message is shown to the user.
+     * 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDownload($id)
+    {
+        try{
+            $withdrawal_model = $this->findModel($id);
+            
+            if(is_null($withdrawal_model->kaewithdr_decisionfile))
+                throw new Exception("There is no uploaded withdrawal decision file.");
+            
+            $filepath = Yii::getAlias(Yii::$app->params['finance_uploadfolder']);
+            //echo $file; die();
+            if(!is_readable($filepath . $withdrawal_model->kaewithdr_decisionfile))
+                throw new Exception("The decision file cannot be found.");            
+                        
+            return Yii::$app->response->SendFile($filepath . $withdrawal_model->kaewithdr_decisionfile, $withdrawal_model->kaewithdr_decisionfile);
+
+                
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+                
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', $e->getMessage()));
+            return $this->redirect(['/finance/finance-kaewithdrawal/index']);
+        }
+    }
 
     /**
      * Finds the FinanceKaewithdrawal model based on its primary key value.
@@ -258,7 +307,7 @@ class FinanceKaewithdrawalController extends Controller
         if (($model = FinanceKaewithdrawal::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException('The requested withdrawal does not exist.');
         }
     }
 }

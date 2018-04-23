@@ -17,6 +17,12 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'Error in uploading file. The action did not complete succesfully.' => 'Σφάλμα στη μεταφόρτωση του αρχείου. Η ενέργεια δεν ολοκληρώθηκε επιτυχώς.',
+    'The decision file cannot be found.' => 'Το αρχείο δεν μπορεί να βρεθεί.',
+    'There is no uploaded withdrawal decision file.' => 'Δεν υπάρχει αρχείο απόφασης ανάληψης.',
+    'Download Decision' => 'Κατέβασμα Απόφασης',
+    'Failure in currying out the RCN withdrawal. Please check the validity of the withdraw amount or contact with the administrator.' =>
+    'Αποτυχία πραγματοποίησης της ανάληψης. Παρακαλώ ελέγξτε την εγκυρότητα του ποσού ανάληψης.',
     'The new RCN was created succesfully. The new RCN has been added with 0 credit to the financial years that have already defined credits for the RCNs.' => 
     'Ο νέος ΚΑΕ δημιουργήθηκε επιτυχώς. Ο νέος ΚΑΕ έχει προστεθεί με μηδενική πίστωση στα οικονομικά έτη για τα οποία έχουν ήδη καθοριστεί πιστώσεις ΚΑΕ.',
     'Invoice Types' => 'Τύποι Παραστατικών',
@@ -50,10 +56,10 @@ return [
     'Failure in updating deduction.' => 'Αποτυχία ενημέρωσης της κράτησης.',
     'Failure in creating deduction.' => 'Αποτυχία δημιουργίας της κράτησης.',
     'The deduction was set to obsolete.' => 'Η κράτηση καταργήθηκε.',
-    'The expenditure was not saved. Please correct the duplicate withdrawals.' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
+    'The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates).' => 'Η δαπάνη δεν αποθηκεύτηκε. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις (τουλάχιστον μία και όχι διπλές).',
     'The changes were not saved. Please correct the duplicate assigned withdrawals.' => 'Οι αλλαγές δεν αποθηκεύτηκαν. Παρακαλώ διορθώστε τις συσχετισμένες αναλήψεις.',
     'Update Withdrawal' => 'Ενημέρωση Ανάληψης',
-    'Failure in saving your changes. The sum of the existing withdrawals is larger than the credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
+    'Failure in saving your changes. The sum of the existing withdrawals is larger than the available credits of the RCN.' => 'Η ενέργεια δεν ολοκληρώθηκε επιτυχώς. Το άθροισμα των υπάρχουσων αναλήψεων είναι μεγαλύτερο από την πίστωση του ΚΑΕ ',
     'Deletion is not allowed for this type of deduction.' => 'Δεν επιτρέπεται η κατάργηση της συγκεκριμένης κράτησης.',
     'Update Year Credit' => 'Ενημέρωση Πίστωσης Έτους',
     'Update Expenditure' => 'Ενημέρωση Δαπάνης',
@@ -64,7 +70,7 @@ return [
     'The new supplier was created successfully.' => 'Ο νέος προμηθευτής δημιουργήθηκε επιτυχώς.',
     'Failure in deleting RCN.' => 'Αποτυχία διαγραφής του ΚΑΕ.',
     'The RCN was deleted succesfully.' => 'Ο ΚΑΕ διαγράφηκε επιτυχώς.',
-    'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN and to have an assigned voucher).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ και να έχει δημιουργηθεί τιμολόγιο για αυτές).',
+    'Failed to create Payments Report. Please check the selected expenditures (should be of the same RCN, to have an assigned voucher and not be in initial state).' => 'Αποτυχία δημιουργίας Κατάστασης Πληρωμών. Παρακαλώ ελέγξτε τις επιλεχθείσες δαπάνες (θα πρέπει να είναι του ίδιου ΚΑΕ, να έχει δημιουργηθεί τιμολόγιο για αυτές και να μην είναι σε αρχική κατάσταση).',
     'Available for Usage' => 'Διαθέσιμο για Χρήση',
     'Credit Withdrawals Sum' => 'Σύνολο Αναλήψεων',
     'Available Credit Amount' => 'Διαθέσιμο ποσό πίστωσης',
@@ -287,4 +293,11 @@ return [
     'Your action did not complete succesfull. There was an error during saving in the database.' => 'H ενέργειά σας δεν ολοκληρώθηκε με επιτυχία. Υπήρξε σφάλμα κατά την αποθήκευση στη βάση δεδομένων.',
     'Your choices cannot be carried out, because the financial year is locked.' => 'Οι επιλογές σας δεν μπορούν να πραγματοποιηθούν επειδή το έτος είναι κλειδωμένο.',
     'Your choices were succesfully saved.' => 'Οι επιλογές σας αποθηκεύτηκαν επιτυχώς.',
+    'Failure in creating the requested item.' => 'Αποτυχία δημιουργίας του ζητουμένου στοιχείου.',
+    'Amount of the expenditure is too high for the available withdrawals.' => 'Το ποσό της δαπάνης είναι μεγαλύτερο από το διαθέσιμο των επιλεχθέντων αναλήψεων.',
+    'Failed to create cover sheet. There is no invoice in at least one of the expenditures.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Τουλάχιστον μία δαπάνη δεν έχει τιμολόγιο.',
+    'Failed to create cover sheet. At least one expenditure is not in the proper state.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Τουλάχιστον μία δαπάνη δεν βρίσκεται σε κατάσταση δημιουργίας διαβιβαστικού.',
+    'Failed to create cover sheet. Please select expenditures of the same supplier.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Παρακαλώ επιλέξτε δαπάνες ίδιου προμηθευτή.',
+    'Failed to create cover sheet. Please select expenditures of the same RCN.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Παρακαλώ επιλέξτε δαπάνες ίδιου ΚΑΕ.',
+    'Failed to create cover sheet. The demand dates of expenditures do not have the same date or protocol.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Οι ημερομηνίες απαίτησεις των δαπανών ή οι αριθμοί πρωτοκόλλου δεν συμφωνούν.',
 ];
