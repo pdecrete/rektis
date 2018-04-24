@@ -3,10 +3,12 @@
 namespace app\modules\schooltransport\controllers;
 
 use Yii;
+use app\modules\schooltransport\Module;
 use app\modules\schooltransport\models\SchtransportState;
 use app\modules\schooltransport\models\SchtransportStateSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\base\Exception;
 use yii\filters\VerbFilter;
 
 /**
@@ -61,7 +63,7 @@ class SchtransportStateController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    /*public function actionCreate()
     {
         $model = new SchtransportState();
 
@@ -72,7 +74,7 @@ class SchtransportStateController extends Controller
                 'model' => $model,
             ]);
         }
-    }
+    }*/
 
     /**
      * Updates an existing SchtransportState model.
@@ -83,9 +85,21 @@ class SchtransportStateController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->state_id]);
+        
+        if ($model->load(Yii::$app->request->post())){
+            try{
+                if(!$model->save())
+                    throw new Exception();
+            
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The state was updated successfully."));
+                return $this->redirect(['index']);
+            }
+            catch(Exception $exc){
+                Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The state was not saved. Please try again."));
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         } else {
             return $this->render('update', [
                 'model' => $model,

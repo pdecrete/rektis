@@ -109,12 +109,15 @@ class SchtransportTransportController extends Controller
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
                 
-                $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
-                if(!$program_exists){
+                $existing_program = SchtransportProgram::findOne(['program_code' => $program_model->program_code]);
+                $program_exists = !(count($existing_program) == 0);
+                if($program_exists)
+                    $program_model->program_id = $existing_program->program_id;
+                else {
                     if(!$program_model->save())
-                        throw new Exception("Failure in creating the transportation");
+                        throw new Exception("Failure in creating the transportation 1");
                 }
-                
+                //echo 'hallo'; die();
                 $meeting_model->program_id = $program_model->program_id;
                 
                 //echo "<pre>"; print_r($meeting_model); echo "</pre>";die();
@@ -122,15 +125,15 @@ class SchtransportTransportController extends Controller
                 
                 if($meeting_model->isNewRecord){
                     if(!$meeting_model->save())
-                        throw new Exception("Failure in creating the transportation");
+                        throw new Exception("Failure in creating the transportation 2");
                 }
                 $model->meeting_id = $meeting_model->meeting_id;
                 
                 if(!$model->save())
-                    throw new Exception("Failure in creating the school transportation.");
+                    throw new Exception("Failure in creating the school transportation 3.");
                 
                 if(!$this->createApprovalFile($model, $meeting_model, $program_model))
-                    throw new Exception("Failure in creating the school transportation.");
+                    throw new Exception("Failure in creating the school transportation 4.");
                 
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
@@ -215,7 +218,7 @@ class SchtransportTransportController extends Controller
                         throw new Exception("Failure in creating the school transportation.");
                     
                 $transaction->commit();
-                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was updated successfully."));
                 return $this->redirect(['index']); 
             }
             else {
@@ -263,6 +266,9 @@ class SchtransportTransportController extends Controller
         try{
             $transaction = Yii::$app->db->beginTransaction();
 
+            if(SchtransportTransportstate::find()->where(['transport_id' => $id])->count() > 0)
+                throw new Exception('Failure in deleting the school transport, because it is not in initial state.');
+            
             if(!$model->delete())
                 throw new Exception('Failure in deleting the school transport.');
 
@@ -299,7 +305,9 @@ class SchtransportTransportController extends Controller
         else if($programcateg_model->programcategory_id == 5)
             $program_action = "KA2";
         else if($programcateg_model->programcategory_id == 10)
-                $program_action = "Polyhmerh";
+            $program_action = "Polyhmerh";
+        else if($programcateg_model->programcategory_id == 11)
+            $program_action = "Vouli";
             
         //echo $program_action; die();
         $fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
@@ -310,11 +318,11 @@ class SchtransportTransportController extends Controller
         
         //echo $template_path; die();
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
-        if(in_array($programcateg_model->programcategory_id, [5, 6, 7, 8, 9, 10])){
+        if(in_array($programcateg_model->programcategory_id, [5, 6, 7, 8, 9, 10, 11])){
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
-        if(in_array($programcateg_model->programcategory_id, [6, 7, 8, 9, 10])){
+        if(in_array($programcateg_model->programcategory_id, [6, 7, 8, 9, 10, 11])){
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
         }
@@ -370,6 +378,8 @@ class SchtransportTransportController extends Controller
                 $program_action = "KA2";           
             else if($programcateg_model->programcategory_id == 10)
                 $program_action = "Polyhmerh";
+            else if($programcateg_model->programcategory_id == 11)
+                $program_action = "Vouli";
             
             $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
                                     str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .

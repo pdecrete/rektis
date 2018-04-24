@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\schooltransport\Module;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -7,7 +8,8 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\modules\schooltransport\models\SchtransportStateSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Schtransport States');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
+$this->title = Module::t('modules/schooltransport/app', 'Transport Approval States');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schtransport-state-index">
@@ -15,19 +17,23 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
+    <!-- <p class="text-right">
         <?= Html::a(Yii::t('app', 'Create Schtransport State'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    </p> -->
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            //['class' => 'yii\grid\SerialColumn'],
 
-            'state_id',
+            ['attribute' => 'state_id',
+             'label' => '',
+             'headerOptions' => ['style' => 'max-width: 100px']
+            ],
             'state_name',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn',
+             'template' => '{update}'
+            ],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

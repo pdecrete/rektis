@@ -14,6 +14,12 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 
 //echo "<pre>"; echo $programcateg_id; echo "</pre>"; die();
+if($program_model['programcategory_id'] == 11){
+    $program_model['program_title'] = 'Βουλή των Ελλήνων';
+    $program_model['program_code'] = '-';
+    $meeting_model['meeting_country'] = 'Ελλάδα';
+    $meeting_model['meeting_city'] = 'Αθήνα';
+}
     
 ?>
 
@@ -69,10 +75,11 @@ use yii\widgets\ActiveForm;
 	                                                       ]);            
            endif;
     ?>    
-	           
+
+	<!--	           
     <?= $form->field($meeting_model, 'meeting_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
     <?= $form->field($meeting_model, 'meeting_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
-
+	-->
     
     <?php ;//$form->field($model, 'transport_submissiondate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?>
 
@@ -80,13 +87,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'transport_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
 
-	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10, 11]))
                echo $form->field($model, 'transport_headteacher')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
     <?= $form->field($model, 'transport_teachers')->textarea(['rows' => '6', 'disabled' => $disabled]) ?>
 
-	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10, 11]))
 	           echo $form->field($model, 'transport_class')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
@@ -94,7 +101,7 @@ use yii\widgets\ActiveForm;
 	           echo $form->field($model, 'transport_students')->textarea(['rows' => '6', 'disabled' => $disabled]);
 	?>	
    
-   	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10]))
+   	<?php  if(in_array($programcateg_id, [6, 7, 8, 9, 10, 11]))
    	           echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
    

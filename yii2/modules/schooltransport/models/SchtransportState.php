@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use app\modules\schooltransport\Module;
 use Yii;
 
 /**
@@ -39,8 +40,8 @@ class SchtransportState extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'state_id' => Yii::t('app', 'State ID'),
-            'state_name' => Yii::t('app', 'State Name'),
+            'state_id' => Module::t('modules/schooltransport/app', 'State ID'),
+            'state_name' => Module::t('modules/schooltransport/app', 'State Name'),
         ];
     }
 

@@ -33,7 +33,7 @@ class SchtransportMeeting extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['meeting_city', 'meeting_country', 'meeting_startdate', 'meeting_enddate', 'program_id'], 'required'],
+            [['meeting_city', 'meeting_country', 'program_id'], 'required'],
             [['meeting_startdate', 'meeting_enddate'], 'safe'],
             [['program_id'], 'integer'],
             [['meeting_city', 'meeting_country'], 'string', 'max' => 100],

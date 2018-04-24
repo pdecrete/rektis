@@ -23,6 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <h3><?= Module::t('modules/schooltransport/app', 'School Units');?></h3>
             <p><?= Module::t('modules/schooltransport/app', 'View/edit/delete school units');?></p>
 			<p><?= Html::a(Module::t('modules/schooltransport/app', 'School Units'), Url::to(['/schooltransport/schoolunit/']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
-        </div>         
+        </div>
+        <div class="col-lg-4">
+            <h3><?= Module::t('modules/schooltransport/app', 'Transportation Approval States');?></h3>
+            <p><?= Module::t('modules/schooltransport/app', 'View/edit states of a transportation approval');?></p>
+			<p><?= Html::a(Module::t('modules/schooltransport/app', 'Transportation Approval States'), Url::to(['/schooltransport/schtransport-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>        
     </div>
 </div>

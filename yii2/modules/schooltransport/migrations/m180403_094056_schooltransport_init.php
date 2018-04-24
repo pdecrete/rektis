@@ -48,6 +48,7 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(8, 'Εκπαιδευτικές Εκδρομές', '', 3)")->execute();
         Yii::$app->db->createCommand($insert_command . "(9, 'Σχολικοί Περίπατοι', '', 3)")->execute();
         Yii::$app->db->createCommand($insert_command . "(10, 'Πολυήμερες Εκδρομές στο εξωτερικό', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(11, 'Βουλή των Ελλήνων', '', NULL)")->execute();
         
         
         /* CREATE TABLE admapp_trnsprt_program */
@@ -70,8 +71,8 @@ class m180403_094056_schooltransport_init extends Migration
                           " (`meeting_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `meeting_city` VARCHAR(100) NOT NULL COMMENT 'Πόλη',
                              `meeting_country` VARCHAR(100) NOT NULL COMMENT 'Χώρα',
-                             `meeting_startdate` DATE NOT NULL COMMENT 'Έναρξη συνάντησης',
-                             `meeting_enddate` DATE NOT NULL COMMENT 'Λήξη συνάντησης',
+                             `meeting_startdate` DATE COMMENT 'Έναρξη συνάντησης',
+                             `meeting_enddate` DATE COMMENT 'Λήξη συνάντησης',
                              `program_id` INTEGER NOT NULL,
                               FOREIGN KEY (`program_id`) REFERENCES " . $dbTrnsprtTables['table_program'] . "(`program_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               PRIMARY KEY (`meeting_id`)

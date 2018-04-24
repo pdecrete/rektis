@@ -23,7 +23,7 @@ use kartik\datecontrol\DateControl;
     
     <div class="form-group  text-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
-        <?= Html::submitButton($transportstate_model->isNewRecord ? Module::t('modules/schooltransport/app', 'Forward Transport Approval State') : Module::t('modules/schooltransport/app', 'Update Transport Approval State'), ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton($transportstate_model->isNewRecord ? Module::t('modules/schooltransport/app', 'Forward State') : Module::t('modules/schooltransport/app', 'Update State'), ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

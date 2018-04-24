@@ -318,14 +318,17 @@ AppAsset::register($this);
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-road"></i></li>',
                         [
-                            'label' => 'Μετακινήσεις',
+                            'label' => 'Μετακινήσεις Σχολείων',
                             'url' => ['/schooltransport/schtransport-transport'],
                         ],
                         [
                             'label' => 'Προβολή Σχολείων',
                             'url' => ['/schooltransport/schoolunit']
                         ],
-                        
+                        [
+                            'label' => 'Στάδια Έγκρισης',
+                            'url' => ['/schooltransport/schtransport-state']
+                        ],
                     ],
                 ],
                 Yii::$app->user->isGuest ? [

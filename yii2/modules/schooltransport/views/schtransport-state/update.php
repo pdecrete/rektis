@@ -1,15 +1,15 @@
 <?php
 
+use app\modules\schooltransport\Module;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\schooltransport\models\SchtransportState */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Schtransport State',
-]) . $model->state_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Schtransport States'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->state_id, 'url' => ['view', 'id' => $model->state_id]];
+$this->title = Module::t('modules/schooltransport/app', 'Update State Title');
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'View States'), 'url' => ['/schooltransport/schtransport-state']];
+
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="schtransport-state-update">

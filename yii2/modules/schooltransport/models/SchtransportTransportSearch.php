@@ -75,7 +75,7 @@ class SchtransportTransportSearch extends SchtransportTransport
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['school_name', 'meeting_country', 'meeting_city', 'transport_startdate', 'transport_enddate',
-                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle'],
+                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle', 'statescount'],
                         'defaultOrder' => ['transport_startdate'=>SORT_ASC, 'school_name'=>SORT_ASC]
             ]
         ]);
