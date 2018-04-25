@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model app\modules\schooltransport\models\SchtransportTransport */
 
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
-$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'View Transportations'), 'url' => ['/schooltransport/schtransport-transport']];
+$this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'Transportations Approvals'), 'url' => ['/schooltransport/schtransport-transport']];
 $this->title = Module::t('modules/schooltransport/app', 'Update Transportation');
 $this->params['breadcrumbs'][] = $this->title;
 

@@ -22,6 +22,8 @@ use Yii;
  */
 class SchtransportTransport extends \yii\db\ActiveRecord
 {
+    public $signedfile;
+    
     /**
      * @inheritdoc
      */
@@ -49,6 +51,9 @@ class SchtransportTransport extends \yii\db\ActiveRecord
             [['transport_approvalfile', 'transport_signedapprovalfile'], 'string', 'max' => 200],
             [['meeting_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchtransportMeeting::className(), 'targetAttribute' => ['meeting_id' => 'meeting_id']],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['school_id' => 'school_id']],
+            [['signedfile'], 'safe'], //----
+            [['signedfile'], 'file', 'extensions'=>'pdf'], //----
+            [['signedfile'], 'file', 'maxSize'=>'10000000'], //----
         ];
     }
 
@@ -110,6 +115,29 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     {
         return $this->hasMany(SchtransportState::className(), ['state_id' => 'state_id'])->viaTable('{{%schtransport_transportstate}}', ['transport_id' => 'transport_id']);
     } 
+ 
+    /**
+     * Uploads the digitally signed file to the server.
+     */
+    public function upload($filename)
+    {   //echo Yii::getAlias(Yii::$app->params['finance_uploadfolder']); die();
+        if ($this->validate()) {
+            //echo Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $filename;die();
+            if(!isset($this->signedfile)){
+                $this->transport_signedapprovalfile = null;
+                return true;
+            }
+            if(!is_writeable(Yii::getAlias(Yii::$app->params['shcooltransport_uploadfolder'])))
+                return false;
+            if(empty($this->signedfile->saveAs(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $filename)))
+                return false;
+            $this->transport_signedapprovalfile = $filename;
+            return true;
+        } 
+        else {echo "Hallo"; die();
+            return false;
+        }
+    }
 
     /**
      * @inheritdoc

@@ -17,7 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'School Transportations' => 'Μετακινήσεις Σχολείων',
+    'School Transportations' => 'Σχολικές Μετακινήσεις',
     'View Transportations' => 'Προβολή Μετακινήσεων',
     'Create Transportation' => 'Δημιουργία Μετακίνησης',
     'Update Transportation' => 'Επεξεργασία Μετακίνησης',
@@ -25,9 +25,8 @@ return [
     'Update' => 'Ενημέρωση',
     'Create' => 'Δημιουργία',
     'School Units' => 'Σχολικές Μονάδες',
-    'View/edit/delete transportations' => 'Προβολή/επεξεργασία/διαγραφή μετακινήσεων',
+    'View/create/edit/delete transportations' => 'Προβολή/δημιουργία/επεξεργασία/διαγραφή μετακινήσεων',
     'Create a new transportation for a school unit' => 'Δημιουργία νέας μετακίνησης σχολικής μονάδας',
-    'View/edit/delete school units' => 'Προβολή/επεξεργασία/διαγραφή σχολικών μονάδων',
     'Create School Unit' => 'Δημιουργία Σχολικής Μονάδας',
     'Directorate of Education' => 'Διεύθυνση Εκπαίδευσης',
     'Failure in creating school unit' => 'Αποτυχία δημιουργίας σχολικής μονάδας',
@@ -69,8 +68,8 @@ return [
     'Description' => 'Σημείωση',
     'Forward State' => 'Προώθηση Κατάστασης',
     'Update State' => 'Ενημέρωση Κατάστασης',
-    'Forward Transportation Approval State' => 'Προώθηση Κατάστασης Έγκρισης Μετακίνησης',
-    'Update Transportation Approval State' => 'Ενημέρωση Κατάστασης Έγκρισης Μετακίνησης',
+    'Forward to State' => 'Προώθηση στην Κατάσταση',
+    'Update of State' => 'Ενημέρωση της Κατάστασης ',
     'State' => 'Κατάσταση',
     'Download Decision' => 'Κατέβασμα Απόφασης',
     'Forward to next state' => 'Προώθηση στην επόμενη κατάσταση',
@@ -83,5 +82,8 @@ return [
     'Update State Title' => 'Ενημέρωση Κατάστασης Έγκρισης',
     'State Name' => 'Τίτλος Κατάστασης Έγκρισης',
     'The transport\'s approval state changed successfully.' => 'Η κατάσταση της έγκρισης μετακίνησης άλλαξε επιτυχώς.',
-    'Are you sure you want to change the state of the transport\'s approval?' => 'Είστε σίγουρος/η ότι θέλετε να αλλάξετε την κατάσταση της έγκρισης μετακίνησης;'    
+    'Are you sure you want to change the state of the transport\'s approval?' => 'Είστε σίγουρος/η ότι θέλετε να αλλάξετε την κατάσταση της έγκρισης μετακίνησης;',
+    'Transportations Approvals' => 'Εγκρίσεις Μετακινήσεων',
+    'View school units as retrieved from myschool' => 'Προβολή σχολικών μονάδων έτσι όπως έχουν αντληθεί από το myschool.',
+    'The school transport cannot be updated, because it is not in initial state.' => 'Τα στοιχεία της μετακίνησης δεν μπορούν να αλλάξουν, διότι δεν είναι σε αρχική κατάσταση.'
 ];

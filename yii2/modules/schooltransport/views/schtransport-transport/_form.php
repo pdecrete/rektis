@@ -32,6 +32,7 @@ if($program_model['programcategory_id'] == 11){
             'options' => ['placeholder' => Module::t('modules/schooltransport/app', 'Select school...'), 'disabled' => $disabled],
         ])->label('Σχολείο'); ?>
   
+
 	<?php  if(empty($typeahead_data['PROGRAMCODES'])): 
 	           echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	       else:

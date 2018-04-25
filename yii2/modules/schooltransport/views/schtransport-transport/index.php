@@ -13,7 +13,7 @@ use app\modules\schooltransport\models\SchtransportState;
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
-$this->title = Module::t('modules/schooltransport/app', 'School Transportations');
+$this->title = Module::t('modules/schooltransport/app', 'Transportations Approvals');
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($dataProvider); echo "</pre>";die();

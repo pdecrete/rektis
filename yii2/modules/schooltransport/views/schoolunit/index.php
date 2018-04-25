@@ -2,7 +2,6 @@
 
 use app\modules\schooltransport\Module;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
@@ -23,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p class="text-right">
         <?= Html::a(Module::t('modules/schooltransport/app', 'Update School Units Details'), ['massupdate'], 
             ['id' =>'massUpdateButton', 'class' => 'btn btn-success', 
-             'onclick' => '(function () { document.getElementById("massUpdateButton").innerHTML = "Τα στοιχεία ενημερώνονται..."; })();']) ?>
+             'onclick' => '(function () { document.getElementById("massUpdateButton").innerHTML = "Γίνεται ενημέρωση των στοιχείων από το myschool..."; })();']) ?>
         <!--<?= Html::a(Module::t('modules/schooltransport/app', 'Create School Unit'), ['create'], ['class' => 'btn btn-success']) ?>-->
     </p>
 <?php Pjax::begin(); ?>    

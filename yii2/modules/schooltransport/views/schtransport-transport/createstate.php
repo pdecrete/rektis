@@ -9,7 +9,7 @@ use yii\helpers\Html;
 
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'View Transportations'), 'url' => ['/schooltransport/schtransport-transport']];
-$this->title = Module::t('modules/schooltransport/app', 'Forward Transportation Approval State');
+$this->title = Module::t('modules/schooltransport/app', 'Forward to State') . ' "' . $state_name . '"';
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($schools); echo "</pre>";die();
@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_transportstateform', [  'transportstate_model' => $transportstate_model, 
-                                                'state_name' => $state_name]);?>
+                                                'state_name' => $state_name, 'trnsprt_model' => $trnsprt_model, 
+                                                'updateFlag' => false]);?>
 
 </div>

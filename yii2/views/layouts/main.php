@@ -313,20 +313,22 @@ AppAsset::register($this);
                     ],
                 ],
                 [
-                    'label' => 'Σχολικές Μονάδες',
+                    'label' => 'Σχολικές Μετακινήσεις',
                     'visible' => !Yii::$app->user->isGuest,
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-road"></i></li>',
                         [
-                            'label' => 'Μετακινήσεις Σχολείων',
+                            'label' => 'Εγκρίσεις Μετακινήσεων',
                             'url' => ['/schooltransport/schtransport-transport'],
                         ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
                         [
-                            'label' => 'Προβολή Σχολείων',
+                            'label' => 'Σχολικές Μονάδες',
                             'url' => ['/schooltransport/schoolunit']
                         ],
                         [
-                            'label' => 'Στάδια Έγκρισης',
+                            'label' => 'Καταστάσεις Εγκρίσεων',
                             'url' => ['/schooltransport/schtransport-state']
                         ],
                     ],
