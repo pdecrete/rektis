@@ -174,8 +174,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download}<hr />{backwardstate} {forwardstate}',
-             'buttons' => ['download' =>    function ($url, $model) { 
+             'template' => '{view} {update} {delete} {download} {downloadsigned}<hr />{backwardstate} {forwardstate}',
+             'buttons' => ['downloadsigned' => function ($url, $model) {
+                                                if(!is_null($model['transport_signedapprovalfile']))
+                                                    return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
+                                                                ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
+                                                                 'data-method' => 'post']);
+                                                return '';
+                                            },
+                           'download' =>    function ($url, $model) { 
                                                 return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
                                                                 ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
                                                                  'data-method' => 'post']);
@@ -211,6 +218,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 if ($action === 'download') {
                     $url = Url::to(['/schooltransport/schtransport-transport/download', 'id' =>$model['transport_id']]);
+                    return $url;
+                }
+                if ($action === 'downloadsigned') {
+                    $url = Url::to(['/schooltransport/schtransport-transport/downloadsigned', 'id' =>$model['transport_id']]);
                     return $url;
                 }
                 if ($action === 'backwardstate') {

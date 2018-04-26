@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="body-content">
-
     <div class="row">
 		<div class="col-lg-4">
             <h3><?= Module::t('modules/schooltransport/app', 'Transportations Approvals');?></h3>
@@ -30,4 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
 			<p><?= Html::a(Module::t('modules/schooltransport/app', 'Transportation Approval States'), Url::to(['/schooltransport/schtransport-state']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>        
     </div>
+    <div class="row">
+		<div class="col-lg-4">
+            <h3><?= Module::t('modules/schooltransport/app', 'Help');?></h3>
+			<p><?= Module::t('modules/schooltransport/app', 'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.');?></p>
+			<p><?= Html::a(Module::t('modules/schooltransport/app', 'Help'), Url::to(['/schooltransport/default/help']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>
+    </div>    
 </div>

@@ -121,13 +121,14 @@ class SchtransportTransport extends \yii\db\ActiveRecord
      */
     public function upload($filename)
     {   //echo Yii::getAlias(Yii::$app->params['finance_uploadfolder']); die();
+        
         if ($this->validate()) {
             //echo Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $filename;die();
-            if(!isset($this->signedfile)){
+            if(!isset($this->signedfile)){//echo "Hallo"; die();
                 $this->transport_signedapprovalfile = null;
                 return true;
             }
-            if(!is_writeable(Yii::getAlias(Yii::$app->params['shcooltransport_uploadfolder'])))
+            if(!is_writeable(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder'])))
                 return false;
             if(empty($this->signedfile->saveAs(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $filename)))
                 return false;

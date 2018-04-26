@@ -316,7 +316,7 @@ AppAsset::register($this);
                     'label' => 'Σχολικές Μετακινήσεις',
                     'visible' => !Yii::$app->user->isGuest,
                     'items' => [
-                        '<li class="dropdown-header"><i class="glyphicon glyphicon-road"></i></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
                         [
                             'label' => 'Εγκρίσεις Μετακινήσεων',
                             'url' => ['/schooltransport/schtransport-transport'],
@@ -330,6 +330,20 @@ AppAsset::register($this);
                         [
                             'label' => 'Καταστάσεις Εγκρίσεων',
                             'url' => ['/schooltransport/schtransport-state']
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',
+                        [
+                            'label' => 'Βοήθεια εφαρμογής σχολικών μετακινήσεων',
+                            'url' => ['/schooltransport/default/help']
+                        ],
+                        [
+                            'label' => 'Διαδικασία έγκρισης σχολικής μετακίνησης',
+                            'url' => ['/schooltransport/default/help']
+                        ],
+                        [
+                            'label' => 'Νομοθεσία σχολικών μετακινήσεων',
+                            'url' => ['/schooltransport/default/help']
                         ],
                     ],
                 ],

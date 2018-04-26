@@ -9,15 +9,19 @@ use kartik\datecontrol\DateControl;
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
+
+$disabled = ($transportstate_model['state_id'] == 1) ? false : true; 
+
 $existingFileUrl = "";
 if($updateFlag && !is_null($trnsprt_model->transport_signedapprovalfile)){
-    $existingFile = Url::to(['/schooltransport/schtransport-transport/download', 'id' =>$trnsprt_model['transport_id']]);
-    $existingFileUrl = ' (<i>' . Html::a(Module::t('modules/schooltransport/app', 'Download digitally signed file') . '&nbsp;<span class="glyphicon glyphicon-download"></span>', $existingFile,
+    $existingFile = Url::to(['/schooltransport/schtransport-transport/downloadsigned', 'id' =>$trnsprt_model['transport_id']]);
+    $existingFileUrl = ' (<i>' . Html::a(Module::t('modules/schooltransport/app', 'Existing file') . '&nbsp;<span class="glyphicon glyphicon-download"></span>', $existingFile,
         ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
             'data-method' => 'post',
             'target' => '_blank'
         ]). '</i>)';
 }
+//}
 ?>
 
 <div class="finance-expenditure-form  col-lg-6">
@@ -30,14 +34,14 @@ if($updateFlag && !is_null($trnsprt_model->transport_signedapprovalfile)){
                   
 	<?= $form->field($transportstate_model, 'transportstate_comment')->textInput(['maxlength' => true])->
            label(Module::t('modules/schooltransport/app', 'Description')); ?>
-           
-	<?= $form->field($trnsprt_model, 'transport_signedapprovalfile')->fileInput()->label(Module::t('modules/schooltransport/app', 'Digitally Signed File') . $existingFileUrl) ?>   
+
+	<?= $form->field($trnsprt_model, 'signedfile')->fileInput(['disabled' => $disabled])->label(Module::t('modules/schooltransport/app', 'Digitally Signed File') . $existingFileUrl) ?>   
     
     <div class="form-group  text-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($transportstate_model->isNewRecord ? Module::t('modules/schooltransport/app', 'Forward State') : Module::t('modules/schooltransport/app', 'Update State'), ['class' => 'btn btn-primary']) ?>
     </div>
-
+	
     <?php ActiveForm::end(); ?>
 
 </div>

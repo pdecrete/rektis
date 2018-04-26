@@ -85,5 +85,11 @@ return [
     'Are you sure you want to change the state of the transport\'s approval?' => 'Είστε σίγουρος/η ότι θέλετε να αλλάξετε την κατάσταση της έγκρισης μετακίνησης;',
     'Transportations Approvals' => 'Εγκρίσεις Μετακινήσεων',
     'View school units as retrieved from myschool' => 'Προβολή σχολικών μονάδων έτσι όπως έχουν αντληθεί από το myschool.',
-    'The school transport cannot be updated, because it is not in initial state.' => 'Τα στοιχεία της μετακίνησης δεν μπορούν να αλλάξουν, διότι δεν είναι σε αρχική κατάσταση.'
+    'The school transport cannot be updated, because it is not in initial state.' => 'Τα στοιχεία της μετακίνησης δεν μπορούν να αλλάξουν, διότι δεν είναι σε αρχική κατάσταση.',
+    'Existing file' => 'Υπάρχον αρχείο',
+    'Download digitally signed file' => 'Κατεβάστε το ψηφιακά υπογεγραμμένο αρχείο',
+    'Digitally Signed File' => 'Ψηφιακά Υπογεγραμμένο Αρχείο',
+    'Help' => 'Βοήθεια',
+    'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.' => 
+    'Βοήθεια σχετικά με τη χρήση της εφαρμογής των σχολικών μετακινήσεων, τη διαδικασία δημιουργίας έγκρισης μετακίνησης, καθώς και τη σχετική νομοθεσία.'
 ];

@@ -383,6 +383,13 @@ class SchtransportTransportController extends Controller
     {
         return $program_action . "_" . str_replace(" ", "_", $school_name) . "_" . $meeting_country . "_" . $meeting_city . "_" . $transport_id . ".docx";
     }
+    
+    private function getFilenamesigned($program_action, $school_name, $meeting_country, $meeting_city, $transport_id)
+    {
+        $filename = $this->getFilename($program_action, $school_name, $meeting_country, $meeting_city, $transport_id);
+        $extension_pos = strrpos($filename, '.docx');
+        return substr_replace($filename, '_signed.pdf', $extension_pos, strlen($filename));        
+    }
 
     /**
      * Prints an existing SchtransportTransport model.     
@@ -397,25 +404,60 @@ class SchtransportTransportController extends Controller
                 throw new Exception("The requested transport could not be found.");
             
             $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
-            $meeting_model = $transport_model->getMeeting()->one();//->getProgram();
+            $meeting_model = $transport_model->getMeeting()->one();
             $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
             $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
             
             $program_action = $this->getProgramAction($programcateg_model);
             
-            $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/") . 
-                    $this->getFilename($program_action, $school_model->school_name, $meeting_model['meeting_country'], 
-                                        $meeting_model['meeting_city'], $transport_model['transport_id']);
-    //        $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/" . $program_action . "_" .
-      //                              str_replace(" ", "_", $school_model->school_name) . "_" . $meeting_model['meeting_country'] . "_" .
-        //                            $transport_model['transport_id'] . ".docx");
-            //echo $file; die();
+            $file = Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $transport_model->transport_approvalfile;
+                    //$this->getFilename($program_action, $school_model->school_name, $meeting_model['meeting_country'], 
+                    //                    $meeting_model['meeting_city'], $transport_model['transport_id']);
+
             if(!is_readable($file))
                 throw new Exception("The decision file cannot be found.");
                     
             return Yii::$app->response->SendFile($file);
                                         
             return $this->redirect(['/schooltransport/schtransport-transport/index']);
+                    
+        }
+        catch(Exception $e){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $e->getMessage()));
+            return $this->redirect(['/schooltransport/schtransport-transport/index']);
+        }
+    }
+    
+    
+    
+    /**
+     * Prints an existing SchtransportTransport model.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDownloadsigned($id){
+        try{
+            $transport_model = $this->findModel($id);
+            
+            if(is_null($transport_model))
+                throw new Exception("The requested transport could not be found.");
+                
+                $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
+                $meeting_model = $transport_model->getMeeting()->one();
+                $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
+                $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
+                
+                $program_action = $this->getProgramAction($programcateg_model);
+                
+                $file = Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile;
+                //echo $file; die();
+                
+                if(!is_readable($file))
+                    throw new Exception("The decision file cannot be found.");
+                    
+                    return Yii::$app->response->SendFile($file);
+                    
+                    return $this->redirect(['/schooltransport/schtransport-transport/index']);
                     
         }
         catch(Exception $e){
@@ -452,21 +494,24 @@ class SchtransportTransportController extends Controller
             if ($transportstate_model->load(Yii::$app->request->post()) && $trnsprt_model->load(Yii::$app->request->post())) {
                 $transaction = Yii::$app->db->beginTransaction();
 
-                $school_model = Schoolunit::findOne(['school_id' => $trnsprt_model['school_id']]);
-                $trnsprt_model->transport_signedapprovalfile = UploadedFile::getInstance($trnsprt_model, 'transport_signedapprovalfile');
-                $meeting_model = $trnsprt_model->getMeeting()->one();//->getProgram();
-                $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
-                $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
-                
-                $filename = $this->getFilename( $this->getProgramAction($programcateg_model), $school_model->school_name, 
-                                                $meeting_model['meeting_country'], $meeting_model['meeting_city'], $trnsprt_model->transport_id);
-                $trnsprt_model->transport_signedapprovalfile = $filename;
-                if(!$trnsprt_model->upload($filename))
-                    throw new Exception("Failed to forward transport state 1.");
+                if($transportstate_model->state_id == 1){
+                    $school_model = Schoolunit::findOne(['school_id' => $trnsprt_model['school_id']]);
+                    $trnsprt_model->signedfile = UploadedFile::getInstance($trnsprt_model, 'signedfile');
+                    $meeting_model = $trnsprt_model->getMeeting()->one();//->getProgram();
+                    $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
+                    $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
+                    
+                    $filename = $this->getFilenamesigned( $this->getProgramAction($programcateg_model), $school_model->school_name, 
+                                                    $meeting_model['meeting_country'], $meeting_model['meeting_city'], $trnsprt_model->transport_id);
+                    
+                    $trnsprt_model->transport_signedapprovalfile = $filename;
+                    if(!$trnsprt_model->upload($filename))
+                        throw new Exception("Failed to forward transport state.");
+                }
                 if(!$trnsprt_model->save(false))
-                    throw new Exception("Failed to forward transport state 2.");
+                    throw new Exception("Failed to forward transport state.");
                 if(!$transportstate_model->save())
-                    throw new Exception("Failed to forward transport state 3.");
+                    throw new Exception("Failed to forward transport state.");
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
                 return $this->redirect(['index']);
@@ -497,17 +542,30 @@ class SchtransportTransportController extends Controller
     public function actionBackwardstate($id)
     {
         try {
-            $states_count = SchtransportTransportstate::findAll(['transport_id' => $id]);
+            $transaction = Yii::$app->db->beginTransaction();
+            $transport_model = $this->findModel($id);
+            $states_count = count(SchtransportTransportstate::findAll(['transport_id' => $id]));
             if($states_count == 0)
                 throw new Exception();
+
+            /* delete old file signed file if backwarded from state of digitally signed file: */
+            if($states_count == 1){
+                if(!is_null($transport_model->transport_signedapprovalfile) && file_exists(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile))
+                    unlink(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile);
+                $transport_model->transport_signedapprovalfile = null;
+                if(!$transport_model->save())
+                    throw new Exception();
+            }
             
             if(!SchtransportTransportstate::findOne(['state_id' => $states_count])->delete())
                 throw new Exception();
             
+            $transaction->commit();
             Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
             return $this->redirect(['index']);
         }
         catch(Exception $e){
+            $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to backward transport state."));
             return $this->redirect(['index']);
         }
@@ -526,11 +584,28 @@ class SchtransportTransportController extends Controller
             $transportstate_model = SchtransportTransportstate::find()->where(['transport_id' => $transport_id])->andWhere(['state_id' => $state_id])->one();
             $state_name = SchtransportState::find()->where(['state_id' => $state_id])->one()['state_name'];
             
-            if ($transportstate_model->load(Yii::$app->request->post())) {                
+            if ($transportstate_model->load(Yii::$app->request->post()) && $trnsprt_model->load(Yii::$app->request->post())) {
+                $transaction = Yii::$app->db->beginTransaction();
+                
+                if($transportstate_model->state_id == 1){
+                    $school_model = Schoolunit::findOne(['school_id' => $trnsprt_model['school_id']]);
+                    $trnsprt_model->signedfile = UploadedFile::getInstance($trnsprt_model, 'signedfile');
+                    $meeting_model = $trnsprt_model->getMeeting()->one();
+                    $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
+                    $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
+                    
+                    $filename = $this->getFilenamesigned( $this->getProgramAction($programcateg_model), $school_model->school_name,
+                        $meeting_model['meeting_country'], $meeting_model['meeting_city'], $trnsprt_model->transport_id);
+                    
+                    $trnsprt_model->transport_signedapprovalfile = $filename;
+                    if(!$trnsprt_model->upload($filename))
+                        throw new Exception();
+                }
                 if(!$transportstate_model->save())
                     throw new Exception();
-                    Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
-                    return $this->redirect(['index']);
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
+                return $this->redirect(['index']);
             }
             else{
                 return $this->render('updatestate', [
@@ -541,6 +616,7 @@ class SchtransportTransportController extends Controller
             }
         }
         catch(Exception $e){
+            $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport state."));
             return $this->redirect(['index']);
         }
