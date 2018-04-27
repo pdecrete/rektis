@@ -17,8 +17,13 @@ use yii\bootstrap\Html;
         ]);
         ?>
     </p>
+    <?= $this->render('_connection_information', ['connection_options' => $connection_options]) ?>
 
-    <?php if ($status !== null) : ?>
+    <?php if ($status === null) : ?>
+
+    <p>Για εμφάνιση της τρέχουσας κατάστασης της απομακρυσμένης υπηρεσίας πατήστε <strong>Ανανέωση</strong>.</p>
+
+    <?php else: ?>
 
     <h2>Κλήση</h2>
     <?php if ($status === true) : ?>

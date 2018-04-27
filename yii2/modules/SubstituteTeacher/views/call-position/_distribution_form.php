@@ -29,7 +29,14 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             // 'id',
-            'title',
+            // 'title',
+            [
+                'attribute' => 'title',
+                'value' => function ($m) {
+                    return $m->title . $m->getSignLanguageLabelHtml();
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => 'school_type',
                 'value' => 'school_type_label',
@@ -61,7 +68,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 'filter' => Select2::widget([
                     'model' => $positionsSearchModel,
                     'attribute' => 'specialisation_id',
-                    'data' => app\models\Specialisation::selectables(),
+                    'data' => \app\modules\SubstituteTeacher\models\Specialisation::selectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
@@ -161,14 +168,35 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
             // 'id',
             // 'call_id',
             // 'position_id',
-            'position.title',
+            // 'position.title',
+            [
+                'attribute' => 'position.title',
+                'value' => function ($m) {
+                    return $m->position->title . $m->position->getSignLanguageLabelHtml();
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => 'position.school_type',
                 'value' => 'position.school_type_label',
                 'label' => Yii::t('substituteteacher', 'Sch.Type')
             ],
-            'teachers_count',
-            'hours_count',
+            [
+                'attribute' => 'position.operation_id',
+                'value' => 'position.operation.label',
+            ],
+            [
+                'attribute' => 'teachers_count',
+                'contentOptions' => [
+                    'class' => 'col-sm-1'
+                ],
+            ],
+            [
+                'attribute' => 'hours_count',
+                'contentOptions' => [
+                    'class' => 'col-sm-1'
+                ],
+            ],
             [
                 'attribute' => 'group',
                 'value' => function ($m) {
@@ -179,7 +207,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                         . '</span>';
                 },
                 'contentOptions' => [
-                    'class' => 'text-center'
+                    'class' => 'text-center col-sm-1'
                 ],
                 'format' => 'html'
             ],
@@ -216,7 +244,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                     }
                 ],
                 'contentOptions' => [
-                    'class' => 'text-right'
+                    'class' => 'text-right col-sm-1'
                 ]
             ],
             [

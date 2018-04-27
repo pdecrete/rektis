@@ -3,7 +3,7 @@
 use yii\bootstrap\Html;
 use yii\grid\GridView;
 use kartik\select2\Select2;
-use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\Specialisation;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherRegistrySearch */

@@ -57,7 +57,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'status_label',
                 'filter' => Teacher::getChoices('status')
             ],
-            'points',
+            [
+                'attribute' => '',
+                'header' => Yii::t('substituteteacher', 'Teacher boards'),
+                'value' => function ($m) {
+                    return $m->boards ? implode(
+                        '<br>',
+                        array_map(function ($model) {
+                            return $model->label;
+                        }, $m->boards)
+                    ) : null;
+                },
+                'format' => 'html'
+            ],
             [
                 'attribute' => '',
                 'header' => Yii::t('substituteteacher', 'Placement preferences'),

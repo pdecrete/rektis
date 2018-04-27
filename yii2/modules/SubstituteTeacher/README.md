@@ -3,7 +3,9 @@
 Για τροφοδότηση στοιχείων για δοκιμές, δώστε την εντολή:
 
 ```
-./yii2/yii fixture/load "*, -Prefecture" --namespace='app\modules\SubstituteTeacher\dbseed'
+./yii2/yii fixture/load "*, -Prefecture" \
+    --namespace='app\modules\SubstituteTeacher\dbseed' \
+    --templatePath=@app/modules/SubstituteTeacher/dbseed/faker-templates
 ```
 
 Με χρήση του module [yii2-faker](https://github.com/yiisoft/yii2-faker) γίνεται δημιουργία των δοκιμαστικών

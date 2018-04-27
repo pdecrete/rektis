@@ -17,7 +17,6 @@ class TeacherSearch extends Teacher
     {
         return [
             [['id', 'registry_id', 'year', 'status'], 'integer'],
-            [['points'], 'number'],
         ];
     }
 
@@ -61,7 +60,6 @@ class TeacherSearch extends Teacher
             'registry_id' => $this->registry_id,
             'year' => $this->year,
             'status' => $this->status,
-            'points' => $this->points,
         ]);
 
         return $dataProvider;

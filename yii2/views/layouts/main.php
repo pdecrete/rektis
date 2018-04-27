@@ -252,6 +252,10 @@ AppAsset::register($this);
                             'url' => [ '/SubstituteTeacher/placement-preference/index' ]
                         ],
                         [
+                            'label' => 'Πίνακες διορισμών',
+                            'url' => [ '/SubstituteTeacher/teacher-board/index' ]
+                        ],
+                        [
                             'label' => 'Καταγραφή κατάστασης αναπληρωτών',
                             'url' => [ '/SubstituteTeacher/teacher-status-audit/index' ]
                         ],

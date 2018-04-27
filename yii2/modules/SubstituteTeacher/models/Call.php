@@ -18,6 +18,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property string $updated_at
  *
  * @property CallPosition[] $callPositions
+ * @property CallTeacherSpecialisation[] $callTeacherSpecialisations
  */
 class Call extends \yii\db\ActiveRecord
 {
@@ -41,12 +42,13 @@ class Call extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'application_start', 'application_end'], 'required'],
+            [['title', 'description', 'application_start', 'application_end', 'year'], 'required'],
+            ['year', 'integer', 'min' => date('Y') - 2],
             [['description'], 'string'],
-            ['application_start', 'date', 'min' => time(), 'format' => 'php:Y-m-d',
-                'timestampAttribute' => 'application_start_ts'],
-            ['application_end', 'date', 'min' => time(), 'format' => 'php:Y-m-d',
-                'timestampAttribute' => 'application_end_ts'],
+            // ['application_start', 'date', 'min' => time(), 'format' => 'php:Y-m-d',
+            //     'timestampAttribute' => 'application_start_ts'],
+            // ['application_end', 'date', 'min' => time(), 'format' => 'php:Y-m-d',
+            //     'timestampAttribute' => 'application_end_ts'],
             ['application_start_ts', 'compare', 'compareAttribute' => 'application_end_ts', 'operator' => '<', 'enableClientValidation' => false],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 500],
@@ -76,6 +78,7 @@ class Call extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
             'title' => Yii::t('substituteteacher', 'Title'),
+            'year' => Yii::t('substituteteacher', 'Year'),
             'description' => Yii::t('substituteteacher', 'Description'),
             'application_start' => Yii::t('substituteteacher', 'Application Start'),
             'application_start_ts' => Yii::t('substituteteacher', 'Application Start'),
@@ -92,6 +95,14 @@ class Call extends \yii\db\ActiveRecord
     public function getCallPositions()
     {
         return $this->hasMany(CallPosition::className(), ['call_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCallTeacherSpecialisations()
+    {
+        return $this->hasMany(CallTeacherSpecialisation::className(), ['call_id' => 'id']);
     }
 
     /**
@@ -114,7 +125,7 @@ class Call extends \yii\db\ActiveRecord
         $this->application_end_ts = strtotime($this->application_end);
         $this->application_end = date('Y-m-d', $this->application_end_ts);
 
-        $this->label = $this->title . ', '
+        $this->label = $this->title . ' (' . $this->year . '), '
             . date('d/m/Y', $this->application_start_ts) . '-'
             . date('d/m/Y', $this->application_end_ts);
     }
