@@ -91,12 +91,15 @@ class BridgeController extends \yii\web\Controller
             $services_status = array_merge($services_status, $data['services']);
         }
         $connection_options = $this->options;
+
+        \Yii::info(\Yii::$app->request->isPost, __METHOD__);
         return $this->render('remote-status', compact('status', 'services_status', 'data', 'connection_options'));
     }
 
     public function actionReceive()
     {
         $connection_options = $this->options;        
+        \Yii::info([], __METHOD__);
         return $this->render('receive', compact('connection_options'));
     }
 
@@ -107,16 +110,18 @@ class BridgeController extends \yii\web\Controller
     {
         switch ($what) {
             case 'teacher':
-                $ids = array_filter(explode(',', \Yii::$app->request->post('ids', '')));
+                $ids = array_filter(explode(',', ($tids = \Yii::$app->request->post('ids', ''))));
                 $dataProvider = new ArrayDataProvider([
                     'allModels' => Teacher::find()
                         ->where(['id' => $ids])
                         ->all(),
                     'pagination' => false,
                 ]);
+                \Yii::info('Fetch teachers', __METHOD__);
                 return $this->renderAjax('_teacher_list', compact('dataProvider'));
                 break;
             default:
+                \Yii::warning("Fetch unknown [{$what}]", __METHOD__);
                 throw new NotFoundHttpException();
                 break;
         }
@@ -129,6 +134,8 @@ class BridgeController extends \yii\web\Controller
      */
     public function actionSend($call_id = 0)
     {
+        $connection_options = $this->options;        
+
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
         if (!empty($call_model)) {
@@ -237,21 +244,40 @@ class BridgeController extends \yii\web\Controller
             $status_clear = null;
             $status_load = null;
 
+            \Yii::info([
+                "#prefectures = [$count_prefectures]",
+                "#teachers = [$count_teachers]",
+                "#call_positions = [$count_call_positions]",
+                "#placement_preferences = [$count_placement_preferences]",
+                $teacher_counts
+            ], __METHOD__);
+
             if (\Yii::$app->request->isPost) {
                 // first issue a clear command
+                \Yii::info(['Call [clear] with [delete] method', $connection_options], __METHOD__);
                 $status_response = $this->client->delete('clear', null, $this->getHeaders())->send();
                 $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_clear = $status_response->getData();
+                if ($status_clear !== true) {
+                    \Yii::error([$status_clear, $response_data_clear], __METHOD__);
+                } else {
+                    \Yii::info([$status_clear, $response_data_clear], __METHOD__);
+                }
                 if ($status_clear === true) {
                     // then post data
+                    \Yii::info(['Call [load] with [post] method', $connection_options], __METHOD__);
                     $status_response = $this->client->post('load', $data, $this->getHeaders())->send();
                     $status_load = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                     $response_data_load = $status_response->getData();
+                    if ($status_load !== true) {
+                        \Yii::error([$status_load, $response_data_load], __METHOD__);
+                    } else {
+                        \Yii::info([$status_load, $response_data_load], __METHOD__);
+                    }
                 }
             }
         }
 
-        $connection_options = $this->options;        
         return $this->render('send', compact('call_model', 'teacher_ids', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences', 'connection_options'));
     }
 }
