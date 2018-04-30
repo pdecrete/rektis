@@ -189,6 +189,7 @@ class BridgeController extends \yii\web\Controller
                         "{$teacherboard_table}.[[points]]" => SORT_ASC, // in case order is not used
                     ])
                     ->select([Teacher::tableName() . ".[[id]]"]);
+                // TODO: select those that placement preference matches BOTH PREFECTURE AND SPECIALISATION of position
                 $call_specialisation_teachers = Teacher::find()
                     ->where(['id' => (new \yii\db\Query())
                         ->select(['id'])

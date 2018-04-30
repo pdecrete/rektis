@@ -169,23 +169,32 @@ class Teacher extends \yii\db\ActiveRecord
     public function toApi()
     {
         // TODO take multiple specialisation into account
-        return [
-            'specialty' => $this->registry->specialisations[0]->code, // TODO TAKE CARE OF MULTIPLE 
-            'vat' => $this->registry->tax_identification_number,
-            'identity' => $this->registry->identity_number,
-            'name' => $this->registry->name, // TODO REMOVE 
-            'firstname' => $this->registry->firstname, // TODO REMOVE 
-            'surname' => $this->registry->surname, // TODO REMOVE 
-            'email' => $this->registry->email, // TODO REMOVE 
-            'mobile_phone' => $this->registry->mobile_phone, // TODO REMOVE 
-            'ref' => $this->buildReference([
-                'id' => $this->id,
+        return array_merge(
+            [
+                'specialty' => $this->registry->specialisations[0]->code, // TODO TAKE CARE OF MULTIPLE
+                'vat' => $this->registry->tax_identification_number,
+                'identity' => $this->registry->identity_number,
+                'ref' => $this->buildReference([
+                    'id' => $this->id,
+                    'firstname' => $this->registry->firstname,
+                    'lastname' => $this->registry->surname,
+                    'fathername' => $this->registry->fathername,
+                    'mothername' => $this->registry->mothername,
+                    'email' => $this->registry->email,
+                    'mobile_phone' => $this->registry->mobile_phone,
+                ])
+            ],
+            (YII_DEBUG ? [ // only for debugging
+                // 'name' => $this->registry->name,
                 'firstname' => $this->registry->firstname,
-                'surname' => $this->registry->surname,
+                'lastname' => $this->registry->surname,
+                'fathername' => $this->registry->fathername,
+                'mothername' => $this->registry->mothername,
                 'email' => $this->registry->email,
                 'mobile_phone' => $this->registry->mobile_phone,
+            ] : [
             ])
-        ];
+        );
     }
 
     /**
