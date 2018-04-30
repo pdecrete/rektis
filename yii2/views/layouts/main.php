@@ -335,15 +335,15 @@ AppAsset::register($this);
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',
                         [
                             'label' => 'Βοήθεια εφαρμογής σχολικών μετακινήσεων',
-                            'url' => ['/schooltransport/default/help']
+                            'url' => ['/schooltransport/default/help?helpId=1#schtransportsapp_help']
                         ],
                         [
                             'label' => 'Διαδικασία έγκρισης σχολικής μετακίνησης',
-                            'url' => ['/schooltransport/default/help']
+                            'url' => ['/schooltransport/default/help?helpId=2#schtransports_help']
                         ],
                         [
                             'label' => 'Νομοθεσία σχολικών μετακινήσεων',
-                            'url' => ['/schooltransport/default/help']
+                            'url' => ['/schooltransport/default/help?helpId=3#legislation']
                         ],
                     ],
                 ],

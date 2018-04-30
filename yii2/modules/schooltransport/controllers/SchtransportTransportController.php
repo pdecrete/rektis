@@ -237,7 +237,7 @@ class SchtransportTransportController extends Controller
                 $view_file = 'update';
                 if($readonly_mode)
                     $view_file = 'view';
-                
+                 
                 return $this->render($view_file, [ 'model' => $model,
                         'meeting_model' => $meeting_model,
                         'program_model' => $program_model,

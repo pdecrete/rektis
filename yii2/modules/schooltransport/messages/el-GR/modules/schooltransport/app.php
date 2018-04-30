@@ -91,5 +91,6 @@ return [
     'Digitally Signed File' => 'Ψηφιακά Υπογεγραμμένο Αρχείο',
     'Help' => 'Βοήθεια',
     'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.' => 
-    'Βοήθεια σχετικά με τη χρήση της εφαρμογής των σχολικών μετακινήσεων, τη διαδικασία δημιουργίας έγκρισης μετακίνησης, καθώς και τη σχετική νομοθεσία.'
+    'Βοήθεια σχετικά με τη χρήση της εφαρμογής των σχολικών μετακινήσεων, τη διαδικασία δημιουργίας έγκρισης μετακίνησης, καθώς και τη σχετική νομοθεσία.',
+    'Error in downloading file.' => 'Σφάλμα στη λήψη του αρχείου.'
 ];

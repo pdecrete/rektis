@@ -6,7 +6,6 @@ use kartik\select2\Select2;
 use kartik\typeahead\Typeahead;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -14,13 +13,18 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 
 //echo "<pre>"; echo $programcateg_id; echo "</pre>"; die();
+$progrfields_readOnly = false;
 if($program_model['programcategory_id'] == 11){
     $program_model['program_title'] = 'Βουλή των Ελλήνων';
     $program_model['program_code'] = '-';
     $meeting_model['meeting_country'] = 'Ελλάδα';
     $meeting_model['meeting_city'] = 'Αθήνα';
+    $typeahead_data['PROGRAMCODES'] = null;
+    $typeahead_data['PROGRAMTITLES'] = null;
+    $typeahead_data['COUNTRIES'] = null;
+    $typeahead_data['CITIES'] = null;
+    $progrfields_readOnly = true;
 }
-    
 ?>
 
 <div class="schtransport-transport-form col-lg-6">
@@ -31,10 +35,10 @@ if($program_model['programcategory_id'] == 11){
             'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
             'options' => ['placeholder' => Module::t('modules/schooltransport/app', 'Select school...'), 'disabled' => $disabled],
         ])->label('Σχολείο'); ?>
-  
+
 
 	<?php  if(empty($typeahead_data['PROGRAMCODES'])): 
-	           echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'disabled' => $disabled]);
+	echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
 	       else:
 	           echo $form->field($program_model, 'program_code')->widget(Typeahead::classname(), 
 	                                                       ['pluginOptions' => ['highlight'=>true],
@@ -45,7 +49,7 @@ if($program_model['programcategory_id'] == 11){
     ?>
 	                                                       
 	<?php  if(empty($typeahead_data['PROGRAMTITLES'])): 
-	           echo $form->field($program_model, 'program_title')->textInput(['maxlength' => true, 'disabled' => $disabled]);
+	           echo $form->field($program_model, 'program_title')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
 	       else:
 	           echo $form->field($program_model, 'program_title')->widget(Typeahead::classname(), 
 	                                                       ['pluginOptions' => ['highlight'=>true],
@@ -56,7 +60,7 @@ if($program_model['programcategory_id'] == 11){
     ?>
 
 	<?php  if(empty($typeahead_data['COUNTRIES'])): 
-	           echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true, 'disabled' => $disabled]);
+	           echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
 	       else:
 	           echo $form->field($meeting_model, 'meeting_country')->widget(Typeahead::classname(), 
 	                                                       ['pluginOptions' => ['highlight'=>true],
@@ -67,7 +71,7 @@ if($program_model['programcategory_id'] == 11){
     ?>      
         
 	<?php  if(empty($typeahead_data['CITIES'])): 
-	           echo $form->field($meeting_model, 'meeting_city')->textInput(['maxlength' => true, 'disabled' => $disabled]);
+               echo $form->field($meeting_model, 'meeting_city')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
 	       else:
 	           echo $form->field($meeting_model, 'meeting_city')->widget(Typeahead::classname(), 
 	                                                       ['pluginOptions' => ['highlight'=>true],
@@ -75,8 +79,8 @@ if($program_model['programcategory_id'] == 11){
 	                                                        'disabled' => $disabled
 	                                                       ]);            
            endif;
-    ?>    
-
+    ?>
+    
 	<!--	           
     <?= $form->field($meeting_model, 'meeting_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
     <?= $form->field($meeting_model, 'meeting_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
