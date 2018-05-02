@@ -15,6 +15,7 @@ use yii\db\Expression;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
 use yii\web\NotFoundHttpException;
 use yii\data\ArrayDataProvider;
+use app\modules\SubstituteTeacher\models\Position;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -151,9 +152,19 @@ class BridgeController extends \yii\web\Controller
             // collect the call positions of the specific call; 
             // also get prefectures that will be used to filter teachers
             $call_positions_prefectures = [];
+            $call_pos_pref_by_specialisation = [];
+            $call_positions_school_types = [];
             $call_positions = CallPosition::findOnePerGroup($call_id);
-            $call_positions = array_map(function ($k) use (&$call_positions_prefectures, $call_positions, $prefecture_substitutions) {
+            $call_positions = array_map(function ($k) use (&$call_positions_prefectures, $call_positions, $prefecture_substitutions, &$call_pos_pref_by_specialisation, &$call_positions_school_types) {
                 $index = $k + 1;
+                $spec_id = $call_positions[$k]->position->specialisation_id;
+                if (!array_key_exists("{$spec_id}", $call_pos_pref_by_specialisation)) {
+                    $call_pos_pref_by_specialisation["{$spec_id}"] = [];
+                    $call_positions_school_types["{$spec_id}"] = [Position::SCHOOL_TYPE_DEFAULT => false, Position::SCHOOL_TYPE_KEDDY => false];
+                }
+                $call_pos_pref_by_specialisation["{$spec_id}"][] = $call_positions[$k]->position->prefecture_id;
+                $call_positions_school_types["{$spec_id}"][$call_positions[$k]->position->school_type] = true;
+
                 $call_positions_prefectures[] = $call_positions[$k]->position->prefecture_id;
                 return array_merge(['index' => $index], $call_positions[$k]->toApi($prefecture_substitutions));
             }, array_keys($call_positions));
@@ -171,10 +182,16 @@ class BridgeController extends \yii\web\Controller
                 // no teachers wanted...
                 $call_teacher_specialisations = [];
             }
+
             // keep track of specialisations and counts of teachers
             $teacher_counts = [];
             // Get the list per specialisation and combine all teachers 
             foreach ($call_teacher_specialisations as $call_teacher_specialisation) {
+                if (!array_key_exists("{$call_teacher_specialisation->specialisation_id}", $call_pos_pref_by_specialisation)) {
+                    continue; // skip specialisations that do not apply in specific call positions
+                }
+                $school_types = array_merge([0], array_keys(array_filter($call_positions_school_types["{$call_teacher_specialisation->specialisation_id}"])));
+
                 $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
                 $call_specialisation_teachers_pool = Teacher::find()
                     ->year($call_model->year)
@@ -182,13 +199,19 @@ class BridgeController extends \yii\web\Controller
                     ->joinWith(['boards', 'registry', 'registry.specialisations', 'placementPreferences'])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => $call_teacher_specialisation->specialisation_id])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => new Expression(TeacherRegistrySpecialisation::tableName() . '.[[specialisation_id]]')])
-                    ->andWhere([PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_positions_prefectures])
+                    // ->andWhere([PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_positions_prefectures])
+                    ->andWhere([
+                        PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_pos_pref_by_specialisation["{$call_teacher_specialisation->specialisation_id}"],
+                        PlacementPreference::tableName() . ".[[school_type]]" => $school_types
+                    ])
+                    ->andWhere('2=2')
                     ->orderBy([
                         "{$teacherboard_table}.[[board_type]]" => SORT_ASC,
                         "{$teacherboard_table}.[[order]]" => SORT_ASC,
                         "{$teacherboard_table}.[[points]]" => SORT_ASC, // in case order is not used
                     ])
                     ->select([Teacher::tableName() . ".[[id]]"]);
+                // TODO: select those that placement preference matches BOTH PREFECTURE AND SPECIALISATION of position
                 $call_specialisation_teachers = Teacher::find()
                     ->where(['id' => (new \yii\db\Query())
                         ->select(['id'])
