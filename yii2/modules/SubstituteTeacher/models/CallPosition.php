@@ -132,7 +132,8 @@ class CallPosition extends \yii\db\ActiveRecord
             'position_id' => $this->position_id, // TODO REMOVE 
             'teachers_count' => $this->teachers_count, // TODO REMOVE 
             'hours_count' => $this->hours_count, // TODO REMOVE 
-            'ref' => $this->buildSelfReference(['id', 'group'])
+            // 'ref' => $this->buildSelfReference(['id', 'group'])
+            'ref' => $this->buildReference(['id' => $this->id, 'group' => $this->group])
         ];
 
         if ($this->group != 0) {
