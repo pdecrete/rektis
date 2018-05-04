@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'School' => 'Σχολείο',
     'School Transportations' => 'Σχολικές Μετακινήσεις',
     'View Transportations' => 'Προβολή Μετακινήσεων',
     'Create Transportation' => 'Δημιουργία Μετακίνησης',

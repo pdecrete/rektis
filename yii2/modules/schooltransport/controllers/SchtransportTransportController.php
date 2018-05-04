@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use yii\base\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\schooltransport\models\SchtransportProgramcategory;
 use app\modules\schooltransport\models\SchtransportMeeting;
@@ -37,6 +38,14 @@ class SchtransportTransportController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
+                    ['actions' => [ 'create', 'update', 'delete', 'download', 'downloadsigned', 
+                                    'forwardstate', 'backwardstate', 'updatestate'], 'allow' => true, 'roles' => ['schtransport_editor']],
+                    ['allow' => true, 'roles' => ['schtransport_director']]
+                ]
+            ]
         ];
     }
 

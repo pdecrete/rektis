@@ -9,6 +9,7 @@ use app\modules\schooltransport\models\SchtransportStateSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -28,6 +29,13 @@ class SchtransportStateController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
+                    ['actions' => ['update', 'delete'], 'allow' => true, 'roles' => ['schtransport_director']],
+                    ['allow' => true, 'roles' => ['schtransport_director']]
+                ]
+            ]
         ];
     }
 

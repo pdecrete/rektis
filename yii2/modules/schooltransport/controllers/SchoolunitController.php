@@ -9,6 +9,7 @@ use app\modules\schooltransport\models\SchoolunitSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\schooltransport\models\Directorate;
 
@@ -29,9 +30,17 @@ class SchoolunitController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
+                    ['actions' => ['massupdate'], 'allow' => true, 'roles' => ['financial_editor']]
+                ]
+            ]            
         ];
     }
 
+    
+    
     /**
      * Lists all Schoolunit models.
      * @return mixed
@@ -214,11 +223,7 @@ class SchoolunitController extends Controller
             return $this->redirect(['index']);
         }
     }
-    
-    private function curlUpdate($api_url, $curl_params, $directorate_id){
-        
-    }
-    
+       
     
     /**
      * Finds the Schoolunit model based on its primary key value.
