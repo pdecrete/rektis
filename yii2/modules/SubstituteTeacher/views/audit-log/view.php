@@ -27,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             [
                 'attribute' => 'level',
-                'value' => function ($m) {
-                    return $m->level_label;
+                'value' => function ($model) {
+                    return $model->level_label;
                 },
                 'format' => 'html'
             ],
@@ -41,7 +41,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->user ? $model->user->username : null;
                 }
             ],
-            'message:ntext',
+            // 'message:ntext',
+            [
+                'attribute' => 'message',
+                'value' => function ($model) {
+                    return '<pre style="white-space: pre-wrap;">' . Html::encode($model->message) . '</pre>';
+                },
+                'format' => 'html'
+            ]
         ],
     ]) ?>
 
