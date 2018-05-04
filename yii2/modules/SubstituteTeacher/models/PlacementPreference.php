@@ -243,9 +243,9 @@ class PlacementPreference extends \yii\db\ActiveRecord
     {
         return [
             'teacher_id' => $this->teacher_id,
-            'teacher' => array_search($this->teacher_id, $teacher_substitutions), // TODO check if error            
+            'teacher' => array_search($this->teacher_id, $teacher_substitutions), // TODO check if error
             'prefecture_id' => $this->prefecture_id,
-            'prefecture' => array_search($this->prefecture_id, $prefecture_substitutions), // TODO check if error            
+            'prefecture' => array_search($this->prefecture_id, $prefecture_substitutions), // TODO check if error
             'school_type' => $this->school_type,
             'order' => $this->order,
             'ref' => $this->buildSelfReference()

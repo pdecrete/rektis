@@ -359,7 +359,7 @@ class ImportController extends Controller
             $textual_sign_language = empty($sign_language) || ctype_digit($sign_language);
             if (($textual_sign_language && intval($sign_language) !== Position::SIGN_LANGUAGE_PREFER && intval($sign_language) !== Position::SIGN_LANGUAGE_INDIFFERENT)
                 || (!$textual_sign_language && $sign_language !== 'ΝΑΙ')) {
-                    $errors[] = Yii::t('substituteteacher', 'The information for sign language is wrong for the position at line {n}', ['n' => $row_index]);
+                $errors[] = Yii::t('substituteteacher', 'The information for sign language is wrong for the position at line {n}', ['n' => $row_index]);
             }
         }
 
@@ -406,10 +406,10 @@ class ImportController extends Controller
      * Some rules may seem missing, but it is supposed that validateTeacher has already been
      * called before importTeacher (see import action).
      *
-     * @param int $year Year inserting teacher to 
+     * @param int $year Year inserting teacher to
      * @param int $board_type The teacher board to insert to (@see TeacherBoard)
      * @param int $specialisation_id The teacher board AND teacher specialisation (should match registry and board)
-     * 
+     *
      * @return boolean whether the import succeeded or not
      */
     protected function importTeacher($year, $board_type, $specialisation_id, $worksheet, $highestColumn)
@@ -469,10 +469,10 @@ class ImportController extends Controller
                 $teachers[] = $teacher;
             }
 
-            // save this for later; teacher registry id, order and points 
-            $teacher_board_info[] = [ 
-                'teacher_registry_id' => $vat_numbers[$data['vat_number']], 
-                'order' => $data['order'], 
+            // save this for later; teacher registry id, order and points
+            $teacher_board_info[] = [
+                'teacher_registry_id' => $vat_numbers[$data['vat_number']],
+                'order' => $data['order'],
                 'points' => $data['points']
             ];
         }
@@ -501,7 +501,7 @@ class ImportController extends Controller
                     $year_teacher_ids[$v['registry_id']] = $v['id'];
                 });
 
-                // add teacher to teacher board 
+                // add teacher to teacher board
                 Yii::$app->db->createCommand()->batchInsert(TeacherBoard::tableName(), ['teacher_id', 'specialisation_id', 'board_type', 'points', 'order'], array_map(function ($v) use ($year_teacher_ids, $specialisation_id, $board_type) {
                     return [
                         $year_teacher_ids[$v['teacher_registry_id']], $specialisation_id, $board_type, $v['points'], $v['order']
@@ -537,12 +537,12 @@ class ImportController extends Controller
      * - afm seems valid
      * - afm AND specialisation can be located at the teacher registry
      * - placement preferences seem valid (letter order, etc)
-     * - board_type is valid 
+     * - board_type is valid
      *
-     * @param int $year Year inserting teacher to 
+     * @param int $year Year inserting teacher to
      * @param int $board_type The teacher board to insert to (@see TeacherBoard)
      * @param int $specialisation_id The teacher board AND teacher specialisation (should match registry and board)
-     * 
+     *
      * @return boolean whether the validation succeeded or not
      */
     protected function validateTeacher($year, $board_type, $specialisation_id, $worksheet)
@@ -621,8 +621,8 @@ class ImportController extends Controller
             }
         }
 
-        // check if board type is valid 
-        if (!in_array($board_type, $board_types)) {
+        // check if board type is valid
+        if (!in_array($board_type, $board_types, true)) {
             $errors[] = Yii::t('substituteteacher', 'Board type is not valid.');
         }
 

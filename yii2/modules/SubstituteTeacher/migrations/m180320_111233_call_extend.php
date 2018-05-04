@@ -14,9 +14,9 @@ class m180320_111233_call_extend extends Migration
 
         Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
 
-        // add teacher board year to call 
+        // add teacher board year to call
         $this->addColumn('{{%stcall}}', 'year', $this->integer()->unsigned()->defaultValue('0')->notNull());
-        
+
         $this->createTable('{{%stcall_teacher_specialisation}}', [
             'id' => $this->primaryKey(),
             'call_id' => $this->integer(),
@@ -34,7 +34,7 @@ class m180320_111233_call_extend extends Migration
         Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
 
         $this->dropColumn('{{%stcall}}', 'year');
-        
+
         $this->dropTable('{{%stcall_teacher_specialisation}}');
     }
 }

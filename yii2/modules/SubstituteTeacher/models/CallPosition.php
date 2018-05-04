@@ -23,7 +23,6 @@ use app\modules\SubstituteTeacher\traits\Reference;
  */
 class CallPosition extends \yii\db\ActiveRecord
 {
-
     use Reference;
 
     public $available_hours_label; // used to get a human readable one line description of what is offered at this position
