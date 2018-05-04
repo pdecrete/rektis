@@ -99,9 +99,28 @@ class BridgeController extends \yii\web\Controller
 
     public function actionReceive()
     {
-        $connection_options = $this->options;        
         \Yii::info([], __METHOD__);
-        return $this->render('receive', compact('connection_options'));
+        $connection_options = $this->options;
+        $data = null;
+        $message = '';
+
+        if (\Yii::$app->request->isPost) {
+            \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
+            $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
+            $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+            $response_data_unload = $status_response->getData();
+            if ($status_unload !== true) {
+                \Yii::error([$status_unload, $response_data_unload], __METHOD__);
+            } else {
+                \Yii::info([$status_unload, $response_data_unload], __METHOD__);
+                $message = $response_data_unload['message'];
+            }
+        } else {
+            $status_unload = null;
+            $response_data_unload = null;
+        }
+
+        return $this->render('receive', compact('connection_options', 'status_unload', 'message'));
     }
 
     /**
@@ -131,11 +150,11 @@ class BridgeController extends \yii\web\Controller
     /**
      * Choose a call and send relevant data to applications frontend.
      *
-     * @param int|null call_id 
+     * @param int|null call_id
      */
     public function actionSend($call_id = 0)
     {
-        $connection_options = $this->options;        
+        $connection_options = $this->options;
 
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
@@ -149,7 +168,7 @@ class BridgeController extends \yii\web\Controller
                 return array_merge(['index' => $index], $prefectures[$k]->toApi());
             }, array_keys($prefectures));
 
-            // collect the call positions of the specific call; 
+            // collect the call positions of the specific call;
             // also get prefectures that will be used to filter teachers
             $call_positions_prefectures = [];
             $call_pos_pref_by_specialisation = [];
@@ -172,9 +191,9 @@ class BridgeController extends \yii\web\Controller
 
             // get the teachers that meet the following criteria:
             // - they belong to the relevant boards (year / specialisation)
-            // - they are eligible for appointment 
-            // - they have priority for appointment (top X in board) 
-            // To avoid huge joins, get the list of applicable specialisations prior to selecting teachers 
+            // - they are eligible for appointment
+            // - they have priority for appointment (top X in board)
+            // To avoid huge joins, get the list of applicable specialisations prior to selecting teachers
             $teachers = [];
             $teacherboard_table = TeacherBoard::tableName();
             $call_teacher_specialisations = $call_model->callTeacherSpecialisations;
@@ -185,7 +204,7 @@ class BridgeController extends \yii\web\Controller
 
             // keep track of specialisations and counts of teachers
             $teacher_counts = [];
-            // Get the list per specialisation and combine all teachers 
+            // Get the list per specialisation and combine all teachers
             foreach ($call_teacher_specialisations as $call_teacher_specialisation) {
                 if (!array_key_exists("{$call_teacher_specialisation->specialisation_id}", $call_pos_pref_by_specialisation)) {
                     continue; // skip specialisations that do not apply in specific call positions
@@ -228,7 +247,7 @@ class BridgeController extends \yii\web\Controller
                     'extra_wanted' => $extra_wanted,
                     'available' => count($call_specialisation_teachers)
                 ];
-                // TODO make list unique in case of duplicates due to other specialisations ? 
+                // TODO make list unique in case of duplicates due to other specialisations ?
                 // TODO what happens when a teacher is selected from one board but not from anothr where he also is eligible?
                 $teachers = array_merge($teachers, $call_specialisation_teachers);
             }
