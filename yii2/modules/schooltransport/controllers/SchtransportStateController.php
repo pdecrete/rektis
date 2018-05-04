@@ -32,7 +32,7 @@ class SchtransportStateController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
-                    ['actions' => ['update', 'delete'], 'allow' => true, 'roles' => ['schtransport_director']],
+                    ['actions' => ['update'], 'allow' => true, 'roles' => ['schtransport_director']],
                     ['allow' => true, 'roles' => ['schtransport_director']]
                 ]
             ]
@@ -93,12 +93,16 @@ class SchtransportStateController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $old_name = $model['state_name'];
         
         if ($model->load(Yii::$app->request->post())){
             try{
                 if(!$model->save())
                     throw new Exception();
             
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' updated state from "' . $old_name . '" to "' . $model->state_name . '".', 'schooltransport');
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The state was updated successfully."));
                 return $this->redirect(['index']);
             }
@@ -121,12 +125,14 @@ class SchtransportStateController extends Controller
      * @param integer $id
      * @return mixed
      */
+    /*
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
+    */
 
     /**
      * Finds the SchtransportState model based on its primary key value.

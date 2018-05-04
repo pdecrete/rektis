@@ -62,7 +62,7 @@ class SchoolunitController extends Controller
      * @return mixed
      */
     public function actionView($id)
-    {
+    {        
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -214,6 +214,10 @@ class SchoolunitController extends Controller
             }            
             curl_close($curl);
             $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;            
+            Yii::info('User ' . $user . ' updated school units data retrieved from MySchool.', 'schooltransport');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The schools' details were updated in the database."));
             return $this->redirect(['index']);
         }

@@ -146,6 +146,10 @@ class SchtransportTransportController extends Controller
                 if(!$model->save()) 
                     throw new Exception("Failure in creating the school transportation.");
                 $transaction->commit();
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' created transport with id "' . $model->transport_id . '".', 'schooltransport');
+                                
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was created successfully."));
                 return $this->redirect(['index']); 
             }
@@ -239,6 +243,11 @@ class SchtransportTransportController extends Controller
                     throw new Exception("Failure in creating the school transportation.");
                                     
                 $transaction->commit();
+                if(!$readonly_mode){
+                    $user = Yii::$app->user->identity->username;
+                    Yii::info('User ' . $user . ' updated transport with id "' . $model->transport_id . '".', 'schooltransport');
+                }
+                    
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was updated successfully."));
                 return $this->redirect(['index']); 
             }
@@ -283,7 +292,7 @@ class SchtransportTransportController extends Controller
     {
         $model = $this->findModel($id);
         $meeting_model = $model->getMeeting()->one();
-         
+                
         try{
             $transaction = Yii::$app->db->beginTransaction();
 
@@ -301,6 +310,9 @@ class SchtransportTransportController extends Controller
                 throw new Exception('Failure in deleting the school transport.');
                             
             $transaction->commit();
+            
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' created transport with id "' . $id . '".', 'schooltransport');
             
             Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The school transport was deleted successfully."));
             return $this->redirect(['index']); 
@@ -425,6 +437,9 @@ class SchtransportTransportController extends Controller
 
             if(!is_readable($file))
                 throw new Exception("The decision file cannot be found.");
+            
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' downloaded approval file for transport with id "' . $id . '".', 'schooltransport');
                     
             return Yii::$app->response->SendFile($file);
                                         
@@ -463,10 +478,13 @@ class SchtransportTransportController extends Controller
                 
                 if(!is_readable($file))
                     throw new Exception("The decision file cannot be found.");
-                    
-                    return Yii::$app->response->SendFile($file);
-                    
-                    return $this->redirect(['/schooltransport/schtransport-transport/index']);
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' downloaded digital signed approval file for transport with id "' . $id . '".', 'schooltransport');                   
+                
+                return Yii::$app->response->SendFile($file);
+                
+                return $this->redirect(['/schooltransport/schtransport-transport/index']);
                     
         }
         catch(Exception $e){
@@ -522,6 +540,10 @@ class SchtransportTransportController extends Controller
                 if(!$transportstate_model->save())
                     throw new Exception("Failed to forward transport state.");
                 $transaction->commit();
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' forwarded state of transport with id "' . $trnsprt_model->transport_id . '" to state ' . $state_name . '.', 'schooltransport');                
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
                 return $this->redirect(['index']);
             }
@@ -570,6 +592,10 @@ class SchtransportTransportController extends Controller
                 throw new Exception();
             
             $transaction->commit();
+
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' backwarded state of transport with id "' . $transport_model->transport_id . '.', 'schooltransport');
+            
             Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
             return $this->redirect(['index']);
         }
@@ -613,6 +639,10 @@ class SchtransportTransportController extends Controller
                 if(!$transportstate_model->save())
                     throw new Exception();
                 $transaction->commit();
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' updated details of state ' . $state_name . ' of transport with id "' . $transport_id . '.', 'schooltransport');                
+                
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transport's approval state changed successfully."));
                 return $this->redirect(['index']);
             }
