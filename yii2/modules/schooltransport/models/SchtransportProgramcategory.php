@@ -32,6 +32,7 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
         return [
             [['programcategory_programtitle'], 'required'],
             [['programcategory_programparent'], 'integer'],
+            [['programcategory_programalias'], 'string', 'max' => 50],
             [['programcategory_programtitle'], 'string', 'max' => 200],
             [['programcategory_programdescription'], 'string', 'max' => 400],
             [['programcategory_programtitle'], 'unique'],
@@ -49,6 +50,12 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
             'programcategory_programdescription' => Yii::t('app', 'Περιγραφή Δράσης'),
             'programcategory_programparent' => Yii::t('app', 'Programcategory Programparent'),
         ];
+    }
+    
+    
+    public static function getAlias($id)
+    {
+        return SchtransportProgramcategory::findOne(['programcategory_id' => $id])['programcategory_programalias'];
     }
 
     /**

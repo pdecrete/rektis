@@ -19,7 +19,7 @@ class SchtransportProgramcategorySearch extends SchtransportProgramcategory
     {
         return [
             [['programcategory_id', 'programcategory_programparent'], 'integer'],
-            [['programcategory_programtitle', 'programcategory_programdescription'], 'safe'],
+            [['programcategory_programalias', 'programcategory_programtitle', 'programcategory_programdescription'], 'safe'],
         ];
     }
 

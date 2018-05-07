@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'typeahead_data' => $typeahead_data,
         'programcateg_id' => $programcateg_id,
         'sep' => $sep,
+        'program_alias' => $program_alias,
         'disabled' => false]);
     ?>
 

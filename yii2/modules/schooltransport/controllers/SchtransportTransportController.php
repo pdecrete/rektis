@@ -59,7 +59,7 @@ class SchtransportTransportController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $programcategs = array();
-        $program_parentcategs = SchtransportProgramcategory::findAll(['programcategory_programparent' => NULL]);
+        $program_parentcategs = SchtransportProgramcategory::find()->where(['programcategory_programparent' => NULL])->orderBy(['programcategory_id' => SORT_ASC, 'programcategory_programtitle' => SORT_ASC])->all();
         foreach ($program_parentcategs as $index=>$parentcateg){
             $programcategs[$parentcateg['programcategory_id']]['TITLE'] = $parentcateg['programcategory_programtitle'];
             $programcategs[$parentcateg['programcategory_id']]['PROGRAMCATEG_ID'] = $parentcateg['programcategory_id'];
@@ -105,6 +105,7 @@ class SchtransportTransportController extends Controller
         
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
+        $program_alias = SchtransportProgramcategory::getAlias($id);
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data = array();
@@ -160,7 +161,9 @@ class SchtransportTransportController extends Controller
                     'schools' => $schools,
                     'typeahead_data' => $typeahead_data,
                     'programcateg_id' => $id,
-                    'sep' => $sep]);
+                    'sep' => $sep,
+                    'program_alias' => $program_alias
+                ]);
             }
         }
         catch(Exception $exc){
@@ -172,7 +175,8 @@ class SchtransportTransportController extends Controller
                                                 'schools' => $schools,
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $id,
-                                                'sep' => $sep]);
+                                                'sep' => $sep,
+                                                'program_alias' => $program_alias]);
         }
     }
     
@@ -196,9 +200,10 @@ class SchtransportTransportController extends Controller
         $meeting = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program = SchtransportProgram::findOne(['program_id' => $meeting->program_id]);
         $programcateg = SchtransportProgramcategory::findOne(['programcategory_id' => $program->programcategory_id]);
-        $pr_categ = $programcateg->programcategory_id;
+        $pr_categ = $programcateg->programcategory_programalias;
         
-        $sep = ($pr_categ == 3 || $programcateg->programcategory_programparent == 3) ? 1: 0;
+        $sep = ($pr_categ == "EUROPEAN_SCHOOL" || 
+                SchtransportProgramcategory::getAlias($programcateg->programcategory_programparent) == "EUROPEAN_SCHOOL") ? 1: 0;
         
         if($sep == 1)
             $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
@@ -207,6 +212,7 @@ class SchtransportTransportController extends Controller
         
         $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
+        $program_alias = SchtransportProgramcategory::getAlias($program_model->program_id);
         $typeahead_data = array();
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data['COUNTRIES'] = array_merge(SchtransportMeeting::find()->select('meeting_country')->column(), $countries);
@@ -262,7 +268,8 @@ class SchtransportTransportController extends Controller
                         'schools' => $schools,
                         'typeahead_data' => $typeahead_data,
                         'programcateg_id' => $pr_categ,
-                        'sep' => $sep]);
+                        'sep' => $sep,
+                        'program_alias' => $program_alias]);
             }
         }
         catch(Exception $exc){
@@ -278,7 +285,8 @@ class SchtransportTransportController extends Controller
                                                 'schools' => $schools,
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $pr_categ,
-                                                'sep' => $sep]);
+                                                'sep' => $sep,
+                                                'program_alias' => $program_alias]);
         }
     }
 
@@ -329,17 +337,7 @@ class SchtransportTransportController extends Controller
     
     private function getProgramAction($programcateg_model)
     {
-        $program_action = "";
-        if($programcateg_model->programcategory_id == 4)
-            $program_action = "KA1";
-        else if($programcateg_model->programcategory_id == 5)
-            $program_action = "KA2";
-        else if($programcateg_model->programcategory_id == 10)
-            $program_action = "Polyhmerh";
-        else if($programcateg_model->programcategory_id == 11)
-            $program_action = "Vouli";
-        
-        return $program_action;
+        return SchtransportProgramcategory::getAlias($programcateg_model->programcategory_id);
     }
     
     
@@ -366,18 +364,21 @@ class SchtransportTransportController extends Controller
         
         //echo $template_path; die();
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
-        if(in_array($programcateg_model->programcategory_id, [5, 6, 7, 8, 9, 10, 11])){
+        $program_alias = SchtransportProgramcategory::getAlias($programcateg_model->programcategory_id);
+        if(in_array($program_alias, ['KA1_STUDENTS', 'KA2', 'TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS', 
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
-        if(in_array($programcateg_model->programcategory_id, [6, 7, 8, 9, 10, 11])){
+        if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
         }
         
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
         $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
-        $templateProcessor->setValue('phonenumber', Yii::$app->params['schooltransport_telephone']);
+        $templateProcessor->setValue('phonenumber', $this->module->params['schooltransport_telephone']);
         $templateProcessor->setValue('fax', Yii::$app->params['fax']);
         $templateProcessor->setValue('email', Yii::$app->params['email']);
         $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
@@ -473,7 +474,7 @@ class SchtransportTransportController extends Controller
                 
                 $program_action = $this->getProgramAction($programcateg_model);
                 
-                $file = Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile;
+                $file = Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile;
                 //echo $file; die();
                 
                 if(!is_readable($file))
@@ -581,8 +582,8 @@ class SchtransportTransportController extends Controller
 
             /* delete old file signed file if backwarded from state of digitally signed file: */
             if($states_count == 1){
-                if(!is_null($transport_model->transport_signedapprovalfile) && file_exists(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile))
-                    unlink(Yii::getAlias(Yii::$app->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile);
+                if(!is_null($transport_model->transport_signedapprovalfile) && file_exists(Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile))
+                    unlink(Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile);
                 $transport_model->transport_signedapprovalfile = null;
                 if(!$transport_model->save())
                     throw new Exception();

@@ -10,7 +10,7 @@ class m180504_080006_rbac_schooltransport_users extends Migration
         $auth = Yii::$app->authManager;
         
         Console::stdout("Creating roles for \"School Transports\" module: \"School Transport Director\",
-                        \"School Transport Editor\", \"School Transport Viewer\"");
+                        \"School Transport Editor\", \"School Transport Viewer\"\n");
         
         $schtransport_viewer = $auth->createRole('schtransport_viewer');
         $schtransport_editor = $auth->createRole('schtransport_editor');
@@ -30,13 +30,13 @@ class m180504_080006_rbac_schooltransport_users extends Migration
         
         return $schtr_v && $schtr_e && $schtr_d && $schtr_v_child && $schtr_e_child && $schtr_d_child && $admin_child;
     }
-
+    
     public function safeDown()
     {
         $auth = Yii::$app->authManager;
         
         Console::stdout("Deleting roles for \"School Transports\" module: \"School Transport Director\",
-                        \"School Transport Editor\", \"School Transport Viewer\"");
+                        \"School Transport Editor\", \"School Transport Viewer\"\n");
         
         $admin = $auth->getRole('admin');
         $visitor = $auth->getRole('visitor');
