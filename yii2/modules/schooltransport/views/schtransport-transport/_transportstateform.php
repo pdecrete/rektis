@@ -5,10 +5,13 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use app\modules\schooltransport\Module;
 use kartik\datecontrol\DateControl;
+use kartik\typeahead\Typeahead;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
+
+$typeahead_notes = array('E-mail', 'Ε-mail', 'Πιστό Αντίγραφο', 'Ταχυδρομείο', 'Αλληλογραφία', 'Fax', 'Φαξ');
 
 $disabled = ($transportstate_model['state_id'] == 1) ? false : true; 
 
@@ -31,8 +34,11 @@ if($updateFlag && !is_null($trnsprt_model->transport_signedapprovalfile)){
 	<?= $form->field($transportstate_model, 'transportstate_date')->widget(DateControl::classname(), 
                 ['type' => DateControl::FORMAT_DATE])->label(Module::t('modules/schooltransport/app', 'Date'));
     ?>
-                  
-	<?= $form->field($transportstate_model, 'transportstate_comment')->textInput(['maxlength' => true])->
+    
+	<?= $form->field($transportstate_model, 'transportstate_comment')->widget(Typeahead::classname(), 
+	                                                       ['pluginOptions' => ['highlight'=>true],
+	                                                         'dataset' => [['local' => $typeahead_notes, 'limit' => 10]]
+	                                                       ])->
            label(Module::t('modules/schooltransport/app', 'Description')); ?>
 
 	<?= $form->field($trnsprt_model, 'signedfile')->fileInput(['disabled' => $disabled])->label(Module::t('modules/schooltransport/app', 'Digitally Signed File') . $existingFileUrl) ?>   
