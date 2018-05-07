@@ -30,18 +30,35 @@ use yii\helpers\VarDumper;
 
 <h2>Κλήση λήψης στοιχείων</h2>
 <?php if ($status_unload === true) : ?>
-<span class="label label-success">Επιτυχής</span>
+<p><span class="label label-success">Επιτυχής</span></p>
 <p>Αναφερόμενος αριθμός στοιχείων που λήφθηκαν από την απομακρυσμένη υπηρεσία:</p>
 <ul>
     <li>
-        <?= $message ?>
+        <?= $message_unload ?>
     </li>
 </ul>
 <?php else: ?>
 <div class="alert alert-danger">
-    <span class="label label-danger">Αποτυχία
+    <p><span class="label label-danger">Αποτυχία
         <?= $status_unload ?>
-    </span>
+    </span></p>
+</div>
+<?php endif; ?>
+
+<h2>Διαχείριση στοιχείων</h2>
+<?php if ($status_data === true) : ?>
+<p><span class="label label-success">Επιτυχής</span></p>
+<p>Τα στοιχεία που ελήφθησαν αποκωδικοποιήθηκαν και διαχειρίστηκαν με επιτυχία:</p>
+<ul>
+    <li><?php echo implode('</li><li>', $messages_data); ?></li>
+</ul>
+<?php else: ?>
+<div class="alert alert-danger">
+    <p><span class="label label-danger">Αποτυχία</span></p>
+    <p>Τα στοιχεία που ελήφθησαν προκάλεσαν σφάλμα:</p>
+    <ul>
+        <li><?php echo implode('</li><li>', $messages_data); ?></li>
+    </ul>
 </div>
 <?php endif; ?>
 
