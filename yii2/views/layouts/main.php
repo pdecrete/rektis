@@ -68,6 +68,17 @@ AppAsset::register($this);
                         ],
 
                         '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-pencil"></i> Σελίδες</li>',
+                        [
+                            'label' => 'Όλες οι σελίδες',
+                            'url' => ['/Pages/page/index']
+                        ],
+                        [
+                            'label' => 'Νέα σελίδα',
+                            'url' => ['/Pages/page/create']
+                        ],
+
+                        '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-dashboard"></i> Παράμετροι</li>',
                         [
                             'label' => 'Auth items',
@@ -250,6 +261,10 @@ AppAsset::register($this);
                         [
                             'label' => 'Προτιμήσεις τοποθέτησης αναπληρωτών',
                             'url' => [ '/SubstituteTeacher/placement-preference/index' ]
+                        ],
+                        [
+                            'label' => 'Πίνακες διορισμών',
+                            'url' => [ '/SubstituteTeacher/teacher-board/index' ]
                         ],
                         [
                             'label' => 'Καταγραφή κατάστασης αναπληρωτών',

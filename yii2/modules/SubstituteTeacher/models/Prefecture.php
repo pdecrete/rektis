@@ -98,12 +98,12 @@ class Prefecture extends \yii\db\ActiveRecord
      * Define fields that should be returned when the model is exposed
      * by or for an API call.
      */
-    public function toApiJson()
+    public function toApi()
     {
         return [
             'region' => $this->region,
             'prefecture' => $this->prefecture,
-            'reference' => $this->buildSelfReference()
+            'ref' => $this->buildSelfReference()
         ];
     }
 

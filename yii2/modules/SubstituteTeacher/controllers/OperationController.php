@@ -4,11 +4,11 @@ namespace app\modules\SubstituteTeacher\controllers;
 use Yii;
 use app\modules\SubstituteTeacher\models\Operation;
 use app\modules\SubstituteTeacher\models\OperationSearch;
+use app\modules\SubstituteTeacher\models\Specialisation;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\Specialisation;
 
 /**
  * OperationController implements the CRUD actions for Operation model.

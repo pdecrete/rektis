@@ -239,14 +239,16 @@ class PlacementPreference extends \yii\db\ActiveRecord
      * Define fields that should be returned when the model is exposed
      * by or for an API call.
      */
-    public function toApiJson()
+    public function toApi($prefecture_substitutions, $teacher_substitutions)
     {
         return [
             'teacher_id' => $this->teacher_id,
+            'teacher' => array_search($this->teacher_id, $teacher_substitutions), // TODO check if error            
             'prefecture_id' => $this->prefecture_id,
+            'prefecture' => array_search($this->prefecture_id, $prefecture_substitutions), // TODO check if error            
             'school_type' => $this->school_type,
             'order' => $this->order,
-            'reference' => $this->buildSelfReference()
+            'ref' => $this->buildSelfReference()
         ];
     }
 

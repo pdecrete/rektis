@@ -3,8 +3,9 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
-use app\models\Specialisation;
 use app\modules\SubstituteTeacher\traits\Selectable;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%stteacher_registry}}".
@@ -83,7 +84,8 @@ class TeacherRegistry extends \yii\db\ActiveRecord
         return [
             [['birthdate'], 'default', 'value' => null],
             [['birthdate'], 'date', 'format' => 'php:Y-m-d'],
-            [['aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
+            [['aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'default', 'value' => 0],
+            [['aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'boolean'],
             ['specialisation_ids', 'each', 'rule' => ['integer']],
             [['protected_children'], 'integer', 'min' => 0, 'max' => '15'],
             [['comments'], 'string'],
@@ -108,11 +110,27 @@ class TeacherRegistry extends \yii\db\ActiveRecord
                 ]
             ],
             [
-                ['gender', 'firstname', 'surname', 'fathername', 'mothername', 'marital_status', 'protected_children',
-                 'mobile_phone', 'city', 'tax_identification_number', 'tax_service', 'social_security_number', 'identity_number',
-                 'bank', 'iban', 'email', 'birthdate', 'specialisation_ids'],
+                [ 'specialisation_ids', 'firstname', 'surname', 'fathername', 'mothername', 'gender', 'protected_children',
+                  'birthdate', 'birthplace', 'mobile_phone', 'home_address', 'city', 'postal_code',
+                  'tax_identification_number', 'tax_service', 'identity_number' ],
+                // [ 'marital_status', 'social_security_number',  'bank', 'iban', 'email' ],
                 'required'
             ],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()')
+            ]
         ];
     }
 

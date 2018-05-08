@@ -16,6 +16,9 @@ class SubstituteTeacherModule extends Module
         $this->params['foo'] = 'bar';
         \Yii::configure($this, require(__DIR__ . '/config/params.php'));
 
+        // set log target for module
+        \Yii::$app->log->targets[] = Yii::createObject(require(__DIR__ . '/config/log.php'));
+
         \Yii::$container->setSingleton('Crypt', [
             'class' => 'app\modules\SubstituteTeacher\components\Crypt',
             'cryptKeyFile' => $this->params['crypt-key-file']

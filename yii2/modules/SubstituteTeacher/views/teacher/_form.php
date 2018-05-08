@@ -8,21 +8,18 @@ use app\modules\SubstituteTeacher\models\PlacementPreference;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
-
-/* @var $this yii\web\View */
-/* @var $model app\modules\SubstituteTeacher\models\Teacher */
-/* @var $form yii\widgets\ActiveForm */
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 $js = '
 jQuery(".dynamicform_wrapper").on("afterInsert", function(e, item) {
-    jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+    jQuery(".dynamicform_wrapper .panel-serial-number").each(function(index) {
+        jQuery(this).html("" + (index + 1))
     });
 });
 
 jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
-    jQuery(".dynamicform_wrapper .panel-title-address").each(function(index) {
-        jQuery(this).html("Address: " + (index + 1))
+    jQuery(".dynamicform_wrapper .panel-serial-number").each(function(index) {
+        jQuery(this).html("" + (index + 1))
     });
 });
 ';
@@ -46,18 +43,80 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
     ]);
     ?>
 
-    <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'status')->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'status')->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
-
-    <?= $form->field($model, 'points')->textInput(['maxlength' => true]) ?>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <?php echo Yii::t('substituteteacher', 'Teacher boards'); ?>
+        </div>
+        <div class="panel-body">
+            <?php if (!isset($modelsBoards)) : ?>
+            <p>Μπορείτε να προσθέσετε στοιχεία πινάκων διορισμών <strong>μετά την δημιουργία</strong>.</p>
+            <?php elseif (empty($modelsBoards)) : ?>
+            <p>Δεν υπάρχουν στοιχεία.</p>
+            <?php else: ?>
+            <?php 
+            $firstModelBoard = reset($modelsBoards);
+            ?>
+            <table class="table table-striped table-hover">
+                <caption>Εάν ο καθηγητής δεν υπάγεται σε πίνακα κάποιας ειδικότητας, εισάγετε κενό στην αντίστοιχη σειρά κατάταξης στον πίνακα και στα μόρια και αφαιρέστε την επιλογή τύπου πίνακα διορισμού.</caption>
+                <thead>
+                    <tr>
+                        <th><?php echo Yii::t('substituteteacher', 'Order in board'); ?></th>
+                        <th><?php echo $firstModelBoard->getAttributeLabel('board_type'); ?></th>
+                        <th><?php echo Yii::t('substituteteacher', 'Specialisation'); ?></th>
+                        <th><?php echo $firstModelBoard->getAttributeLabel('points'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($modelsBoards as $index => $modelBoard): ?>
+                    <tr class="item">
+                        <td>
+                            <?php
+                                // necessary for update action.
+                                if (!$modelBoard->isNewRecord) {
+                                    echo Html::activeHiddenInput($modelBoard, "[{$index}]id");
+                                }
+                            ?>
+                            <?= $form->field($modelBoard, "[{$index}]order")->textInput(['type' => 'number', 'min' => 0])->label(false) ?>
+                            <?php 
+                                $teacher_errors = $modelBoard->getErrors('teacher_id');
+                                if (!empty($teacher_errors)) :
+                            ?>
+                                <div class="text-danger"><?= implode(', ', $teacher_errors) ?></div>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?= $form->field($modelBoard, "[{$index}]board_type")->dropDownList(TeacherBoard::getChoices('board_type'), ['prompt' => Yii::t('substituteteacher', 'Choose...')])->label(false) ?>
+                        </td>
+                        <td>
+                            <?php echo $modelBoard->specialisation->code; ?>
+                            <?= $form->field($modelBoard, "[{$index}]specialisation_id")->hiddenInput()->label(false) ?>
+                        </td>
+                        <td class="col-sm-2">
+                            <?= $form->field($modelBoard, "[{$index}]points")->textInput()->label(false) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <?php 
     DynamicFormWidget::begin([
         'widgetContainer' => 'dynamicform_wrapper',
         'widgetBody' => '.container-items',
         'widgetItem' => '.item',
-        'min' => 0,
+        'min' => 1,
         'insertButton' => '.add-item',
         'deleteButton' => '.remove-item',
         'model' => $firstModelPlacementPreference,
@@ -80,6 +139,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <th class="col-xs-1">#</th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('prefecture_id'); ?></th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('school_type'); ?></th>
                         <th><?php echo $firstModelPlacementPreference->getAttributeLabel('order'); ?></th>
@@ -89,6 +149,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                 <tbody class="container-items">
                 <?php foreach ($modelsPlacementPreferences as $index => $modelPlacementPreference): ?>
                     <tr class="item">
+                        <td><span class="badge panel-serial-number"><?php echo $index + 1; ?></span></td>
                         <td>
                             <?php
                                 // necessary for update action.
