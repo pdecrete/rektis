@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3be8b4fe91acb69f73186b8db3005a35",
+    "content-hash": "1602e04137135dbd98924f9854a43ebc",
     "packages": [
         {
             "name": "2amigos/yii2-chartjs-widget",
@@ -1451,6 +1451,53 @@
                 "yii2"
             ],
             "time": "2015-06-28T18:05:41+00:00"
+        },
+        {
+            "name": "marekpetras/yii2-ajax-box-widget",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/marekpetras/yii2-ajax-box-widget.git",
+                "reference": "4e31bef265cd48cb2dd3e54045a98cf04abc34bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/marekpetras/yii2-ajax-box-widget/zipball/4e31bef265cd48cb2dd3e54045a98cf04abc34bb",
+                "reference": "4e31bef265cd48cb2dd3e54045a98cf04abc34bb",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-bootstrap": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "marekpetras\\yii2ajaxboxwidget\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marek Petras",
+                    "email": "mark@markpetras.eu"
+                }
+            ],
+            "description": "Ajax Box widget for Yii 2 Framework.",
+            "homepage": "https://github.com/marekpetras/yii2-ajax-box-widget",
+            "keywords": [
+                "ajax",
+                "box",
+                "extension",
+                "load content with ajax",
+                "submit",
+                "widget",
+                "yii2"
+            ],
+            "time": "2018-03-05T22:39:37+00:00"
         },
         {
             "name": "mpdf/mpdf",
