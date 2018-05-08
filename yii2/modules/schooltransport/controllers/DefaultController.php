@@ -36,7 +36,7 @@ class DefaultController extends Controller
         return $this->render('index');
     }
     
-    public function actionHelp($helpId)
+    public function actionHelp($helpId = 1)
     {
         return $this->render('help', ['helpId' => $helpId]);
     }
