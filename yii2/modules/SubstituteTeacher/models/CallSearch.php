@@ -16,7 +16,7 @@ class CallSearch extends Call
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'year'], 'integer'],
             [['title', 'description', 'application_start', 'application_end', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -58,6 +58,7 @@ class CallSearch extends Call
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'year' => $this->year,
             'application_start' => $this->application_start,
             'application_end' => $this->application_end,
             'created_at' => $this->created_at,

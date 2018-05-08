@@ -49,6 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'position_has_type',
                 'value' => $model->position_has_type_label
             ],
+            'sign_language:boolean',
             'teachers_count',
             'hours_count',
             'covered_teachers_count',

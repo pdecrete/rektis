@@ -13,7 +13,6 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $registry_id
  * @property integer $year
  * @property integer $status
- * @property string $points
  *
  * @property string $name
  *
@@ -21,6 +20,7 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property TeacherRegistry $registry
  * @property TeacherStatusAudit[] $teacherStatusAudits
  * @property Prefecture[] $placementPreferencePrefectures
+ * @property TeacherBoard[] $boards
  */
 class Teacher extends \yii\db\ActiveRecord
 {
@@ -49,9 +49,7 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['registry_id', 'year', 'status'], 'integer'],
-            [['points'], 'default', 'value' => 0],
             [['registry_id', 'year', 'status'], 'required'],
-            [['points'], 'number'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
         ];
@@ -67,7 +65,6 @@ class Teacher extends \yii\db\ActiveRecord
             'registry_id' => Yii::t('substituteteacher', 'Registry ID'),
             'year' => Yii::t('substituteteacher', 'Year'),
             'status' => Yii::t('substituteteacher', 'Status'),
-            'points' => Yii::t('substituteteacher', 'Points'),
         ];
     }
 
@@ -77,7 +74,7 @@ class Teacher extends \yii\db\ActiveRecord
     public function getPlacementPreferences()
     {
         return $this->hasMany(PlacementPreference::className(), ['teacher_id' => 'id'])
-            ->orderBy(['[[order]]' => SORT_ASC]);
+            ->orderBy([PlacementPreference::tableName() . '.[[order]]' => SORT_ASC]);
     }
 
     /**
@@ -104,6 +101,14 @@ class Teacher extends \yii\db\ActiveRecord
     public function getTeacherStatusAudits()
     {
         return $this->hasMany(TeacherStatusAudit::className(), ['teacher_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBoards()
+    {
+        return $this->hasMany(TeacherBoard::className(), ['teacher_id' => 'id']);
     }
 
     /**
@@ -161,26 +166,35 @@ class Teacher extends \yii\db\ActiveRecord
      * Define fields that should be returned when the model is exposed
      * by or for an API call.
      */
-    public function toApiJson()
+    public function toApi()
     {
         // TODO take multiple specialisation into account
-        return [
-            'name' => $this->registry->name,
-            'specialisation' => $this->registry->specialisations[0]->code,
-            'firstname' => $this->registry->firstname,
-            'surname' => $this->registry->surname,
-            'email' => $this->registry->email,
-            'mobile_phone' => $this->registry->mobile_phone,
-            'f1' => $this->registry->tax_identification_number,
-            'f2' => $this->registry->identity_number,
-            'reference' => $this->buildReference([
-                'id' => $this->id,
+        return array_merge(
+            [
+                'specialty' => $this->registry->specialisations[0]->code, // TODO TAKE CARE OF MULTIPLE
+                'vat' => $this->registry->tax_identification_number,
+                'identity' => $this->registry->identity_number,
+                'ref' => $this->buildReference([
+                    'id' => $this->id,
+                    'firstname' => $this->registry->firstname,
+                    'lastname' => $this->registry->surname,
+                    'fathername' => $this->registry->fathername,
+                    'mothername' => $this->registry->mothername,
+                    'email' => $this->registry->email,
+                    'mobile_phone' => $this->registry->mobile_phone,
+                ])
+            ],
+            (YII_DEBUG ? [ // only for debugging
+                // 'name' => $this->registry->name,
                 'firstname' => $this->registry->firstname,
-                'surname' => $this->registry->surname,
+                'lastname' => $this->registry->surname,
+                'fathername' => $this->registry->fathername,
+                'mothername' => $this->registry->mothername,
                 'email' => $this->registry->email,
                 'mobile_phone' => $this->registry->mobile_phone,
+            ] : [
             ])
-        ];
+        );
     }
 
     /**

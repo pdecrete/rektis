@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'title',
+            'year',
             'description:ntext',
             [
                 'attribute' => 'application_start',
@@ -48,7 +49,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     return \Yii::$app->formatter->asDate($m->application_end, 'php:l d F Y');
                 }
             ],
-            'created_at',
+            [
+                'attribute' => '',
+                'label' => Yii::t('substituteteacher', 'Teachers to appoint'),
+                'value' => $model->callTeacherSpecialisations ? implode(
+                    '<br>',
+                        array_map(function ($m) {
+                            return "{$m->teachers}, {$m->specialisation->label}";
+                        }, $model->callTeacherSpecialisations)
+                    ) : null
+                ,
+                'format' => 'html'
+            ],
+        'created_at',
             'updated_at',
         ],
     ])

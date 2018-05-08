@@ -15,6 +15,7 @@ use yii\web\UnprocessableEntityHttpException;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
  * TeacherController implements the CRUD actions for Teacher model.
@@ -156,17 +157,16 @@ class TeacherController extends Controller
         $modelsPlacementPreferences = [new PlacementPreference];
 
         if ($model->load(Yii::$app->request->post())) {
-            //  && $model->save()) {
+            $post = \Yii::$app->request->post();
+
+            if (isset($post['PlacementPreference'])) {
+                $post['PlacementPreference'] = array_values($post['PlacementPreference']);
+            }
             $modelsPlacementPreferences = Model::createMultiple(PlacementPreference::classname(), $modelsPlacementPreferences);
             Model::loadMultiple($modelsPlacementPreferences, Yii::$app->request->post());
 
-            array_walk($modelsPlacementPreferences, function ($m) {
-                $m->setScenario(PlacementPreference::SCENARIO_MASS_UPDATE);
-            });
-
             // validate all models
             $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
             $valid = PlacementPreference::checkRules($modelsPlacementPreferences) && $valid;
@@ -175,8 +175,16 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        $id = $model->id;
+                        array_walk($modelsPlacementPreferences, function ($m) use ($id) {
+                            $m->setScenario(PlacementPreference::SCENARIO_MASS_UPDATE);
+                            $m->teacher_id = $id;
+                        });
+
+                        // $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
+
                         foreach ($modelsPlacementPreferences as $modelPlacementPreference) {
-                            if (! ($flag = $modelPlacementPreference->save(false))) {
+                            if (! ($flag = $modelPlacementPreference->save())) {
                                 $transaction->rollBack();
                                 break;
                             }
@@ -194,13 +202,40 @@ class TeacherController extends Controller
                 }
             }
         }
-
+// dd(array_map(function ($m) {
+//     return $m->getAttributes();
+// }, $modelsPlacementPreferences));
         return $this->render('create', [
             'model' => $model,
             'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
         ]);
     }
 
+    protected function getModelsBoards($model)
+    {
+        $id = $model->id; 
+
+        $specialisations = array_map(function ($m) {
+            return $m->id;
+        }, $model->registry->specialisations);
+        $specialisations_boards = array_map(function ($m) {
+            return $m->specialisation_id;
+        }, $model->boards);
+        $missing_specialisations = array_diff($specialisations, $specialisations_boards);
+
+        $modelsBoards = $model->boards;
+        if (!empty($missing_specialisations)) {
+            $modelsBoards = array_merge($modelsBoards, array_map(function ($spec_id) use ($id) {
+                $new_entry = new TeacherBoard;
+                $new_entry->id = - $spec_id;
+                $new_entry->teacher_id = $id;
+                $new_entry->specialisation_id = $spec_id;
+                return $new_entry;
+            }, $missing_specialisations));
+        }
+
+        return $modelsBoards;
+    }
     /**
      * Updates an existing Teacher model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -212,10 +247,25 @@ class TeacherController extends Controller
         $model = $this->findModel($id);
         $modelsPlacementPreferences = ($model->placementPreferences ? $model->placementPreferences : [new PlacementPreference]);
 
+        $modelsBoards = $this->getModelsBoards($model);
+
         if ($model->load(Yii::$app->request->post())) {
+            $post = \Yii::$app->request->post();
+            $modelsBoards = Model::createMultiple(TeacherBoard::classname(), $modelsBoards);
+            // need to feed the teacher id 
+            array_walk($modelsBoards, function (&$m, $k) use ($id) {
+                if ($m->id == null) {
+                    $m->teacher_id = $id;
+                }
+            });
+            Model::loadMultiple($modelsBoards, $post);
+
+            if (isset($post['PlacementPreference'])) {
+                $post['PlacementPreference'] = array_values($post['PlacementPreference']);
+            }
             $oldIDs = ArrayHelper::map($modelsPlacementPreferences, 'id', 'id');
             $modelsPlacementPreferences = Model::createMultiple(PlacementPreference::classname(), $modelsPlacementPreferences);
-            Model::loadMultiple($modelsPlacementPreferences, Yii::$app->request->post());
+            Model::loadMultiple($modelsPlacementPreferences, $post);
             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsPlacementPreferences, 'id', 'id')));
 
             array_walk($modelsPlacementPreferences, function ($m) use ($id) {
@@ -234,6 +284,24 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        foreach ($modelsBoards as $modelBoard) {
+                            // those with empty values are considered not existant in the board
+                            if (empty($modelBoard->board_type) 
+                                && empty($modelBoard->points)
+                                && empty($modelBoard->order)) {
+                                // remove if already existed or else ignore and skip it 
+                                if (!empty($modelBoard->id) && $modelBoard->id > 0) {
+                                    $modelBoard->delete();
+                                }
+                                continue;
+                            }
+
+                            if (! ($flag = $modelBoard->save())) {
+                                $transaction->rollBack();
+                                break;
+                            }
+                        }
+
                         if (! empty($deletedIDs)) {
                             PlacementPreference::deleteAll(['id' => $deletedIDs]);
                         }
@@ -259,7 +327,8 @@ class TeacherController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
+            'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference],
+            'modelsBoards' => $modelsBoards ? $modelsBoards : [ new TeacherBoard ],
         ]);
     }
 

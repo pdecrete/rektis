@@ -5,7 +5,7 @@ namespace app\modules\SubstituteTeacher\controllers;
 use Yii;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySearch;
-use app\models\Specialisation;
+use app\modules\SubstituteTeacher\models\Specialisation;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

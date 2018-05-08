@@ -39,7 +39,8 @@ class CallPositionSearch extends CallPosition
      */
     public function search($params)
     {
-        $query = CallPosition::find();
+        $query = CallPosition::find()
+            ->joinWith(['position', 'position.operation']);
 
         // add conditions that should always apply here
 

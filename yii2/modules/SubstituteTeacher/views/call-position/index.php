@@ -95,16 +95,13 @@ $form = ActiveForm::begin([
 
 ?>
 <div class="container-fluid">
-    <div class="row">
+    <div class="row form-group">
         <div class="col-sm-6">
             <?= Yii::t('substituteteacher', 'Calls') ?>
         </div>
         <div class="col-sm-6">
             <?= Html::dropDownList('call', null, \app\modules\SubstituteTeacher\models\Call::defaultSelectables(), ['class' => 'form-control']) ?>
         </div>
-    </div>
-    <div class="row">
-        <p>&nbsp;</p>
     </div>
     <div class="row">
         <div class="col-sm-12 text-right">
