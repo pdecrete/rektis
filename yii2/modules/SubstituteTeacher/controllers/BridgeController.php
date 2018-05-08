@@ -101,114 +101,130 @@ class BridgeController extends \yii\web\Controller
         return $this->render('remote-status', compact('status', 'services_status', 'data', 'connection_options'));
     }
 
-    public function actionReceive()
+    /**
+     * Choose a call to receive application information from the frontend.
+     *
+     * @param int|null call_id
+     */
+    public function actionReceive($call_id = 0)
     {
         \Yii::info([], __METHOD__);
         $connection_options = $this->options;
         $data = null;
         $message_unload = '';
+        $status_unload = null;
         $status_data = false;
         $messages_data = [];
 
-        if (\Yii::$app->request->isPost) {
-            \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
-            $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
-            $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
-            $response_data_unload = $status_response->getData();
-            if ($status_unload !== true) {
-                \Yii::error([$status_unload, $response_data_unload], __METHOD__);
-            } else {
-                \Yii::info([$status_unload, $response_data_unload], __METHOD__);
-                $message_unload = $response_data_unload['message'];
+        $call_model = Call::findOne(['id' => $call_id]);
+        // if call is selected, collect positions, prefectures, teachers and placement preferences
+        if (!empty($call_model)) {
+            if (\Yii::$app->request->isPost) {
+                \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
+                $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
+                $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+                $response_data_unload = $status_response->getData();
+                if ($status_unload !== true) {
+                    \Yii::error([$status_unload, $response_data_unload], __METHOD__);
+                } else {
+                    \Yii::info([$status_unload, $response_data_unload], __METHOD__);
+                    $message_unload = $response_data_unload['message'];
 
-                // check input for malformed information and save accordingly
-                try {
-                    // get incoming data 
-                    $applicants = isset($response_data_unload['data']['applicants']) ? $response_data_unload['data']['applicants'] : [];
-                    $choices = isset($response_data_unload['data']['choices']) ? $response_data_unload['data']['choices'] : [];
-                    $applications_parsed = isset($response_data_unload['data']['applications']) ? $response_data_unload['data']['applications'] : [];
+                    // check input for malformed information and save accordingly
+                    try {
+                        // get incoming data
+                        $applicants = isset($response_data_unload['data']['applicants']) ? $response_data_unload['data']['applicants'] : [];
+                        $choices = isset($response_data_unload['data']['choices']) ? $response_data_unload['data']['choices'] : [];
+                        $applications_parsed = isset($response_data_unload['data']['applications']) ? $response_data_unload['data']['applications'] : [];
 
-                    // get references to frontend ids used to link data 
-                    $applicants_parsed = array_flip(array_map(function ($v) {
-                        return $v['id'];
-                    }, $applicants));
-                    $choices_parsed = array_flip(array_map(function ($v) {
-                        return $v['id'];
-                    }, $choices));
+                        // get references to frontend ids used to link data
+                        $applicants_parsed = array_flip(array_map(function ($v) {
+                            return $v['id'];
+                        }, $applicants));
+                        $choices_parsed = array_flip(array_map(function ($v) {
+                            return $v['id'];
+                        }, $choices));
 
-                    // decrypt data  
-                    array_walk($applicants, function ($v, $k) use (&$applicants_parsed) {
-                        $applicants_parsed[$v['id']] = [];
-                        foreach (['reference', 'vat', 'identity', 'specialty', 'agreedterms', 'application_choices', 'state', 'statets'] as $field) {
-                            $applicants_parsed[$v['id']][$field] = \Yii::$container->get('Crypt')->decrypt($v[$field]);
-                        }
-                        $applicants_parsed[$v['id']]['reference'] = Json::decode($applicants_parsed[$v['id']]['reference']);
-                        return;
-                    });
-                    array_walk($choices, function ($v, $k) use (&$choices_parsed) {
-                        $choices_parsed[$v['id']] = [
+                        // decrypt data
+                        array_walk($applicants, function ($v, $k) use (&$applicants_parsed) {
+                            $applicants_parsed[$v['id']] = [];
+                            foreach (['reference', 'vat', 'identity', 'specialty', 'agreedterms', 'application_choices', 'state', 'statets'] as $field) {
+                                $applicants_parsed[$v['id']][$field] = \Yii::$container->get('Crypt')->decrypt($v[$field]);
+                            }
+                            $applicants_parsed[$v['id']]['reference'] = Json::decode($applicants_parsed[$v['id']]['reference']);
+                            return;
+                        });
+                        array_walk($choices, function ($v, $k) use (&$choices_parsed) {
+                            $choices_parsed[$v['id']] = [
                             'reference' => Json::decode(\Yii::$container->get('Crypt')->decrypt($v['reference'])),
                         ];
-                        return;
-                    });
+                            return;
+                        });
 
-                    $messages_data[] = Yii::t('substituteteacher', '{n} applicants parsed.', ['n' => count($applicants_parsed)]);
-                    $messages_data[] = Yii::t('substituteteacher', '{n} choices parsed.', ['n' => count($choices_parsed)]);
-                    $messages_data[] = Yii::t('substituteteacher', '{n} applications parsed.', ['n' => count($applications_parsed)]);
+                        $messages_data[] = Yii::t('substituteteacher', '{n} applicants parsed.', ['n' => count($applicants_parsed)]);
+                        $messages_data[] = Yii::t('substituteteacher', '{n} choices parsed.', ['n' => count($choices_parsed)]);
+                        $messages_data[] = Yii::t('substituteteacher', '{n} applications parsed.', ['n' => count($applications_parsed)]);
 
-                    // check data integrity:
-                    // - frontend application references to applicants and choices
-                    // - backend references to applicants 
-                    // - backend references to choices 
-                    array_walk($applications_parsed, function ($v) use ($applicants_parsed, $choices_parsed) {
-                        // check each entry for valid references to applicant and choice selection
-                        if (!isset($applicants_parsed[$v['applicant_id']])) {
-                            throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to applicant.'));
-                        }
-                        if (!isset($choices_parsed[$v['choice_id']])) {
-                            throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to choice.'));
-                        }
-                    });
-                    array_walk($choices_parsed, function ($v) {
-                        // check if choice is valid in backend 
-                        if (is_array($v['reference']['id'])) {
-                            $ids = $v['reference']['id'];
-                        } else {
-                            $ids = [$v['reference']['id']];
-                        }
-                        $choices = CallPosition::find()->andWhere(['id' => $ids])->count(); // TODO add group info lookup?
-                        if (count($ids) != $choices) {
-                            throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
-                        }
-                    });
-                    array_walk($applicants_parsed, function ($v) {
-                        $teacher = Teacher::find()->joinWith('registry')->andWhere([
+                        // check data integrity:
+                        // - frontend application references to applicants and choices
+                        // - backend references to applicants
+                        // - backend references to choices
+                        array_walk($applications_parsed, function ($v) use ($applicants_parsed, $choices_parsed) {
+                            // check each entry for valid references to applicant and choice selection
+                            if (!isset($applicants_parsed[$v['applicant_id']])) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to applicant.'));
+                            }
+                            if (!isset($choices_parsed[$v['choice_id']])) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to choice.'));
+                            }
+                        });
+                        array_walk($choices_parsed, function ($v) {
+                            // check if choice is valid in backend
+                            if (is_array($v['reference']['id'])) {
+                                $ids = $v['reference']['id'];
+                            } else {
+                                $ids = [$v['reference']['id']];
+                            }
+                            $choices = CallPosition::find()->andWhere(['id' => $ids])->count(); // TODO add group info lookup?
+                            if (count($ids) != $choices) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
+                            }
+                        });
+                        array_walk($applicants_parsed, function ($v) {
+                            $teacher = Teacher::find()->joinWith('registry')->andWhere([
                             Teacher::tableName() . '.id' => $v['reference']['id'],
                             TeacherRegistry::tableName() . '.tax_identification_number' => $v['vat'],
                             TeacherRegistry::tableName() . '.identity_number' => $v['identity'],
                             TeacherRegistry::tableName() . '.firstname' => $v['reference']['firstname'],
                             TeacherRegistry::tableName() . '.surname' => $v['reference']['lastname'],
                         ])->one();
-                        // TODO add check for specialty ? 
-                        if (empty($teacher)) {
-                            throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to teacher.'));
-                        }
-                    });
+                            // TODO add check for specialty ?
+                            if (empty($teacher)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to teacher.'));
+                            }
+                        });
 
-                    $status_data = true;
-                } catch (WrongKeyOrModifiedCiphertextException $ex) {
-                    $messages_data[] = Yii::t('substituteteacher', 'Data received contains data with invalid encoding.') .
+                        // separate applicants that made and application and those that denied
+
+                        // mark applicants that denied
+
+                        // mark applicants that applied to be used in placement procedures
+
+                        // LOG everything
+
+                        $status_data = true;
+                    } catch (WrongKeyOrModifiedCiphertextException $ex) {
+                        $messages_data[] = Yii::t('substituteteacher', 'Data received contains data with invalid encoding.') .
                         ' (' . $ex->getMessage() . ')';
-                } catch (\Exception $ex) {
-                    $messages_data[] = Yii::t('substituteteacher', 'Invalid or malformed data or error while parsing data.') .
+                    } catch (\Exception $ex) {
+                        $messages_data[] = Yii::t('substituteteacher', 'Invalid or malformed data or error while parsing data.') .
                         ' (' . $ex->getMessage() . ')';
+                    }
                 }
             }
-        } else {
-            $status_unload = $status_data = null;
         }
 
-        return $this->render('receive', compact('connection_options', 'status_unload', 'status_data', 'message_unload', 'messages_data'));
+        return $this->render('receive', compact('call_model', 'connection_options', 'status_unload', 'status_data', 'message_unload', 'messages_data'));
     }
 
     /**
