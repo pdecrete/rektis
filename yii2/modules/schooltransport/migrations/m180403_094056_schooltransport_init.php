@@ -45,11 +45,11 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(4, 'KA1', 'Erasmus+ KA1', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
         Yii::$app->db->createCommand($insert_command . "(5, 'KA1_STUDENTS', 'Erasmus+ KA1 με συμμετοχή μαθητών', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
         Yii::$app->db->createCommand($insert_command . "(6, 'KA2', 'Erasmus+ KA2', 'Στρατηγικές Συμπράξεις', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(7, 'TEACHING_VISITS', 'Διδακτικές Επισκέψεις', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(8, 'EDUCATIONAL_VISITS', 'Εκπαιδευτικές Επισκέψεις', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(9, 'EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτικές Εκδρομές', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(10, 'SCHOOL_EXCURIONS', 'Σχολικοί Περίπατοι', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(11, 'EXCURIONS_FOREIGN_COUNTRY', 'Πολυήμερες Εκδρομές στο εξωτερικό', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(7, 'TEACHING_VISITS', 'Διδακτική Επίσκεψη', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(8, 'EDUCATIONAL_VISITS', 'Εκπαιδευτική Επίσκεψη', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(9, 'EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτική Εκδρομή', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(10, 'SCHOOL_EXCURIONS', 'Σχολικός Περίπατος', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(11, 'EXCURIONS_FOREIGN_COUNTRY', 'Πολυήμερη Εκδρομή στο εξωτερικό', '', NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "(12, 'PARLIAMENT', 'Βουλή των Ελλήνων', '', NULL)")->execute();
         
         
@@ -109,11 +109,12 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου')")->execute();
         
-        /* CREATE TABLE admapp_school */
+        /* CREATE TABLE admapp_school 
+         * `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
+         * */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_school'] .
-                          " (`school_id` INTEGER NOT NULL AUTO_INCREMENT,
-                             `school_name` VARCHAR(200) NOT NULL COMMENT 'Σχολείο',
-                             `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
+                          " (`school_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
+                             `school_name` VARCHAR(200) NOT NULL COMMENT 'Σχολείο',                             
                              `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Σχολείου',
                               FOREIGN KEY (`directorate_id`) REFERENCES " . $dbTrnsprtTables['table_directorate'] . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               PRIMARY KEY (`school_id`),

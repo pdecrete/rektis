@@ -207,7 +207,7 @@ class SchoolunitController extends Controller
                 foreach ($school_names as $school){
                     $school_model = new Schoolunit();
                     $school_model->directorate_id = $edu_admin[0];
-                    $school_model->school_mm_id = $school->mm_id;
+                    $school_model->school_id = $school->mm_id;
                     $school_model->school_name = $school->name;
                     $school_model->save();
                 }

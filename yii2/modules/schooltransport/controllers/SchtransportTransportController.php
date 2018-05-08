@@ -193,7 +193,7 @@ class SchtransportTransportController extends Controller
     public function actionUpdate($id, $readonly_mode = false)
     {        
         $model = $this->findModel($id);
-        if($model->getStates()->count() > 0){
+        if($model->getStates()->count() > 0 && !$readonly_mode){
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The school transport cannot be updated, because it is not in initial state."));
             return $this->redirect(['index']);
         }
@@ -403,11 +403,13 @@ class SchtransportTransportController extends Controller
     
     private function getFilename($program_action, $school_name, $meeting_country, $meeting_city, $transport_id)
     {
+        $school_name  = str_replace('/', '_', $school_name);
         return $program_action . "_" . str_replace(" ", "_", $school_name) . "_" . $meeting_country . "_" . $meeting_city . "_" . $transport_id . ".docx";
     }
     
     private function getFilenamesigned($program_action, $school_name, $meeting_country, $meeting_city, $transport_id)
     {
+        $school_name  = str_replace('/', '_', $school_name);
         $filename = $this->getFilename($program_action, $school_name, $meeting_country, $meeting_city, $transport_id);
         $extension_pos = strrpos($filename, '.docx');
         return substr_replace($filename, '_signed.pdf', $extension_pos, strlen($filename));        
@@ -632,13 +634,17 @@ class SchtransportTransportController extends Controller
                     
                     $filename = $this->getFilenamesigned( $this->getProgramAction($programcateg_model), $school_model->school_name,
                         $meeting_model['meeting_country'], $meeting_model['meeting_city'], $trnsprt_model->transport_id);
-                    
+                                    
                     $trnsprt_model->transport_signedapprovalfile = $filename;
+                    if(!$trnsprt_model->save())
+                        throw new Exception();
                     if(!$trnsprt_model->upload($filename))
                         throw new Exception();
                 }
                 if(!$transportstate_model->save())
                     throw new Exception();
+
+                    //echo $trnsprt_model->transport_signedapprovalfile; die();
                 $transaction->commit();
                 
                 $user = Yii::$app->user->identity->username;
