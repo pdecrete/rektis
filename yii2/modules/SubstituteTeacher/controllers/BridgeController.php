@@ -130,6 +130,7 @@ class BridgeController extends \yii\web\Controller
                     \Yii::info([$status_unload, $response_data_unload], __METHOD__);
                     $message_unload = $response_data_unload['message'];
 
+                    $transaction = Yii::$app->db->beginTransaction();
                     // check input for malformed information and save accordingly
                     try {
                         // get incoming data
@@ -156,8 +157,8 @@ class BridgeController extends \yii\web\Controller
                         });
                         array_walk($choices, function ($v, $k) use (&$choices_parsed) {
                             $choices_parsed[$v['id']] = [
-                            'reference' => Json::decode(\Yii::$container->get('Crypt')->decrypt($v['reference'])),
-                        ];
+                                'reference' => Json::decode(\Yii::$container->get('Crypt')->decrypt($v['reference'])),
+                            ];
                             return;
                         });
 
@@ -167,7 +168,7 @@ class BridgeController extends \yii\web\Controller
 
                         // check data integrity:
                         // - frontend application references to applicants and choices
-                        // - backend references to applicants
+                        // - backend references to applicants and teacher board
                         // - backend references to choices
                         array_walk($applications_parsed, function ($v) use ($applicants_parsed, $choices_parsed) {
                             // check each entry for valid references to applicant and choice selection
@@ -190,7 +191,7 @@ class BridgeController extends \yii\web\Controller
                                 throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
                             }
                         });
-                        array_walk($applicants_parsed, function ($v) {
+                        array_walk($applicants_parsed, function (&$v) {
                             $teacher = Teacher::find()->joinWith('registry')->andWhere([
                                 Teacher::tableName() . '.id' => $v['reference']['id'],
                                 TeacherRegistry::tableName() . '.tax_identification_number' => $v['vat'],
@@ -198,9 +199,18 @@ class BridgeController extends \yii\web\Controller
                                 TeacherRegistry::tableName() . '.firstname' => $v['reference']['firstname'],
                                 TeacherRegistry::tableName() . '.surname' => $v['reference']['lastname'],
                             ])->one();
-                            // TODO Check specialty and retrieve specific TEACHER BOARD ID to be used
                             if (empty($teacher)) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to teacher.'));
+                            }
+
+                            // select appropriate teacher board
+                            $boards = array_filter($teacher->boards, function ($m) use ($v) {
+                                return $m->specialisation->id == $v['reference']['specialty_id'];
+                            });
+                            if (empty($boards)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not locate teacher board related to teacher specialisation.'));
+                            } else {
+                                $v['reference']['teacher_board_id'] = $boards[0]->id;
                             }
                         });
 
@@ -212,11 +222,15 @@ class BridgeController extends \yii\web\Controller
 
                         // LOG everything
 
+                        d($applicants_parsed);
+                        $transaction->commit();
                         $status_data = true;
                     } catch (WrongKeyOrModifiedCiphertextException $ex) {
+                        $transaction->rollBack();
                         $messages_data[] = Yii::t('substituteteacher', 'Data received contains data with invalid encoding.') .
                         ' (' . $ex->getMessage() . ')';
                     } catch (\Exception $ex) {
+                        $transaction->rollBack();
                         $messages_data[] = Yii::t('substituteteacher', 'Invalid or malformed data or error while parsing data.') .
                         ' (' . $ex->getMessage() . ')';
                     }
@@ -327,13 +341,15 @@ class BridgeController extends \yii\web\Controller
                         PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_pos_pref_by_specialisation["{$call_teacher_specialisation->specialisation_id}"],
                         PlacementPreference::tableName() . ".[[school_type]]" => $school_types
                     ])
-                    ->andWhere('2=2')
                     ->orderBy([
                         "{$teacherboard_table}.[[board_type]]" => SORT_ASC,
                         "{$teacherboard_table}.[[order]]" => SORT_ASC,
                         "{$teacherboard_table}.[[points]]" => SORT_ASC, // in case order is not used
                     ])
-                    ->select([Teacher::tableName() . ".[[id]]"]);
+                    ->select([
+                        Teacher::tableName() . ".[[id]]",
+                        // "{$teacherboard_table}.[[specialisation_id]]"
+                    ]);
 
                 $call_specialisation_teachers = Teacher::find()
                     ->where(['id' => (new \yii\db\Query())
@@ -343,6 +359,11 @@ class BridgeController extends \yii\web\Controller
                     ])
                     ->limit($extra_wanted) // only get the number of teachers wanted
                     ->all();
+                array_walk($call_specialisation_teachers, function ($model, $k) use ($call_teacher_specialisation) {
+                    $model->setScenario(Teacher::SCENARIO_CALL_FETCH);
+                    $model->call_use_specialisation_id = $call_teacher_specialisation->specialisation_id;
+                    return;
+                });
 
                 // keep track of specialisations and counts of teachers
                 $teacher_counts[] = [
@@ -351,8 +372,6 @@ class BridgeController extends \yii\web\Controller
                     'extra_wanted' => $extra_wanted,
                     'available' => count($call_specialisation_teachers)
                 ];
-                // TODO make list unique in case of duplicates due to other specialisations ?
-                // TODO what happens when a teacher is selected from one board but not from anothr where he also is eligible?
                 $teachers = array_merge($teachers, $call_specialisation_teachers);
             }
             $placement_preferences = [];
