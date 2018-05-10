@@ -334,6 +334,41 @@ AppAsset::register($this);
                         ]
                     ],
                 ],
+                [
+                    'label' => 'Σχολικές Μετακινήσεις',
+                    'visible' => !Yii::$app->user->isGuest,
+                    'items' => [
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
+                        [
+                            'label' => 'Εγκρίσεις Μετακινήσεων',
+                            'url' => ['/schooltransport/schtransport-transport'],
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
+                        [
+                            'label' => 'Σχολικές Μονάδες',
+                            'url' => ['/schooltransport/schoolunit']
+                        ],
+                        [
+                            'label' => 'Καταστάσεις Εγκρίσεων',
+                            'url' => ['/schooltransport/schtransport-state']
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',
+                        [
+                            'label' => 'Βοήθεια εφαρμογής σχολικών μετακινήσεων',
+                            'url' => ['/schooltransport/default/help?helpId=1#schtransportsapp_help']
+                        ],
+                        [
+                            'label' => 'Διαδικασία έγκρισης σχολικής μετακίνησης',
+                            'url' => ['/schooltransport/default/help?helpId=2#schtransports_help']
+                        ],
+                        [
+                            'label' => 'Νομοθεσία σχολικών μετακινήσεων',
+                            'url' => ['/schooltransport/default/help?helpId=3#legislation']
+                        ],
+                    ],
+                ],
                 Yii::$app->user->isGuest ? [
                     'label' => 'Σχετικά',
                     'url' => ['/site/about']

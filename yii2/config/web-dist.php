@@ -129,6 +129,9 @@ $config = [
         'Pages' => [
             'class' => 'app\modules\Pages\PagesModule',
         ],
+        'schooltransport' => [
+            'class' => 'app\modules\schooltransport\Module',
+        ],
         'datecontrol' => [
             'class' => 'kartik\datecontrol\Module',
             // format settings for displaying each date attribute (ICU format example)
