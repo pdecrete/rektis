@@ -212,7 +212,7 @@ class SchtransportTransportController extends Controller
         
         $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
-        $program_alias = SchtransportProgramcategory::getAlias($program_model->program_id);
+        $program_alias = SchtransportProgramcategory::getAlias($program_model->programcategory_id);
         $typeahead_data = array();
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data['COUNTRIES'] = array_merge(SchtransportMeeting::find()->select('meeting_country')->column(), $countries);
