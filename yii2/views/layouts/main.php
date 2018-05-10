@@ -272,6 +272,7 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Διαχείριση αιτήσεων',
+                            'url' => [ '/SubstituteTeacher/application/index' ]
                         ],
                         [
                             'label' => 'Κατανομή',
