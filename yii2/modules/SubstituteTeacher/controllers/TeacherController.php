@@ -202,9 +202,6 @@ class TeacherController extends Controller
                 }
             }
         }
-        // dd(array_map(function ($m) {
-//     return $m->getAttributes();
-        // }, $modelsPlacementPreferences));
         return $this->render('create', [
             'model' => $model,
             'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]

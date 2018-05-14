@@ -20,6 +20,8 @@ use app\modules\SubstituteTeacher\models\Position;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use yii\helpers\Json;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use app\modules\SubstituteTeacher\models\Application;
+use app\modules\SubstituteTeacher\models\ApplicationPosition;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -210,19 +212,66 @@ class BridgeController extends \yii\web\Controller
                             if (empty($boards)) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Could not locate teacher board related to teacher specialisation.'));
                             } else {
-                                $v['reference']['teacher_board_id'] = $boards[0]->id;
+                                $first_board = reset($boards);
+                                $v['reference']['teacher_board_id'] = $first_board->id;
                             }
                         });
 
-                        // separate applicants that made and application and those that denied
+                        //
+                        // TODO CHECK IF THERE IS DATA FOR THIS CALL!!! WARN USER!!!
+                        //
 
-                        // mark applicants that denied
+                        // mark previous data as deleted; just do this once
+                        $deletions = Application::updateAll([
+                            'deleted' => Application::APPLICATION_DELETED,
+                            'updated_at' => new Expression('NOW()')
+                        ], [
+                            'call_id' => $call_model->id,
+                            'deleted' => Application::APPLICATION_NOT_DELETED
+                        ]); 
 
-                        // mark applicants that applied to be used in placement procedures
+                        // add new applications
+                        array_walk($applicants_parsed, function (&$v, $key_applicant_id) use ($call_model, $applications_parsed, $choices_parsed) {
+                            $application = new Application;
+                            $application->call_id = $call_model->id;
+                            $application->teacher_board_id = $v['reference']['teacher_board_id'];
+                            $application->agreed_terms_ts = $v['agreedterms'];
+                            $application->state = $v['state'];
+                            $application->state_ts = $v['statets'];
+                            $application->reference = Json::encode(['id' => $key_applicant_id, 'application_choices' => $v['application_choices']]);
+                            $application->deleted = Application::APPLICATION_NOT_DELETED;
+                            if (false === ($save = $application->save())) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher application.'));
+                            }
+
+                            $application_positions = array_filter($applications_parsed, function ($v) use ($key_applicant_id) {
+                                return $v['applicant_id'] == $key_applicant_id;
+                            });
+                            if ($v['application_choices'] != count($application_positions)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Teacher application information mismatch.'));
+                            }
+                            foreach ($application_positions as $application_position) {
+                                $call_position_ids = $choices_parsed[$application_position['choice_id']]['reference']['id'];
+                                if (!is_array($call_position_ids)) {
+                                    $call_position_ids = [ $call_position_ids ]; // just to unify handling
+                                }
+                                foreach ($call_position_ids as $call_position_id) {
+                                    $app_position = new ApplicationPosition;
+                                    $app_position->application_id = $application->id;
+                                    $app_position->call_position_id = $call_position_id;
+                                    $app_position->order = $application_position['order'];
+                                    $app_position->updated = $application_position['updated'];
+                                    $app_position->deleted = $application_position['deleted'];
+                                    if (false === ($save = $app_position->save())) {
+                                        throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher application position.'));
+                                    }
+                                }
+                            }
+                            // mark applicants that denied
+                            // mark applicants that applied to be used in placement procedures
+                        });
 
                         // LOG everything
-
-                        d($applicants_parsed);
                         $transaction->commit();
                         $status_data = true;
                     } catch (WrongKeyOrModifiedCiphertextException $ex) {

@@ -3,6 +3,8 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%stapplication}}".
@@ -24,6 +26,9 @@ use Yii;
  */
 class Application extends \yii\db\ActiveRecord
 {
+    const APPLICATION_DELETED = 1;
+    const APPLICATION_NOT_DELETED = 0;
+
     /**
      * @inheritdoc
      */
@@ -39,13 +44,29 @@ class Application extends \yii\db\ActiveRecord
     {
         return [
             [['call_id', 'teacher_board_id', 'agreed_terms_ts', 'state', 'state_ts', 'deleted'], 'integer'],
-            ['state', 'in', 'range' => [0, 1]],
+            ['deleted', 'default', 'value' => Application::APPLICATION_NOT_DELETED],
             [['reference'], 'default', 'value' => '{}'],
             [['reference'], 'required'],
             [['reference'], 'string'],
+            ['state', 'in', 'range' => [0, 1]],
             [['created_at', 'updated_at'], 'safe'],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
             [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()')
+            ]
         ];
     }
 
