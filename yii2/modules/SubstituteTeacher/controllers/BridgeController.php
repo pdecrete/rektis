@@ -2,6 +2,7 @@
 
 namespace app\modules\SubstituteTeacher\controllers;
 
+use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\httpclient\Client;
@@ -16,6 +17,11 @@ use app\modules\SubstituteTeacher\models\PlacementPreference;
 use yii\web\NotFoundHttpException;
 use yii\data\ArrayDataProvider;
 use app\modules\SubstituteTeacher\models\Position;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
+use yii\helpers\Json;
+use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use app\modules\SubstituteTeacher\models\Application;
+use app\modules\SubstituteTeacher\models\ApplicationPosition;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -97,11 +103,191 @@ class BridgeController extends \yii\web\Controller
         return $this->render('remote-status', compact('status', 'services_status', 'data', 'connection_options'));
     }
 
-    public function actionReceive()
+    /**
+     * Choose a call to receive application information from the frontend.
+     *
+     * @param int|null call_id
+     */
+    public function actionReceive($call_id = 0)
     {
-        $connection_options = $this->options;        
         \Yii::info([], __METHOD__);
-        return $this->render('receive', compact('connection_options'));
+        $connection_options = $this->options;
+        $data = null;
+        $message_unload = '';
+        $status_unload = null;
+        $status_data = false;
+        $messages_data = [];
+
+        $call_model = Call::findOne(['id' => $call_id]);
+        // if call is selected, collect positions, prefectures, teachers and placement preferences
+        if (!empty($call_model)) {
+            if (\Yii::$app->request->isPost) {
+                \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
+                $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
+                $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+                $response_data_unload = $status_response->getData();
+                if ($status_unload !== true) {
+                    \Yii::error([$status_unload, $response_data_unload], __METHOD__);
+                } else {
+                    \Yii::info([$status_unload, $response_data_unload], __METHOD__);
+                    $message_unload = $response_data_unload['message'];
+
+                    $transaction = Yii::$app->db->beginTransaction();
+                    // check input for malformed information and save accordingly
+                    try {
+                        // get incoming data
+                        $applicants = isset($response_data_unload['data']['applicants']) ? $response_data_unload['data']['applicants'] : [];
+                        $choices = isset($response_data_unload['data']['choices']) ? $response_data_unload['data']['choices'] : [];
+                        $applications_parsed = isset($response_data_unload['data']['applications']) ? $response_data_unload['data']['applications'] : [];
+
+                        // get references to frontend ids used to link data
+                        $applicants_parsed = array_flip(array_map(function ($v) {
+                            return $v['id'];
+                        }, $applicants));
+                        $choices_parsed = array_flip(array_map(function ($v) {
+                            return $v['id'];
+                        }, $choices));
+
+                        // decrypt data
+                        array_walk($applicants, function ($v, $k) use (&$applicants_parsed) {
+                            $applicants_parsed[$v['id']] = [];
+                            foreach (['reference', 'vat', 'identity', 'specialty', 'agreedterms', 'application_choices', 'state', 'statets'] as $field) {
+                                $applicants_parsed[$v['id']][$field] = \Yii::$container->get('Crypt')->decrypt($v[$field]);
+                            }
+                            $applicants_parsed[$v['id']]['reference'] = Json::decode($applicants_parsed[$v['id']]['reference']);
+                            return;
+                        });
+                        array_walk($choices, function ($v, $k) use (&$choices_parsed) {
+                            $choices_parsed[$v['id']] = [
+                                'reference' => Json::decode(\Yii::$container->get('Crypt')->decrypt($v['reference'])),
+                            ];
+                            return;
+                        });
+
+                        $messages_data[] = Yii::t('substituteteacher', '{n} applicants parsed.', ['n' => count($applicants_parsed)]);
+                        $messages_data[] = Yii::t('substituteteacher', '{n} choices parsed.', ['n' => count($choices_parsed)]);
+                        $messages_data[] = Yii::t('substituteteacher', '{n} applications parsed.', ['n' => count($applications_parsed)]);
+
+                        // check data integrity:
+                        // - frontend application references to applicants and choices
+                        // - backend references to applicants and teacher board
+                        // - backend references to choices
+                        array_walk($applications_parsed, function ($v) use ($applicants_parsed, $choices_parsed) {
+                            // check each entry for valid references to applicant and choice selection
+                            if (!isset($applicants_parsed[$v['applicant_id']])) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to applicant.'));
+                            }
+                            if (!isset($choices_parsed[$v['choice_id']])) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to choice.'));
+                            }
+                        });
+                        array_walk($choices_parsed, function ($v) {
+                            // check if choice is valid in backend
+                            if (is_array($v['reference']['id'])) {
+                                $ids = $v['reference']['id'];
+                            } else {
+                                $ids = [$v['reference']['id']];
+                            }
+                            $choices = CallPosition::find()->andWhere(['id' => $ids])->count(); // TODO add group info lookup?
+                            if (count($ids) != $choices) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
+                            }
+                        });
+                        array_walk($applicants_parsed, function (&$v) {
+                            $teacher = Teacher::find()->joinWith('registry')->andWhere([
+                                Teacher::tableName() . '.id' => $v['reference']['id'],
+                                TeacherRegistry::tableName() . '.tax_identification_number' => $v['vat'],
+                                TeacherRegistry::tableName() . '.identity_number' => $v['identity'],
+                                TeacherRegistry::tableName() . '.firstname' => $v['reference']['firstname'],
+                                TeacherRegistry::tableName() . '.surname' => $v['reference']['lastname'],
+                            ])->one();
+                            if (empty($teacher)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to teacher.'));
+                            }
+
+                            // select appropriate teacher board
+                            $boards = array_filter($teacher->boards, function ($m) use ($v) {
+                                return $m->specialisation->id == $v['reference']['specialty_id'];
+                            });
+                            if (empty($boards)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not locate teacher board related to teacher specialisation.'));
+                            } else {
+                                $first_board = reset($boards);
+                                $v['reference']['teacher_board_id'] = $first_board->id;
+                            }
+                        });
+
+                        //
+                        // TODO CHECK IF THERE IS DATA FOR THIS CALL!!! WARN USER!!!
+                        //
+
+                        // mark previous data as deleted; just do this once
+                        $deletions = Application::updateAll([
+                            'deleted' => Application::APPLICATION_DELETED,
+                            'updated_at' => new Expression('NOW()')
+                        ], [
+                            'call_id' => $call_model->id,
+                            'deleted' => Application::APPLICATION_NOT_DELETED
+                        ]); 
+
+                        // add new applications
+                        array_walk($applicants_parsed, function (&$v, $key_applicant_id) use ($call_model, $applications_parsed, $choices_parsed) {
+                            $application = new Application;
+                            $application->call_id = $call_model->id;
+                            $application->teacher_board_id = $v['reference']['teacher_board_id'];
+                            $application->agreed_terms_ts = $v['agreedterms'];
+                            $application->state = $v['state'];
+                            $application->state_ts = $v['statets'];
+                            $application->reference = Json::encode(['id' => $key_applicant_id, 'application_choices' => $v['application_choices']]);
+                            $application->deleted = Application::APPLICATION_NOT_DELETED;
+                            if (false === ($save = $application->save())) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher application.'));
+                            }
+
+                            $application_positions = array_filter($applications_parsed, function ($v) use ($key_applicant_id) {
+                                return $v['applicant_id'] == $key_applicant_id;
+                            });
+                            if ($v['application_choices'] != count($application_positions)) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Teacher application information mismatch.'));
+                            }
+                            foreach ($application_positions as $application_position) {
+                                $call_position_ids = $choices_parsed[$application_position['choice_id']]['reference']['id'];
+                                if (!is_array($call_position_ids)) {
+                                    $call_position_ids = [ $call_position_ids ]; // just to unify handling
+                                }
+                                foreach ($call_position_ids as $call_position_id) {
+                                    $app_position = new ApplicationPosition;
+                                    $app_position->application_id = $application->id;
+                                    $app_position->call_position_id = $call_position_id;
+                                    $app_position->order = $application_position['order'];
+                                    $app_position->updated = $application_position['updated'];
+                                    $app_position->deleted = $application_position['deleted'];
+                                    if (false === ($save = $app_position->save())) {
+                                        throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher application position.'));
+                                    }
+                                }
+                            }
+                            // mark applicants that denied
+                            // mark applicants that applied to be used in placement procedures
+                        });
+
+                        // LOG everything
+                        $transaction->commit();
+                        $status_data = true;
+                    } catch (WrongKeyOrModifiedCiphertextException $ex) {
+                        $transaction->rollBack();
+                        $messages_data[] = Yii::t('substituteteacher', 'Data received contains data with invalid encoding.') .
+                        ' (' . $ex->getMessage() . ')';
+                    } catch (\Exception $ex) {
+                        $transaction->rollBack();
+                        $messages_data[] = Yii::t('substituteteacher', 'Invalid or malformed data or error while parsing data.') .
+                        ' (' . $ex->getMessage() . ')';
+                    }
+                }
+            }
+        }
+
+        return $this->render('receive', compact('call_model', 'connection_options', 'status_unload', 'status_data', 'message_unload', 'messages_data'));
     }
 
     /**
@@ -131,11 +317,11 @@ class BridgeController extends \yii\web\Controller
     /**
      * Choose a call and send relevant data to applications frontend.
      *
-     * @param int|null call_id 
+     * @param int|null call_id
      */
     public function actionSend($call_id = 0)
     {
-        $connection_options = $this->options;        
+        $connection_options = $this->options;
 
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
@@ -149,7 +335,7 @@ class BridgeController extends \yii\web\Controller
                 return array_merge(['index' => $index], $prefectures[$k]->toApi());
             }, array_keys($prefectures));
 
-            // collect the call positions of the specific call; 
+            // collect the call positions of the specific call;
             // also get prefectures that will be used to filter teachers
             $call_positions_prefectures = [];
             $call_pos_pref_by_specialisation = [];
@@ -172,9 +358,9 @@ class BridgeController extends \yii\web\Controller
 
             // get the teachers that meet the following criteria:
             // - they belong to the relevant boards (year / specialisation)
-            // - they are eligible for appointment 
-            // - they have priority for appointment (top X in board) 
-            // To avoid huge joins, get the list of applicable specialisations prior to selecting teachers 
+            // - they are eligible for appointment
+            // - they have priority for appointment (top X in board)
+            // To avoid huge joins, get the list of applicable specialisations prior to selecting teachers
             $teachers = [];
             $teacherboard_table = TeacherBoard::tableName();
             $call_teacher_specialisations = $call_model->callTeacherSpecialisations;
@@ -185,7 +371,7 @@ class BridgeController extends \yii\web\Controller
 
             // keep track of specialisations and counts of teachers
             $teacher_counts = [];
-            // Get the list per specialisation and combine all teachers 
+            // Get the list per specialisation and combine all teachers
             foreach ($call_teacher_specialisations as $call_teacher_specialisation) {
                 if (!array_key_exists("{$call_teacher_specialisation->specialisation_id}", $call_pos_pref_by_specialisation)) {
                     continue; // skip specialisations that do not apply in specific call positions
@@ -204,14 +390,16 @@ class BridgeController extends \yii\web\Controller
                         PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_pos_pref_by_specialisation["{$call_teacher_specialisation->specialisation_id}"],
                         PlacementPreference::tableName() . ".[[school_type]]" => $school_types
                     ])
-                    ->andWhere('2=2')
                     ->orderBy([
                         "{$teacherboard_table}.[[board_type]]" => SORT_ASC,
                         "{$teacherboard_table}.[[order]]" => SORT_ASC,
                         "{$teacherboard_table}.[[points]]" => SORT_ASC, // in case order is not used
                     ])
-                    ->select([Teacher::tableName() . ".[[id]]"]);
-                // TODO: select those that placement preference matches BOTH PREFECTURE AND SPECIALISATION of position
+                    ->select([
+                        Teacher::tableName() . ".[[id]]",
+                        // "{$teacherboard_table}.[[specialisation_id]]"
+                    ]);
+
                 $call_specialisation_teachers = Teacher::find()
                     ->where(['id' => (new \yii\db\Query())
                         ->select(['id'])
@@ -220,6 +408,11 @@ class BridgeController extends \yii\web\Controller
                     ])
                     ->limit($extra_wanted) // only get the number of teachers wanted
                     ->all();
+                array_walk($call_specialisation_teachers, function ($model, $k) use ($call_teacher_specialisation) {
+                    $model->setScenario(Teacher::SCENARIO_CALL_FETCH);
+                    $model->call_use_specialisation_id = $call_teacher_specialisation->specialisation_id;
+                    return;
+                });
 
                 // keep track of specialisations and counts of teachers
                 $teacher_counts[] = [
@@ -228,8 +421,6 @@ class BridgeController extends \yii\web\Controller
                     'extra_wanted' => $extra_wanted,
                     'available' => count($call_specialisation_teachers)
                 ];
-                // TODO make list unique in case of duplicates due to other specialisations ? 
-                // TODO what happens when a teacher is selected from one board but not from anothr where he also is eligible?
                 $teachers = array_merge($teachers, $call_specialisation_teachers);
             }
             $placement_preferences = [];
