@@ -27,30 +27,35 @@ class m180403_094056_schooltransport_init extends Migration
         $i = 1;
         /* CREATE TABLE admapp_trnsprt_programcategory */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_programcategory'] .
-                          " (`programcategory_id` INTEGER,
+                          " (`programcategory_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `programcategory_programalias` VARCHAR(50) NOT NULL,
                              `programcategory_programtitle` VARCHAR(200) NOT NULL COMMENT 'Τίτλος Δράσης',
                              `programcategory_programdescription` VARCHAR(400) COMMENT 'Περιγραφή Δράσης',
                              `programcategory_programparent` INTEGER,
                               PRIMARY KEY (`programcategory_id`),
-                              UNIQUE KEY (`programcategory_programtitle`)
+                              UNIQUE KEY (`programcategory_programtitle`),
+                              UNIQUE KEY (`programcategory_programalias`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_programcategory'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_programcategory'] . "(programcategory_id, programcategory_programalias, programcategory_programtitle, programcategory_programdescription, programcategory_programparent) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "(1, 'EUROPEAN', 'Ευρωπαϊκά Προγράμματα και λοιπές ευρωπαϊκές δραστηριότητες', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(2, 'INTERNATIONAL', 'Εκπαιδευτικές ανταλλαγές, αδελφοποιήσεις, εκπαιδευτικά προγράμματα, προγράμματα διεθνών οργανισμών και διεθνείς συμμετοχές', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(3, 'EUROPEAN_SCHOOL', 'Σχολείο Ευρωπαϊκής Παιδείας', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(4, 'KA1', 'Erasmus+ KA1', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(5, 'KA1_STUDENTS', 'Erasmus+ KA1 με συμμετοχή μαθητών', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(6, 'KA2', 'Erasmus+ KA2', 'Στρατηγικές Συμπράξεις', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(7, 'TEACHING_VISITS', 'Διδακτική Επίσκεψη', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(8, 'EDUCATIONAL_VISITS', 'Εκπαιδευτική Επίσκεψη', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(9, 'EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτική Εκδρομή', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(10, 'SCHOOL_EXCURIONS', 'Σχολικός Περίπατος', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(11, 'EXCURIONS_FOREIGN_COUNTRY', 'Πολυήμερη Εκδρομή στο εξωτερικό', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(12, 'PARLIAMENT', 'Βουλή των Ελλήνων', '', NULL)")->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_programcategory'] . "(programcategory_programalias, programcategory_programtitle, programcategory_programdescription, programcategory_programparent) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('EUROPEAN', 'Ευρωπαϊκά Προγράμματα και λοιπές ευρωπαϊκές δραστηριότητες', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('INTERNATIONAL', 'Εκπαιδευτικές ανταλλαγές, αδελφοποιήσεις, εκπαιδευτικά προγράμματα, προγράμματα διεθνών οργανισμών και διεθνείς συμμετοχές', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EUROPEAN_SCHOOL', 'Σχολείο Ευρωπαϊκής Παιδείας', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA1', 'Erasmus+ KA1', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA1_STUDENTS', 'Erasmus+ KA1 με συμμετοχή μαθητών', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA2', 'Erasmus+ KA2', 'Στρατηγικές Συμπράξεις', 1)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA2_STUDENTS', 'Erasmus+ KA2 με συμμετοχή μαθητών', 'Στρατηγικές Συμπράξεις', 1)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('TEACHING_VISITS', 'Διδακτική Επίσκεψη', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_VISITS', 'Εκπαιδευτική Επίσκεψη', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτική Εκδρομή', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('SCHOOL_EXCURIONS', 'Σχολικός Περίπατος', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EXCURIONS_FOREIGN_COUNTRY', 'Πολυήμερη Εκδρομή στο εξωτερικό', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('OMOGENEIA_FOREIGN_COUNTRY', 'Συνεργασία μετά από πρόσκληση σχολείου της Ομογένειας', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ETWINNING_FOREIGN_COUNTRY', 'Πρόγραμμα eTwinning', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('SCH_TWINNING_FOREIGN_COUNTRY', 'Αδελφοποίηση με σχολείο εξωτερικού', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('PARLIAMENT', 'Βουλή των Ελλήνων', '', NULL)")->execute();
         
         
         
@@ -88,9 +93,10 @@ class m180403_094056_schooltransport_init extends Migration
         /* CREATE TABLE admapp_directorate */
         /* TODO prefecture_id*/
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_directorate'] .
-                          " (`directorate_id` INTEGER NOT NULL AUTO_INCREMENT,
+                          " (`directorate_id` INTEGER NOT NULL,
                              `directorate_name` VARCHAR(200) NOT NULL,
                              `directorate_shortname` VARCHAR(100),
+                             `directorate_stage` VARCHAR(20),
                               PRIMARY KEY (`directorate_id`),
                               UNIQUE KEY (`directorate_name`),
                               UNIQUE KEY (`directorate_shortname`)
@@ -98,16 +104,16 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_directorate'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_directorate'] . "(directorate_name, directorate_shortname) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "('Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης', 'ΠΔΕ Κρήτης')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΠΕ Ηρακλείου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΔΕ Ηρακλείου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΠΕ Χανίων')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΔΕ Χανίων')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΠΕ Ρεθύμνου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΔΕ Ρεθύμνου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου')")->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_directorate'] . "(directorate_id, directorate_name, directorate_shortname, directorate_stage) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "(1019118, 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης', 'ΠΔΕ Κρήτης', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019281, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΠΕ Ηρακλείου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019039, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΔΕ Ηρακλείου', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019405, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΠΕ Χανίων', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019103, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΔΕ Χανίων', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019375, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΠΕ Ρεθύμνου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019091, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΔΕ Ρεθύμνου', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019347, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(1019077, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου', 'SECONDARY')")->execute();
         
         /* CREATE TABLE admapp_school 
          * `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
@@ -159,7 +165,8 @@ class m180403_094056_schooltransport_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_country'] .
                           " (`country_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `country_name` VARCHAR(100) NOT NULL,
-                              PRIMARY KEY (`country_id`)    
+                              PRIMARY KEY (`country_id`),
+                              UNIQUE KEY (`country_name`)
                             )" . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_country'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -208,14 +215,15 @@ class m180403_094056_schooltransport_init extends Migration
                           "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `state_name` VARCHAR(100),
                              PRIMARY KEY (`state_id`)
+                             UNIQUE KEY (`state_name`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_state'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_state'] . "(state_name) VALUES ";
         Yii::$app->db->createCommand($insert_command . "('Υπογραφή Σχεδίου')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Πρωτοκολλήθηκε/Ξεχρεώθηκε')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Διεκπεραιώθηκε')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πρωτοκολλήθηκε/Ξεχρεώθηκε')")->execute();
         
         
         /* CREATE TABLE admapp_schtrnsport_transportstate */
