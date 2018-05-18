@@ -93,5 +93,11 @@ return [
     'Help' => 'Βοήθεια',
     'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.' => 
     'Βοήθεια σχετικά με τη χρήση της εφαρμογής των σχολικών μετακινήσεων, τη διαδικασία δημιουργίας έγκρισης μετακίνησης, καθώς και τη σχετική νομοθεσία.',
-    'Error in downloading file.' => 'Σφάλμα στη λήψη του αρχείου.'
+    'Error in downloading file.' => 'Σφάλμα στη λήψη του αρχείου.',
+    'City' => 'Πόλη',
+    'Country' => 'Χώρα',
+    'Hosting School' => 'Σχολείο Υποδοχής',
+    'Meeting Start' => 'Έναρξη συνάντησης',
+    'Meeting End' => 'Λήξη συνάντησης',
+    'Please define the hosting school.' => 'Παρακαλώ ορίστε το σχολείο υποδοχής.'
 ];

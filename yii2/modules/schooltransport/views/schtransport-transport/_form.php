@@ -81,6 +81,10 @@ if($program_alias == 'PARLIAMENT'){
            endif;
     ?>
     
+    <?php if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']))
+               echo $form->field($meeting_model, 'meeting_hostschool')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+    ?>
+    
 	<!--	           
     <?= $form->field($meeting_model, 'meeting_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
     <?= $form->field($meeting_model, 'meeting_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>

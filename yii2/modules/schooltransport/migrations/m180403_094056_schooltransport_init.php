@@ -31,7 +31,7 @@ class m180403_094056_schooltransport_init extends Migration
                              `programcategory_programalias` VARCHAR(50) NOT NULL,
                              `programcategory_programtitle` VARCHAR(200) NOT NULL COMMENT 'Τίτλος Δράσης',
                              `programcategory_programdescription` VARCHAR(400) COMMENT 'Περιγραφή Δράσης',
-                             `programcategory_programparent` INTEGER,
+                             `programcategory_programparent` VARCHAR(50),
                               PRIMARY KEY (`programcategory_id`),
                               UNIQUE KEY (`programcategory_programtitle`),
                               UNIQUE KEY (`programcategory_programalias`)
@@ -43,18 +43,18 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('EUROPEAN', 'Ευρωπαϊκά Προγράμματα και λοιπές ευρωπαϊκές δραστηριότητες', '', NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "('INTERNATIONAL', 'Εκπαιδευτικές ανταλλαγές, αδελφοποιήσεις, εκπαιδευτικά προγράμματα, προγράμματα διεθνών οργανισμών και διεθνείς συμμετοχές', '', NULL)")->execute();
         Yii::$app->db->createCommand($insert_command . "('EUROPEAN_SCHOOL', 'Σχολείο Ευρωπαϊκής Παιδείας', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('KA1', 'Erasmus+ KA1', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('KA1_STUDENTS', 'Erasmus+ KA1 με συμμετοχή μαθητών', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('KA2', 'Erasmus+ KA2', 'Στρατηγικές Συμπράξεις', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('KA2_STUDENTS', 'Erasmus+ KA2 με συμμετοχή μαθητών', 'Στρατηγικές Συμπράξεις', 1)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('TEACHING_VISITS', 'Διδακτική Επίσκεψη', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_VISITS', 'Εκπαιδευτική Επίσκεψη', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτική Εκδρομή', '', 3)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('SCHOOL_EXCURIONS', 'Σχολικός Περίπατος', '', 3)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA1', 'Erasmus+ KA1', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 'EUROPEAN')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA1_STUDENTS', 'Erasmus+ KA1 με συμμετοχή μαθητών', 'Μαθησιακή Κινητικότητα Προσωπικού Σχολικής Εκπαίδευσης', 'EUROPEAN')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA2', 'Erasmus+ KA2', 'Στρατηγικές Συμπράξεις', 'EUROPEAN')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('KA2_STUDENTS', 'Erasmus+ KA2 με συμμετοχή μαθητών', 'Στρατηγικές Συμπράξεις', 'EUROPEAN')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('TEACHING_VISITS', 'Διδακτική Επίσκεψη', '', 'EUROPEAN_SCHOOL')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_VISITS', 'Εκπαιδευτική Επίσκεψη', '', 'EUROPEAN_SCHOOL')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('EDUCATIONAL_EXCURSIONS', 'Εκπαιδευτική Εκδρομή', '', 'EUROPEAN_SCHOOL')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('SCHOOL_EXCURIONS', 'Σχολικός Περίπατος', '', 'EUROPEAN_SCHOOL')")->execute();
         Yii::$app->db->createCommand($insert_command . "('EXCURIONS_FOREIGN_COUNTRY', 'Πολυήμερη Εκδρομή στο εξωτερικό', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('OMOGENEIA_FOREIGN_COUNTRY', 'Συνεργασία μετά από πρόσκληση σχολείου της Ομογένειας', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('ETWINNING_FOREIGN_COUNTRY', 'Πρόγραμμα eTwinning', '', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "('SCH_TWINNING_FOREIGN_COUNTRY', 'Αδελφοποίηση με σχολείο εξωτερικού', '', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "('OMOGENEIA_FOREIGN_COUNTRY', 'Συνεργασία μετά από πρόσκληση σχολείου της Ομογένειας', '', 'INTERNATIONAL')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ETWINNING_FOREIGN_COUNTRY', 'Πρόγραμμα eTwinning', '', 'INTERNATIONAL')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('SCH_TWINNING_FOREIGN_COUNTRY', 'Αδελφοποίηση με σχολείο εξωτερικού', '', 'INTERNATIONAL')")->execute();
         Yii::$app->db->createCommand($insert_command . "('PARLIAMENT', 'Βουλή των Ελλήνων', '', NULL)")->execute();
         
         
@@ -77,8 +77,9 @@ class m180403_094056_schooltransport_init extends Migration
         /* CREATE TABLE admapp_trnsprt_meeting */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_meeting'] .
                           " (`meeting_id` INTEGER NOT NULL AUTO_INCREMENT,
-                             `meeting_city` VARCHAR(100) NOT NULL COMMENT 'Πόλη',
                              `meeting_country` VARCHAR(100) NOT NULL COMMENT 'Χώρα',
+                             `meeting_city` VARCHAR(100) NOT NULL COMMENT 'Πόλη',
+                             `meeting_hostschool` VARCHAR(200) COMMENT 'Σχολείο Υποδοχής',
                              `meeting_startdate` DATE COMMENT 'Έναρξη συνάντησης',
                              `meeting_enddate` DATE COMMENT 'Λήξη συνάντησης',
                              `program_id` INTEGER NOT NULL,
@@ -214,7 +215,7 @@ class m180403_094056_schooltransport_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_state'] .
                           "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
                             `state_name` VARCHAR(100),
-                             PRIMARY KEY (`state_id`)
+                             PRIMARY KEY (`state_id`),
                              UNIQUE KEY (`state_name`)
                            ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_state'] . ". *** \n");
