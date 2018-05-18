@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\modules\Email\components\EmailButtonWidget;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PageSearch */
@@ -20,6 +21,19 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Νέο σελίδα', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+    <?php 
+    echo EmailButtonWidget::widget([
+        'template' => 'mail1',
+        // 'from' => 'info@pdecrete.gr',
+        'to' => [
+            'spapad@sch.gr'
+        ],
+        'cc' => [
+            'spapad@outlook.com'
+        ],
+        'label' => 'Στείλε email'
+    ]);
+     ?>
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,

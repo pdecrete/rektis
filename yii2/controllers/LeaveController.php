@@ -404,7 +404,9 @@ class LeaveController extends Controller
         $messages = [];
         foreach ($emails as $email) {
             $messages[] = Yii::$app->mailer->compose()
-                ->setFrom(Yii::$app->params['adminEmail'])
+                // ->setFrom(Yii::$app->params['adminEmail'])
+                ->setFrom(['noreply@pdekritis.gr' => 'ΠΔΕ Κρήτης'])
+                ->setReplyTo('pdekritisweb@sch.gr')
                 ->setSubject($subject)
                 ->setTextBody($txtBody)
                 ->setHtmlBody($htmlBody)
