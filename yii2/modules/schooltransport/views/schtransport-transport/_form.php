@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\modules\schooltransport\models\SchtransportTransport */
 /* @var $form yii\widgets\ActiveForm */
 
-//echo "<pre>"; print_r($program_alias); echo "</pre>"; die();
+//echo "<pre>"; print_r($program_model); echo "</pre>"; die();
 $progrfields_readOnly = false;
 if($program_alias == 'PARLIAMENT'){
     $program_model['program_title'] = 'Βουλή των Ελλήνων';
@@ -97,14 +97,14 @@ if($program_alias == 'PARLIAMENT'){
     <?= $form->field($model, 'transport_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
 
 	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT']))
+	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY']))
                echo $form->field($model, 'transport_headteacher')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
     <?= $form->field($model, 'transport_teachers')->textarea(['rows' => '6', 'disabled' => $disabled]) ?>
 
 	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT']))
+	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT']))
 	           echo $form->field($model, 'transport_class')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
@@ -113,7 +113,7 @@ if($program_alias == 'PARLIAMENT'){
 	?>	
    
    	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT']))
+   	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY']))
    	           echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
    

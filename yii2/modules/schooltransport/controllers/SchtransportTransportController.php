@@ -100,6 +100,7 @@ class SchtransportTransportController extends Controller
     {
         $tblprefix = Yii::$app->db->tablePrefix;
         $program_alias = SchtransportProgramcategory::getAlias($id);
+        $program_title = SchtransportProgramcategory::getTitle($id);
         $model = new SchtransportTransport();     
         $tblprogram = Yii::$app->db->tablePrefix . 'schtransport_program';
         $tblmeeting = Yii::$app->db->tablePrefix . 'schtransport_meeting';
@@ -188,7 +189,8 @@ class SchtransportTransportController extends Controller
                     'typeahead_data' => $typeahead_data,
                     'programcateg_id' => $id,
                     'sep' => $sep,
-                    'program_alias' => $program_alias
+                    'program_alias' => $program_alias,
+                    'program_title' => $program_title
                 ]);
             }
         }
@@ -203,7 +205,8 @@ class SchtransportTransportController extends Controller
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $id,
                                                 'sep' => $sep,
-                                                'program_alias' => $program_alias]);
+                                                'program_alias' => $program_alias,
+                                                'program_title' => $program_title]);
         }
     }
     
@@ -240,6 +243,7 @@ class SchtransportTransportController extends Controller
         $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
         $program_alias = SchtransportProgramcategory::getAlias($program_model->programcategory_id);
+        $program_title = SchtransportProgramcategory::getTitle($program_model->programcategory_id);
         $typeahead_data = array();
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data['COUNTRIES'] = array_merge(SchtransportMeeting::find()->select('meeting_country')->column(), $countries);
@@ -301,7 +305,8 @@ class SchtransportTransportController extends Controller
                         'typeahead_data' => $typeahead_data,
                         'programcateg_id' => $pr_categ,
                         'sep' => $sep,
-                        'program_alias' => $program_alias]);
+                        'program_alias' => $program_alias,
+                        'program_title' => $program_title]);
             }
         }
         catch(Exception $exc){
@@ -318,7 +323,8 @@ class SchtransportTransportController extends Controller
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $pr_categ,
                                                 'sep' => $sep,
-                                                'program_alias' => $program_alias]);
+                                                'program_alias' => $program_alias, 
+                                                'program_title' => $program_title]);
         }
     }
 
@@ -375,6 +381,10 @@ class SchtransportTransportController extends Controller
     
     private function createApprovalFile($transport_model, $meeting_model, $program_model)
     {
+        //echo "<pre>"; print_r($transport_model); echo "</pre>";
+        //echo "<pre>"; print_r($meeting_model); echo "</pre>";
+        //echo "<pre>"; print_r($program_model); echo "</pre>";
+        //die();
         $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
         $directorate_model = $school_model->getDirectorate()->one();
         
@@ -402,14 +412,17 @@ class SchtransportTransportController extends Controller
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
         $program_alias = SchtransportProgramcategory::getAlias($programcateg_model->programcategory_id);
         if(in_array($program_alias, ['KA1_STUDENTS', 'KA2_STUDENTS', 'TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS', 
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
         if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
+        }
+        if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY'])){
+            $templateProcessor->setValue('host_school', $meeting_model->meeting_hostschool);            
         }
         
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);

@@ -151,15 +151,16 @@ class SchoolunitController extends Controller
 
     
     public function actionMassupdate(){
-        $edu_admins = [ [1019039, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ"], [1019103, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ"], [1019091, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ"], [1019077, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ"],
-            [1019281, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ"], [1019405, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ"], [1019375, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ"], [1019347, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ"],
+        $edu_admins = [ [15, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ"], [25, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ"], [100, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ"], [95, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ"],
+            [41, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ"], [60, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ"], [75, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ"], [72, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ"]
         ];
         
         try{
             $params = array(
-                "region_edu_admin" => 6,
+                "region_edu_admin" => 53,
                 "pagesize" => 500,
-                "page" => 1
+                "page" => 1,
+                "edu_admin" => null
             );
                         
             $curl = curl_init();        
@@ -173,7 +174,7 @@ class SchoolunitController extends Controller
 
             $transaction = Yii::$app->db->beginTransaction();
             /***************** Περιφερειακή Διεύθυνση ********************/
-            /*
+            
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
             $data = curl_exec($curl);
             $data = json_decode($data);
@@ -184,11 +185,11 @@ class SchoolunitController extends Controller
             $school_names = $data->data;
             foreach ($school_names as $school){
                 $school_model = new Schoolunit();
-                $school_model->directorate_id = 1;
-                $school_model->school_mm_id = $school->mm_id;
+                $school_model->directorate_id = 53;
+                $school_model->school_id = $school->mm_id;
                 $school_model->school_name = $school->name;
                 $school_model->save();
-            } */          
+            }          
             
             /**************** Διευθύνσεις Α/θμιας & Β/θμιας **************/
             unset($params['region_edu_admin']);
@@ -211,7 +212,7 @@ class SchoolunitController extends Controller
                     $school_model->school_name = $school->name;
                     $school_model->save();
                 }
-            }            
+            }           
             curl_close($curl);
             $transaction->commit();
             

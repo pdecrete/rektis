@@ -106,15 +106,15 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_directorate'] . "(directorate_id, directorate_name, directorate_shortname, directorate_stage) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "(1019118, 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης', 'ΠΔΕ Κρήτης', NULL)")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019281, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΠΕ Ηρακλείου', 'PRIMARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019039, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΔΕ Ηρακλείου', 'SECONDARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019405, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΠΕ Χανίων', 'PRIMARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019103, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΔΕ Χανίων', 'SECONDARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019375, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΠΕ Ρεθύμνου', 'PRIMARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019091, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΔΕ Ρεθύμνου', 'SECONDARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019347, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου', 'PRIMARY')")->execute();
-        Yii::$app->db->createCommand($insert_command . "(1019077, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(53, 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης', 'ΠΔΕ Κρήτης', NULL)")->execute();
+        Yii::$app->db->createCommand($insert_command . "(41, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΠΕ Ηρακλείου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(15, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ηρακλείου', 'ΔΔΕ Ηρακλείου', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(60, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΠΕ Χανίων', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(25, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Χανίων', 'ΔΔΕ Χανίων', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(75, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΠΕ Ρεθύμνου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(100, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΔΕ Ρεθύμνου', 'SECONDARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(72, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου', 'PRIMARY')")->execute();
+        Yii::$app->db->createCommand($insert_command . "(95, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου', 'SECONDARY')")->execute();
         
         /* CREATE TABLE admapp_school 
          * `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
