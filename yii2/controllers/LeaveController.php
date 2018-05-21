@@ -476,7 +476,30 @@ class LeaveController extends Controller
         $simpleLeaveIDs = implode(',', array_filter($leaveIDs, function ($v) {
             return $v !== null;
         }));
-        $sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
+        // $sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
+        $sendNum = \app\modules\Email\controllers\PostmanController::send([
+            'redirect_route' => [
+                '/leave/print', 'id' => $model->id
+            ],
+            'template' => 'leave.mail.main',
+            'template_data' => [
+                '{DECISION_PROTOCOL}' => $model->decision_protocol,
+                '{DECISION_DATE}' => Yii::$app->formatter->asDate($model->decision_protocol_date),
+                '{LEAVE_PERSON}' => Yii::$app->params['leavePerson'],
+                '{LEAVE_PHONE}' => Yii::$app->params['leavePhone'],
+                '{LEAVE_FAX}' => Yii::$app->params['leaveFax'],
+                '{LEAVE_TYPE}' => mb_strtolower($model->typeObj->name),
+            ],
+            'files' => [
+                LeavePrint::path($filename),
+            ],
+            'to' => [
+                $model->employeeObj->email
+            ],
+            'cc' => [
+                'spapad@outlook.com'
+            ],
+        ]);
 
         $userName = Yii::$app->user->identity->username;
         $simple_emails = implode(',', array_filter($emails, function ($v) {

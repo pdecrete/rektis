@@ -62,7 +62,7 @@ class PostmanController extends Controller
         list($subject, $body) = PostmanController::parseTemplate($template, $data);
 
         $messages = PostmanController::prepareMessages($subject, $body, $data);
-dd($messages);
+
         return PostmanController::realSendMessages($messages);
     }
 
@@ -91,23 +91,13 @@ dd($messages);
         }
 
         list($subject, $body) = PostmanController::parseTemplate($template, $data);
-// dd ($data);
+
         $messages = PostmanController::prepareMessages($subject, $body, $data);
-// dd($messages);
 
-        return PostmanController::realSendMessages($messages);
-
-        // return $this->render('debug', [
-        //     'subject' => $subject,
-        //     'body' => $body,
-        //     'data' => $data
-        // ]);
-
-        // if (empty($this->redirect_route)) {
-        //     $this->redirect_route = Yii::$app->request->referrer;
-        // } elseif (is_array($this->redirect_route)) {
-        //     $this->redirect_route = Url::to($this->redirect_route);
-        // }
+        $sent = PostmanController::realSendMessages($messages);
+        Yii::$app->session->addFlash('info', "Στάλθηκαν συνολικά {$sent} email. Ζητήθηκε αποστολή σε διευθύνσεις to=[" . implode(', ', $data['to']) . "], cc=[" . implode(', ', $data['cc']) . "], bcc=[" . implode(', ', $data['bcc']) . "]" );
+        
+        return $this->redirect($data['redirect_route']);
     }
 
     /**
@@ -135,8 +125,11 @@ dd($messages);
             'to' => '',
             'cc' => '',
             'template' => '',
-            'template_data' => []
+            'template_data' => [],
+            'files' => '',
+            'redirect_route' => Yii::$app->request->referrer // default redirect
         ], $data);
+        //unify to,cc fields
         if (!empty($data['to']) && !is_array($data['to'])) {
             $data['to'] = [ $data['to'] ];
         }
@@ -144,6 +137,15 @@ dd($messages);
             $data['cc'] = [ $data['cc'] ];
         }
         $data['bcc'] = Yii::$app->getModule('Email')->params['shadow-recipients'];
+
+        // validate files for attachments
+        if (!empty($data['files'])) {
+            foreach ($data['files'] as $file) {
+                if (!is_readable($file)) {
+                    throw new NotFoundHttpException('Το αρχείο ' . basename($file) . ' δεν βρέθηκε.');
+                }
+            }
+        }
 
         return $data;
     }
@@ -158,7 +160,7 @@ dd($messages);
             $body = $template->content;
         }
 
-        $body .= Yii::$app->view->render('/postman/_email-footer');
+        $body .= Yii::$app->view->render('@app/modules/Email/views/postman/_email-footer');
 
         return [$subject, $body];
     }
@@ -166,6 +168,7 @@ dd($messages);
     public static function prepareMessages($subject, $body, $data)
     {
         $messages = [];
+
         if (!empty($data['to'])) {
             foreach ($data['to'] as $email) {
                 $message = Yii::$app->mailer->compose()
@@ -173,35 +176,39 @@ dd($messages);
                     ->setReplyTo($data['replyTo'])
                     ->setSubject($subject)
                     ->setHtmlBody($body)
-                    // ->attach($filename)
                     ->setTo($email);
                 $messages[] = $message;
             }
         }
-        if (!empty($data['cc'])) {
-            foreach ($data['cc'] as $email) {
-                $message = Yii::$app->mailer->compose()
-                    ->setFrom($data['from'])
-                    ->setReplyTo($data['replyTo'])
-                    ->setSubject($subject)
-                    ->setHtmlBody($body)
-                    // ->attach($filename)
-                    ->setTo($email);
-                $messages[] = $message;
-            }
-        }
-        if (!empty($data['bcc'])) {
-            foreach ($data['bcc'] as $email) {
-                $message = Yii::$app->mailer->compose()
-                    ->setFrom($data['from'])
-                    ->setReplyTo($data['replyTo'])
-                    ->setSubject($subject . ' [αντίγραφο]')
-                    ->setHtmlBody($body)
-                    // ->attach($filename)
-                    ->setTo($email);
-                $messages[] = $message;
-            }
-        }
+        // if (!empty($data['cc'])) {
+        //     foreach ($data['cc'] as $email) {
+        //         $message = Yii::$app->mailer->compose()
+        //             ->setFrom($data['from'])
+        //             ->setReplyTo($data['replyTo'])
+        //             ->setSubject($subject)
+        //             ->setHtmlBody($body)
+        //             ->setTo($email);
+        //         $messages[] = $message;
+        //     }
+        // }
+        // if (!empty($data['bcc'])) {
+        //     foreach ($data['bcc'] as $email) {
+        //         $message = Yii::$app->mailer->compose()
+        //             ->setFrom($data['from'])
+        //             ->setReplyTo($data['replyTo'])
+        //             ->setSubject($subject . ' [αντίγραφο]')
+        //             ->setHtmlBody($body)
+        //             ->setTo($email);
+        //         $messages[] = $message;
+        //     }
+        // }
+        array_walk($messages, function ($message) use ($data) {
+            if (!empty($data['files'])) {
+                foreach ($data['files'] as $file) {
+                    $message->attach($file);
+                }
+            }    
+        });
         return $messages;
     }
 

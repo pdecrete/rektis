@@ -33,15 +33,11 @@ class EmailButtonWidget extends Widget
         }
 
         $this->envelope = [];        
-        foreach (['from', 'to', 'cc', 'template', 'template_data', 'redirect_route'] as $field) {
-            if (empty($this->$field)) {
-                $this->$field = '';
-            } else {
+        foreach (['from', 'to', 'cc', 'template', 'template_data', 'redirect_route', 'files'] as $field) {
+            if (!empty($this->$field)) {
                 $this->envelope[$field] = $this->$field;
             }
         }
-
-        // TODO FILE ATTACHMENETS 
     }
     public function run()
     {
