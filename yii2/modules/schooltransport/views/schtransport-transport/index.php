@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
       		<div class="row">
 				<?php 
 				    foreach ($programcategs as $key=>$programcateg){
-				        $sep = ($programcateg['PROGRAMCATEG_ID'] == 3);
+				        $sep = ($programcateg['PROGRAMCATEG_ALIAS'] == 'EUROPEAN_SCHOOL');
 				        echo "<ul>";
 				        if(count($programcateg['SUBCATEGS']) == 0)
 				            echo "<li><strong><a href=" . Url::to(['create', 'id' => $programcateg['PROGRAMCATEG_ID'], 'sep' => $sep]) . ">{$programcateg['TITLE']}</a></strong></li>";
