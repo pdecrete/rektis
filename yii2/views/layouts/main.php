@@ -272,6 +272,7 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Διαχείριση αιτήσεων',
+                            'url' => [ '/SubstituteTeacher/application/index' ]
                         ],
                         [
                             'label' => 'Κατανομή',
@@ -288,9 +289,16 @@ AppAsset::register($this);
                             'url' => [ '/SubstituteTeacher/bridge/send' ]
                         ],
                         [
-                            'label' => 'Λήψη αιτήσεων',
+                            'label' => 'Λήψη από το σύστημα αιτήσεων',
                             'url' => [ '/SubstituteTeacher/bridge/receive' ]
-                        ]
+                        ],
+
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-list-alt"></i> Αρχείο καταγραφής</li>',
+                        [
+                            'label' => 'Στοιχεία καταγραφής (audit log)',
+                            'url' => [ '/SubstituteTeacher/audit-log/index' ]
+                        ],
                     ],
                 ],
 

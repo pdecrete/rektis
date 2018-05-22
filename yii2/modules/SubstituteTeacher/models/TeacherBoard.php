@@ -99,7 +99,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
             case TeacherBoard::TEACHER_BOARD_TYPE_SECONDARY:
                 $label = Yii::t('substituteteacher', 'Secondary teacher board');
                 break;
-            default: 
+            default:
                 $label = '-';
                 break;
         }
@@ -130,7 +130,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
         parent::afterFind();
 
         $this->label = '(α/α: ' . $this->order . ') ' .
-            TeacherBoard::boardTypeLabel($this->board_type) . ' ' . 
+            TeacherBoard::boardTypeLabel($this->board_type) . ' ' .
             $this->specialisation->code . ' ' .
             $this->points;
     }

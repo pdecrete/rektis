@@ -2,25 +2,23 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TeacherBoardSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\TeacherBoard`.
+ * AuditLogSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\AuditLog`.
  */
-class TeacherBoardSearch extends TeacherBoard
+class AuditLogSearch extends AuditLog
 {
-    public $year; // to filter teachers by year
-
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year'], 'integer'],
-            [['points'], 'number'],
+            [['id', 'level'], 'integer'],
+            [['category', 'prefix', 'message'], 'safe'],
+            [['log_time'], 'number'],
         ];
     }
 
@@ -42,20 +40,16 @@ class TeacherBoardSearch extends TeacherBoard
      */
     public function search($params)
     {
-        $query = TeacherBoard::find()
-            ->joinWith('teacher');
+        $query = AuditLog::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [ 'id' => SORT_DESC ]
+            ]
         ]);
-
-        $dataProvider->sort->attributes['year'] = [
-            'label' => Yii::t('substituteteacher', 'Year'),
-            'asc' => ['{{%stteacher}}.year' => SORT_ASC],
-            'desc' => ['{{%stteacher}}.year' => SORT_DESC],
-        ];
 
         $this->load($params);
 
@@ -68,13 +62,13 @@ class TeacherBoardSearch extends TeacherBoard
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'teacher_id' => $this->teacher_id,
-            'specialisation_id' => $this->specialisation_id,
-            'board_type' => $this->board_type,
-            'points' => $this->points,
-            'order' => $this->order,
-            '{{%stteacher}}.year' => $this->year,
+            'level' => $this->level,
+            'log_time' => $this->log_time,
         ]);
+
+        $query->andFilterWhere(['like', 'UPPER({{category}})', strtoupper($this->category)])
+            ->andFilterWhere(['like', 'prefix', $this->prefix])
+            ->andFilterWhere(['like', 'message', $this->message]);
 
         return $dataProvider;
     }

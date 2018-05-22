@@ -202,9 +202,6 @@ class TeacherController extends Controller
                 }
             }
         }
-// dd(array_map(function ($m) {
-//     return $m->getAttributes();
-// }, $modelsPlacementPreferences));
         return $this->render('create', [
             'model' => $model,
             'modelsPlacementPreferences' => $modelsPlacementPreferences ? $modelsPlacementPreferences : [ new PlacementPreference]
@@ -213,7 +210,7 @@ class TeacherController extends Controller
 
     protected function getModelsBoards($model)
     {
-        $id = $model->id; 
+        $id = $model->id;
 
         $specialisations = array_map(function ($m) {
             return $m->id;
@@ -252,7 +249,7 @@ class TeacherController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $post = \Yii::$app->request->post();
             $modelsBoards = Model::createMultiple(TeacherBoard::classname(), $modelsBoards);
-            // need to feed the teacher id 
+            // need to feed the teacher id
             array_walk($modelsBoards, function (&$m, $k) use ($id) {
                 if ($m->id == null) {
                     $m->teacher_id = $id;
@@ -286,10 +283,10 @@ class TeacherController extends Controller
                     if ($flag = $model->save(false)) { // already validated
                         foreach ($modelsBoards as $modelBoard) {
                             // those with empty values are considered not existant in the board
-                            if (empty($modelBoard->board_type) 
+                            if (empty($modelBoard->board_type)
                                 && empty($modelBoard->points)
                                 && empty($modelBoard->order)) {
-                                // remove if already existed or else ignore and skip it 
+                                // remove if already existed or else ignore and skip it
                                 if (!empty($modelBoard->id) && $modelBoard->id > 0) {
                                     $modelBoard->delete();
                                 }

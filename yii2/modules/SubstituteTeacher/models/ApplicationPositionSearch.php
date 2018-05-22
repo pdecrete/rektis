@@ -5,22 +5,20 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\SubstituteTeacher\models\ApplicationPosition;
 
 /**
- * TeacherBoardSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\TeacherBoard`.
+ * ApplicationPositionSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\ApplicationPosition`.
  */
-class TeacherBoardSearch extends TeacherBoard
+class ApplicationPositionSearch extends ApplicationPosition
 {
-    public $year; // to filter teachers by year
-
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year'], 'integer'],
-            [['points'], 'number'],
+            [['id', 'application_id', 'call_position_id', 'order', 'updated', 'deleted'], 'integer'],
         ];
     }
 
@@ -42,20 +40,13 @@ class TeacherBoardSearch extends TeacherBoard
      */
     public function search($params)
     {
-        $query = TeacherBoard::find()
-            ->joinWith('teacher');
+        $query = ApplicationPosition::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
-        $dataProvider->sort->attributes['year'] = [
-            'label' => Yii::t('substituteteacher', 'Year'),
-            'asc' => ['{{%stteacher}}.year' => SORT_ASC],
-            'desc' => ['{{%stteacher}}.year' => SORT_DESC],
-        ];
 
         $this->load($params);
 
@@ -68,12 +59,11 @@ class TeacherBoardSearch extends TeacherBoard
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'teacher_id' => $this->teacher_id,
-            'specialisation_id' => $this->specialisation_id,
-            'board_type' => $this->board_type,
-            'points' => $this->points,
+            'application_id' => $this->application_id,
+            'call_position_id' => $this->call_position_id,
             'order' => $this->order,
-            '{{%stteacher}}.year' => $this->year,
+            'updated' => $this->updated,
+            'deleted' => $this->deleted,
         ]);
 
         return $dataProvider;
