@@ -99,5 +99,13 @@ return [
     'Hosting School' => 'Σχολείο Υποδοχής',
     'Meeting Start' => 'Έναρξη συνάντησης',
     'Meeting End' => 'Λήξη συνάντησης',
-    'Please define the hosting school.' => 'Παρακαλώ ορίστε το σχολείο υποδοχής.'
+    'Please define the hosting school.' => 'Παρακαλώ ορίστε το σχολείο υποδοχής.',
+    'Archived Transportations Approvals' => 'Αρχειοθετημένες Εγκρίσεις Μετακινήσεων',
+    'Active Transportations Approvals' => 'Ενεργές Εγκρίσεις Μετακινήσεων',
+    'The transportation approval was archived successfully.' => 'Η έγκριση μετακίνησης αρχειοθετήθηκε επιτυχώς.',
+    'Failed to archive transportation approval' => 'Αποτυχία αρχειοθέτησης της έγκρισης μετακίνησης.',
+    'The transportation approval was restored successfully.' => 'Η έγκριση μετακίνησης μεταφέθηκε επιτυχώς στη λίστα με τις ενεργές.',
+    'Failed to restore transportation approval.' => 'Αποτυχία μεταφοράς της έγκρισης μετακίνησης στη λίστα με τις ενεργές.',
+    'Not allowed action for archived transportation approval.' => 'Μη επιτρεπτή ενέργεια για αρχειοθετημένη έγκριση μετακίνησης.',
+    'The transportation approval cannot be archived because the procedure is not completed.' => 'Η έγκριση μετακίνησης δεν μπορεί να αρχειοθετηθεί διότι δεν βρίσκεται στην τελική κατάσταση.' 
 ];

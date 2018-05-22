@@ -151,6 +151,7 @@ class m180403_094056_schooltransport_init extends Migration
                              `transport_dateprotocolcompleted` VARCHAR(100) COMMENT 'Ημερομηνία Ξεχρέωσης στο Πρωτόκολλο',
                              `transport_approvalfile` VARCHAR(200) COMMENT 'Αρχείο Έγκρισης',
                              `transport_signedapprovalfile` VARCHAR(200) COMMENT 'Αρχείο Ψηφιακά Υπογεγραμμένο',
+                             `transport_isarchived` BOOLEAN NOT NULL DEFAULT 0 COMMENT 'Αρχειοθετημένη μετακίνηση',
                              `meeting_id` INTEGER NOT NULL,
                              `school_id` INTEGER NOT NULL,
                               FOREIGN KEY (`meeting_id`) REFERENCES " . $dbTrnsprtTables['table_meeting'] . "(`meeting_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",

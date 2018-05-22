@@ -13,13 +13,7 @@ use app\modules\schooltransport\models\SchtransportState;
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
-$stateactions = '';
-if($archived)
-    $this->title .= Module::t('modules/schooltransport/app', 'Archived Transportations Approvals');
-else{
-    $stateactions = '<hr />{backwardstate} {forwardstate}';
-    $this->title .= Module::t('modules/schooltransport/app', 'Transportations Approvals');
-}
+$this->title = Module::t('modules/schooltransport/app', 'Transportations Approvals');
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($dataProvider); echo "</pre>";die();
@@ -31,13 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
 	<p class="text-right">
-		<?php 
-		      if($archived):
-                  echo Html::a(Module::t('modules/schooltransport/app', 'Active Transportations Approvals'), ['index'], ['class' => 'btn btn-primary']);
-    	      else:
-    	          echo Html::a(Module::t('modules/schooltransport/app', 'Archived Transportations Approvals'), ['index', 'archived' => 1], ['class' => 'btn btn-primary']);
-              endif;
-        ?>
     	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">
         	<?php echo Module::t('modules/schooltransport/app',  'Create Transportation'); ?>
         </button>
@@ -187,30 +174,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download} {downloadsigned} {archive}' . $stateactions,
-              'buttons' => ['archive' => function ($url, $model) {
-                                                        if(!$model['transport_isarchived'])
-                                                            return Html::a('<span class="glyphicon glyphicon-save-file"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Archive transportation approval'),
-                                                                    'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να αρχειοθετήσετε την έγκριση μετακίνησης;",
-                                                                             'data-method' => 'post']]);
-                                                        else
-                                                            return Html::a('<span class="glyphicon glyphicon-open-file"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Restore transportation approval'),
-                                                                    'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να επαναφέρετε την έγκριση μετακίνησης στις ενεργές;",
-                                                                             'data-method' => 'post']]);
-                                                    },
-                           'downloadsigned' => function ($url, $model) {
-                                                    if(!is_null($model['transport_signedapprovalfile']))
-                                                        return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
-                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
-                                                                     'data-method' => 'post']);
-                                                    return '';
+             'template' => '{view} {update} {delete} {download} {downloadsigned}<hr />{backwardstate} {forwardstate}',
+             'buttons' => ['downloadsigned' => function ($url, $model) {
+                                                if(!is_null($model['transport_signedapprovalfile']))
+                                                    return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
+                                                                ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
+                                                                 'data-method' => 'post']);
+                                                return '';
                                             },
-                           'download' =>    function ($url, $model) {
-                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
-                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
-                                                                     'data-method' => 'post']);
+                           'download' =>    function ($url, $model) { 
+                                                return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
+                                                                ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
+                                                                 'data-method' => 'post']);
                                             },
                            'forwardstate' => function ($url, $model) {
                                                 if ($model['statescount'] < 3) {
@@ -247,14 +222,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 if ($action === 'downloadsigned') {
                     $url = Url::to(['/schooltransport/schtransport-transport/downloadsigned', 'id' =>$model['transport_id']]);
-                    return $url;
-                }
-                if ($action === 'archive') {
-                    $url = "";
-                    if(!$model['transport_isarchived'])
-                        $url = Url::to(['/schooltransport/schtransport-transport/archive', 'id' =>$model['transport_id']]);
-                    else
-                        $url = Url::to(['/schooltransport/schtransport-transport/restore', 'id' =>$model['transport_id']]);
                     return $url;
                 }
                 if ($action === 'backwardstate') {

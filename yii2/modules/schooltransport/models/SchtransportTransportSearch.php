@@ -48,10 +48,8 @@ class SchtransportTransportSearch extends SchtransportTransport
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
-        //$query = SchtransportTransport::find();
-        
+    public function search($params, $archived = 0)
+    {       
         $tblprefix = Yii::$app->db->tablePrefix;
         $transport_states = $tblprefix . 'schtransport_transportstate';
         $transports = $tblprefix . 'schtransport_transport';
@@ -65,7 +63,8 @@ class SchtransportTransportSearch extends SchtransportTransport
                              $count_states . " AS statescount ")
                     ->from($tblprefix . 'schtransport_transport,' . $tblprefix . 'schtransport_meeting,' . 
                            $tblprefix . 'schoolunit,' . $tblprefix . 'schtransport_program,' . $tblprefix . 'schtransport_programcategory')
-                    ->where($tblprefix . 'schtransport_transport.meeting_id  = ' . $tblprefix . 'schtransport_meeting.meeting_id')
+                    ->where($tblprefix . 'schtransport_transport.transport_isarchived = ' . $archived)
+                    ->andWhere($tblprefix . 'schtransport_transport.meeting_id  = ' . $tblprefix . 'schtransport_meeting.meeting_id')
                     ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
                     ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id')
                     ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id');

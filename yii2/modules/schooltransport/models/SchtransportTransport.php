@@ -49,6 +49,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
             [['transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_dateprotocolcompleted'], 'string', 'max' => 100],
             [['transport_remarks'], 'string', 'max' => 500],
             [['transport_approvalfile', 'transport_signedapprovalfile'], 'string', 'max' => 200],
+            [['transport_isarchived'], 'integer'],
             [['meeting_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchtransportMeeting::className(), 'targetAttribute' => ['meeting_id' => 'meeting_id']],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['school_id' => 'school_id']],
             [['signedfile'], 'safe'], //----
@@ -79,6 +80,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
             'transport_dateprotocolcompleted' => Module::t('modules/schooltransport/app', 'Registration Completion Protocol'),
             'transport_approvalfile' => Module::t('modules/schooltransport/app', 'Approval File'),
             'transport_signedapprovalfile' => Module::t('modules/schooltransport/app', 'Digital Signed File'),
+            'transport_isarchived' => Module::t('modules/schooltransport/app', 'Archived Transport'),
             'meeting_id' => Module::t('modules/schooltransport/app', 'Meeting ID'),
             'school_id' => Module::t('modules/schooltransport/app', 'School ID'),
         ];
