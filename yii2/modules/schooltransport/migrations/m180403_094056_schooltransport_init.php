@@ -167,50 +167,51 @@ class m180403_094056_schooltransport_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_country'] .
                           " (`country_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `country_name` VARCHAR(100) NOT NULL,
+                             `country_accusativearticle` VARCHAR(5) NOT NULL,
                               PRIMARY KEY (`country_id`),
                               UNIQUE KEY (`country_name`)
                             )" . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_country'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_country'] . " (country_name) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "('Βέλγιο')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ελλάδα')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Λιθουανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Πορτογαλία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Βουλγαρία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ισπανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Λουξεμβούργο')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ρουμανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Τσεχία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Γαλλία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ουγγαρία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Σλοβενία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Δανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Κροατία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Μάλτα')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Σλοβακία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Γερμανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ιταλία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ολλανδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Φινλανδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Εσθονία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Κύπρος')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Αυστρία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Σουηδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ιρλανδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Λετονία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Πολωνία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Βρετανία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Αγγλία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Σκωτία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Βόρεια Ιρλανδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ουαλία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('ΠΓΔΜ')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Ισλανδία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Νορβηγία')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Λιχτενστάιν')")->execute();
-        Yii::$app->db->createCommand($insert_command . "('Τουρκία')")->execute();
+        $insert_command = "INSERT INTO " . $dbTrnsprtTables['table_country'] . " (country_name, country_accusativearticle) VALUES ";
+        Yii::$app->db->createCommand($insert_command . "('Βέλγιο', 'στο')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ελλάδα', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λιθουανία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πορτογαλία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βουλγαρία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ισπανία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λουξεμβούργο', 'στο')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ρουμανία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τσεχία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Γαλλία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ουγγαρία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σλοβενία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Δανία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Κροατία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Μάλτα', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σλοβακία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Γερμανία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ιταλία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ολλανδία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Φινλανδία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Εσθονία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Κύπρος', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Αυστρία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σουηδία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ιρλανδία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λετονία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Πολωνία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βρετανία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Αγγλία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Σκωτία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Βόρεια Ιρλανδία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ουαλία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('ΠΓΔΜ', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Ισλανδία', 'στην')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Νορβηγία', 'στη')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Λιχτενστάιν', 'στο')")->execute();
+        Yii::$app->db->createCommand($insert_command . "('Τουρκία', 'στην')")->execute();
        
         /* CREATE TABLE admapp_schtrnsport_state */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_state'] .

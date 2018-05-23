@@ -34,8 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php 
 		      if($archived):
                   echo Html::a(Module::t('modules/schooltransport/app', 'Active Transportations Approvals'), ['index'], ['class' => 'btn btn-primary']);
-    	      else:
-    	          echo Html::a(Module::t('modules/schooltransport/app', 'Archived Transportations Approvals'), ['index', 'archived' => 1], ['class' => 'btn btn-primary']);
               endif;
         ?>
     	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">

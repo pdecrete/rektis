@@ -56,7 +56,7 @@ class SchtransportTransportController extends Controller
      */
     public function actionIndex($archived = 0)
     {
-        if(is_nan($archived) || ($archived != 0 && $archived != 1))
+        if(!is_numeric($archived) || ($archived != 0 && $archived != 1))
             $archived = 0;
         
         $searchModel = new SchtransportTransportSearch();
@@ -400,6 +400,11 @@ class SchtransportTransportController extends Controller
         //echo "<pre>"; print_r($meeting_model); echo "</pre>";
         //echo "<pre>"; print_r($program_model); echo "</pre>";
         //die();
+        $country_article = 'στη';
+        $country = SchtransportCountry::findOne(['country_name' => $meeting_model['meeting_country']]);
+        if($country != NULL)
+            $country_article = $country['country_accusativearticle'];
+        
         $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
         $directorate_model = $school_model->getDirectorate()->one();
         
@@ -450,7 +455,7 @@ class SchtransportTransportController extends Controller
         $templateProcessor->setValue('protocol', $transport_model['transport_pde_protocol']);
         $templateProcessor->setValue('school', $school_model->school_name);
         $templateProcessor->setValue('teachers', $transport_model['transport_teachers']);        
-        $templateProcessor->setValue('country', $meeting_model['meeting_country']);
+        $templateProcessor->setValue('country', $country_article . ' ' . $meeting_model['meeting_country']);
         $templateProcessor->setValue('local_directorate_protocol', $transport_model['transport_localdirectorate_protocol']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
         $templateProcessor->setValue('programcateg_title', $programcateg_model->programcategory_programtitle);
@@ -793,11 +798,11 @@ class SchtransportTransportController extends Controller
                     Yii::info('User ' . $user . ' restored transport with id "' . $id . '.', 'schooltransport');
                     
                     Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transportation approval was restored successfully."));
-                    return $this->redirect(['index']);
+                    return $this->redirect(['index?archived=1']);
         }
         catch (Exception $exc){
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to restore transportation approval."));
-            return $this->redirect(['index']);
+            return $this->redirect(['index?archived=1']);
         }
     }
     
