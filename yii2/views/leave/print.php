@@ -73,7 +73,8 @@ if ($model->deleted) {
                 'cc' => [
                     'spapad@outlook.com'
                 ],
-                'label' => 'Στείλε email'
+                'label' => 'Στείλε email',
+                'enable_upload' => true
             ]);
         ?>
         <?=

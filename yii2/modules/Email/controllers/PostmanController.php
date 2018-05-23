@@ -8,7 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\base\View;
+use yii\web\UploadedFile;
 
 /**
  *
@@ -52,6 +52,11 @@ class PostmanController extends Controller
      */
     public static function send($data)
     {
+        $save_directory = $this->module->params['archive-repository'] . uniqid(date('YmdHis_'), true);
+        if (false === mkdir($save_directory)) {
+            throw new \Exception('Αδυναμία αρχικοποίησης αποθετηρίου αρχείων.');
+        }
+
         $data = PostmanController::prepareData($data);
 
         $template = Page::find()->identity($data['template'])->one();
@@ -63,7 +68,11 @@ class PostmanController extends Controller
 
         $messages = PostmanController::prepareMessages($subject, $body, $data);
 
-        return PostmanController::realSendMessages($messages);
+        $sent = PostmanController::realSendMessages($messages);
+
+        PostmanController::archiveMessages($messages, $save_directory);
+
+        return $sent;
     }
 
     /**
@@ -76,6 +85,12 @@ class PostmanController extends Controller
      */
     public function actionSend()
     {
+        $save_directory = $this->module->params['archive-repository'] . uniqid(date('YmdHis_'), true);
+        if (false === mkdir($save_directory)) {
+            Yii::$app->session->addFlash('danger', 'Αδυναμία αρχικοποίησης αποθετηρίου αρχείων.');
+            return $this->redirect(Yii::$app->request->referrer);
+        }
+
         $envelope = Yii::$app->request->post('envelope');
         if (empty($envelope)) {
             Yii::$app->session->addFlash('danger', 'Ανύπαρκτα στοιχεία για πραγματοποίηση της αποστολής.');
@@ -83,6 +98,19 @@ class PostmanController extends Controller
         }
 
         $data = PostmanController::prepareData(unserialize(base64_decode($envelope, true)));
+
+        // get any extra file
+        $attachment = UploadedFile::getInstanceByName('attachment');
+        if (null !== $attachment) {
+            $filename = $save_directory . DIRECTORY_SEPARATOR . $attachment->name;
+            if (true !== $attachment->saveAs($filename)) {
+                @unlink($attachment->tempName);
+                Yii::$app->session->addFlash('danger', 'Αδυναμία αποθήκευσης του αρχείου.');
+                return $this->redirect(Yii::$app->request->referrer);
+            }
+
+            $data['files'][] = $filename;
+        }
 
         $template = Page::find()->identity($data['template'])->one();
         if (empty($template)) {
@@ -95,8 +123,10 @@ class PostmanController extends Controller
         $messages = PostmanController::prepareMessages($subject, $body, $data);
 
         $sent = PostmanController::realSendMessages($messages);
-        Yii::$app->session->addFlash('info', "Στάλθηκαν συνολικά {$sent} email. Ζητήθηκε αποστολή σε διευθύνσεις to=[" . implode(', ', $data['to']) . "], cc=[" . implode(', ', $data['cc']) . "], bcc=[" . implode(', ', $data['bcc']) . "]" );
-        
+        Yii::$app->session->addFlash('info', "Στάλθηκαν συνολικά {$sent} email. Ζητήθηκε αποστολή σε διευθύνσεις to=[" . implode(', ', $data['to']) . "], cc=[" . implode(', ', $data['cc']) . "], bcc=[" . implode(', ', $data['bcc']) . "]");
+
+        PostmanController::archiveMessages($messages, $save_directory);
+
         return $this->redirect($data['redirect_route']);
     }
 
@@ -126,7 +156,7 @@ class PostmanController extends Controller
             'cc' => '',
             'template' => '',
             'template_data' => [],
-            'files' => '',
+            'files' => [],
             'redirect_route' => Yii::$app->request->referrer // default redirect
         ], $data);
         //unify to,cc fields
@@ -207,7 +237,7 @@ class PostmanController extends Controller
                 foreach ($data['files'] as $file) {
                     $message->attach($file);
                 }
-            }    
+            }
         });
         return $messages;
     }
@@ -223,8 +253,15 @@ class PostmanController extends Controller
             if ($pos>0) {
                 $logStr .= substr($e, 0, $pos);
             }
-            Yii::info($logStr, 'leave-email');
+            Yii::info($logStr, 'leave-email'); // CHECK TODO 
         }
         return $sent;
+    }
+
+    public static function archiveMessages($messages, $savedir)
+    {
+        array_walk($messages, function ($message, $idx) use ($savedir) {
+            file_put_contents("{$savedir}/{$idx}.eml", $message->toString());
+        });
     }
 }

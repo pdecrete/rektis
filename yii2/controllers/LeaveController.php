@@ -488,7 +488,7 @@ class LeaveController extends Controller
                 '{LEAVE_PERSON}' => Yii::$app->params['leavePerson'],
                 '{LEAVE_PHONE}' => Yii::$app->params['leavePhone'],
                 '{LEAVE_FAX}' => Yii::$app->params['leaveFax'],
-                '{LEAVE_TYPE}' => mb_strtolower($model->typeObj->name),
+                '{LEAVE_TYPE}' => $model->typeObj->name,
             ],
             'files' => [
                 LeavePrint::path($filename),

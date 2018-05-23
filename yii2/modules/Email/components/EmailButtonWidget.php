@@ -19,6 +19,7 @@ class EmailButtonWidget extends Widget
     public $template; // page to use as template for email subject and body 
     public $template_data; // substitutions for template placeholders 
     public $files; // attachments
+    public $enable_upload; // if true, allows for an uploaded file to be sent
 
     public function init()
     {
@@ -44,6 +45,7 @@ class EmailButtonWidget extends Widget
         return $this->render('email-button', [
             'email_postman_route' => $this->email_postman_route,
             'envelope' => base64_encode(serialize($this->envelope)),
+            'enable_upload' => boolval($this->enable_upload),
             'label' => $this->label
         ]);
     }
