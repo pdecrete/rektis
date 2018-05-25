@@ -35,6 +35,7 @@ $config = [
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,
+            'enableSwiftMailerLogging' => true,
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'host' => 'SMTP_HOST',
@@ -42,11 +43,24 @@ $config = [
                 'password' => 'PASSWORD',
                 'port' => '587',
                 'encryption' => 'tls',
+                // avoid this if you can; properly configure ssl or else disable verify
+                // 'streamOptions' => [
+                //     'ssl' => [
+                //         'allow_self_signed' => true,
+                //         'verify_peer' => false,
+                //         'verify_peer_name' => false,
+                //     ],
+                // ],
             ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
+                // if you need to log swift mailer messages somewhere
+                // [
+                //     'class' => 'yii\log\FileTarget',
+                //     'categories' => ['yii\swiftmailer\Logger::add'],
+                // ],
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
@@ -81,17 +95,6 @@ $config = [
                     'logFile' => '@runtime/logs/financial.log',
                     'logVars' => [],
                 ],
-            // future use (or not?): log to db
-            /*
-              [
-              'class' => 'yii\log\DbTarget',
-              'levels' => ['info'],
-              'categories' => ['employee'],
-              'logTable' => 'employee_log',
-              'logVars' => [],
-              'db' => $db
-              ]
-             */
             ],
         ],
         'db' => $db,

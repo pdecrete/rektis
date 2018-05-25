@@ -20,6 +20,8 @@
 ],
 ```
 
+## Παραμετροποίηση 
+
 Το πρόσθετο δέχεται ορισμένες παραμέτρους, όπως στο υπόδειγμα 
 `config/params-dist.php`. Αντιγράψτε το αρχείο `config/params-dist.php`
 στο `config/params.php` και τροποποιήστε σύμφωνα με τις ανάγκες σας.
@@ -31,7 +33,37 @@ return [
         'from' => [
             'noreply@pdekritis.gr' => 'ΠΔΕ Κρήτης'
         ],
-        'replyTo' => 'pdekritisweb@sch.gr'
+        'reply-to' => 'pdekritisweb@sch.gr'
+    ]
+];
+```
+
+## Αρχεία καταγραφής 
+
+Για το αρχείο καταγραφής παρέχεται υπόδειγμα `config/log-dist.php` 
+στο οποίο ορίζεται ένα log target που καταγράφει τις ενέργειες αποστολής.
+Στο παράδειγμα η καταγραφή γίνεται σε πίνακα της βάσης δεδομένων για τον
+οποίο διατίθεται και σχετικό migration. Εκτελέστε το με: 
+
+`yii migrate --migrationPath=@app/modules/Email/migrations` 
+
+Αντιγράψτε το αρχείο `config/log-dist.php`
+στο `config/log.php` και τροποποιήστε σύμφωνα με τις ανάγκες σας
+προσθέτοντας ενδεχομένως και άλλα log targets. 
+Στο παρακάτω παράδειγμα `config/log.php` έχε οριστεί να καταγράφονται 
+και οι καταγραφές από τον swift mailer, εφόσον έχει ενεργοποιηθεί
+από την κύρια εφαρμογή στο mailer component (δείτε στο [Yii2 api](https://www.yiiframework.com/extension/yiisoft/yii2-swiftmailer/doc/api/2.2/yii-swiftmailer-logger))
+
+```php
+return [
+    [
+        'class' => 'yii\log\DbTarget',
+        'logTable' => '{{%email_audit_log}}',
+        'categories' => [
+            'app\modules\Email*',
+            'yii\swiftmailer\Logger::add'
+        ],
+        'logVars' => [],
     ]
 ];
 ```
@@ -75,6 +107,7 @@ To widget για την αποστολή email εμφανίζει ένα κου�
 Επιπλέον το widget αναγνωρίζει και την παράμετρο:
 
 - `label`: Αφορά το λεκτικό το οποίο θα εμφανίζεται στο κουμπί αποστολής. 
+- `tooltip`: Κείμενο tooltip που θα εμφανιστεί πάνω στο κουμπί (hover)
 - `enable_upload`: Εφόσον τεθεί σε τιμή που ισοδυναμεί με λογικό true, ενεργοποιεί
 λειτουργία επιλογής αρχείου το οποίο γίνεται upload για να σταλεί ως συνημμένο. 
 
@@ -102,4 +135,4 @@ To widget για την αποστολή email εμφανίζει ένα κου�
 να επισυναφθούν στα email. 
 - `from`: Αντικαθιστά τον προεπιλεγμένο αποστολέα του μυνήματος. 
 - `to`, `cc`: Διευθύνσεις email για αποστολή. 
-- `replyTo`: Αντικαθιστά το προεπιλεγμένο email που αναφέρεται ως διεύθυνση απαντήσεων. 
+- `reply-to`: Αντικαθιστά το προεπιλεγμένο email που αναφέρεται ως διεύθυνση απαντήσεων. 

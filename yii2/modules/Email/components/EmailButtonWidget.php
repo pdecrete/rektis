@@ -12,6 +12,7 @@ class EmailButtonWidget extends Widget
     private $envelope; // data to send to the handler 
 
     public $label; 
+    public $tooltip;
     public $redirect_route; // where to go after action is taken; string url or route options
     public $from; // who sends the email 
     public $to;
@@ -46,7 +47,8 @@ class EmailButtonWidget extends Widget
             'email_postman_route' => $this->email_postman_route,
             'envelope' => base64_encode(serialize($this->envelope)),
             'enable_upload' => boolval($this->enable_upload),
-            'label' => $this->label
+            'label' => $this->label,
+            'tooltip' => $this->tooltip
         ]);
     }
 }

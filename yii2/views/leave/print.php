@@ -15,6 +15,16 @@ $this->title = $model->information;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Leaves'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->information, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Print');
+
+$js = <<<EOJS
+$(function () { 
+    $('body').tooltip({
+        selector: '[data-toggle="tooltip"]',
+        html: true
+    });
+});
+EOJS;
+$this->registerJs($js, $this::POS_READY);
 ?>
 
 <?php
@@ -33,25 +43,39 @@ if ($model->deleted) {
         <?= Html::encode($this->title) ?>
     </h1>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Return to view'), ['view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Download'), ['download', 'id' => $model->id], [
-            'class' => 'btn btn-success',
-            'data' => [
-                'method' => 'post',
-            ],
-        ])
-        ?>
-        <?= Html::a(Yii::t('app', 'Send e-mail'), ['email', 'id' => $model->id], [
-            'class' => 'btn btn-warning',
-            'data' => [
-                'confirm' => Yii::t('app', 'The leave is sent automatically to all recipients concerned (employees - organic and serve services).') . ' ' . Yii::t('app', 'Are you sure you want to e-mail this leave?'),
-                'method' => 'post',
-            ],
-        ])
-        ?>
-        <?php 
-            echo EmailButtonWidget::widget([
+    <div class="row">
+        <div class="col-md-8">
+            <p>
+                <?= Html::a(Yii::t('app', 'Return to view'), ['view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a(Yii::t('app', 'Download'), ['download', 'id' => $model->id], [
+                    'class' => 'btn btn-success',
+                    'data' => [
+                        'method' => 'post',
+                    ],
+                ])
+                ?>
+                <?= Html::a(Yii::t('app', 'Print again'), ['reprint', 'id' => $model->id], [
+                    'class' => 'btn btn-default',
+                    'data' => [
+                        'confirm' => Yii::t('app', 'Are you sure you want to print this leave?'),
+                        'method' => 'post',
+                    ],
+                ])
+                ?>
+                <?= empty($filename) ? '' : Html::a(Yii::t('app', 'Send e-mail'), ['email', 'id' => $model->id], [
+                    'class' => 'btn btn-warning',
+                    'data' => [
+                        'confirm' => Yii::t('app', 'The leave is sent automatically to all recipients concerned (employees - organic and serve services).') . ' ' . Yii::t('app', 'Are you sure you want to e-mail this leave?'),
+                        'method' => 'post',
+                    ],
+                    'data-toggle' => 'tooltip',
+                    'title' => 'Θα αποσταλεί το <strong>αρχείο που παράγει η εφαρμογή</strong>'
+                ])
+                ?>
+            </p>
+        </div>
+        <div class="col-md-4 text-right">
+            <?= empty($filename) ? '' : EmailButtonWidget::widget([
                 'redirect_route' => [
                     '/leave/print', 'id' => $model->id
                 ],
@@ -65,28 +89,19 @@ if ($model->deleted) {
                     '{LEAVE_TYPE}' => mb_strtolower($model->typeObj->name),
                 ],
                 'files' => [
-                    LeavePrint::path($filename),
+                    // LeavePrint::path($filename),
                 ],
-                'to' => [
-                    $model->employeeObj->email
-                ],
+                'to' => $emails, // [ $model->employeeObj->email ],
                 'cc' => [
                     'spapad@outlook.com'
                 ],
-                'label' => 'Στείλε email',
+                'label' => 'Αποστολή',
+                'tooltip' => 'Δεν Θα αποσταλεί το αρχείο που παράγει η εφαρμογή. Θα σταλεί <strong>το αρχείο που θα επιλέξετε</strong>.',
                 'enable_upload' => true
-            ]);
-        ?>
-        <?=
-        Html::a(Yii::t('app', 'Print again'), ['reprint', 'id' => $model->id], [
-            'class' => 'btn btn-default',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to print this leave?'),
-                'method' => 'post',
-            ],
-        ])
-        ?>
-    </p>
+            ])
+            ?>
+        </div>
+    </div>
 
     <?php if ($filename != null) : ?>
     <div class="alert alert-info" role="alert">Το αρχείο εκτύπωσης της άδειας είναι διαθέσιμο για μεταφόρτωση ή αποστολή.</div>
@@ -123,7 +138,15 @@ if ($model->deleted) {
                 ['label' => Yii::t('app', 'Sent at'),
                     'attribute' => 'send_ts'],
                 ['label' => Yii::t('app', 'Email recipients'),
-                    'attribute' => 'to_emails'],
+                    'attribute' => 'to_emails',
+                    'value' => function ($m) {
+                        if (!empty($m->to_emails)) {
+                            return strtr($m->to_emails, ",", " ");
+                        } else {
+                            return null;
+                        }
+                    }
+                ],
             ],
         ]);
     ?>
