@@ -131,6 +131,22 @@ class FinanceExpenditureController extends Controller
 
         $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
 
+        $withdrawals_expendituressum['DECISION'] = array();
+        $withdrawals_expendituressum['INITIAL'] = array();
+        $withdrawals_expendituressum['EXPENDED'] = array();
+        $withdrawals_expendituressum['AVAILABLE'] = array();
+        foreach ($kaewithdrawals as $key=>$kaewithdrawal){
+            $expended = FinanceExpendwithdrawal::getExpendituresSum($kaewithdrawal->kaewithdr_id);
+            $substr_decision = $kaewithdrawal->kaewithdr_decision;
+            if (strlen($substr_decision) > 22){
+                $substr_decision = substr($kaewithdrawal->kaewithdr_decision, 0, 22) . '...'; 
+            }
+            array_push($withdrawals_expendituressum['DECISION'], $substr_decision);
+            array_push($withdrawals_expendituressum['INITIAL'], Money::toCurrency($kaewithdrawal->kaewithdr_amount));
+            array_push($withdrawals_expendituressum['EXPENDED'], Money::toCurrency($expended));
+            array_push($withdrawals_expendituressum['AVAILABLE'], Money::toCurrency($kaewithdrawal->kaewithdr_amount - $expended));
+        }
+        
         $i = 0;
         $expendwithdrawals_models = [];
         foreach ($kaewithdrawals as $key=>$kaewithdrawal) {
@@ -141,7 +157,7 @@ class FinanceExpenditureController extends Controller
                 unset($kaewithdrawals[$key]);
             }
         }
-
+        
         if (count($expendwithdrawals_models) == 0) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "There is no withdrawal for this RCN to create expenditure."));
             return $this->redirect(['index']);
@@ -184,7 +200,8 @@ class FinanceExpenditureController extends Controller
                 'kaewithdrawals' => $kaewithdrawals,
                 'suppliers' => $suppliers,
                 'expenddeduction_models' => $expenddeduction_models,
-                'deductions' => $deductions
+                'deductions' => $deductions,
+                'withdrawals_expendituressum' => $withdrawals_expendituressum
             ]);
         }
     }
