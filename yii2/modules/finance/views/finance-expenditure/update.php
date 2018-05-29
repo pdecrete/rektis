@@ -23,7 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'kaewithdrawals' => $kaewithdrawals,
         'suppliers' => $suppliers,
         'expenddeduction_models' => $expenddeduction_models,
-        'deductions' => $deductions
+        'deductions' => $deductions,
+        'withdrawals_expendituressum' => $withdrawals_expendituressum
     ]) ?>
 
 </div>

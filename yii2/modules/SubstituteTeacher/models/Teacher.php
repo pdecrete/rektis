@@ -27,12 +27,15 @@ class Teacher extends \yii\db\ActiveRecord
     use Selectable;
     use Reference;
 
+    const SCENARIO_CALL_FETCH = 'CALL_FETCH'; // used to specify that model is used in the process of selecting teachers for call
+
     const TEACHER_STATUS_ELIGIBLE = 0;
     const TEACHER_STATUS_APPOINTED = 1;
     const TEACHER_STATUS_NEGATION = 2;
 
     public $status_label;
     public $name;
+    public $call_use_specialisation_id; // property to hold the specialisation used in a specific call; used in SCENARIO_CALL_FETCH
 
     /**
      * @inheritdoc
@@ -52,6 +55,7 @@ class Teacher extends \yii\db\ActiveRecord
             [['registry_id', 'year', 'status'], 'required'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
+            [['call_use_specialisation_id'], 'required', 'on' => self::SCENARIO_CALL_FETCH],
         ];
     }
 
@@ -168,14 +172,32 @@ class Teacher extends \yii\db\ActiveRecord
      */
     public function toApi()
     {
-        // TODO take multiple specialisation into account
+        // If the model has set the call_use_specialisation_id property, use that one as
+        // the specialisation. Otherwise return all specialisations with it.
+        $specialty = $specialty_id = null;
+        $specialisations = $this->registry->specialisations;
+        if ($this->scenario === Teacher::SCENARIO_CALL_FETCH) {
+            foreach ($specialisations as $specialisation) {
+                if ($specialisation->id == $this->call_use_specialisation_id) {
+                    $specialty = $specialisation->code;
+                    $specialty_id = $specialisation->id;
+                }
+            }
+        } else {
+            $specialty = '-'; // multiple; don't serve frontend...
+            $specialty_id = array_map(function ($m) {
+                return $m->id;
+            }, $specialisations);
+        }
+
         return array_merge(
             [
-                'specialty' => $this->registry->specialisations[0]->code, // TODO TAKE CARE OF MULTIPLE
+                'specialty' => $specialty,
                 'vat' => $this->registry->tax_identification_number,
                 'identity' => $this->registry->identity_number,
                 'ref' => $this->buildReference([
                     'id' => $this->id,
+                    'specialty_id' => $specialty_id,
                     'firstname' => $this->registry->firstname,
                     'lastname' => $this->registry->surname,
                     'fathername' => $this->registry->fathername,
@@ -186,6 +208,7 @@ class Teacher extends \yii\db\ActiveRecord
             ],
             (YII_DEBUG ? [ // only for debugging
                 // 'name' => $this->registry->name,
+                'specialty_id' => $specialty_id,
                 'firstname' => $this->registry->firstname,
                 'lastname' => $this->registry->surname,
                 'fathername' => $this->registry->fathername,

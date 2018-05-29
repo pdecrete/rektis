@@ -100,7 +100,7 @@ class CallController extends Controller
                         array_walk($modelsCallTeacherSpecialisation, function ($m) use ($id) {
                             $m->call_id = $id;
                         });
-                        // validate dependent models 
+                        // validate dependent models
                         $flag = Model::validateMultiple($modelsCallTeacherSpecialisation);
                         if ($flag) {
                             foreach ($modelsCallTeacherSpecialisation as $modelCTS) {
@@ -110,7 +110,7 @@ class CallController extends Controller
                                 }
                             }
                         } else {
-                            Yii::$app->session->setFlash('danger', 'Μη έγκυρα στοιχεία καθηγητών.');                            
+                            Yii::$app->session->setFlash('danger', 'Μη έγκυρα στοιχεία καθηγητών.');
                         }
                     }
                     if ($flag) {
@@ -124,7 +124,7 @@ class CallController extends Controller
                     Yii::$app->session->addFlash('danger', $e->getMessage());
                 }
             }
-        }        
+        }
         return $this->render('create', [
             'model' => $model,
             'modelsCallTeacherSpecialisation' => $modelsCallTeacherSpecialisation ? $modelsCallTeacherSpecialisation : [ new CallTeacherSpecialisation]

@@ -5,14 +5,13 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
  * TeacherBoardSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\TeacherBoard`.
  */
 class TeacherBoardSearch extends TeacherBoard
 {
-    public $year; // to filter teachers by year 
+    public $year; // to filter teachers by year
 
     /**
      * @inheritdoc

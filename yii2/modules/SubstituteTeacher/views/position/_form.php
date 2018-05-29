@@ -141,9 +141,9 @@ JS;
                 ],
                 'clientOptions' => [
                     'onColor' => 'primary',
-                    'onText' => Yii::t('substituteteacher', 'Ναι'),
+                    'onText' => Yii::t('substituteteacher', 'Yes'),
                     'offColor' => 'default',
-                    'offText' => Yii::t('substituteteacher', 'Όχι'),
+                    'offText' => Yii::t('substituteteacher', 'No'),
                 ]
             ]);
             ?>

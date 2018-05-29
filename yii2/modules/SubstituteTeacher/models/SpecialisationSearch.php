@@ -2,8 +2,6 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
-use yii\base\Model;
-
 /**
  * @inheritdoc
  */
