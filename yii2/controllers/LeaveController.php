@@ -459,8 +459,6 @@ class LeaveController extends Controller
                 LeavePrint::path($filename), // remove this if you don't want to send the editable file
             ],
             'to' => $emails,
-            // 'to' => [ $model->employeeObj->email ],
-            'cc' => [ 'spapad@outlook.com' ],
         ]);
 
         $userName = Yii::$app->user->identity->username;

@@ -304,7 +304,6 @@ class TransportController extends Controller
      */
     public function actionDelete($id)
     {
-        //        $this->findModel($id)->delete();
         $model = $this->findModel($id);
         if ($model->locked == false) {
             $model->deleted = 1;
@@ -356,7 +355,10 @@ class TransportController extends Controller
             $filename = $prints[0]->transportPrint0->filename;
             return $this->render('print', [
                     'model' => $model,
-                    'filename' => $filename
+                    'filename' => $filename,
+                    'id' => $id, 
+                    'ftype' => $ftype,
+                    'emails' => [ $model->employee0->email ] // @see actionEmail
             ]);
         } else {
             if ($ftype > Transport::fall) {
@@ -426,12 +428,12 @@ class TransportController extends Controller
         $dts = date('YmdHis');
         if ($which == Transport::fapproval) { //ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
             $templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename1 : null;
-            if ($templatefilename === null) {
+            if (empty($templatefilename)) {
                 throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
             }
         } elseif ($which == Transport::fjournal) { //ΗΜΕΡΟΛΟΓΙΟ ΜΕΤΑΚΙΝΗΣΗΣ
             $templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename2 : null;
-            if ($templatefilename === null) {
+            if (empty($templatefilename)) {
                 throw new NotFoundHttpException(Yii::t('app', 'There is no associated template file for this transport type.'));
             }
             $dts .= '_' . str_replace('-', '', $this->from) . '-' . str_replace('-', '', $this->to);
@@ -796,7 +798,10 @@ class TransportController extends Controller
         Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
         return $this->render('print', [
                     'model' => $model,
-                    'filename' => $filename
+                    'filename' => $filename,
+                    'id' => $id, 
+                    'ftype' => $ftype,
+                    'emails' => [ $model->employee0->email ] // @see actionEmail
         ]);
     }
 
@@ -991,45 +996,13 @@ class TransportController extends Controller
         return $success;
     }
 
-    /* Send email to $email with $filename attached
-     * @return Integer = number of emails successfully sent
-     */
-    protected function sendEmail($filename, $emails)
-    {
-        $subject = Yii::t('app', 'Transport journal post');
-        $txtBody = Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated transport journal email');
-        $htmlBody = '<b>' . Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated transport journal email') .'</b>';
-        $messages = [];
-        foreach ($emails as $email) {
-            $messages[] = Yii::$app->mailer->compose()
-                ->setFrom(Yii::$app->params['adminEmail'])
-                ->setSubject($subject)
-                ->setTextBody($txtBody)
-                ->setHtmlBody($htmlBody)
-                ->attach($filename)
-                ->setTo($email);
-        }
-        $num = -1;
-        try {
-            $num = Yii::$app->mailer->sendMultiple($messages);
-        } catch (\Swift_TransportException $e) { // exception 'Swift_TransportException'
-            $logStr = 'Swift_TransportException in transport-journal-email-sending: ';
-            $pos = strpos($e, 'Stack trace:');
-            if ($pos>0) {
-                $logStr .= substr($e, 0, $pos);
-            }
-            Yii::info($logStr, 'transport-journal-email');
-        }
-
-        return  $num;//num of messages successfully sent
-    }
-
     public function actionEmailjournal($id, $ftype)
     {
         $model = $this->findModel($id);
         if ($model->deleted) {
             throw new NotFoundHttpException(Yii::t('app', 'The requested transport is deleted.'));
         }
+        $emails = [];
         // Σε κάθε μετακίνηση θα υπάρχει το πολύ ένα έγγραφο του τύπου ftype
         if (($prints = $model->transportPrints) != null) {
             if (count($prints) == 1) {
@@ -1060,7 +1033,22 @@ class TransportController extends Controller
         }
 
         $emails[0] = $model->employee0->email; // το έχω σαν πίνακα ώστε αν θέλω κι άλλα emails να δουλεύουν όλα
-        $sendNum = $this->sendEmail(TransportPrint::path($filename), $emails); // θα είναι 0 ή 1 εκτός αν προσθέσω emails...
+        $sendNum = \app\modules\Email\controllers\PostmanController::send([
+            'redirect_route' => [
+                '/transport/print', 'id' => $model->id, 'ftype' => $ftype
+            ],
+            'template' => 'transport.journal.main',
+            'template_data' => [
+                '{TRANSPORT_PERSON}' => Yii::$app->params['transportPerson'],
+                '{TRANSPORT_PHONE}' => Yii::$app->params['transportPhone'],
+                '{TRANSPORT_FAX}' => Yii::$app->params['transportFax'],
+            ],
+            'files' => [
+                TransportPrint::path($filename) // remove this if you don't want to send the editable file
+            ],
+            'to' => $emails, // θα είναι 0 ή 1 εκτός αν προσθέσω emails...
+        ]);
+
         $userName = Yii::$app->user->identity->username;
         $simple_emails = implode(',', array_filter($emails, function ($v) {
             return $v !== null;

@@ -166,8 +166,8 @@ class PostmanController extends Controller
         $data = array_merge([
             'from' => Yii::$app->getModule('Email')->params['from'],
             'replyTo' => Yii::$app->getModule('Email')->params['reply-to'],
-            'to' => '',
-            'cc' => '',
+            'to' => [],
+            'cc' => [],
             'template' => '',
             'template_data' => [],
             'files' => [],
