@@ -93,56 +93,6 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
     <?php ActiveForm::end(); ?>
 
 </div>
-<div class="finance-expenditure-form col-lg-6">
-			<div>
-			<?= ChartJs::widget(['type' => 'horizontalBar',
-			    
-                                 'data' => [                                    
-                                    'labels' => $withdrawals_expendituressum['DECISION'],
-                                    'datasets' => [
-                                        [
-                                            'label' => Module::t('modules/finance/app', "Initial Amount"),
-                                            'backgroundColor' => 'blue', //$colors,
-                                            'data' => $withdrawals_expendituressum['INITIAL']
-                                        ],
-                                        [
-                                            'label' => Module::t('modules/finance/app', "Expenditures Sum"),
-                                            'backgroundColor' => 'red', //$colors,
-                                            'data' => $withdrawals_expendituressum['EXPENDED']
-                                        ],                                        
-                                        [
-                                            'label' => Module::t('modules/finance/app', "Available Amount"),
-                                            'backgroundColor' => 'green', //$colors,
-                                            'data' => $withdrawals_expendituressum['AVAILABLE']
-                                        ],
-                                     ]
-                                ],
-			    'options' => ['height' => count($withdrawals_expendituressum['DECISION'])*40,'title' => ['display' => true, 'text' => 'Στοιχεία αναλήψεων ΚΑΕ δαπάνης']],
-                            ]);
-            ?> 
-            </div>
-            <div><hr></div>
-            <div class="table-responsive">          
-  				<table class="table table-bordered table-hover">
-  					<thead><tr class="info"><th colspan="4" style="text-align: center;">Στοιχεία αναλήψεων ΚΑΕ δαπάνης</th></tr></thead>
-                	<thead>
-                        <tr>
-                            <th><?= Module::t('modules/finance/app', "Withdrawal") ?></th>
-                            <th><?= Module::t('modules/finance/app', "Initial Amount") ?></th>
-                            <th><?= Module::t('modules/finance/app', "Expenditures Sum") ?></th>
-                            <th><?= Module::t('modules/finance/app', "Available Amount") ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    	<?php for ($i = 0; $i < count($withdrawals_expendituressum['DECISION']); $i++) {?>
-                            <tr>
-                                <td><?= $withdrawals_expendituressum['DECISION'][$i]; ?></td>
-                                <td style="text-align: right;"><?= Yii::$app->formatter->asCurrency($withdrawals_expendituressum['INITIAL'][$i]); ?></td>
-                                <td style="text-align: right;"><?= Yii::$app->formatter->asCurrency($withdrawals_expendituressum['EXPENDED'][$i]); ?></td>
-                                <td style="text-align: right;"><?= Yii::$app->formatter->asCurrency($withdrawals_expendituressum['AVAILABLE'][$i]); ?></td>
-                            </tr>
-                        <?php }?>
-	                </tbody>
-  				</table>
-			</div>
+<div class="col-lg-6">
+	<?= $this->render('/default/kaewithdrawalsexpenditures', ['withdrawals_expendituressum' => $withdrawals_expendituressum, 'horizontal' => false]);?>			
 </div>
