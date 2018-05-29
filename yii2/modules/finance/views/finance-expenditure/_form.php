@@ -11,14 +11,7 @@ use dosamigos\chartjs\ChartJs;
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
-/*$tmp = array();//[43, 42, 54, 78, 41, 43];
-array_push($tmp, 43);
-array_push($tmp, 42);
-array_push($tmp, 54);
-array_push($tmp, 78);
-array_push($tmp, 41);
-array_push($tmp, 43);*/
-//echo "<pre>"; print_r($withdrawals_expendituressum['INITIAL']); echo "</pre>"; die();
+
 $model->exp_amount = Money::toCurrency($model->exp_amount);
 ?>
 
