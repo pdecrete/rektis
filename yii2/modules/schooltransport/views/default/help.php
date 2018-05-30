@@ -2,6 +2,7 @@
 
 use app\modules\Pages\models\Page;
 use app\modules\schooltransport\Module;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 
@@ -17,7 +18,17 @@ if(array_key_exists($helpId, $collapse_in)){
 }
 
 $app_help = Page::findOne(['identity' => 'schtransport_apphelp']);
+if(is_null($app_help)){
+    $app_help['title'] = 'Η σελίδα βοήθειας με λεκτικό αναγνωριστικό <em>"schtransport_apphelp"</em> δεν βρέθηκε.';
+    $app_help['content'] = '';
+}
 $approval_help = Page::findOne(['identity' => 'schtransport_approvalhelp']);
+if(is_null($approval_help)){
+    $approval_help['title'] = 'Η σελίδα βοήθειας με λεκτικό αναγνωριστικό <em>"schtransport_approvalhelp"</em> δεν βρέθηκε.';
+    $approval_help['content'] = '';
+    $approval_help['id'] = -1;
+    $approval_help['updated_at'] = -1;
+}
 $legislation_help = Page::findOne(['identity' => 'schtransport_legislationhelp']);
 ?>
 
@@ -25,7 +36,6 @@ $legislation_help = Page::findOne(['identity' => 'schtransport_legislationhelp']
   <div class="panel-group" id="accordion">
   	
     <div class="panel panel-default">
-      <a id="schtransportsapp_help"></a>
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"><?= $app_help['title']?></a>
@@ -39,7 +49,6 @@ $legislation_help = Page::findOne(['identity' => 'schtransport_legislationhelp']
     </div>
     
     <div class="panel panel-default">
-      <a id="schtransports_help"></a>
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"><?= $approval_help['title']?></a>
@@ -47,13 +56,16 @@ $legislation_help = Page::findOne(['identity' => 'schtransport_legislationhelp']
       </div>
       <div id="collapse2" class="panel-collapse collapse <?php echo $collapse_in[2];?>">
         <div class="panel-body">
-        	<?= $approval_help['content']?>
+        	<?= $approval_help['content']?>        	
+    	    <div class="form-group text-right">
+				<?= Html::a(Yii::t('app', 'Update'), ['/Pages/page/update', 'id' => $approval_help['id']], ['class' => 'btn btn-primary']) ?>
+			</div>
+			<div><em>Τελευταία ενημέρωση: <?= date("d-m-Y",$approval_help['updated_at'])?></em></div>
 		</div>
       </div>
     </div>
    
     <div class="panel panel-default">
-      <a id="legislation"></a>
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Νομοθεσία σχετική με τις σχολικές μετακινήσεις.</a>
