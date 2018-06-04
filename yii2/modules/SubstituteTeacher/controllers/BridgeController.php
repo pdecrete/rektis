@@ -126,6 +126,7 @@ class BridgeController extends \yii\web\Controller
                 $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
                 $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_unload = $status_response->getData();
+                // dd($response_data_unload);
                 if ($status_unload !== true) {
                     \Yii::error([$status_unload, $response_data_unload], __METHOD__);
                 } else {
