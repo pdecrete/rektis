@@ -255,7 +255,8 @@ class LeaveController extends Controller
         Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
         return $this->render('print', [
                     'model' => $model,
-                    'filename' => $filename
+                    'filename' => $filename,
+                    'emails' => $model->getDecisionEmails()
         ]);
     }
 
