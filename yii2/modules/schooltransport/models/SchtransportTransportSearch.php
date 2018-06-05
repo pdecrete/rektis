@@ -67,16 +67,15 @@ class SchtransportTransportSearch extends SchtransportTransport
                     ->andWhere($tblprefix . 'schtransport_transport.meeting_id  = ' . $tblprefix . 'schtransport_meeting.meeting_id')
                     ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
                     ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id')
-                    ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id');
+                    ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id')
+                    ->orderBy($tblprefix . 'schtransport_transport.transport_creationdate');
         //echo $query->createCommand()->rawSql; die();
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['school_name', 'meeting_country', 'meeting_city', 'transport_startdate', 'transport_enddate',
-                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle', 'statescount'],
-                        'defaultOrder' => ['transport_startdate'=>SORT_ASC, 'school_name'=>SORT_ASC]
-            ]
+                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle', 'statescount']]
         ]);
 
         $this->load($params);

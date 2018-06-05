@@ -160,7 +160,8 @@ class SchoolunitController extends Controller
                 "region_edu_admin" => 53,
                 "pagesize" => 500,
                 "page" => 1,
-                "edu_admin" => null
+                "edu_admin" => null,
+                "state" => 'ΕΝΕΡΓΗ'
             );
                         
             $curl = curl_init();        
@@ -173,6 +174,7 @@ class SchoolunitController extends Controller
             curl_setopt($curl, CURLOPT_URL, $api_url); 
 
             $transaction = Yii::$app->db->beginTransaction();
+            
             /***************** Περιφερειακή Διεύθυνση ********************/
             
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
@@ -184,11 +186,19 @@ class SchoolunitController extends Controller
                 
             $school_names = $data->data;
             foreach ($school_names as $school){
-                $school_model = new Schoolunit();
-                $school_model->directorate_id = 53;
-                $school_model->school_id = $school->mm_id;
-                $school_model->school_name = $school->name;
-                $school_model->save();
+                $school_model = Schoolunit::findOne(['school_id' => $school->mm_id]);
+                if(is_null($school_model)){
+                    $school_model = new Schoolunit();
+                    $school_model->directorate_id = 53;
+                    $school_model->school_id = $school->mm_id;
+                    $school_model->school_name = $school->name;
+                }
+                else {
+                    $school_model->school_name = $school->name;
+                }
+               
+                if(!$school_model->save())
+                    throw new \Exception("PDE schools error.");
             }          
             
             /**************** Διευθύνσεις Α/θμιας & Β/θμιας **************/
@@ -206,11 +216,20 @@ class SchoolunitController extends Controller
         
                 $school_names = $data->data;
                 foreach ($school_names as $school){
-                    $school_model = new Schoolunit();
-                    $school_model->directorate_id = $edu_admin[0];
-                    $school_model->school_id = $school->mm_id;
-                    $school_model->school_name = $school->name;
-                    $school_model->save();
+                    $school_model = Schoolunit::findOne(['school_id' => $school->mm_id]);
+                    if(is_null($school_model)){
+                        $school_model = new Schoolunit();
+                        $school_model->directorate_id = $edu_admin[0];
+                        $school_model->school_id = $school->mm_id;
+                        $school_model->school_name = $school->name;
+                    }
+                    else {
+                        $school_model->school_name = $school->name;
+                    }
+                    
+                    if(!$school_model->save()){
+                        throw new \Exception("Local directorates school error.");
+                    }
                 }
             }           
             curl_close($curl);

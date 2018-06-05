@@ -34,6 +34,9 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php 
 		      if($archived):
                   echo Html::a(Module::t('modules/schooltransport/app', 'Active Transportations Approvals'), ['index'], ['class' => 'btn btn-primary']);
+              else:
+                  echo Html::a(Module::t('modules/schooltransport/app', 'Archive'), ['archive'], 
+                                        ['class' => 'btn btn-success', 'data-method' => 'POST']);
               endif;
         ?>
     	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">
@@ -71,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],              
+            //['class' => 'yii\grid\SerialColumn'],              
             ['attribute' => 'school_name',
              'label' => Module::t('modules/schooltransport/app', 'School Unit'),
              'headerOptions' => ['class'=> 'text-center'],
@@ -265,6 +268,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             },
             'contentOptions' => ['class'=> 'text-center text-nowrap'],
+            ],
+            ['class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {return ['value' => $model['transport_id']];}
             ],
         ],
     ]); ?>

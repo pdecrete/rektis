@@ -149,7 +149,7 @@ class SchtransportTransportController extends Controller
                     $program_model->program_id = $existing_program->program_id;
                 else {
                     if(!$program_model->save())
-                        throw new Exception("Failure in creating the transportation");
+                        throw new Exception("Failure in creating the transportation1");
                 }
                 //echo 'hallo'; die();
                 $meeting_model->program_id = $program_model->program_id;
@@ -161,16 +161,17 @@ class SchtransportTransportController extends Controller
                     if(!$meeting_model->save())
                         throw new Exception("Failure in creating the transportation");
                 }
-                $model->meeting_id = $meeting_model->meeting_id;                
+                $model->meeting_id = $meeting_model->meeting_id;
+                $model->transport_creationdate = date("Y-m-d");
                 if(!$model->save())
-                    throw new Exception("Failure in creating the school transportation.");
+                    throw new Exception("Failure in creating the school transportation2.");
                 $file = $this->createApprovalFile($model, $meeting_model, $program_model);
                 $model->transport_approvalfile = $file;
                 
                 /* Save model twice, the first one for creating the transport_id and the
                  second to save the file with filename that has the transport_id as part of it.*/
                 if(!$model->save()) 
-                    throw new Exception("Failure in creating the school transportation.");
+                    throw new Exception("Failure in creating the school transportation3.");
                 
                     if($file == null){
                         throw new Exception("The template file could not be found.");
@@ -290,6 +291,7 @@ class SchtransportTransportController extends Controller
                 if($filename == null)
                     throw new Exception("The template file could not be found.");
                 $model->transport_approvalfile = $filename;
+                $model->transport_creationdate = date("Y-m-d");
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
                                     
@@ -752,28 +754,37 @@ class SchtransportTransportController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionArchive($id)
+    public function actionArchive()//$id)
     {
-        try{
-            $transport_model = $this->findModel($id);
-            
-            $existing_trnsportstate_models = $transport_model->getTransportstates()->all();
-                        
-            if(count($existing_trnsportstate_models) < 3){
-                throw new Exception('The transportation approval cannot be archived because the procedure is not completed.');
+        $transport_ids = Yii::$app->request->post('selection');
+        echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
+        $transaction = Yii::$app->db->beginTransaction();
+        try{            
+            foreach ($transport_ids as $transport_id)
+            {
+                $transport_model = $this->findModel($id);
+                
+                $existing_trnsportstate_models = $transport_model->getTransportstates()->all();
+                            
+                if(count($existing_trnsportstate_models) < 3){
+                    throw new Exception('The transportation approval cannot be archived because the procedure is not completed.');
+                }
+                
+                $transport_model->transport_isarchived = 1;
+                if(!$transport_model->save())
+                    throw new Exception("Failed to archive transportation approval.");                
+                    
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' archived transport with id "' . $id . '.', 'schooltransport');
             }
             
-            $transport_model->transport_isarchived = 1;
-            if(!$transport_model->save())
-                throw new Exception("Failed to archive transportation approval.");
-            
-            $user = Yii::$app->user->identity->username;
-            Yii::info('User ' . $user . ' archived transport with id "' . $id . '.', 'schooltransport');
-                    
-            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transportation approval was archived successfully."));
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The archiving was completed successfully."));
             return $this->redirect(['index']);
+            
         }
         catch (Exception $exc){
+            $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }

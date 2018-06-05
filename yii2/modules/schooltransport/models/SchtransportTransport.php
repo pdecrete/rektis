@@ -38,8 +38,8 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_datesentapproval'], 'safe'],
-            [['transport_startdate', 'transport_enddate', 'transport_teachers', 'transport_localdirectorate_protocol', 'meeting_id', 'school_id'], 'required'],
+            [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_datesentapproval', 'transport_creationdate'], 'safe'],
+            [['transport_startdate', 'transport_creationdate', 'transport_enddate', 'transport_teachers', 'transport_localdirectorate_protocol', 'meeting_id', 'school_id'], 'required'],
             [['meeting_id', 'school_id'], 'integer'],
             [['transport_headteacher'], 'string', 'max' => 100],
             [['transport_teachers'], 'string', 'max' => 1000],
@@ -68,6 +68,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
             'transport_submissiondate' => Module::t('modules/schooltransport/app', 'Application Date'),
             'transport_startdate' => Module::t('modules/schooltransport/app', 'Transportation Start'),
             'transport_enddate' => Module::t('modules/schooltransport/app', 'Transportation End'),
+            'transport_creationdate' => Module::t('modules/schooltransport/app', 'Creation Date'),
             'transport_headteacher' => Module::t('modules/schooltransport/app', 'Head Teacher'),
             'transport_teachers' => Module::t('modules/schooltransport/app', 'Transportation Teachers'),
             'transport_students' => Module::t('modules/schooltransport/app', 'Transportation Students'),
