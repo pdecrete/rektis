@@ -25,7 +25,7 @@ class SchtransportTransportSearch extends SchtransportTransport
     public function rules()
     {    
         return [[['transport_id', 'meeting_id', 'school_id'], 'integer'],
-                [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_teachers', 
+                [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_creationdate', 'transport_teachers', 
                 'transport_students', 'transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_remarks', 
                 'transport_datesentapproval', 'transport_dateprotocolcompleted', 'transport_approvalfile',                     
                 'transport_signedapprovalfile', 'meeting_city' ,'meeting_country', 'meeting_startdate', 
@@ -68,14 +68,15 @@ class SchtransportTransportSearch extends SchtransportTransport
                     ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
                     ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id')
                     ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id')
-                    ->orderBy($tblprefix . 'schtransport_transport.transport_creationdate desc');
+                    ;//->orderBy($tblprefix . 'schtransport_transport.transport_creationdate desc');
         //echo $query->createCommand()->rawSql; die();
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [ 'attributes' => ['school_name', 'meeting_country', 'meeting_city', 'transport_startdate', 'transport_enddate',
-                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle', 'statescount']]
+            'sort' => [ 'attributes' => ['school_name', 'meeting_country', 'meeting_city', 'transport_startdate', 'transport_enddate', 'transport_creationdate',
+                        'meeting_startdate', 'meeting_enddate', 'programcategory_programtitle', 'statescount'],
+                        'defaultOrder' => ['transport_creationdate'=>SORT_DESC]]
         ]);
 
         $this->load($params);

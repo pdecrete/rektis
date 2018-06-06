@@ -113,5 +113,6 @@ return [
     'Archive' => 'Αρχειοθέτηση',
     'Restore' => 'Επαναφορά',
     'Please select at least one transport approval.' => 'Παρακαλώ επιλέξτε τουλάχιστον μία έγκριση μετακίνησης.',
-    'End date of transportation is prior start date. Please correct.' => 'Η ημερομηνία λήξης της μετακίνησης είναι πριν την ημερομηνία έναρξης. Παρακαλώ διορθώστε.'
+    'End date of transportation is prior start date. Please correct.' => 'Η ημερομηνία λήξης της μετακίνησης είναι πριν την ημερομηνία έναρξης. Παρακαλώ διορθώστε.',
+    'Created' => 'Δημιουργήθηκε'
 ];
