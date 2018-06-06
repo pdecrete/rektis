@@ -138,7 +138,7 @@ class m180403_094056_schooltransport_init extends Migration
                              `transport_submissiondate` DATE COMMENT 'Ημερομηνία Αίτησης Έγκρισης',
                              `transport_startdate` DATE NOT NULL COMMENT 'Έναρξη Μετακίνησης',
                              `transport_enddate` DATE NOT NULL COMMENT 'Λήξη Μετακίνησης',
-                             `transport_creationdate` DATE NOT NULL COMMENT 'Δημιουργία Μετακίνησης',
+                             `transport_creationdate` DATETIME NOT NULL COMMENT 'Δημιουργία Μετακίνησης',
                              `transport_headteacher` VARCHAR(100) COMMENT 'Αρχηγός Συνοδός',
                              `transport_teachers` VARCHAR(1000) NOT NULL COMMENT 'Μετακινούμενοι/Συνοδοί Εκπαιδευτικοί',
                              `transport_substituteteachers` VARCHAR(1000) COMMENT 'Αναπληρωτές Συνοδοί Εκπαιδευτικοί',

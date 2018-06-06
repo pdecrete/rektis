@@ -68,7 +68,7 @@ class SchtransportTransportSearch extends SchtransportTransport
                     ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
                     ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id')
                     ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id')
-                    ->orderBy($tblprefix . 'schtransport_transport.transport_creationdate');
+                    ->orderBy($tblprefix . 'schtransport_transport.transport_creationdate desc');
         //echo $query->createCommand()->rawSql; die();
         // add conditions that should always apply here
 

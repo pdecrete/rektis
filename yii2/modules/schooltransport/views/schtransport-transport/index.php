@@ -29,14 +29,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <?=Html::beginForm(['archiveform'], 'post');?>
 	<p class="text-right">
 		<?php 
 		      if($archived):
                   echo Html::a(Module::t('modules/schooltransport/app', 'Active Transportations Approvals'), ['index'], ['class' => 'btn btn-primary']);
+                  echo "&nbsp;". Html::a(Module::t('modules/schooltransport/app', 'Restore'), ['restore'], 
+                                                  ['class' => 'btn btn-primary', 'data-method' => 'POST', 'data-toggle'=>"tooltip", 
+                                                      'title'=> Module::t('modules/schooltransport/app', "Restore selected approvals.")]);
               else:
                   echo Html::a(Module::t('modules/schooltransport/app', 'Archive'), ['archive'], 
-                                        ['class' => 'btn btn-success', 'data-method' => 'POST']);
+                                        ['class' => 'btn btn-primary', 'data-method' => 'POST']);
               endif;
         ?>
     	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">
@@ -74,7 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            //['class' => 'yii\grid\SerialColumn'],              
+            ['class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {return ['value' => $model['transport_id']];}
+            ],
             ['attribute' => 'school_name',
              'label' => Module::t('modules/schooltransport/app', 'School Unit'),
              'headerOptions' => ['class'=> 'text-center'],
@@ -189,19 +194,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{view} {update} {delete} {download} {downloadsigned} {archive}' . $stateactions,
-              'buttons' => ['archive' => function ($url, $model) {
-                                                        if(!$model['transport_isarchived'])
-                                                            return Html::a('<span class="glyphicon glyphicon-save-file"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Archive transportation approval'),
-                                                                    'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να αρχειοθετήσετε την έγκριση μετακίνησης;",
-                                                                             'data-method' => 'post']]);
-                                                        else
-                                                            return Html::a('<span class="glyphicon glyphicon-open-file"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Restore transportation approval'),
-                                                                    'data'=>['confirm'=>"Είστε σίγουροι ότι θέλετε να επαναφέρετε την έγκριση μετακίνησης στις ενεργές;",
-                                                                             'data-method' => 'post']]);
-                                                    },
-                           'downloadsigned' => function ($url, $model) {
+              'buttons' => ['downloadsigned' => function ($url, $model) {
                                                     if(!is_null($model['transport_signedapprovalfile']))
                                                         return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
                                                                     ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
@@ -250,14 +243,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     $url = Url::to(['/schooltransport/schtransport-transport/downloadsigned', 'id' =>$model['transport_id']]);
                     return $url;
                 }
-                if ($action === 'archive') {
-                    $url = "";
-                    if(!$model['transport_isarchived'])
-                        $url = Url::to(['/schooltransport/schtransport-transport/archive', 'id' =>$model['transport_id']]);
-                    else
-                        $url = Url::to(['/schooltransport/schtransport-transport/restore', 'id' =>$model['transport_id']]);
-                    return $url;
-                }
                 if ($action === 'backwardstate') {
                     $url = Url::to(['/schooltransport/schtransport-transport/backwardstate', 'id' =>$model['transport_id']]);
                     return $url;
@@ -269,9 +254,8 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'contentOptions' => ['class'=> 'text-center text-nowrap'],
             ],
-            ['class' => 'yii\grid\CheckboxColumn',
-                'checkboxOptions' => function ($model) {return ['value' => $model['transport_id']];}
-            ],
         ],
     ]); ?>
-<?php Pjax::end(); ?></div>
+<?php Pjax::end(); ?>
+<?= Html::endForm();?>
+</div>

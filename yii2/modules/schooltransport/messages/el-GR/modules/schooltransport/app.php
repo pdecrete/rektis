@@ -108,7 +108,10 @@ return [
     'The transportation approval was restored successfully.' => 'Η έγκριση μετακίνησης μεταφέθηκε επιτυχώς στη λίστα με τις ενεργές.',
     'Failed to restore transportation approval.' => 'Αποτυχία μεταφοράς της έγκρισης μετακίνησης στη λίστα με τις ενεργές.',
     'Not allowed action for archived transportation approval.' => 'Μη επιτρεπτή ενέργεια για αρχειοθετημένη έγκριση μετακίνησης.',
-    'The transportation approval cannot be archived because the procedure is not completed.' => 'Η έγκριση μετακίνησης δεν μπορεί να αρχειοθετηθεί διότι δεν βρίσκεται στην τελική κατάσταση.',
-    'Restore transportation approval' => 'Μεταφορά της έγκρισης μετακίνησης στη λίστα των ενεργών.',
-    'Archive' => 'Αρχειοθέτηση'
+    'Archiving failed because at least one selected transportation approval is not in last state.' => 'Η αρχειοθέτηση απέτυχε επειδή τουλάχιστον μία από τις επιλεχθείσες μετακινήσεις δεν είναι στην τελική κατάσταση.',
+    'Restore selected approvals.' => 'Μεταφορά των επιλεγμένων έγκρισεων μετακίνησης στη λίστα των ενεργών.',
+    'Archive' => 'Αρχειοθέτηση',
+    'Restore' => 'Επαναφορά',
+    'Please select at least one transport approval.' => 'Παρακαλώ επιλέξτε τουλάχιστον μία έγκριση μετακίνησης.',
+    'End date of transportation is prior start date. Please correct.' => 'Η ημερομηνία λήξης της μετακίνησης είναι πριν την ημερομηνία έναρξης. Παρακαλώ διορθώστε.'
 ];

@@ -20,7 +20,6 @@ use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\SchtransportCountry;
 use app\modules\schooltransport\models\SchtransportState;
 use app\modules\schooltransport\models\SchtransportTransportstate;
-use app\modules\schooltransport\models\Directorate;
 
 /**
  * SchtransportTransportController implements the CRUD actions for SchtransportTransport model.
@@ -151,18 +150,18 @@ class SchtransportTransportController extends Controller
                     if(!$program_model->save())
                         throw new Exception("Failure in creating the transportation1");
                 }
-                //echo 'hallo'; die();
-                $meeting_model->program_id = $program_model->program_id;
                 
-                //echo "<pre>"; print_r($meeting_model); echo "</pre>";die();
-                //$meeting_model->program_id = 4;
+                $meeting_model->program_id = $program_model->program_id;
                 
                 if($meeting_model->isNewRecord){
                     if(!$meeting_model->save())
                         throw new Exception("Failure in creating the transportation");
                 }
                 $model->meeting_id = $meeting_model->meeting_id;
-                $model->transport_creationdate = date("Y-m-d");
+                $model->transport_creationdate = date("Y-m-d H:i:s");
+                if(!($model->transport_startdate < $model->transport_enddate))
+                    throw new Exception("End date of transportation is prior start date. Please correct.");
+                
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation2.");
                 $file = $this->createApprovalFile($model, $meeting_model, $program_model);
@@ -228,7 +227,7 @@ class SchtransportTransportController extends Controller
     public function actionUpdate($id, $readonly_mode = false)
     {        
         $model = $this->findModel($id);
-        if($model->transport_isarchived == 1){
+        if($model->transport_isarchived == 1 && !$readonly_mode){
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Not allowed action for archived transportation approval."));
             return $this->redirect(['index', 'archived' => 1]);
         }
@@ -291,7 +290,10 @@ class SchtransportTransportController extends Controller
                 if($filename == null)
                     throw new Exception("The template file could not be found.");
                 $model->transport_approvalfile = $filename;
-                $model->transport_creationdate = date("Y-m-d");
+                $model->transport_creationdate = date("Y-m-d H:i:s");
+                if(!($model->transport_startdate < $model->transport_enddate))
+                    throw new Exception("End date of transportation is prior start date. Please correct.");
+                
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
                                     
@@ -651,7 +653,7 @@ class SchtransportTransportController extends Controller
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $transport_model = $this->findModel($id);
-            if($trnsprt_model->transport_isarchived == 1)
+            if($transport_model->transport_isarchived == 1)
                 throw new Exception('Not allowed action for archived transportation approval.');
             $states_count = count(SchtransportTransportstate::findAll(['transport_id' => $id]));
             if($states_count == 0)
@@ -757,17 +759,22 @@ class SchtransportTransportController extends Controller
     public function actionArchive()//$id)
     {
         $transport_ids = Yii::$app->request->post('selection');
-        echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
+        //echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
+        if(count($transport_ids) == 0){
+            Yii::$app->session->addFlash('info', Module::t('modules/schooltransport/app', "Please select at least one transport approval."));
+            return $this->redirect(['index']);
+        }
+        
         $transaction = Yii::$app->db->beginTransaction();
         try{            
-            foreach ($transport_ids as $transport_id)
+            foreach ($transport_ids as $id)
             {
                 $transport_model = $this->findModel($id);
                 
                 $existing_trnsportstate_models = $transport_model->getTransportstates()->all();
                             
                 if(count($existing_trnsportstate_models) < 3){
-                    throw new Exception('The transportation approval cannot be archived because the procedure is not completed.');
+                    throw new Exception('Archiving failed because at least one selected transportation approval is not in last state.');
                 }
                 
                 $transport_model->transport_isarchived = 1;
@@ -796,22 +803,32 @@ class SchtransportTransportController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionRestore($id)
+    public function actionRestore()
     {
-        try{               
-            $transport_model = $this->findModel($id);
+        $transport_ids = Yii::$app->request->post('selection');
+        if(count($transport_ids) == 0){
+            Yii::$app->session->addFlash('info', Module::t('modules/schooltransport/app', "Please select at least one transport approval."));
+            return $this->redirect(['index?archived=1']);
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            foreach ($transport_ids as $id)
+            {
+                $transport_model = $this->findModel($id);
                 
                 $transport_model->transport_isarchived = 0;
                 if(!$transport_model->save())
                     throw new Exception();
-                    
-                    $user = Yii::$app->user->identity->username;
-                    Yii::info('User ' . $user . ' restored transport with id "' . $id . '.', 'schooltransport');
-                    
-                    Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transportation approval was restored successfully."));
-                    return $this->redirect(['index?archived=1']);
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' restored transport with id "' . $id . '.', 'schooltransport');
+            }
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transportation approval was restored successfully."));
+            return $this->redirect(['index?archived=1']);
         }
         catch (Exception $exc){
+            $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to restore transportation approval."));
             return $this->redirect(['index?archived=1']);
         }
