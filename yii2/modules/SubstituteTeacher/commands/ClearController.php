@@ -2,6 +2,7 @@
 
 namespace app\modules\SubstituteTeacher\commands;
 
+use Yii;
 use yii\helpers\Console;
 use yii\console\Controller;
 use app\modules\SubstituteTeacher\models\Application;
@@ -14,14 +15,15 @@ use app\modules\SubstituteTeacher\models\ApplicationPosition;
  */
 class ClearController extends Controller
 {
+    public $defaultAction = 'application';
 
     /**
-     * Clear data marked as deleted.
+     * Clear application data that has been marked as deleted or is orphaned.
      *
      */
-    public function actionIndex()
+    public function actionApplication()
     {
-        if (false === Console::confirm("Clear application data marked with soft delete?")) {
+        if (false === Console::confirm(Console::ansiFormat("Clear application data marked with soft delete or orphaned?", [Console::BG_RED]))) {
             echo "Abort.\n";
             exit();
         }
@@ -45,6 +47,24 @@ class ClearController extends Controller
         echo "- {$applications_deleted} applications marked as deleted", PHP_EOL;
         echo "- {$application_positions_deleted} application positions marked as deleted", PHP_EOL;
         echo "- {$application_positions_orphaned} application positions orhpaned (null application)", PHP_EOL;
+
+        return Controller::EXIT_CODE_NORMAL;
+    }
+
+    /**
+     * Clear module audit log.
+     *
+     */
+    public function actionAudit()
+    {
+        if (false === Console::confirm(Console::ansiFormat("Clear module audit log?", [Console::BG_RED]))) {
+            echo "Abort.\n";
+            exit();
+        }
+
+        $truncate = Yii::$app->db->createCommand()->truncateTable('{{%staudit_log}}')->execute();
+
+        echo "Cleared audit log [{$truncate}]", PHP_EOL;
 
         return Controller::EXIT_CODE_NORMAL;
     }
