@@ -594,6 +594,7 @@ class SchtransportTransportController extends Controller
             $transportstate_model = new SchtransportTransportstate();
             $transportstate_model->state_id = $count_transportstates + 1;
             $transportstate_model->transport_id = $id;
+            $transportstate_model->transportstate_date = date("Y-m-d");
             $state_name = SchtransportState::find()->where(['state_id' => $count_transportstates+1])->one()['state_name'];
             
             if ($transportstate_model->load(Yii::$app->request->post()) && $trnsprt_model->load(Yii::$app->request->post())) {
