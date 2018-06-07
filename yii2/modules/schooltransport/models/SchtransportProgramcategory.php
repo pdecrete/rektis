@@ -57,6 +57,11 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
     {
         return SchtransportProgramcategory::findOne(['programcategory_id' => $id])['programcategory_programalias'];
     }
+    
+    public static function getTitle($id)
+    {
+        return SchtransportProgramcategory::findOne(['programcategory_id' => $id])['programcategory_programtitle'];
+    }
 
     /**
      * @return \yii\db\ActiveQuery

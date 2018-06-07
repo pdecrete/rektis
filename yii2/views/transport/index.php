@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\datecontrol\DateControl;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TransportSearch */
@@ -31,8 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'employee',
                 'value' => 'employee0.fullname',
-                //'filter' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column()
-                'filter' => \app\models\Employee::find()->innerJoin('admapp_specialisation', 'admapp_specialisation.id=admapp_employee.specialisation')->select(["CONCAT(admapp_employee.surname, \" \", admapp_employee.name, \" του \", admapp_employee.fathersname,  \" (\", admapp_specialisation.code, \")\") as fname", "admapp_employee.id"])->orderBy("fname")->indexBy("id")->column()
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'employee',
+                    'data' => \app\models\Employee::find()->innerJoin('admapp_specialisation', 'admapp_specialisation.id=admapp_employee.specialisation')->select(["CONCAT(admapp_employee.surname, \" \", admapp_employee.name, \" του \", admapp_employee.fathersname,  \" (\", admapp_specialisation.code, \")\") as fname", "admapp_employee.id"])->orderBy("fname")->indexBy("id")->column(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
             ],
             [
                 'attribute' => 'mode',
@@ -83,35 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ])
             ],
-            // 'application_protocol',
-            // 'application_protocol_date',
-            // 'application_date',
-            // 'accompanying_document',
-            // 'reason',
-            // 'from_to',
-            // 'base',
-            // 'days_applied',
-            // 'klm',
-            // 'ticket_value',
-            // 'klm_reimb',
-            // 'days_out',
-            // 'day_reimb',
-            // 'night_reimb',
-            // 'reimbursement',
-            // 'mtpy',
-            // 'pay_amount',
-            // 'expense_details',
-            // 'funds1',
-            // 'funds2',
-            // 'funds3',
-            // 'code719',
-            // 'code721',
-            // 'code722',
-            // 'count_flag',
-            // 'comment:ntext',
-            // 'create_ts',
-            // 'update_ts',
-            // 'deleted',
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {update} {printButton} {delete}',

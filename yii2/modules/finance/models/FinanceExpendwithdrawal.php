@@ -3,6 +3,7 @@
 namespace app\modules\finance\models;
 
 use app\modules\finance\Module;
+use app\modules\finance\components\Money;
 
 /**
  * This is the model class for table "{{%finance_expendwithdrawal}}".
@@ -85,9 +86,10 @@ class FinanceExpendwithdrawal extends \yii\db\ActiveRecord
         $expenditures_sum = 0;
         $expend_withdrawals = FinanceExpendwithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->all();
         foreach ($expend_withdrawals as $expend_withdrawal) {
-            $expenditures_sum += $expend_withdrawal->expwithdr_amount;
+            $expenditure_fpa = Money::toDecimalPercentage(FinanceExpenditure::findOne(['exp_id' => $expend_withdrawal['exp_id']])['fpa_value'], false);
+            $expenditures_sum += $expend_withdrawal->expwithdr_amount + $expend_withdrawal->expwithdr_amount*$expenditure_fpa;
         }
-        return $expenditures_sum;
+        return round($expenditures_sum, 0);
     }
 
     /**

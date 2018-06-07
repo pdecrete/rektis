@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 use app\modules\finance\Module;
 use kartik\select2\Select2;
 use app\modules\finance\components\Money;
+use dosamigos\chartjs\ChartJs;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
@@ -84,4 +85,7 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 
     <?php ActiveForm::end(); ?>
 
+</div>
+<div class="col-lg-6">
+	<?= $this->render('/default/kaewithdrawalsexpenditures', ['withdrawals_expendituressum' => $withdrawals_expendituressum, 'horizontal' => false]);?>			
 </div>

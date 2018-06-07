@@ -2,6 +2,7 @@
 
 namespace app\modules\schooltransport\models;
 
+use app\modules\schooltransport\Module;
 use Yii;
 
 /**
@@ -37,6 +38,7 @@ class SchtransportMeeting extends \yii\db\ActiveRecord
             [['meeting_startdate', 'meeting_enddate'], 'safe'],
             [['program_id'], 'integer'],
             [['meeting_city', 'meeting_country'], 'string', 'max' => 100],
+            [['meeting_hostschool'], 'string', 'max' => 200],
             [['program_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchtransportProgram::className(), 'targetAttribute' => ['program_id' => 'program_id']],
         ];
     }
@@ -47,12 +49,13 @@ class SchtransportMeeting extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'meeting_id' => Yii::t('app', 'Meeting ID'),
-            'meeting_city' => Yii::t('app', 'Πόλη'),
-            'meeting_country' => Yii::t('app', 'Χώρα'),
-            'meeting_startdate' => Yii::t('app', 'Έναρξη συνάντησης'),
-            'meeting_enddate' => Yii::t('app', 'Λήξη συνάντησης'),
-            'program_id' => Yii::t('app', 'Program ID'),
+            'meeting_id' => Module::t('modules/schooltransport/app', 'Meeting ID'),
+            'meeting_city' => Module::t('modules/schooltransport/app', 'City'),
+            'meeting_country' => Module::t('modules/schooltransport/app', 'Country'),
+            'meeting_hostschool' => Module::t('modules/schooltransport/app', 'Hosting School'),
+            'meeting_startdate' => Module::t('modules/schooltransport/app', 'Meeting Start'),
+            'meeting_enddate' => Module::t('modules/schooltransport/app', 'Meeting End'),
+            'program_id' => Module::t('modules/schooltransport/app', 'Program ID'),
         ];
     }
 

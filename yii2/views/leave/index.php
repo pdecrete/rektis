@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use kartik\datecontrol\DateControl;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LeaveSearch */
@@ -32,7 +33,14 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'employee',
                 'value' => 'employeeObj.fullname',
-                'filter' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column()
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'employee',
+                    'data' => \app\models\Employee::find()->select(["CONCAT(surname, ' ', name) as fname", 'id'])->orderBy('fname')->indexBy('id')->column(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
             ],
             [
                 'attribute' => 'type',

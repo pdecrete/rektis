@@ -234,7 +234,8 @@ class LeaveController extends Controller
             $filename = $prints[0]->filename;
             return $this->render('print', [
                     'model' => $model,
-                    'filename' => $filename
+                    'filename' => $filename,
+                    'emails' => $model->getDecisionEmails()
             ]);
         } else {
             $filename = $this->fixPrintDocument($model);
@@ -254,7 +255,8 @@ class LeaveController extends Controller
         Yii::$app->session->setFlash('success', Yii::t('app', 'Succesfully generated file on {date}.', ['date' => date('d/m/Y')]));
         return $this->render('print', [
                     'model' => $model,
-                    'filename' => $filename
+                    'filename' => $filename,
+                    'emails' => $model->getDecisionEmails()
         ]);
     }
 
@@ -393,39 +395,6 @@ class LeaveController extends Controller
         }
     }
 
-    /* Send multiple emails to $emails with $filename attached
-     * @return Integer = number of emails successfully sent
-     */
-    protected function sendEmail($filename, $emails)
-    {
-        $subject = Yii::t('app', 'Leave decision post');
-        $txtBody = Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email');
-        $htmlBody = '<b>' . Yii::$app->params['companyName'] . ' - ' . Yii::t('app', 'Automated leave email') .'</b>';
-        $messages = [];
-        foreach ($emails as $email) {
-            $messages[] = Yii::$app->mailer->compose()
-                ->setFrom(Yii::$app->params['adminEmail'])
-                ->setSubject($subject)
-                ->setTextBody($txtBody)
-                ->setHtmlBody($htmlBody)
-                ->attach($filename)
-                ->setTo($email);
-        }
-        $num = -1;
-        try {
-            $num = Yii::$app->mailer->sendMultiple($messages);
-        } catch (\Swift_TransportException $e) { // exception 'Swift_TransportException'
-            $logStr = 'Swift_TransportException in leave-email-sending: ';
-            $pos = strpos($e, 'Stack trace:');
-            if ($pos>0) {
-                $logStr .= substr($e, 0, $pos);
-            }
-            Yii::info($logStr, 'leave-email');
-        }
-
-        return  $num;//num of messages successfully sent
-    }
-
     protected function updateEmailSent($emails, $model)
     {
         $ids = [];
@@ -474,7 +443,24 @@ class LeaveController extends Controller
         $simpleLeaveIDs = implode(',', array_filter($leaveIDs, function ($v) {
             return $v !== null;
         }));
-        $sendNum = $this->sendEmail(LeavePrint::path($filename), $emails);
+        $sendNum = \app\modules\Email\controllers\PostmanController::send([
+            'redirect_route' => [
+                '/leave/print', 'id' => $model->id
+            ],
+            'template' => 'leave.mail.main',
+            'template_data' => [
+                '{DECISION_PROTOCOL}' => $model->decision_protocol,
+                '{DECISION_DATE}' => Yii::$app->formatter->asDate($model->decision_protocol_date),
+                '{LEAVE_PERSON}' => Yii::$app->params['leavePerson'],
+                '{LEAVE_PHONE}' => Yii::$app->params['leavePhone'],
+                '{LEAVE_FAX}' => Yii::$app->params['leaveFax'],
+                '{LEAVE_TYPE}' => $model->typeObj->name,
+            ],
+            'files' => [
+                LeavePrint::path($filename), // remove this if you don't want to send the editable file
+            ],
+            'to' => $emails,
+        ]);
 
         $userName = Yii::$app->user->identity->username;
         $simple_emails = implode(',', array_filter($emails, function ($v) {

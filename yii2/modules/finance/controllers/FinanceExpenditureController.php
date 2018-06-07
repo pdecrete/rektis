@@ -98,7 +98,8 @@ class FinanceExpenditureController extends Controller
                 ->where(['kaewithdr_id' => $kaewithdrawal['kaewithdr_id']])
                 ->one()['kaecredit_id'];
 
-                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'] +
+                $kaewithdrawal['expwithdr_amount']*Money::toDecimalPercentage($expend_model['fpa_value']);
             }
         }
 
@@ -111,6 +112,31 @@ class FinanceExpenditureController extends Controller
         ]);
     }
 
+    /**
+     * Creates an array of the sum expenditures carried out in the withdrawalas of an RCN
+     * @return array
+     */
+    private function withdrawalsData($kaewithdrawals)
+    {
+        $withdrawals_expendituressum['DECISION'] = array();
+        $withdrawals_expendituressum['INITIAL'] = array();
+        $withdrawals_expendituressum['EXPENDED'] = array();
+        $withdrawals_expendituressum['AVAILABLE'] = array();
+        foreach ($kaewithdrawals as $key=>$kaewithdrawal){
+            $expended = FinanceExpendwithdrawal::getExpendituresSum($kaewithdrawal->kaewithdr_id);
+            $substr_decision = $kaewithdrawal->kaewithdr_decision;
+            if (strlen($substr_decision) > 22){
+                $substr_decision = substr($kaewithdrawal->kaewithdr_decision, 0, 22) . '...';
+            }
+            array_push($withdrawals_expendituressum['DECISION'], $substr_decision);
+            array_push($withdrawals_expendituressum['INITIAL'], Money::toCurrency($kaewithdrawal->kaewithdr_amount));
+            array_push($withdrawals_expendituressum['EXPENDED'], Money::toCurrency($expended));
+            array_push($withdrawals_expendituressum['AVAILABLE'], Money::toCurrency($kaewithdrawal->kaewithdr_amount - $expended));
+        }
+        
+        return $withdrawals_expendituressum;
+    }
+    
 
     /**
      * Creates a new FinanceExpenditure model for the RCN with number $id.
@@ -131,6 +157,8 @@ class FinanceExpenditureController extends Controller
 
         $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
 
+        $withdrawals_expendituressum = $this->withdrawalsData($kaewithdrawals);
+        
         $i = 0;
         $expendwithdrawals_models = [];
         foreach ($kaewithdrawals as $key=>$kaewithdrawal) {
@@ -141,7 +169,7 @@ class FinanceExpenditureController extends Controller
                 unset($kaewithdrawals[$key]);
             }
         }
-
+        
         if (count($expendwithdrawals_models) == 0) {
             Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "There is no withdrawal for this RCN to create expenditure."));
             return $this->redirect(['index']);
@@ -173,7 +201,8 @@ class FinanceExpenditureController extends Controller
                     'kaewithdrawals' => $kaewithdrawals,
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
-                    'deductions' => $deductions
+                    'deductions' => $deductions,
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum
                 ]);
             }
         } else {
@@ -184,7 +213,8 @@ class FinanceExpenditureController extends Controller
                 'kaewithdrawals' => $kaewithdrawals,
                 'suppliers' => $suppliers,
                 'expenddeduction_models' => $expenddeduction_models,
-                'deductions' => $deductions
+                'deductions' => $deductions,
+                'withdrawals_expendituressum' => $withdrawals_expendituressum
             ]);
         }
     }
@@ -217,6 +247,8 @@ class FinanceExpenditureController extends Controller
         $kaewithdr_id = FinanceExpendwithdrawal::find()->where(['exp_id' => $id])->all()[0]->kaewithdr_id;
         $kaecredit_id = FinanceKaewithdrawal::find()->where(['kaewithdr_id' => $kaewithdr_id])->all()[0]->kaecredit_id;
         $kaewithdrawals = FinanceKaewithdrawal::find()->where(['kaecredit_id' => $kaecredit_id])->all();
+        
+        $withdrawals_expendituressum = $this->withdrawalsData($kaewithdrawals);
                 
         $i = 0;
         $expendwithdrawals_models = FinanceExpendwithdrawal::find()->where(['exp_id' => $id])->orderBy('expwithdr_order')->all();
@@ -279,7 +311,8 @@ class FinanceExpenditureController extends Controller
                     'kaewithdrawals' => $kaewithdrawals,
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
-                    'deductions' => $deductions
+                    'deductions' => $deductions,
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum
                 ]);
             }
         } else {
@@ -290,7 +323,8 @@ class FinanceExpenditureController extends Controller
                     'kaewithdrawals' => $kaewithdrawals,
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
-                    'deductions' => $deductions
+                    'deductions' => $deductions,
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum
             ]);
         }
     }
@@ -379,38 +413,41 @@ class FinanceExpenditureController extends Controller
                 }
             }
            
-            
+            $fpa = Money::toDecimalPercentage($model->fpa_value);
             $partial_amount = $model->exp_amount;
 
             foreach ($expendwithdrawals_models as $expendwithdrawals_model) {
                 if($expendwithdrawals_model->kaewithdr_id == null)
                     continue;
-                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);                
+                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);     
+                
                 $expendwithdrawals_model->exp_id = $model->exp_id;
-                if ($partial_amount > $withdrawal_balance) {
-                    $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
-                    $partial_amount = $partial_amount - $withdrawal_balance;
+                if (($partial_amount + $partial_amount*$fpa) > $withdrawal_balance) {  
+                    $expendwithdrawals_model->expwithdr_amount = floor($withdrawal_balance/(1+$fpa));
+                    $partial_amount = $partial_amount - $expendwithdrawals_model->expwithdr_amount;
                     if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
                         $exist_model->expwithdr_amount = $expendwithdrawals_model['expwithdr_amount'];
                         $exist_model->expwithdr_order = $expendwithdrawals_model->expwithdr_order;
-                        if(!$exist_model->save())
-                            throw new Exception("Error in assigning withdrawals to exceptions.");
+                        if(!$exist_model->save()){
+                            print_r($exist_model->errors); die();
+                            throw new Exception("Error in assigning withdrawals to exceptions1.");
+                        }
                     }
                     else if (!$expendwithdrawals_model->save()) {
-                        throw new Exception("Error in assigning withdrawals to exceptions.");
+                        throw new Exception("Error in assigning withdrawals to exceptions2.");
                     }
                 } 
-                else {
+                else if(($partial_amount + $partial_amount*$fpa) <= $withdrawal_balance) {
                     $expendwithdrawals_model->expwithdr_amount = $partial_amount;              
                     if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
                         $exist_model->expwithdr_amount = $partial_amount;
                         $exist_model->expwithdr_order = $expendwithdrawals_model->expwithdr_order;
                         
                         if(!$exist_model->save())
-                            throw new Exception("Error in assigning withdrawals to exceptions.");
+                            throw new Exception("Error in assigning withdrawals to exceptions3.");
                     }
                     else if (!$expendwithdrawals_model->save()) {
-                        throw new Exception("Error in assigning withdrawals to exceptions.");
+                        throw new Exception("Error in assigning withdrawals to exceptions4.");
                     }
                     $partial_amount = 0;
                     break;
@@ -467,7 +504,6 @@ class FinanceExpenditureController extends Controller
             return $this->redirect(['/finance/finance-expenditure/index']);
         }
 
-        $stopedhere = "";
         $expenditure = $this->findModel($id);
         try {
             $transaction = Yii::$app->db->beginTransaction();
@@ -498,7 +534,7 @@ class FinanceExpenditureController extends Controller
             return $this->redirect(['index']);
         } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to delete expenditure." . $stopedhere));
+            Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "Failed to delete expenditure."));
             return $this->redirect(['index']);
         }
         return $this->redirect(['index']);

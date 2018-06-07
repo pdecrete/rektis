@@ -93,5 +93,26 @@ return [
     'Help' => 'Βοήθεια',
     'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.' => 
     'Βοήθεια σχετικά με τη χρήση της εφαρμογής των σχολικών μετακινήσεων, τη διαδικασία δημιουργίας έγκρισης μετακίνησης, καθώς και τη σχετική νομοθεσία.',
-    'Error in downloading file.' => 'Σφάλμα στη λήψη του αρχείου.'
+    'Error in downloading file.' => 'Σφάλμα στη λήψη του αρχείου.',
+    'City' => 'Πόλη',
+    'Country' => 'Χώρα',
+    'Hosting School' => 'Σχολείο Υποδοχής',
+    'Meeting Start' => 'Έναρξη συνάντησης',
+    'Meeting End' => 'Λήξη συνάντησης',
+    'Please define the hosting school.' => 'Παρακαλώ ορίστε το σχολείο υποδοχής.',
+    'Archived Transportations Approvals' => 'Προβολή Αρχειοθετημένων Εγκρίσεων',
+    'Active Transportations Approvals' => 'Προβολή Ενεργών Εγκρίσεων',
+    'Archive transportation approval' => 'Αρχειοθέτηση έγκρισης',
+    'The archiving was completed successfully.' => 'Η αρχειοθέτηση ολοκληρώθηκε επιτυχώς.',
+    'Failed to archive transportation approval' => 'Αποτυχία αρχειοθέτησης της έγκρισης μετακίνησης.',
+    'The transportation approval was restored successfully.' => 'Η έγκριση μετακίνησης μεταφέθηκε επιτυχώς στη λίστα με τις ενεργές.',
+    'Failed to restore transportation approval.' => 'Αποτυχία μεταφοράς της έγκρισης μετακίνησης στη λίστα με τις ενεργές.',
+    'Not allowed action for archived transportation approval.' => 'Μη επιτρεπτή ενέργεια για αρχειοθετημένη έγκριση μετακίνησης.',
+    'Archiving failed because at least one selected transportation approval is not in last state.' => 'Η αρχειοθέτηση απέτυχε επειδή τουλάχιστον μία από τις επιλεχθείσες μετακινήσεις δεν είναι στην τελική κατάσταση.',
+    'Restore selected approvals.' => 'Μεταφορά των επιλεγμένων έγκρισεων μετακίνησης στη λίστα των ενεργών.',
+    'Archive' => 'Αρχειοθέτηση',
+    'Restore' => 'Επαναφορά',
+    'Please select at least one transport approval.' => 'Παρακαλώ επιλέξτε τουλάχιστον μία έγκριση μετακίνησης.',
+    'End date of transportation is prior start date. Please correct.' => 'Η ημερομηνία λήξης της μετακίνησης είναι πριν την ημερομηνία έναρξης. Παρακαλώ διορθώστε.',
+    'Created' => 'Δημιουργήθηκε'
 ];
