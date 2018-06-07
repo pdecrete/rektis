@@ -53,17 +53,22 @@ class SchtransportTransportController extends Controller
      * Lists all SchtransportTransport models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($archived = 0)
     {
+        if(!is_numeric($archived) || ($archived != 0 && $archived != 1))
+            $archived = 0;
+        
         $searchModel = new SchtransportTransportSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived);
 
         $programcategs = array();
         $program_parentcategs = SchtransportProgramcategory::find()->where(['programcategory_programparent' => NULL])->orderBy(['programcategory_id' => SORT_ASC, 'programcategory_programtitle' => SORT_ASC])->all();
+        //echo "<pre>"; print_r($program_parentcategs); echo "</pre>";
         foreach ($program_parentcategs as $index=>$parentcateg){
             $programcategs[$parentcateg['programcategory_id']]['TITLE'] = $parentcateg['programcategory_programtitle'];
             $programcategs[$parentcateg['programcategory_id']]['PROGRAMCATEG_ID'] = $parentcateg['programcategory_id'];
-            $programcategs[$parentcateg['programcategory_id']]['SUBCATEGS'] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_id']]);
+            $programcategs[$parentcateg['programcategory_id']]['PROGRAMCATEG_ALIAS'] = $parentcateg['programcategory_programalias'];
+            $programcategs[$parentcateg['programcategory_id']]['SUBCATEGS'] = SchtransportProgramcategory::findAll(['programcategory_programparent' => $parentcateg['programcategory_programalias']]);
         }
         //echo "<pre>"; print_r($programcategs); echo "</pre>";
         //die();
@@ -71,7 +76,8 @@ class SchtransportTransportController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'programcategs' => $programcategs
+            'programcategs' => $programcategs,
+            'archived' => $archived
         ]);
     }
 
@@ -95,17 +101,29 @@ class SchtransportTransportController extends Controller
      */
     public function actionCreate($id, $sep = 0)
     {
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $program_alias = SchtransportProgramcategory::getAlias($id);
+        $program_title = SchtransportProgramcategory::getTitle($id);
         $model = new SchtransportTransport();     
         $tblprogram = Yii::$app->db->tablePrefix . 'schtransport_program';
         $tblmeeting = Yii::$app->db->tablePrefix . 'schtransport_meeting';
+        $schools = array();
         if($sep == 1)
             $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
+        else if($program_alias == 'EXCURIONS_FOREIGN_COUNTRY'){
+            $schools = (new \yii\db\Query())
+                            ->select($tblprefix . 'schoolunit.*,')
+                            ->from([$tblprefix . 'schoolunit', $tblprefix . 'directorate'])
+                            ->where($tblprefix . 'schoolunit.directorate_id' . '=' . $tblprefix . 'directorate.directorate_id')
+                            ->andWhere($tblprefix . 'directorate.directorate_stage'  . '=' .  '\'SECONDARY\'')
+                            ->all();
+        }
         else
-            $schools = Schoolunit::find()->all();
+            $schools = Schoolunit::find()->all();        
         
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
-        $program_alias = SchtransportProgramcategory::getAlias($id);
+        
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data = array();
@@ -120,32 +138,45 @@ class SchtransportTransportController extends Controller
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
                 
+                if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']) && 
+                    ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == ''))
+                    throw new Exception("Please define the hosting school.");
+                    
                 $existing_program = SchtransportProgram::findOne(['program_code' => $program_model->program_code]);
                 $program_exists = !(count($existing_program) == 0);
                 if($program_exists)
                     $program_model->program_id = $existing_program->program_id;
                 else {
                     if(!$program_model->save())
-                        throw new Exception("Failure in creating the transportation");
+                        throw new Exception("Failure in creating the transportation1");
                 }
-                //echo 'hallo'; die();
-                $meeting_model->program_id = $program_model->program_id;
                 
-                //echo "<pre>"; print_r($meeting_model); echo "</pre>";die();
-                //$meeting_model->program_id = 4;
+                $meeting_model->program_id = $program_model->program_id;
                 
                 if($meeting_model->isNewRecord){
                     if(!$meeting_model->save())
                         throw new Exception("Failure in creating the transportation");
                 }
-                $model->meeting_id = $meeting_model->meeting_id;                
+                $model->meeting_id = $meeting_model->meeting_id;
+                $model->transport_creationdate = date("Y-m-d H:i:s");
+                if(!($model->transport_startdate < $model->transport_enddate))
+                    throw new Exception("End date of transportation is prior start date. Please correct.");
+                
                 if(!$model->save())
-                    throw new Exception("Failure in creating the school transportation.");
-                $model->transport_approvalfile = $this->createApprovalFile($model, $meeting_model, $program_model);
+                    throw new Exception("Failure in creating the school transportation2.");
+                $file = $this->createApprovalFile($model, $meeting_model, $program_model);
+                $model->transport_approvalfile = $file;
+                
                 /* Save model twice, the first one for creating the transport_id and the
                  second to save the file with filename that has the transport_id as part of it.*/
                 if(!$model->save()) 
-                    throw new Exception("Failure in creating the school transportation.");
+                    throw new Exception("Failure in creating the school transportation3.");
+                
+                    if($file == null){
+                        throw new Exception("The template file could not be found.");
+                    }
+                    
+                    
                 $transaction->commit();
                 
                 $user = Yii::$app->user->identity->username;
@@ -162,21 +193,24 @@ class SchtransportTransportController extends Controller
                     'typeahead_data' => $typeahead_data,
                     'programcateg_id' => $id,
                     'sep' => $sep,
-                    'program_alias' => $program_alias
+                    'program_alias' => $program_alias,
+                    'program_title' => $program_title
                 ]);
             }
         }
         catch(Exception $exc){
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('create', [  'model' => $model,
+            //echo gettype($schools); die();
+            return $this->render('create', [  'model' => $model,
                                                 'meeting_model' => $meeting_model,
                                                 'program_model' => $program_model,                
                                                 'schools' => $schools,
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $id,
                                                 'sep' => $sep,
-                                                'program_alias' => $program_alias]);
+                                                'program_alias' => $program_alias,
+                                                'program_title' => $program_title]);
         }
     }
     
@@ -193,6 +227,11 @@ class SchtransportTransportController extends Controller
     public function actionUpdate($id, $readonly_mode = false)
     {        
         $model = $this->findModel($id);
+        if($model->transport_isarchived == 1 && !$readonly_mode){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Not allowed action for archived transportation approval."));
+            return $this->redirect(['index', 'archived' => 1]);
+        }
+            
         if($model->getStates()->count() > 0 && !$readonly_mode){
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The school transport cannot be updated, because it is not in initial state."));
             return $this->redirect(['index']);
@@ -213,6 +252,7 @@ class SchtransportTransportController extends Controller
         $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);        
         $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model->program_id]);
         $program_alias = SchtransportProgramcategory::getAlias($program_model->programcategory_id);
+        $program_title = SchtransportProgramcategory::getTitle($program_model->programcategory_id);
         $typeahead_data = array();
         $countries = SchtransportCountry::find()->select('country_name')->column();
         $typeahead_data['COUNTRIES'] = array_merge(SchtransportMeeting::find()->select('meeting_country')->column(), $countries);
@@ -225,6 +265,10 @@ class SchtransportTransportController extends Controller
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
+
+                if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']) &&
+                    ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == ''))
+                    throw new Exception("Please define the hosting school.");
                 
                 $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if(!$program_exists){
@@ -243,8 +287,13 @@ class SchtransportTransportController extends Controller
                     unlink(Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $model->transport_approvalfile);
                 
                 $filename = $this->createApprovalFile($model, $meeting_model, $program_model);
-                //unlink($filename);
+                if($filename == null)
+                    throw new Exception("The template file could not be found.");
                 $model->transport_approvalfile = $filename;
+                $model->transport_creationdate = date("Y-m-d H:i:s");
+                if(!($model->transport_startdate < $model->transport_enddate))
+                    throw new Exception("End date of transportation is prior start date. Please correct.");
+                
                 if(!$model->save())
                     throw new Exception("Failure in creating the school transportation.");
                                     
@@ -269,7 +318,8 @@ class SchtransportTransportController extends Controller
                         'typeahead_data' => $typeahead_data,
                         'programcateg_id' => $pr_categ,
                         'sep' => $sep,
-                        'program_alias' => $program_alias]);
+                        'program_alias' => $program_alias,
+                        'program_title' => $program_title]);
             }
         }
         catch(Exception $exc){
@@ -279,14 +329,15 @@ class SchtransportTransportController extends Controller
             if($readonly_mode)
                 $view_file = 'view';
             
-            return $this->redirect($view_file, ['model' => $model,
+            return $this->render($view_file, ['model' => $model,
                                                 'meeting_model' => $meeting_model,
                                                 'program_model' => $program_model,
                                                 'schools' => $schools,
                                                 'typeahead_data' => $typeahead_data,
                                                 'programcateg_id' => $pr_categ,
                                                 'sep' => $sep,
-                                                'program_alias' => $program_alias]);
+                                                'program_alias' => $program_alias, 
+                                                'program_title' => $program_title]);
         }
     }
 
@@ -300,6 +351,7 @@ class SchtransportTransportController extends Controller
     {
         $model = $this->findModel($id);
         $meeting_model = $model->getMeeting()->one();
+        $archived = 0;
                 
         try{
             $transaction = Yii::$app->db->beginTransaction();
@@ -307,6 +359,11 @@ class SchtransportTransportController extends Controller
             if(SchtransportTransportstate::find()->where(['transport_id' => $id])->count() > 0)
                 throw new Exception('Failure in deleting the school transport, because it is not in initial state.');
 
+            if($model->transport_isarchived == 1){
+                $archived = 1;
+                throw new Exception('Not allowed action for archived transportation approval.');
+            }
+                
             /* delete old file: */
             if(file_exists(Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $model->transport_approvalfile))
                 unlink(Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $model->transport_approvalfile);
@@ -328,7 +385,7 @@ class SchtransportTransportController extends Controller
         catch (Exception $exc){
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
-            return $this->redirect('index');
+            return $this->redirect('index?archived=' . $archived);
         }
         
         return $this->redirect(['index']);
@@ -343,6 +400,15 @@ class SchtransportTransportController extends Controller
     
     private function createApprovalFile($transport_model, $meeting_model, $program_model)
     {
+        //echo "<pre>"; print_r($transport_model); echo "</pre>";
+        //echo "<pre>"; print_r($meeting_model); echo "</pre>";
+        //echo "<pre>"; print_r($program_model); echo "</pre>";
+        //die();
+        $country_article = 'στη';
+        $country = SchtransportCountry::findOne(['country_name' => $meeting_model['meeting_country']]);
+        if($country != NULL)
+            $country_article = $country['country_accusativearticle'];
+        
         $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
         $directorate_model = $school_model->getDirectorate()->one();
         
@@ -360,20 +426,27 @@ class SchtransportTransportController extends Controller
         $fullpath_fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $this->getFilename( $program_action, $school_model->school_name, 
                                     $meeting_model['meeting_country'], $meeting_model['meeting_city'], $transport_model['transport_id']);
             
-        $template_path = "@vendor/admapp/resources/schooltransports/" . $program_action . ".docx";
+        $template_path = "@vendor/admapp/resources/schooltransports/" . $program_action . "_" . $directorate_model->directorate_stage . ".docx";
         
         //echo $template_path; die();
+
+        if(!file_exists(Yii::getAlias($template_path)))
+            return null;
+        
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
         $program_alias = SchtransportProgramcategory::getAlias($programcateg_model->programcategory_id);
-        if(in_array($program_alias, ['KA1_STUDENTS', 'KA2', 'TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS', 
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
+        if(in_array($program_alias, ['KA1_STUDENTS', 'KA2_STUDENTS', 'TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS', 
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
         if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT'])){
+                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
+        }
+        if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY'])){
+            $templateProcessor->setValue('host_school', $meeting_model->meeting_hostschool);            
         }
         
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
@@ -386,7 +459,7 @@ class SchtransportTransportController extends Controller
         $templateProcessor->setValue('protocol', $transport_model['transport_pde_protocol']);
         $templateProcessor->setValue('school', $school_model->school_name);
         $templateProcessor->setValue('teachers', $transport_model['transport_teachers']);        
-        $templateProcessor->setValue('country', $meeting_model['meeting_country']);
+        $templateProcessor->setValue('country', $country_article . ' ' . $meeting_model['meeting_country']);
         $templateProcessor->setValue('local_directorate_protocol', $transport_model['transport_localdirectorate_protocol']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
         $templateProcessor->setValue('programcateg_title', $programcateg_model->programcategory_programtitle);
@@ -469,12 +542,11 @@ class SchtransportTransportController extends Controller
             if(is_null($transport_model))
                 throw new Exception("The requested transport could not be found.");
                 
-                $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
                 $meeting_model = $transport_model->getMeeting()->one();
                 $program_model = SchtransportProgram::findOne(['program_id' => $meeting_model['program_id']]);
                 $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
                 
-                $program_action = $this->getProgramAction($programcateg_model);
+                //$program_action = $this->getProgramAction($programcateg_model, $directorate_model);
                 
                 $file = Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile;
                 //echo $file; die();
@@ -509,6 +581,9 @@ class SchtransportTransportController extends Controller
     {        
         try {            
             $trnsprt_model = $this->findModel($id);
+            if($trnsprt_model->transport_isarchived == 1)
+                throw new Exception('Not allowed action for archived transportation approval.');
+            
             $existing_trnsportstate_models = $trnsprt_model->getTransportstates()->all();
             //$states =
             $count_transportstates = count($existing_trnsportstate_models);
@@ -519,6 +594,7 @@ class SchtransportTransportController extends Controller
             $transportstate_model = new SchtransportTransportstate();
             $transportstate_model->state_id = $count_transportstates + 1;
             $transportstate_model->transport_id = $id;
+            $transportstate_model->transportstate_date = date("Y-m-d");
             $state_name = SchtransportState::find()->where(['state_id' => $count_transportstates+1])->one()['state_name'];
             
             if ($transportstate_model->load(Yii::$app->request->post()) && $trnsprt_model->load(Yii::$app->request->post())) {
@@ -578,6 +654,8 @@ class SchtransportTransportController extends Controller
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $transport_model = $this->findModel($id);
+            if($transport_model->transport_isarchived == 1)
+                throw new Exception('Not allowed action for archived transportation approval.');
             $states_count = count(SchtransportTransportstate::findAll(['transport_id' => $id]));
             if($states_count == 0)
                 throw new Exception();
@@ -588,11 +666,11 @@ class SchtransportTransportController extends Controller
                     unlink(Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile);
                 $transport_model->transport_signedapprovalfile = null;
                 if(!$transport_model->save())
-                    throw new Exception();
+                    throw new Exception("Failed to backward transport state.");
             }
             
             if(!SchtransportTransportstate::findOne(['state_id' => $states_count])->delete())
-                throw new Exception();
+                throw new Exception("Failed to backward transport state.");
             
             $transaction->commit();
 
@@ -604,7 +682,7 @@ class SchtransportTransportController extends Controller
         }
         catch(Exception $e){
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to backward transport state."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $e->getMessage()));
             return $this->redirect(['index']);
         }
     }
@@ -618,12 +696,18 @@ class SchtransportTransportController extends Controller
     public function actionUpdatestate($state_id, $transport_id)
     {
         try {
-            $trnsprt_model = $this->findModel($transport_id);            
+            $transaction = Yii::$app->db->beginTransaction();
+            $archived = 0;
+            $trnsprt_model = $this->findModel($transport_id);
+            if($trnsprt_model->transport_isarchived == 1){
+                $archived = 1;
+                throw new Exception('Not allowed action for archived transportation approval.');
+            }
             $transportstate_model = SchtransportTransportstate::find()->where(['transport_id' => $transport_id])->andWhere(['state_id' => $state_id])->one();
             $state_name = SchtransportState::find()->where(['state_id' => $state_id])->one()['state_name'];
             
             if ($transportstate_model->load(Yii::$app->request->post()) && $trnsprt_model->load(Yii::$app->request->post())) {
-                $transaction = Yii::$app->db->beginTransaction();
+                
                 
                 if($transportstate_model->state_id == 1){
                     $school_model = Schoolunit::findOne(['school_id' => $trnsprt_model['school_id']]);
@@ -637,12 +721,12 @@ class SchtransportTransportController extends Controller
                                     
                     $trnsprt_model->transport_signedapprovalfile = $filename;
                     if(!$trnsprt_model->save())
-                        throw new Exception();
+                        throw new Exception("Failed to forward transport state.");
                     if(!$trnsprt_model->upload($filename))
-                        throw new Exception();
+                        throw new Exception("Failed to forward transport state.");
                 }
                 if(!$transportstate_model->save())
-                    throw new Exception();
+                    throw new Exception("The transport's approval state changed successfully.");
 
                     //echo $trnsprt_model->transport_signedapprovalfile; die();
                 $transaction->commit();
@@ -663,11 +747,93 @@ class SchtransportTransportController extends Controller
         }
         catch(Exception $e){
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to forward transport state."));
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $e->getMessage()));
+            return $this->redirect(['index?archived=' . $archived]);
+        }
+    }
+    
+    /**
+     * Archive the selected transport. 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionArchive()//$id)
+    {
+        $transport_ids = Yii::$app->request->post('selection');
+        //echo "<pre>"; print_r(Yii::$app->request->post('selection')); echo "</pre>"; die();
+        if(count($transport_ids) == 0){
+            Yii::$app->session->addFlash('info', Module::t('modules/schooltransport/app', "Please select at least one transport approval."));
+            return $this->redirect(['index']);
+        }
+        
+        $transaction = Yii::$app->db->beginTransaction();
+        try{            
+            foreach ($transport_ids as $id)
+            {
+                $transport_model = $this->findModel($id);
+                
+                $existing_trnsportstate_models = $transport_model->getTransportstates()->all();
+                            
+                if(count($existing_trnsportstate_models) < 3){
+                    throw new Exception('Archiving failed because at least one selected transportation approval is not in last state.');
+                }
+                
+                $transport_model->transport_isarchived = 1;
+                if(!$transport_model->save())
+                    throw new Exception("Failed to archive transportation approval.");                
+                    
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' archived transport with id "' . $id . '.', 'schooltransport');
+            }
+            
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The archiving was completed successfully."));
+            return $this->redirect(['index']);
+            
+        }
+        catch (Exception $exc){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }
     }
     
+    
+    /**
+     * Moves the selected transport from the archived to the active transportation approvals.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionRestore()
+    {
+        $transport_ids = Yii::$app->request->post('selection');
+        if(count($transport_ids) == 0){
+            Yii::$app->session->addFlash('info', Module::t('modules/schooltransport/app', "Please select at least one transport approval."));
+            return $this->redirect(['index?archived=1']);
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            foreach ($transport_ids as $id)
+            {
+                $transport_model = $this->findModel($id);
+                
+                $transport_model->transport_isarchived = 0;
+                if(!$transport_model->save())
+                    throw new Exception();
+                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' restored transport with id "' . $id . '.', 'schooltransport');
+            }
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The transportation approval was restored successfully."));
+            return $this->redirect(['index?archived=1']);
+        }
+        catch (Exception $exc){
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "Failed to restore transportation approval."));
+            return $this->redirect(['index?archived=1']);
+        }
+    }
     
     /**
      * Finds the SchtransportTransport model based on its primary key value.

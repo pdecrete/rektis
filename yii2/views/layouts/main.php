@@ -344,6 +344,10 @@ AppAsset::register($this);
                             'label' => 'Εγκρίσεις Μετακινήσεων',
                             'url' => ['/schooltransport/schtransport-transport'],
                         ],
+                        [
+                            'label' => 'Αρχειοθετημένες Εγκρίσεις Μετακινήσεων',
+                            'url' => ['/schooltransport/schtransport-transport/index?archived=1'],
+                        ],
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
                         [

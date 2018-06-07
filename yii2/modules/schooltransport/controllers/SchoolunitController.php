@@ -151,15 +151,17 @@ class SchoolunitController extends Controller
 
     
     public function actionMassupdate(){
-        $edu_admins = [ [3, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ"], [5, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ"], [7, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ"], [9, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ"],
-            [2, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ"], [4, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ"], [6, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ"], [8, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ"],
+        $edu_admins = [ [15, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΗΡΑΚΛΕΙΟΥ"], [25, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΧΑΝΙΩΝ"], [100, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΡΕΘΥΜΝΟΥ"], [95, "ΔΙΕΥΘΥΝΣΗ Δ.Ε. ΛΑΣΙΘΙΟΥ"],
+            [41, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΗΡΑΚΛΕΙΟΥ"], [60, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΧΑΝΙΩΝ"], [75, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΡΕΘΥΜΝΟΥ"], [72, "ΔΙΕΥΘΥΝΣΗ Π.Ε. ΛΑΣΙΘΙΟΥ"]
         ];
         
         try{
             $params = array(
-                "region_edu_admin" => 6,
+                "region_edu_admin" => 53,
                 "pagesize" => 500,
-                "page" => 1
+                "page" => 1,
+                "edu_admin" => null,
+                "state" => 'ΕΝΕΡΓΗ'
             );
                         
             $curl = curl_init();        
@@ -172,8 +174,9 @@ class SchoolunitController extends Controller
             curl_setopt($curl, CURLOPT_URL, $api_url); 
 
             $transaction = Yii::$app->db->beginTransaction();
+            
             /***************** Περιφερειακή Διεύθυνση ********************/
-            /*
+            
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
             $data = curl_exec($curl);
             $data = json_decode($data);
@@ -183,12 +186,20 @@ class SchoolunitController extends Controller
                 
             $school_names = $data->data;
             foreach ($school_names as $school){
-                $school_model = new Schoolunit();
-                $school_model->directorate_id = 1;
-                $school_model->school_mm_id = $school->mm_id;
-                $school_model->school_name = $school->name;
-                $school_model->save();
-            } */          
+                $school_model = Schoolunit::findOne(['school_id' => $school->mm_id]);
+                if(is_null($school_model)){
+                    $school_model = new Schoolunit();
+                    $school_model->directorate_id = 53;
+                    $school_model->school_id = $school->mm_id;
+                    $school_model->school_name = $school->name;
+                }
+                else {
+                    $school_model->school_name = $school->name;
+                }
+               
+                if(!$school_model->save())
+                    throw new \Exception("PDE schools error.");
+            }          
             
             /**************** Διευθύνσεις Α/θμιας & Β/θμιας **************/
             unset($params['region_edu_admin']);
@@ -205,13 +216,22 @@ class SchoolunitController extends Controller
         
                 $school_names = $data->data;
                 foreach ($school_names as $school){
-                    $school_model = new Schoolunit();
-                    $school_model->directorate_id = $edu_admin[0];
-                    $school_model->school_id = $school->mm_id;
-                    $school_model->school_name = $school->name;
-                    $school_model->save();
+                    $school_model = Schoolunit::findOne(['school_id' => $school->mm_id]);
+                    if(is_null($school_model)){
+                        $school_model = new Schoolunit();
+                        $school_model->directorate_id = $edu_admin[0];
+                        $school_model->school_id = $school->mm_id;
+                        $school_model->school_name = $school->name;
+                    }
+                    else {
+                        $school_model->school_name = $school->name;
+                    }
+                    
+                    if(!$school_model->save()){
+                        throw new \Exception("Local directorates school error.");
+                    }
                 }
-            }            
+            }           
             curl_close($curl);
             $transaction->commit();
             

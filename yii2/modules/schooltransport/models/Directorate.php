@@ -33,6 +33,7 @@ class Directorate extends \yii\db\ActiveRecord
             [['directorate_name'], 'required'],
             [['directorate_name'], 'string', 'max' => 200],
             [['directorate_shortname'], 'string', 'max' => 100],
+            [['directorate_stage'], 'string', 'max' => 20],
         ];
     }
 
@@ -45,6 +46,7 @@ class Directorate extends \yii\db\ActiveRecord
             'directorate_id' => Module::t('modules/schooltransport/app', 'Directorate ID'),
             'directorate_name' => Module::t('modules/schooltransport/app', 'Directorate of Education'),
             'directorate_shortname' => Module::t('modules/schooltransport/app', 'Directorate of Education'),
+            'directorate_stage' => Module::t('modules/schooltransport/app', 'Directorate Stage'),
         ];
     }
 
