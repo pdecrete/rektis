@@ -3,8 +3,9 @@ namespace app\modules\SubstituteTeacher;
 
 use Yii;
 use yii\base\Module;
+use yii\base\BootstrapInterface;
 
-class SubstituteTeacherModule extends Module
+class SubstituteTeacherModule extends Module implements BootstrapInterface
 {
     public function init()
     {
@@ -23,6 +24,13 @@ class SubstituteTeacherModule extends Module
             'class' => 'app\modules\SubstituteTeacher\components\Crypt',
             'cryptKeyFile' => $this->params['crypt-key-file']
         ]);
+    }
+
+    public function bootstrap($app)
+    {
+        if ($app instanceof \yii\console\Application) {
+            $this->controllerNamespace = 'app\modules\SubstituteTeacher\commands';
+        }
     }
 
     public function registerTranslations()

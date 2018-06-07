@@ -126,6 +126,7 @@ class BridgeController extends \yii\web\Controller
                 $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
                 $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_unload = $status_response->getData();
+                // dd($response_data_unload);
                 if ($status_unload !== true) {
                     \Yii::error([$status_unload, $response_data_unload], __METHOD__);
                 } else {
@@ -217,10 +218,6 @@ class BridgeController extends \yii\web\Controller
                             }
                         });
 
-                        //
-                        // TODO CHECK IF THERE IS DATA FOR THIS CALL!!! WARN USER!!!
-                        //
-
                         // mark previous data as deleted; just do this once
                         $deletions = Application::updateAll([
                             'deleted' => Application::APPLICATION_DELETED,
@@ -228,7 +225,7 @@ class BridgeController extends \yii\web\Controller
                         ], [
                             'call_id' => $call_model->id,
                             'deleted' => Application::APPLICATION_NOT_DELETED
-                        ]); 
+                        ]);
 
                         // add new applications
                         array_walk($applicants_parsed, function (&$v, $key_applicant_id) use ($call_model, $applications_parsed, $choices_parsed) {
@@ -283,6 +280,19 @@ class BridgeController extends \yii\web\Controller
                         $messages_data[] = Yii::t('substituteteacher', 'Invalid or malformed data or error while parsing data.') .
                         ' (' . $ex->getMessage() . ')';
                     }
+                }
+            } else {
+                // check if any applications data is already present and warn user
+                $existing = Application::find()->andWhere([
+                    'call_id' => $call_model->id,
+                    'deleted' => Application::APPLICATION_NOT_DELETED
+                ])->count(); // TODO add group info lookup?
+                if ($existing > 0) {
+                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There seem to be {n} existing application entries for this call. <strong>If you proceed these entries will be deleted and more side-effectes may occur (i.e. teacher status)</strong>', ['n' => $existing]));
+                    \Yii::warning("Call [unload] with [get] method for call [{$call_model->id}] found [{$existing}] existing applications", __METHOD__);
+                } else {
+                    Yii::$app->session->setFlash('info', Yii::t('substituteteacher', 'There does not seem to be any existing application entries for this call.'));
+                    \Yii::info("Call [unload] with [get] method for call [{$call_model->id}] found [{$existing}] existing applications", __METHOD__);
                 }
             }
         }

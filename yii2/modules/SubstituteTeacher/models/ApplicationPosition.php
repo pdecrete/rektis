@@ -19,6 +19,10 @@ use Yii;
  */
 class ApplicationPosition extends \yii\db\ActiveRecord
 {
+
+    const APPLICATION_POSITION_DELETED = 1;
+    const APPLICATION_POSITION_NOT_DELETED = 0;
+
     /**
      * @inheritdoc
      */

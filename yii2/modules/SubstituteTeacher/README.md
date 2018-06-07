@@ -29,3 +29,32 @@
 
 
 _Εκκρεμεί η τροφοδότηση στοιχείων για όλες τις οντότητες, καθώς και η διαχείριση των Π.Ε._
+
+## Console commands 
+
+Για εκκαθάριση στοιχείων στο σύστημα δοκιμών είναι διαθέσιμες εντολές εκτελέσιμες 
+σε περιβάλλον console. 
+Για να τις ενεργοποιήσετε προσθέστε στο `config/console.php` της κύριας εφαρμογής
+τις ρυθμίσεις: 
+
+```php 
+    'bootstrap' => [
+        'SubstituteTeacher'
+    ],
+    'modules' => [
+        'SubstituteTeacher' => [ 'class' => 'app\modules\SubstituteTeacher\SubstituteTeacherModule' ],
+    ],
+```
+
+Οι διαθέσιμες εντολές θα εμφανιστούν στη λίστα εντολών του yii.
+Παράδειγμα εκτέλεσης: 
+
+```sh
+$ ./yii2/yii SubstituteTeacher/clear
+Checking: [=========================================================================] 100% (4/4) ETA: n/a
+Check results; entries that would have been deleted:
+- 12 audit log entries
+- 5 applications marked as deleted
+- 0 application positions marked as deleted
+- 0 application positions orhpaned (null application)
+```
