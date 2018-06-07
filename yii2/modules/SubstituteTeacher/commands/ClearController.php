@@ -7,6 +7,7 @@ use yii\helpers\Console;
 use yii\console\Controller;
 use app\modules\SubstituteTeacher\models\Application;
 use app\modules\SubstituteTeacher\models\ApplicationPosition;
+use app\modules\SubstituteTeacher\models\AuditLog;
 
 /**
  * This command clears redundant data; USE WITH CAUTION!
@@ -15,7 +16,42 @@ use app\modules\SubstituteTeacher\models\ApplicationPosition;
  */
 class ClearController extends Controller
 {
-    public $defaultAction = 'application';
+    public $defaultAction = 'check';
+
+    public function actionCheck()
+    {
+        $total_tasks = 4;
+        $current_task = 0;
+        Console::startProgress($current_task++, $total_tasks, "Checking: ");
+
+        $applications_deleted = Application::find()
+            ->where(['[[deleted]]' => Application::APPLICATION_DELETED])
+            ->count();
+        Console::updateProgress($current_task++, $total_tasks);
+
+        $application_positions_deleted = ApplicationPosition::find()
+            ->where(['[[deleted]]' => ApplicationPosition::APPLICATION_POSITION_DELETED])
+            ->count();
+        Console::updateProgress($current_task++, $total_tasks);
+
+        $application_positions_orphaned = ApplicationPosition::find()
+            ->where(['[[application_id]]' => null])
+            ->count();
+        Console::updateProgress($current_task++, $total_tasks);
+
+        $audit_log_entries = AuditLog::find()->count();
+        Console::updateProgress($current_task++, $total_tasks);        
+
+        Console::endProgress();
+
+        echo "Check results; entries that would have been deleted:", PHP_EOL;
+        echo "- {$audit_log_entries} audit log entries", PHP_EOL;
+        echo "- {$applications_deleted} applications marked as deleted", PHP_EOL;
+        echo "- {$application_positions_deleted} application positions marked as deleted", PHP_EOL;
+        echo "- {$application_positions_orphaned} application positions orhpaned (null application)", PHP_EOL;
+
+        return Controller::EXIT_CODE_NORMAL;
+    }
 
     /**
      * Clear application data that has been marked as deleted or is orphaned.
