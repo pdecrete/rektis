@@ -13,7 +13,13 @@ use app\modules\schooltransport\models\SchtransportState;
 /* @var $searchModel app\modules\schooltransport\models\SchtransportTransportSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
-$this->title = Module::t('modules/schooltransport/app', 'Transportations Approvals');
+$stateactions = '';
+if($archived)
+    $this->title .= Module::t('modules/schooltransport/app', 'Archived Transportations Approvals');
+else{
+    $stateactions = '<hr />{backwardstate} {forwardstate}';
+    $this->title .= Module::t('modules/schooltransport/app', 'Transportations Approvals');
+}
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($dataProvider); echo "</pre>";die();
@@ -23,8 +29,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <?=Html::beginForm(['archiveform'], 'post');?>
 	<p class="text-right">
+		<?php 
+		      if($archived):
+                  echo Html::a(Module::t('modules/schooltransport/app', 'Active Transportations Approvals'), ['index'], ['class' => 'btn btn-primary']);
+                  echo "&nbsp;". Html::a(Module::t('modules/schooltransport/app', 'Restore'), ['restore'], 
+                                                  ['class' => 'btn btn-primary', 'data-method' => 'POST', 'data-toggle'=>"tooltip", 
+                                                      'title'=> Module::t('modules/schooltransport/app', "Restore selected approvals.")]);
+              else:
+                  echo Html::a(Module::t('modules/schooltransport/app', 'Archive'), ['archive'], 
+                                        ['class' => 'btn btn-primary', 'data-method' => 'POST']);
+              endif;
+        ?>
     	<button type="button" class="btn btn-success" data-toggle="collapse" data-target="#programsCategs">
         	<?php echo Module::t('modules/schooltransport/app',  'Create Transportation'); ?>
         </button>
@@ -35,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
       		<div class="row">
 				<?php 
 				    foreach ($programcategs as $key=>$programcateg){
-				        $sep = ($programcateg['PROGRAMCATEG_ID'] == 3);
+				        $sep = ($programcateg['PROGRAMCATEG_ALIAS'] == 'EUROPEAN_SCHOOL');
 				        echo "<ul>";
 				        if(count($programcateg['SUBCATEGS']) == 0)
 				            echo "<li><strong><a href=" . Url::to(['create', 'id' => $programcateg['PROGRAMCATEG_ID'], 'sep' => $sep]) . ">{$programcateg['TITLE']}</a></strong></li>";
@@ -60,7 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],              
+            ['class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {return ['value' => $model['transport_id']];}
+            ],
             ['attribute' => 'school_name',
              'label' => Module::t('modules/schooltransport/app', 'School Unit'),
              'headerOptions' => ['class'=> 'text-center'],
@@ -116,6 +135,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'programcategory_programtitle',
              'label' => Module::t('modules/schooltransport/app', 'Program'),
              'headerOptions' => ['class'=> 'text-center'],
+            ],
+            ['attribute' => 'transport_creationdate',
+                'label' => Module::t('modules/schooltransport/app', 'Created'),
+                'format' => ['datetime', 'php:d-m-Y H:i:s'],
+                'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'statescount',
              'label' => Module::t('modules/schooltransport/app', 'State'),
@@ -174,18 +198,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download} {downloadsigned}<hr />{backwardstate} {forwardstate}',
-             'buttons' => ['downloadsigned' => function ($url, $model) {
-                                                if(!is_null($model['transport_signedapprovalfile']))
-                                                    return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
-                                                                 'data-method' => 'post']);
-                                                return '';
+             'template' => '{view} {update} {delete} {download} {downloadsigned} {archive}' . $stateactions,
+              'buttons' => ['downloadsigned' => function ($url, $model) {
+                                                    if(!is_null($model['transport_signedapprovalfile']))
+                                                        return Html::a('<span class="glyphicon glyphicon-lock"></span>', $url,
+                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download digitally signed file'),
+                                                                     'data-method' => 'post']);
+                                                    return '';
                                             },
-                           'download' =>    function ($url, $model) { 
-                                                return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
-                                                                ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
-                                                                 'data-method' => 'post']);
+                           'download' =>    function ($url, $model) {
+                                                    return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
+                                                                    ['title' => Module::t('modules/schooltransport/app', 'Download Decision'),
+                                                                     'data-method' => 'post']);
                                             },
                            'forwardstate' => function ($url, $model) {
                                                 if ($model['statescount'] < 3) {
@@ -237,4 +261,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-<?php Pjax::end(); ?></div>
+<?php Pjax::end(); ?>
+<?= Html::endForm();?>
+</div>
