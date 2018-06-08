@@ -3,6 +3,7 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stteacher_board}}".
@@ -19,6 +20,8 @@ use Yii;
  */
 class TeacherBoard extends \yii\db\ActiveRecord
 {
+    use Selectable;
+
     const TEACHER_BOARD_TYPE_ANY = 0;
     const TEACHER_BOARD_TYPE_PRIMARY = 1;
     const TEACHER_BOARD_TYPE_SECONDARY = 2;

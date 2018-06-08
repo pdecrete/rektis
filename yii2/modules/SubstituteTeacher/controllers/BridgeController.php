@@ -126,7 +126,7 @@ class BridgeController extends \yii\web\Controller
                 $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
                 $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_unload = $status_response->getData();
-                // dd($response_data_unload);
+
                 if ($status_unload !== true) {
                     \Yii::error([$status_unload, $response_data_unload], __METHOD__);
                 } else {
@@ -189,7 +189,7 @@ class BridgeController extends \yii\web\Controller
                             } else {
                                 $ids = [$v['reference']['id']];
                             }
-                            $choices = CallPosition::find()->andWhere(['id' => $ids])->count(); // TODO add group info lookup?
+                            $choices = CallPosition::find()->andWhere(['id' => $ids, 'group' => $v['reference']['group']])->count();
                             if (count($ids) != $choices) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
                             }
@@ -264,11 +264,10 @@ class BridgeController extends \yii\web\Controller
                                     }
                                 }
                             }
-                            // mark applicants that denied
-                            // mark applicants that applied to be used in placement procedures
+                            // TODO mark applicants that denied; this information is held in application data, we need to crosscheck before marking them 
+                            // TODO mark applicants that applied to be used in placement procedures; this information is held in data; an info table may be used
                         });
 
-                        // LOG everything
                         $transaction->commit();
                         $status_data = true;
                     } catch (WrongKeyOrModifiedCiphertextException $ex) {
@@ -286,7 +285,7 @@ class BridgeController extends \yii\web\Controller
                 $existing = Application::find()->andWhere([
                     'call_id' => $call_model->id,
                     'deleted' => Application::APPLICATION_NOT_DELETED
-                ])->count(); // TODO add group info lookup?
+                ])->count();
                 if ($existing > 0) {
                     Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There seem to be {n} existing application entries for this call. <strong>If you proceed these entries will be deleted and more side-effectes may occur (i.e. teacher status)</strong>', ['n' => $existing]));
                     \Yii::warning("Call [unload] with [get] method for call [{$call_model->id}] found [{$existing}] existing applications", __METHOD__);
@@ -331,11 +330,14 @@ class BridgeController extends \yii\web\Controller
      */
     public function actionSend($call_id = 0)
     {
+        \Yii::info([], __METHOD__);
         $connection_options = $this->options;
 
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
         if (!empty($call_model)) {
+            \Yii::info("Collecting info for call [{$call_id}]", __METHOD__);
+
             // no filtering on prefectures; catalogue only
             $prefectures = Prefecture::find()->all();
             $prefecture_substitutions = [];
