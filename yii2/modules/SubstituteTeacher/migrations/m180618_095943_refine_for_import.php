@@ -14,20 +14,9 @@ class m180618_095943_refine_for_import extends Migration
 
         Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
 
-        // $this->alterColumn('{{%stteacher_registry}}', 'gender', $this->char(1)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'mothername', $this->string(100)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'marital_status', $this->char(1)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'mobile_phone', $this->string(20)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'home_address', $this->string()->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'city', $this->string(100)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'postal_code', $this->string(10)->null()->defaultValue(null));
+        $this->dropIndex('idx_stteacher_registry_social_security_number_unique', '{{%stteacher_registry}}');
         $this->alterColumn('{{%stteacher_registry}}', 'social_security_number', $this->string(11)->null()->defaultValue(null)->comment('ΑΜΚΑ'));
-        // $this->alterColumn('{{%stteacher_registry}}', 'tax_service', $this->string(100)->null()->defaultValue(null)->comment('ΔΟΥ'));
-        // $this->alterColumn('{{%stteacher_registry}}', 'bank', $this->string(100)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'iban', $this->string(34)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'email', $this->string(150)->null()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'birthdate', $this->date()->defaultValue(null));
-        // $this->alterColumn('{{%stteacher_registry}}', 'birthplace', $this->string(100)->null()->defaultValue(null));
+        $this->createIndex('idx_stteacher_registry_social_security_number', '{{%stteacher_registry}}', 'social_security_number', false);
     }
 
     public function safeDown()
@@ -40,7 +29,9 @@ class m180618_095943_refine_for_import extends Migration
 
         Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
 
+        $this->dropIndex('idx_stteacher_registry_social_security_number', '{{%stteacher_registry}}');
         $this->alterColumn('{{%stteacher_registry}}', 'social_security_number', $this->string(11)->notNull()->defaultValue('')->comment('ΑΜΚΑ'));
+        $this->createIndex('idx_stteacher_registry_social_security_number_unique', '{{%stteacher_registry}}', 'social_security_number', true);
     }
 
 }
