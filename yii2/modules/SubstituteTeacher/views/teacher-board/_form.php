@@ -25,6 +25,8 @@ use app\modules\SubstituteTeacher\models\Specialisation;
 
     <?= $form->field($model, 'order')->textInput() ?>
 
+    <?= $form->field($model, 'status')->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

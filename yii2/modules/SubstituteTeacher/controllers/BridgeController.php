@@ -393,10 +393,10 @@ class BridgeController extends \yii\web\Controller
                 $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
                 $call_specialisation_teachers_pool = Teacher::find()
                     ->year($call_model->year)
-                    ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
                     ->joinWith(['boards', 'registry', 'registry.specialisations', 'placementPreferences'])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => $call_teacher_specialisation->specialisation_id])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => new Expression(TeacherRegistrySpecialisation::tableName() . '.[[specialisation_id]]')])
+                    ->andWhere(["{$teacherboard_table}.[[status]]" => Teacher::TEACHER_STATUS_ELIGIBLE])
                     // ->andWhere([PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_positions_prefectures])
                     ->andWhere([
                         PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_pos_pref_by_specialisation["{$call_teacher_specialisation->specialisation_id}"],
