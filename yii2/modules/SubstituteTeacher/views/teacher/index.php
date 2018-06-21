@@ -33,6 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 return ['class' => 'danger'];
             } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
                 return ['class' => 'success'];
+            } elseif ($model->status == Teacher::TEACHER_STATUS_PENDING) {
+                return ['class' => 'warning'];
             }
         },
         'columns' => [

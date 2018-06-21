@@ -264,8 +264,16 @@ class BridgeController extends \yii\web\Controller
                                     }
                                 }
                             }
-                            // TODO mark applicants that denied; this information is held in application data, we need to crosscheck before marking them 
-                            // TODO mark applicants that applied to be used in placement procedures; this information is held in data; an info table may be used
+                            // mark applicants that denied or applied to be used in placement procedures
+                            $teacher_board = $application->teacherBoard;
+                            if ($application->state == Application::STATE_DENIED_TO_APPLY) {
+                                $teacher_board->status = Teacher::TEACHER_STATUS_NEGATION;
+                            } else {
+                                $teacher_board->status = Teacher::TEACHER_STATUS_PENDING;
+                            }
+                            if (false === $teacher_board->save()) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher status (denied).'));
+                            }
                         });
 
                         $transaction->commit();
