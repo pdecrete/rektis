@@ -5,6 +5,7 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "{{%stapplication}}".
@@ -33,6 +34,7 @@ class Application extends \yii\db\ActiveRecord
     const STATE_DENIED_TO_APPLY = 1;
 
     public $state_label;
+    public $reference_data; // array holding reference information 
 
     /**
      * @inheritdoc
@@ -115,15 +117,26 @@ class Application extends \yii\db\ActiveRecord
      */
     public function getApplicationPositions()
     {
-        return $this->hasMany(ApplicationPosition::className(), ['application_id' => 'id']);
+        return $this->hasMany(ApplicationPosition::className(), ['application_id' => 'id'])
+            ->orderBy(['order' => SORT_ASC]);
     }
 
     public function afterFind()
     {
         parent::afterFind();
 
+        if (!empty($this->reference)) {
+            // the following may thorw an exception, but better let it bubble up
+            $this->reference_data = Json::decode($this->reference, true);
+        } else {
+            $this->reference_data = [];
+        }
+
         if ($this->state == self::STATE_DENIED_TO_APPLY) {
             $this->state_label = '<span class="label label-danger">' . Yii::t('substituteteacher', 'Denied on {d}', ['d' => Yii::$app->formatter->asDatetime($this->state_ts)]) . '</span>';
+        } else if (array_key_exists('application_choices', $this->reference_data)) {
+            $display_class = ($this->reference_data['application_choices'] > 0) ? 'success' : 'warning';
+            $this->state_label = "<span class=\"label label-{$display_class}\">" . Yii::t('substituteteacher', 'Submitted {d} choices', ['d' => $this->reference_data['application_choices']]) . '</span>';
         } else {
             $this->state_label = '';
         }

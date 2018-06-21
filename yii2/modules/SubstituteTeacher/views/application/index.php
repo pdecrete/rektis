@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'teacher_board_id',
                 'value' => function ($m) {
-                    return $m->teacherBoard->teacher->name. '<br/>' . $m->teacherBoard->label;
+                    return empty($m->teacherBoard) ? null : $m->teacherBoard->teacher->name . '<br>' . $m->teacherBoard->label;
                 },
                 'filter' => Select2::widget([
                     'model' => $searchModel,

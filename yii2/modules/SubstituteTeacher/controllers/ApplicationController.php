@@ -8,6 +8,7 @@ use app\modules\SubstituteTeacher\models\ApplicationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 
 /**
  * ApplicationController implements the CRUD actions for Application model.
@@ -35,6 +36,8 @@ class ApplicationController extends Controller
      */
     public function actionIndex()
     {
+        Url::remember('', 'applicationsindex');
+
         $searchModel = new ApplicationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

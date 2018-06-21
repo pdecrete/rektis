@@ -4,12 +4,13 @@ use yii\bootstrap\Html;
 use yii\widgets\DetailView;
 use yii\grid\GridView;
 use yii\data\ArrayDataProvider;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\Application */
 
 $this->title = Yii::t('substituteteacher', 'Application') . " {$model->id}";
-$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Applications'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Applications'), 'url' => empty($url = Url::previous('applicationsindex')) ? ['index'] : $url];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="application-view">
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'teacher_board_id',
                 'value' => $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label
             ],
-            'agreed_terms_ts',
+            'agreed_terms_ts:datetime',
             [
                 'attribute' => 'state',
                 'value' => $model->state_label,
@@ -71,13 +72,36 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $provider,
         // 'filterModel' => $searchModel,
         'columns' => [
-            'id',
-            'order',
             [
-                'attribute' => 'call_position_id',
-                'value' => 'callPosition.position.title',
+                'attribute' => 'id',
+                'contentOptions' => [
+                    'class' => 'text-center col-sm-1'
+                ],
             ],
-            'deleted:boolean'
+            [
+                'attribute' => 'order',
+                'contentOptions' => [
+                    'class' => 'text-center col-sm-1'
+                ],
+            ],
+            [
+                'header' => Yii::t('substituteteacher', 'In group'),
+                'value' => function ($m) {
+                    return $m->callPosition ? 
+                        '<span class="label" style="color: #555; background-color: hsl('
+                            . (($m->callPosition->group * 25 % 360) + 20) . ','
+                            . (($m->callPosition->group == 0) ? '0%,90%' : '100%,50%') . ')">'
+                            . (($m->callPosition->group == 0) ? Yii::t('substituteteacher', 'Sole position') : Yii::t('substituteteacher', 'Group {d}', ['d' => 1]))
+                            . '</span>' :
+                        null;
+                },
+                'contentOptions' => [
+                    'class' => 'text-center col-sm-1'
+                ],
+                'format' => 'html'
+            ],
+            'callPosition.position.title',
+            'deleted:boolean',
         ],
     ]); ?>
 
