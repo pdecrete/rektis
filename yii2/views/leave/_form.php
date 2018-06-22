@@ -10,6 +10,37 @@ use kartik\datecontrol\DateControl;
 /* @var $this yii\web\View */
 /* @var $model app\models\Leave */
 /* @var $form yii\widgets\ActiveForm */
+
+$toggle_js = <<<TOGGLEJS
+var extra_reason_visible = 10;
+
+// hide empty elements
+for (var extra_reason_visible_cnt = 10; extra_reason_visible_cnt >= 2; extra_reason_visible_cnt--) {
+    var element = "#leave-extra_reason" + extra_reason_visible_cnt,
+        container_element = ".field-leave-extra_reason" + extra_reason_visible_cnt;
+    if (!$.trim($(element).val())) {
+        $(".form-group" + container_element).hide();
+    } else {
+        break;
+    }
+}
+extra_reason_visible = extra_reason_visible_cnt;
+
+$("#show_extra_reason").click(function(e) {
+    var element;
+
+    e.preventDefault();
+    if (extra_reason_visible > 10) {
+        alert("Μέχρι 10 αιτιολογήσεις είναι διαθέσιμες")
+    } else {
+        extra_reason_visible++;
+        element = ".field-leave-extra_reason" + extra_reason_visible;
+        $(".form-group" + element).toggle();
+    }
+});
+TOGGLEJS;
+$this->registerJs($toggle_js, $this::POS_READY);
+
 ?>
 
 <div class="leave-form">
@@ -82,9 +113,16 @@ use kartik\datecontrol\DateControl;
             <?= admappHtml::displayCopyFieldValueButton($model, 'start_date', 'end_date', 'Αντιγραφή από ' . $model->getAttributeLabel('start_date'), null, '-disp'); ?>
         </div>
     </div>
-    <?= $form->field($model, 'extra_reason1')->textarea(['rows' => 4, 'maxlength' => true]) ?>
-    <?= $form->field($model, 'extra_reason2')->textarea(['rows' => 4, 'maxlength' => true]) ?>
-    <?= $form->field($model, 'extra_reason3')->textarea(['rows' => 4, 'maxlength' => true]) ?>
+
+    <div class="row">
+        <div class="col-sm-offset-2">
+            <p><a href="#" id="show_extra_reason" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span> Εμφάνιση περισσότερων αιτιολογήσεων</a></p>
+        </div>
+    </div>
+    <?php for ($extra_reason_cnt = 1; $extra_reason_cnt <= 10; $extra_reason_cnt++) : ?>
+    <?= $form->field($model, "extra_reason{$extra_reason_cnt}")->textarea(['rows' => 4, 'maxlength' => true]) ?>
+    <?php endfor; ?>
+
     <?= $form->field($model, 'comment')->textarea(['rows' => 4, 'maxlength' => true]) ?>
 
     <?php if (!$model->isNewRecord) : ?>

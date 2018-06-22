@@ -141,6 +141,7 @@ return [
     'Expense Details' => 'Λεπτομέρειες αποζημίωσης',
     'Extra Reason' => 'Προσθήκη αιτιολόγησης στο έγγραφο',
     'Extra Reason (included in print)' => 'Προσθήκη αιτιολόγησης (εμφάνιση στην εκτύπωση)',
+    'Extra Reason {d} (included in print)' => 'Προσθήκη αιτιολόγησης {d} (εμφάνιση στην εκτύπωση)',
     'Father\'s name' => 'Πατρώνυμο',
     'Filename' => 'Όνομα αρχείου',
     'From' => 'Από',
