@@ -23,9 +23,7 @@ use yii\db\Expression;
  * @property string $end_date
  * @property string $reason
  * @property string $comment
- * @property string $extra_reason1
- * @property string $extra_reason2
- * @property string $extra_reason3
+ * @property string $extra_reason1 .. $extra_reason10
  * @property string $create_ts
  * @property string $update_ts
  * @property integer $deleted
@@ -77,7 +75,10 @@ class Leave extends \yii\db\ActiveRecord
             [['comment'], 'string'],
             [['accompanying_document'], 'string', 'max' => 100],
             [['reason'], 'string', 'max' => 200],
-            [['extra_reason1', 'extra_reason2', 'extra_reason3'], 'string', 'max' => 250],
+            [[
+                'extra_reason1', 'extra_reason2', 'extra_reason3', 'extra_reason4', 'extra_reason5', 
+                'extra_reason6', 'extra_reason7', 'extra_reason8', 'extra_reason9', 'extra_reason10'
+             ], 'string', 'max' => 250],
             [['employee'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['employee' => 'id']],
             [['type'], 'exist', 'skipOnError' => true, 'targetClass' => LeaveType::className(), 'targetAttribute' => ['type' => 'id']],
             [['type'], 'safe'],
@@ -104,9 +105,16 @@ class Leave extends \yii\db\ActiveRecord
             'end_date' => Yii::t('app', 'End date'),
             'reason' => Yii::t('app', 'Reason (for special leaves etc.)'),
             'comment' => Yii::t('app', 'Comments'),
-            'extra_reason1' => Yii::t('app', 'Extra Reason (included in print)'),
-            'extra_reason2' => Yii::t('app', 'Extra Reason (included in print)'),
-            'extra_reason3' => Yii::t('app', 'Extra Reason (included in print)'),
+            'extra_reason1' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 1]),
+            'extra_reason2' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 2]),
+            'extra_reason3' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 3]),
+            'extra_reason4' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 4]),
+            'extra_reason5' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 5]),
+            'extra_reason6' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 6]),
+            'extra_reason7' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 7]),
+            'extra_reason8' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 8]),
+            'extra_reason9' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 9]),
+            'extra_reason10' => Yii::t('app', 'Extra Reason {d} (included in print)', ['d' => 10]),
             'deleted' => Yii::t('app', 'Deleted'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
