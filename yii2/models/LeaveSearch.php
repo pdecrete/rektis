@@ -18,8 +18,8 @@ class LeaveSearch extends Leave
     {
         return [
             [['id', 'employee', 'type', 'decision_protocol', 'application_protocol', 'duration'], 'integer'],
-            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'extra_reason1', 'extra_reason2', 'extra_reason3', 'reason', 'comment', 'create_ts', 'update_ts'], 'safe'],
-            [['type'], 'safe'],
+            [['decision_protocol_date', 'application_protocol_date', 'application_date', 'accompanying_document', 'start_date', 'end_date', 'reason', 'comment', 'create_ts', 'update_ts', 'type'], 'safe'],
+            [['extra_reason1', 'extra_reason2', 'extra_reason3', 'extra_reason4', 'extra_reason5', 'extra_reason6', 'extra_reason7', 'extra_reason8', 'extra_reason9', 'extra_reason10'], 'safe'],
         ];
     }
 
@@ -80,10 +80,11 @@ class LeaveSearch extends Leave
 
         $query->andFilterWhere(['like', 'accompanying_document', $this->accompanying_document])
                 ->andFilterWhere(['like', 'reason', $this->reason])
-                ->andFilterWhere(['like', 'extra_reason1', $this->extra_reason1])
-                ->andFilterWhere(['like', 'extra_reason2', $this->extra_reason2])
-                ->andFilterWhere(['like', 'extra_reason3', $this->extra_reason3])
                 ->andFilterWhere(['like', 'comment', $this->comment]);
+        for ($extrareason = 1; $extrareason <= 10; $extrareason++) {
+            $field = "extra_reason{$extrareason}";
+            $query = $query->andFilterWhere(['like', $field, $this->$field]);
+        }
 
         return $dataProvider;
     }
