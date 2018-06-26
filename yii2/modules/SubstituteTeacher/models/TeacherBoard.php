@@ -27,7 +27,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
     const TEACHER_BOARD_TYPE_PRIMARY = 1;
     const TEACHER_BOARD_TYPE_SECONDARY = 2;
 
-    public $label;
+    public $label, $label_teacher;
 
     /**
      * @inheritdoc
@@ -139,6 +139,13 @@ class TeacherBoard extends \yii\db\ActiveRecord
             $this->specialisation->code . ' ' .
             $this->points . ' ' .
             '[' . Teacher::statusLabel($this->status) . ']';
+    }
+
+    public static function selectablesWithTeacherInfo()
+    {
+        return static::selectables('id', function ($data, $default) { return $data->teacher->name . ' ' . $data->label; }, 'teacher.name', function ($aq) {
+            return $aq->orderBy(['teacher_id' => SORT_ASC]);
+        });
     }
 
     /**

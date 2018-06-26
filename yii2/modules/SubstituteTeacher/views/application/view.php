@@ -41,6 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'teacher_board_id',
                 'value' => $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label
             ],
+            [
+                'label' => Yii::t('substituteteacher', 'Teacher status'),
+                'attribute' => 'teacherBoard.teacher.status_label'
+            ],
             'agreed_terms_ts:datetime',
             [
                 'attribute' => 'state',
@@ -87,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'header' => Yii::t('substituteteacher', 'In group'),
                 'value' => function ($m) {
-                    return $m->callPosition ? 
+                    return $m->callPosition ?
                         '<span class="label" style="color: #555; background-color: hsl('
                             . (($m->callPosition->group * 25 % 360) + 20) . ','
                             . (($m->callPosition->group == 0) ? '0%,90%' : '100%,50%') . ')">'
@@ -102,6 +106,33 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'callPosition.position.title',
             'deleted:boolean',
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{place}',
+                'buttons' => [
+                    'place' => function ($url, $position_model, $key) use ($model) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-check"></span>',
+                            Url::to(['placement/place',
+                                'application_id' => $model->id,
+                                // 'position_id' => $position_model->callPosition->position_id,
+                                'call_position_id' => $position_model->callPosition->id,
+                                ]),
+                            [
+                                'title' => Yii::t('substituteteacher', 'Place teacher to this positions or group.'),
+                                'data' => [
+                                    'confirm' => Yii::t('substituteteacher', 'Are you sure you want to place the teacher in this position or group?'),
+                                    'method' => 'post',
+                                ],
+                                'class' => 'btn btn-sm btn-primary'
+                            ]
+                        );
+                    },
+                ],
+                'contentOptions' => [
+                    'class' => 'text-center'
+                ]
+            ],
         ],
     ]); ?>
 

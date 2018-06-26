@@ -275,7 +275,8 @@ AppAsset::register($this);
                             'url' => [ '/SubstituteTeacher/application/index' ]
                         ],
                         [
-                            'label' => 'Κατανομή',
+                            'label' => 'Τοποθετήσεις',
+                            'url' => [ '/SubstituteTeacher/placement/index' ]
                         ],
 
                         '<li class="divider"></li>',
