@@ -12,6 +12,8 @@ use dosamigos\chartjs\ChartJs;
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
 
+echo "<pre>"; print_r($deductions); echo "</pre>"; die();
+
 $model->exp_amount = Money::toCurrency($model->exp_amount);
 ?>
 
@@ -42,6 +44,10 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
                                                          'value'  => Money::toPercentage($model->fpa_value, true)]
     );
     ?>
+    
+    <?= $form->field($model, 'exp_notes')->textarea(['maxlength' => true]);
+    ?>
+    
     <hr />
     <h3><?= Module::t('modules/finance/app', 'Assign withdrawals');?></h3>
     <?php 
