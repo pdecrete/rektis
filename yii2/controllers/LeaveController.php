@@ -129,8 +129,6 @@ class LeaveController extends Controller
             // up to 10 extra reasons
             for ($extrareason = 1; $extrareason <= 10; $extrareason++) {
                 $field = "extra_reason{$extrareason}";
-                $query = $query->andFilterWhere(['like', $field, $this->$field]);
-
                 if (!empty($currentModel->$field)) {
                     $k++;
                     $extra .= $k . '. ' . $currentModel->$field . '<w:br/>';
