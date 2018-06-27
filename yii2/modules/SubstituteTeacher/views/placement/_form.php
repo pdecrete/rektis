@@ -36,6 +36,7 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
+    <?php if ($model->isNewRecord): ?>
     <?=
     $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
         'data' => TeacherBoard::selectablesWithTeacherInfo(),
@@ -45,8 +46,18 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
             'allowClear' => false
         ],
     ]);
-
     ?>
+    <?php else: ?>
+    <h3><?php echo $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label; ?></h3>
+    <div class="row">
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><?php echo Yii::t('substituteteacher', 'Altered'); ?></label>
+            <div class="col-sm-10">
+                <p class="form-control-static"><?php echo Yii::$app->formatter->asBoolean($model->altered); ?></p>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="row">
         <div class="col-md-6">
@@ -82,9 +93,20 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
     <?= $form->field($model, 'comments')->textarea(['rows' => 3]) ?>
 
     <?php if (!$model->isNewRecord): ?>
-    <?= $form->field($model, 'deleted')->textInput() ?>
-    <?= $form->field($model, 'created_at')->textInput() ?>
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <div class="row">
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><?php echo Yii::t('substituteteacher', 'Created At'); ?></label>
+            <div class="col-sm-10">
+                <p class="form-control-static"><?php echo $model->created_at; ?></p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><?php echo Yii::t('substituteteacher', 'Updated At'); ?></label>
+            <div class="col-sm-10">
+                <p class="form-control-static"><?php echo $model->updated_at; ?></p>
+            </div>
+        </div>
+    </div>
     <?php endif; ?>
 
 

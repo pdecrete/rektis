@@ -16,7 +16,7 @@ class PlacementSearch extends Placement
     public function rules()
     {
         return [
-            [['id', 'teacher_board_id', 'call_id', 'deleted'], 'integer'],
+            [['id', 'teacher_board_id', 'call_id', 'deleted', 'altered'], 'integer'],
             [['date', 'decision_board', 'decision', 'comments', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -61,6 +61,7 @@ class PlacementSearch extends Placement
             'teacher_board_id' => $this->teacher_board_id,
             'call_id' => $this->call_id,
             'date' => $this->date,
+            'altered' => $this->altered,
             'deleted' => $this->deleted,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -21,10 +21,17 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
 
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
+        <?= $model->deleted ? '' : Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('substituteteacher', 'Are you sure you want to delete this item?'),
+                'method' => 'post',
+            ],
+        ]) ?>
+        <?= $model->altered ? '' : Html::a(Yii::t('substituteteacher', 'Alter'), ['alter', 'id' => $model->id], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
                 'method' => 'post',
             ],
         ]) ?>
@@ -46,7 +53,10 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
             'decision_board',
             'decision',
             'comments:ntext',
+            'altered:boolean',
+            'altered_at:datetime',
             'deleted:boolean',
+            'deleted_at:datetime',
             'created_at:datetime',
             'updated_at:datetime',
         ],

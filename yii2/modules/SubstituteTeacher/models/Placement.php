@@ -16,7 +16,10 @@ use yii\db\Expression;
  * @property string $decision_board
  * @property string $decision
  * @property string $comments
+ * @property integer $altered
+ * @property string $altered_at
  * @property integer $deleted
+ * @property string $deleted_at
  * @property string $created_at
  * @property string $updated_at
  *
@@ -26,6 +29,9 @@ use yii\db\Expression;
  */
 class Placement extends \yii\db\ActiveRecord
 {
+
+    const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
+
     /**
      * @inheritdoc
      */
@@ -42,9 +48,9 @@ class Placement extends \yii\db\ActiveRecord
         return [
             [['teacher_board_id', 'date'], 'required'],
             [['teacher_board_id', 'call_id'], 'integer'],
-            ['teacher_board_id', 'validateTeacherStatus'],
-            [['deleted'], 'boolean'],
-            [['date', 'created_at', 'updated_at'], 'safe'],
+            ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
+            [['deleted', 'altered'], 'boolean'],
+            [['date'], 'safe'],
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
@@ -85,7 +91,10 @@ class Placement extends \yii\db\ActiveRecord
             'decision_board' => Yii::t('substituteteacher', 'Decision Board'),
             'decision' => Yii::t('substituteteacher', 'Decision'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
+            'altered' => Yii::t('substituteteacher', 'Altered'),
+            'altered_at' => Yii::t('substituteteacher', 'Altered At'),
             'deleted' => Yii::t('substituteteacher', 'Deleted'),
+            'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];

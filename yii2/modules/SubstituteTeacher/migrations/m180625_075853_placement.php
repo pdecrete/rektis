@@ -21,11 +21,15 @@ class m180625_075853_placement extends Migration
             'decision_board' => $this->string(500)->notNull()->defaultValue(''),
             'decision' => $this->string(500)->notNull()->defaultValue(''),
             'comments' => $this->text()->notNull()->defaultValue(''),
+            'altered' => $this->boolean()->notNull()->defaultValue(false),
+            'altered_at' => $this->timestamp()->null()->defaultValue(null),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
+            'deleted_at' => $this->timestamp()->null()->defaultValue(null),
             'created_at' => $this->timestamp()->notNull()->defaultValue(0),
             'updated_at' => $this->timestamp()->notNull()->defaultValue(new Expression('NOW()')),
         ], $tableOptions);
         $this->createIndex('idx_stplacement_by_deleted', '{{%stplacement}}', 'deleted');
+        $this->createIndex('idx_stplacement_by_altered', '{{%stplacement}}', 'altered');
         $this->createIndex('idx_stplacement_by_teacher', '{{%stplacement}}', 'teacher_board_id');
         $this->createIndex('idx_stplacement_by_decision', '{{%stplacement}}', 'decision');
         $this->createIndex('idx_stplacement_by_date', '{{%stplacement}}', 'date');

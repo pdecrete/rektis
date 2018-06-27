@@ -5,9 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\Placement */
 
-$this->title = Yii::t('substituteteacher', 'Update {modelClass}: ', [
-    'modelClass' => 'Placement',
-]) . $model->id;
+$this->title = Yii::t('substituteteacher', 'Update placement');
+
 $this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placements'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('substituteteacher', 'Update');
@@ -18,6 +17,7 @@ $this->params['breadcrumbs'][] = Yii::t('substituteteacher', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'modelsPlacementPositions' => $modelsPlacementPositions
     ]) ?>
 
 </div>

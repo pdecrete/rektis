@@ -119,7 +119,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'call_position_id' => $position_model->callPosition->id,
                                 ]),
                             [
-                                'title' => Yii::t('substituteteacher', 'Place teacher to this positions or group.'),
+                                'title' => Yii::t('substituteteacher', 'Place teacher to this position or group.'),
                                 'data' => [
                                     'confirm' => Yii::t('substituteteacher', 'Are you sure you want to place the teacher in this position or group?'),
                                     'method' => 'post',

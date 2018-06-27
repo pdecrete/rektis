@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use kartik\select2\Select2;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
@@ -51,11 +52,41 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'decision_board',
             'decision',
             // 'comments:ntext',
+            'altered:boolean',
             'deleted:boolean',
             // 'created_at',
             // 'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {update} {delete} {alter}',
+                'buttons' => [
+                    'alter' => function ($url, $model, $key) {
+                        return Html::a(
+                                '<span class="glyphicon glyphicon-erase"></span>',
+                                $url,
+                                [
+                                    'title' => Yii::t('substituteteacher', 'Mark this placement as altered'),
+                                    'data-method' => 'post',
+                                    'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
+                                    'class' => 'text-danger'
+                                ]
+                        );
+                    },
+                ],
+                'visibleButtons' => [
+                    'delete' => function ($model, $key, $index) {
+                        return $model->deleted != true;
+                    },
+                    'alter' => function ($model, $key, $index) {
+                        return $model->altered != true;
+                    },
+                ],
+                'contentOptions' => [
+                    'class' => 'text-center',
+                    'style' => 'white-space: nowrap'
+                ]
+            ],
         ],
     ]); ?>
 </div>
