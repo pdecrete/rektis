@@ -84,16 +84,22 @@ class PlacementController extends Controller
      * Place a teacher based on his application information.
      * Redirects back to the application.
      * @param int $application_id the application id
-     * @param int $call_position_id the call position to place to; this may be part of a group of positions wi which case placement is done accordingly
+     * @param mixed payload(post) contains various parameters:
+     *      - int call_position_id MANDATORY 
+     *      - string date defaults to current_date()
+     *      - string decision_board
+     *      - string decision
+     *      - string comments automatically appended with one click info 
      * @return mixed
      */
-    public function actionPlace($application_id, $call_position_id)
+    public function actionPlace($application_id)
     {
         // locate application
         $application = Application::findOne($application_id);
         if (empty($application)) {
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Application not found.'));
         } else {
+            $call_position_id = Yii::$app->request->post('call_position_id', -1); // fails if not passed correctly
             $teacher_board = $application->teacherBoard;
             $call_position_ids = array_map(function ($m) {
                 return $m->call_position_id;
@@ -105,13 +111,20 @@ class PlacementController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
 
                 $model = new Placement();
+
+                // get information for placement
                 $model->teacher_board_id = $teacher_board->id;
                 $model->call_id = $application->call_id;
-                $model->date = new Expression('CURRENT_DATE()');
-                $model->decision_board = '';
-                $model->decision = '';
-                $model->comments = "ONE-CLICK PLACEMENT FROM APPLICATION {$application_id}, POSITION {$call_position_id}";
+                $model->date = Yii::$app->request->post('date', '');
+                if (empty($model->date)) {
+                    $model->date = date('Y-m-d');
+                }
+                $model->decision_board = Yii::$app->request->post('decision_board', '');
+                $model->decision = Yii::$app->request->post('decision', '');
+                $model->comments = Yii::$app->request->post('comments', '') . " / ONE-CLICK PLACEMENT FROM APPLICATION {$application_id}, POSITION {$call_position_id}";
                 $model->deleted = false;
+                $model->altered = false;
+
                 if (!$model->save()) {
                     $transaction->rollBack();
                     Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error creating the placement.'));

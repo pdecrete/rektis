@@ -50,7 +50,7 @@ class Placement extends \yii\db\ActiveRecord
             [['teacher_board_id', 'call_id'], 'integer'],
             ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
             [['deleted', 'altered'], 'boolean'],
-            [['date'], 'safe'],
+            [['date'], 'date', 'format' => 'php:Y-m-d'],
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
