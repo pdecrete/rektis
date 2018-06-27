@@ -110,13 +110,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{place}',
                 'buttons' => [
-                    'place' => function ($url, $position_model, $key) use ($model) {
+                    'place' => function ($url, $appposition_model, $key) use ($model) {
                         return Html::a(
                             '<span class="glyphicon glyphicon-check"></span>',
                             Url::to(['placement/place',
                                 'application_id' => $model->id,
                                 // 'position_id' => $position_model->callPosition->position_id,
-                                'call_position_id' => $position_model->callPosition->id,
+                                'call_position_id' => $appposition_model->call_position_id,
                                 ]),
                             [
                                 'title' => Yii::t('substituteteacher', 'Place teacher to this position or group.'),

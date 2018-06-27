@@ -304,7 +304,7 @@ return [
     'The teacher board does not exist.' => 'Η καταχώρηση στον πίνακα διορισμού δεν βρέθηκε.',
     'The teacher cannot be deleted from the registry because the teacher has been selected at sometime.' => 'Ο αναπληρωτής δεν μπορεί να αφαιρεθεί από τον κατάλογο διότι έχει χρησιμοποιηθεί σε διαδικασία επιλογής.',
     'The teacher does not exist.' => 'Ο αναπληρωτής δεν υπάρχει.',
-    'The teacher status does not allow for placement ({statuslabel}).' => 'Η κατάσταση του ααπληρωτή δεν επιτρέπει την τοποθέτηση του ({statuslabel}).',
+    'The teacher status does not allow for placement ({statuslabel}).' => 'Η κατάσταση του αναπληρωτή δεν επιτρέπει την τοποθέτηση του ({statuslabel}).',
     'There does not seem to be any existing application entries for this call.' => 'Φαίνεται πως δεν υπάρχουν ήδη καταχωρημένα στοιχεία αιτήσεων για αυτή την πρόσκληση προσλήψεων.',
     'There is no information about either teachers or hours for the position at line {n}' => 'Δεν υπάρχει πληροφορία αναπληρωτών ή ωρών διδασκαλίας για το κενό στη γραμμή {n}',
     'There seem to be {n} existing application entries for this call. <strong>If you proceed these entries will be deleted and more side-effectes may occur (i.e. teacher status)</strong>' => 'Φαίνεται πως υπάρχουν ήδη {n} καταχωρημένα στοιχεία αιτήσεων για αυτή την πρόσκληση προσλήψεων. <strong>Εάν προχωρήσετε αυτά τα στοιχεία θα διαγραφούν και θα υπάρξουν επιπλέον παρενέργειες (π.χ. στην κατάσταση αναπληρωτών)</strong>',

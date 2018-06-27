@@ -99,8 +99,7 @@ class PlacementController extends Controller
                 return $m->call_position_id;
             }, $application->applicationPositions);
             $call_positions = CallPosition::findAllInGroupOfCallPosition($call_position_id);
-
-            if (!in_array($call_position_id, $call_position_ids, true) || empty($call_positions)) {
+            if (!in_array($call_position_id, $call_position_ids, false) || empty($call_positions)) {
                 Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Call position not found.'));
             } else {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -111,7 +110,7 @@ class PlacementController extends Controller
                 $model->date = new Expression('CURRENT_DATE()');
                 $model->decision_board = '';
                 $model->decision = '';
-                $model->comments = "APPLICATION {$application_id}, POSITION {$call_position_id}";
+                $model->comments = "ONE-CLICK PLACEMENT FROM APPLICATION {$application_id}, POSITION {$call_position_id}";
                 $model->deleted = false;
                 if (!$model->save()) {
                     $transaction->rollBack();
@@ -330,7 +329,7 @@ class PlacementController extends Controller
     /**
      * Mark an existing Placement model as altered.
      * Also marks the teacher board as TEACHER_STATUS_PENDING.
-     * 
+     *
      * @param integer $id
      * @return mixed
      */
