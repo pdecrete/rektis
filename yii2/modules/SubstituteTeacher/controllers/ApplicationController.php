@@ -8,6 +8,8 @@ use app\modules\SubstituteTeacher\models\ApplicationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 
 /**
  * ApplicationController implements the CRUD actions for Application model.
@@ -26,6 +28,20 @@ class ApplicationController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['admin', 'spedu_user'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -35,6 +51,8 @@ class ApplicationController extends Controller
      */
     public function actionIndex()
     {
+        Url::remember('', 'applicationsindex');
+
         $searchModel = new ApplicationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -85,7 +103,7 @@ class ApplicationController extends Controller
         if (($model = Application::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException('The requested application does not exist.');
         }
     }
 }

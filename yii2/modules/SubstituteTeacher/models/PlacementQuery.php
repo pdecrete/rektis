@@ -3,15 +3,15 @@
 namespace app\modules\SubstituteTeacher\models;
 
 /**
- * This is the ActiveQuery class for [[ApplicationPosition]].
+ * This is the ActiveQuery class for [[Placement]].
  *
- * @see ApplicationPosition
+ * @see Placement
  */
-class ApplicationPositionQuery extends \yii\db\ActiveQuery
+class PlacementQuery extends \yii\db\ActiveQuery
 {
     /**
      * @inheritdoc
-     * @return ApplicationPosition[]|array
+     * @return Placement[]|array
      */
     public function all($db = null)
     {
@@ -20,7 +20,7 @@ class ApplicationPositionQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return ApplicationPosition|array|null
+     * @return Placement|array|null
      */
     public function one($db = null)
     {

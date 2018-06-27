@@ -47,9 +47,6 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
         <div class="col-md-6">
             <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
         </div>
-        <div class="col-md-6">
-            <?= $form->field($model, 'status')->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')]) ?>
-        </div>
     </div>
 
     <div class="panel panel-default">
@@ -73,6 +70,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                         <th><?php echo $firstModelBoard->getAttributeLabel('board_type'); ?></th>
                         <th><?php echo Yii::t('substituteteacher', 'Specialisation'); ?></th>
                         <th><?php echo $firstModelBoard->getAttributeLabel('points'); ?></th>
+                        <th><?php echo Yii::t('substituteteacher', 'Status'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,6 +100,9 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                         </td>
                         <td class="col-sm-2">
                             <?= $form->field($modelBoard, "[{$index}]points")->textInput()->label(false) ?>
+                        </td>
+                        <td class="col-sm-2">
+                            <?= $form->field($modelBoard, "[{$index}]status")->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')])->label(false) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

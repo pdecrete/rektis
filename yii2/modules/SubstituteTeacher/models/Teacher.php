@@ -12,7 +12,6 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $id
  * @property integer $registry_id
  * @property integer $year
- * @property integer $status
  *
  * @property string $name
  *
@@ -29,11 +28,12 @@ class Teacher extends \yii\db\ActiveRecord
 
     const SCENARIO_CALL_FETCH = 'CALL_FETCH'; // used to specify that model is used in the process of selecting teachers for call
 
-    const TEACHER_STATUS_ELIGIBLE = 0;
-    const TEACHER_STATUS_APPOINTED = 1;
-    const TEACHER_STATUS_NEGATION = 2;
+    const TEACHER_STATUS_ELIGIBLE = 0; // can be selected for appointment 
+    const TEACHER_STATUS_APPOINTED = 1; // is already appointed 
+    const TEACHER_STATUS_NEGATION = 2; // has neglected all appointments 
+    const TEACHER_STATUS_PENDING = 3; // is included in an open appointment process 
 
-    public $status_label;
+    public $status, $status_label;
     public $name;
     public $call_use_specialisation_id; // property to hold the specialisation used in a specific call; used in SCENARIO_CALL_FETCH
 
@@ -51,8 +51,8 @@ class Teacher extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registry_id', 'year', 'status'], 'integer'],
-            [['registry_id', 'year', 'status'], 'required'],
+            [['registry_id', 'year'], 'integer'],
+            [['registry_id', 'year'], 'required'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
             [['call_use_specialisation_id'], 'required', 'on' => self::SCENARIO_CALL_FETCH],
@@ -128,6 +128,7 @@ class Teacher extends \yii\db\ActiveRecord
                 self::TEACHER_STATUS_ELIGIBLE => Yii::t('substituteteacher', 'Eligible for appointment'),
                 self::TEACHER_STATUS_APPOINTED => Yii::t('substituteteacher', 'Teacher appointed'),
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
+                self::TEACHER_STATUS_PENDING => Yii::t('substituteteacher', 'Teacher status pending'),
             ];
         } elseif ($for === 'year') {
             // one year before and 2 ahead...
@@ -137,6 +138,27 @@ class Teacher extends \yii\db\ActiveRecord
         }
 
         return $choices;
+    }
+
+    public static function statusLabel($status) {
+        switch ($status) {
+            case self::TEACHER_STATUS_ELIGIBLE:
+                $status_label = Yii::t('substituteteacher', 'Eligible for appointment');
+                break;
+            case self::TEACHER_STATUS_APPOINTED:
+                $status_label = Yii::t('substituteteacher', 'Teacher appointed');
+                break;
+            case self::TEACHER_STATUS_NEGATION:
+                $status_label = Yii::t('substituteteacher', 'Teacher denied appointment');
+                break;
+            case self::TEACHER_STATUS_PENDING:
+                $status_label = Yii::t('substituteteacher', 'Teacher status pending');
+                break;
+            default:
+                $status_label = null;
+                break;
+        }
+        return $status_label;
     }
 
     public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)
@@ -149,21 +171,29 @@ class Teacher extends \yii\db\ActiveRecord
         parent::afterFind();
 
         $this->name = ($this->registry ? $this->registry->name : '-') . " ({$this->year})";
-
-        switch ($this->status) {
-            case self::TEACHER_STATUS_ELIGIBLE:
-                $this->status_label = Yii::t('substituteteacher', 'Eligible for appointment');
-                break;
-            case self::TEACHER_STATUS_APPOINTED:
-                $this->status_label = Yii::t('substituteteacher', 'Teacher appointed');
-                break;
-            case self::TEACHER_STATUS_NEGATION:
-                $this->status_label = Yii::t('substituteteacher', 'Teacher denied appointment');
-                break;
-            default:
-                $this->status_label = null;
-                break;
+        // get the combined status 
+        $this->status = self::TEACHER_STATUS_ELIGIBLE; 
+        $boards = $this->boards;
+        if (empty($boards)) {
+            $this->status = self::TEACHER_STATUS_ELIGIBLE; 
+        } elseif (count($boards) == 1) {
+            $sole_board = reset($boards);
+            $this->status = $sole_board->status;
+        } else {
+            $statuses = array_map(function ($bm) {
+                return $bm->status;
+            }, $boards);
+            if (in_array(self::TEACHER_STATUS_APPOINTED, $statuses)) {
+                $this->status = self::TEACHER_STATUS_APPOINTED;
+            } elseif (in_array(self::TEACHER_STATUS_PENDING, $statuses)) {
+                $this->status = self::TEACHER_STATUS_PENDING;
+            } elseif (in_array(self::TEACHER_STATUS_ELIGIBLE, $statuses)) {
+                $this->status = self::TEACHER_STATUS_ELIGIBLE;
+            } else {
+                $this->status = self::TEACHER_STATUS_NEGATION;
+            }
         }
+        $this->status_label = self::statusLabel($this->status);
     }
 
     /**

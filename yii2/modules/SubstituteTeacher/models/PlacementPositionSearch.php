@@ -6,9 +6,9 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TeacherSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Teacher`.
+ * PlacementPositionSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\PlacementPosition`.
  */
-class TeacherSearch extends Teacher
+class PlacementPositionSearch extends PlacementPosition
 {
     /**
      * @inheritdoc
@@ -16,7 +16,8 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year'], 'integer'],
+            [['id', 'placement_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -38,7 +39,7 @@ class TeacherSearch extends Teacher
      */
     public function search($params)
     {
-        $query = Teacher::find();
+        $query = PlacementPosition::find();
 
         // add conditions that should always apply here
 
@@ -57,8 +58,12 @@ class TeacherSearch extends Teacher
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'registry_id' => $this->registry_id,
-            'year' => $this->year,
+            'placement_id' => $this->placement_id,
+            'position_id' => $this->position_id,
+            'teachers_count' => $this->teachers_count,
+            'hours_count' => $this->hours_count,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ]);
 
         return $dataProvider;

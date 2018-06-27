@@ -6,9 +6,9 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TeacherSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Teacher`.
+ * PlacementSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Placement`.
  */
-class TeacherSearch extends Teacher
+class PlacementSearch extends Placement
 {
     /**
      * @inheritdoc
@@ -16,7 +16,8 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year'], 'integer'],
+            [['id', 'teacher_board_id', 'call_id', 'deleted', 'altered'], 'integer'],
+            [['date', 'decision_board', 'decision', 'comments', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -38,7 +39,7 @@ class TeacherSearch extends Teacher
      */
     public function search($params)
     {
-        $query = Teacher::find();
+        $query = Placement::find();
 
         // add conditions that should always apply here
 
@@ -57,9 +58,18 @@ class TeacherSearch extends Teacher
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'registry_id' => $this->registry_id,
-            'year' => $this->year,
+            'teacher_board_id' => $this->teacher_board_id,
+            'call_id' => $this->call_id,
+            'date' => $this->date,
+            'altered' => $this->altered,
+            'deleted' => $this->deleted,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ]);
+
+        $query->andFilterWhere(['like', 'decision_board', $this->decision_board])
+            ->andFilterWhere(['like', 'decision', $this->decision])
+            ->andFilterWhere(['like', 'comments', $this->comments]);
 
         return $dataProvider;
     }
