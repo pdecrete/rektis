@@ -44,6 +44,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
             [['exp_amount', 'exp_date', 'exp_description', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
             [['exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
             [['exp_amount'], 'number'],
+            [['exp_notes'], 'string', 'max' => 400],
             [['exp_date'], 'safe'],
             [['suppl_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceSupplier::className(), 'targetAttribute' => ['suppl_id' => 'suppl_id']],
         ];
@@ -61,6 +62,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
             'exp_date' => Module::t('modules/finance/app', 'Date'),
             'exp_lock' => Module::t('modules/finance/app', 'Locked'),
             'exp_deleted' => Module::t('modules/finance/app', 'Deleted'),
+            'exp_notes' => Module::t('modules/finance/app', 'Notes'),
             'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
             'fpa_value' => Module::t('modules/finance/app', 'VAT')
         ];

@@ -20,6 +20,8 @@ $sum_expenditure_taxes = 0;
 $deductions_array = [];
 $deductions_array_sum = [];
 $maxnum_deductions = 0;
+
+$show_notes_column = false;
 foreach ($models as $model) {
     if (count($model['DEDUCTIONS'] > $maxnum_deductions)) {
         $maxnum_deductions = count($model['DEDUCTIONS']);
@@ -33,12 +35,10 @@ foreach ($models as $model) {
         }
         $deductions_array['SUM'][$deduction['deduct_name']]['SUM_AMOUNT'] += (Money::toPercentage($deduction['deduct_percentage'], false)/100)*Money::toCurrency($model['EXPENDITURE']['exp_amount']);
     }
+    if(trim($model['EXPENDITURE']['exp_notes']) != '')
+        $show_notes_column = true;
 }
 
-//foreach ($deductions_array['SUM'] as $key=>$value)
-//    echo $key . "<br />";
-//echo "<pre>"; print_r($deductions_array); echo "</pre>";
-//die();
 
 $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 ?>
@@ -59,20 +59,25 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		<tr>
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Beneficiary Details') ?></td>
 			<td rowspan="2" <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Voucher Number') ?></td>
-			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Rationale') ?></td>									
+			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Rationale') ?></td>
 			<td colspan="3" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Expenditure Amount') ?></td>
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
-					<td <?= $inline_th_css?>><?= $key ?></td>										
+					<td <?= $inline_th_css?>><?= $key ?></td>
 		<?php   endforeach;?>
+			<?php if($show_notes_column): ?>
+				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
+			<?php endif;?>
 			<td <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
 		</tr>
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Net Value') ?></td>					
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'VAT') ?></td>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>
+			
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_th_css_min_width?>><?= $value['PERCENTAGE'] ?></td>										
 		<?php   endforeach;?>
+			
 			<td <?= $inline_td_css_right?>></td>
 		</tr>
 		<?php   foreach ($models as $model):
@@ -98,7 +103,9 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 								<td <?= $inline_td_css_right?>></td>                                
        	<?php               endif;?>                    		    
 		<?php           endforeach;?>
-		
+		<?php           if($show_notes_column): ?>
+							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
+		<?php           endif; ?>						
         				<td <?= $inline_td_css_right?>><?= number_format($payable_amount - $sum_expenditure_taxes, 2, ',', '.') ?></td>
         			</tr>
         <?php       $sum_net_value += $net_value;
@@ -116,7 +123,9 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_td_css_right?>><?= number_format($value['SUM_AMOUNT'], 2, ',', '.') ?></td>										
 		<?php   endforeach;?>
-
+		<?php if($show_notes_column): ?>
+			<td <?= $inline_td_css_right?>></td>
+		<?php endif;?>
 			<td <?= $inline_td_css_right?>><?= number_format($sum_payable_amount, 2, ',', '.') ?></td>
 		</tr>						
 	</table>
