@@ -302,5 +302,6 @@ return [
     'Failed to create cover sheet. The demand dates of expenditures do not have the same date or protocol.' => 'Αποτυχία δημιουργίας του διαβιβαστικού. Οι ημερομηνίες απαίτησεις των δαπανών ή οι αριθμοί πρωτοκόλλου δεν συμφωνούν.',
     'Expenditures Sum' => 'Σύνολο Δαπανών',
     'Initial Amount' => 'Αρχικό Ποσό',
-    'Notes' => 'Σημειώσεις'
+    'Notes' => 'Σημειώσεις',
+    'Text Key' => 'Λεκτικό Κλειδί'
 ];

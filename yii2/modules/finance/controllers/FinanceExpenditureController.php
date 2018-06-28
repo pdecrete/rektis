@@ -177,10 +177,12 @@ class FinanceExpenditureController extends Controller
 
         $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
         $expenddeduction_models = [];
-        for ($i = 3; $i <= count($deductions); $i++) { //3 for the first three deductions presented as radiolist
-            $expenddeduction_models[$i-3] = new FinanceExpenddeduction();
-        }
 
+        $standard_deductions_count = count(FinanceDeduction::getStandardFinanceDeductionsAlias());
+        for ($i = $standard_deductions_count; $i <= count($deductions); $i++) { //$standard_deductions_count for the number of standard deductions presented as radiolist
+            $expenddeduction_models[$i-$standard_deductions_count] = new FinanceExpenddeduction();
+        }
+        
         $model = new FinanceExpenditure();
         $vat_levels = FinanceFpa::find()->all();
 
@@ -273,20 +275,24 @@ class FinanceExpenditureController extends Controller
         }
 
         $deductions = FinanceDeduction::find()->where(['deduct_obsolete' => false])->all();
-
         $expenddeduction_models = [];
-        $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['<=', 'deduct_id', 3])->one();
+        $standard_deductions_ids = FinanceDeduction::getStandardFinanceDeductionsIds();        
+        $exp_deduction = FinanceExpenddeduction::find()->where(['exp_id' => $id])->andWhere(['in', 'deduct_id', $standard_deductions_ids])->one();
 
+        $index = 0;
         if (count($exp_deduction)) {
-            $expenddeduction_models[0] = $exp_deduction;
+            $expenddeduction_models[$index++] = $exp_deduction;
         }
-        for ($i = 3; $i < count($deductions); $i++) {
-            $exp_deductions_checkbox = FinanceExpenddeduction::find()->where(['exp_id' => $id, 'deduct_id'=> $deductions[$i]->deduct_id])->one();
-            if (count($exp_deductions_checkbox)) {
-                $expenddeduction_models[$i-2] = $exp_deductions_checkbox;
-            } else {
-                $expenddeduction_models[$i-2] = new FinanceExpenddeduction();
-                $expenddeduction_models[$i-2]->exp_id = $id;
+        
+        foreach ($deductions as $deduction) {
+            if(!in_array($deduction->deduct_id, $standard_deductions_ids)) {
+                $exp_deductions_checkbox = FinanceExpenddeduction::find()->where(['exp_id' => $id, 'deduct_id'=> $deduction->deduct_id])->one();
+                if (count($exp_deductions_checkbox)) {
+                    $expenddeduction_models[$index++] = $exp_deductions_checkbox;
+                } else {
+                    $expenddeduction_models[$index] = new FinanceExpenddeduction();
+                    $expenddeduction_models[$index++]->exp_id = $id;
+                }
             }
         }
 
@@ -375,8 +381,10 @@ class FinanceExpenditureController extends Controller
             }
 
             if (!$new_expenditure) {
+                $standard_deductions_ids = FinanceDeduction::getStandardFinanceDeductionsIds();
                 $old_expdeductions = FinanceExpenddeduction::find()->where(['exp_id' => $model->exp_id])
-                                                                   ->andWhere(['>', 'deduct_id', 3])->all();
+                                                                    ->andWhere(['NOT IN', 'deduct_id', $standard_deductions_ids])->all();
+                
                 foreach ($old_expdeductions as $old_expdeduction) {
                     $delete_it = false;
                     foreach ($expenddeduction_models as $expenddeduction_model) {

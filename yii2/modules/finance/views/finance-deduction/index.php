@@ -29,6 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn',
              'headerOptions' => ['class'=> 'text-center'], 'contentOptions' => ['class' => 'text-center']],
+            ['attribute' => 'deduct_alias', 'label' => Module::t('modules/finance/app', 'Text Key'),
+                'headerOptions' => ['class'=> 'text-center']],
             ['attribute' => 'deduct_name', 'label' => Module::t('modules/finance/app', 'Title'),
              'headerOptions' => ['class'=> 'text-center']],
             ['attribute' => 'deduct_description', 'label' => Module::t('modules/finance/app', 'Description'),
