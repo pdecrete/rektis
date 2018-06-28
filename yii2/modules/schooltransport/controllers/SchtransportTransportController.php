@@ -42,7 +42,7 @@ class SchtransportTransportController extends Controller
                 'rules' =>  [
                     ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
                     ['actions' => [ 'create', 'update', 'delete', 'download', 'downloadsigned', 
-                                    'forwardstate', 'backwardstate', 'updatestate'], 'allow' => true, 'roles' => ['schtransport_editor']],
+                                    'forwardstate', 'backwardstate', 'updatestate', 'archive', 'restore'], 'allow' => true, 'roles' => ['schtransport_editor']],
                     ['allow' => true, 'roles' => ['schtransport_director']]
                 ]
             ]
