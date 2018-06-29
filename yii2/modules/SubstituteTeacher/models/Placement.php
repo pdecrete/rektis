@@ -5,32 +5,31 @@ namespace app\modules\SubstituteTeacher\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stplacement}}".
  *
  * @property integer $id
- * @property integer $teacher_board_id
  * @property integer $call_id
  * @property string $date
  * @property string $decision_board
  * @property string $decision
  * @property string $comments
- * @property integer $altered
- * @property string $altered_at
  * @property integer $deleted
  * @property string $deleted_at
  * @property string $created_at
  * @property string $updated_at
  *
  * @property Call $call
- * @property TeacherBoard $teacherBoard
- * @property PlacementPosition[] $placementPositions
+ * @property PlacementTeacher[] $placementTeachers
  */
 class Placement extends \yii\db\ActiveRecord
 {
 
-    const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
+    use Selectable;
+
+    public $label;
 
     /**
      * @inheritdoc
@@ -46,36 +45,14 @@ class Placement extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teacher_board_id', 'date'], 'required'],
-            [['teacher_board_id', 'call_id'], 'integer'],
-            ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
-            [['deleted', 'altered'], 'boolean'],
+            [['date'], 'required'],
+            [['call_id'], 'integer'],
+            [['deleted'], 'boolean'],
             [['date'], 'date', 'format' => 'php:Y-m-d'],
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
-            [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
         ];
-    }
-
-    public function validateTeacherStatus($attribute, $params, $validator)
-    {
-        $teacher_board = TeacherBoard::findOne($this->$attribute);
-        if (empty($teacher_board)) {
-            $this->addError($attribute, Yii::t('substituteteacher', 'The teacher board does not exist.'));
-        }
-
-        $teacher = $teacher_board->teacher;
-        if (empty($teacher)) {
-            $this->addError($attribute, Yii::t('substituteteacher', 'The teacher does not exist.'));
-        }
-
-        $teacher_status = $teacher->status;
-        if (($teacher_status == Teacher::TEACHER_STATUS_APPOINTED) ||
-            ($teacher_status == Teacher::TEACHER_STATUS_NEGATION)) {
-            $this->addError($attribute, Yii::t('substituteteacher', 'The teacher status does not allow for placement ({statuslabel}).', ['statuslabel' => Teacher::statusLabel($teacher_status)]));
-        }
-        // remaining options as TEACHER_STATUS_ELIGIBLE and TEACHER_STATUS_PENDING which shouls be fine
     }
 
     /**
@@ -85,14 +62,11 @@ class Placement extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
-            'teacher_board_id' => Yii::t('substituteteacher', 'Teacher Board ID'),
-            'call_id' => Yii::t('substituteteacher', 'Call ID'),
+            'call_id' => Yii::t('substituteteacher', 'Call'),
             'date' => Yii::t('substituteteacher', 'Date'),
             'decision_board' => Yii::t('substituteteacher', 'Decision Board'),
             'decision' => Yii::t('substituteteacher', 'Decision'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
-            'altered' => Yii::t('substituteteacher', 'Altered'),
-            'altered_at' => Yii::t('substituteteacher', 'Altered At'),
             'deleted' => Yii::t('substituteteacher', 'Deleted'),
             'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
@@ -116,6 +90,24 @@ class Placement extends \yii\db\ActiveRecord
     }
 
     /**
+     * Get a list of available choices in the form of
+     * ID => LABEL suitable for select lists.
+     */
+    public static function defaultSelectables($index_property = 'id', $label_property = 'label', $group_property = null)
+    {
+        return static::selectables($index_property, $label_property, $group_property, function ($aq) {
+            return $aq->orderBy(['date' => SORT_DESC]);
+        });
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision;
+    }
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getCall()
@@ -126,17 +118,9 @@ class Placement extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTeacherBoard()
+    public function getPlacementTeachers()
     {
-        return $this->hasOne(TeacherBoard::className(), ['id' => 'teacher_board_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPlacementPositions()
-    {
-        return $this->hasMany(PlacementPosition::className(), ['placement_id' => 'id']);
+        return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id']);
     }
 
     /**
