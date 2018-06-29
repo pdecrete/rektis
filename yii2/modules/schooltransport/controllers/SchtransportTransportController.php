@@ -110,7 +110,7 @@ class SchtransportTransportController extends Controller
         $schools = array();
         if($sep == 1)
             $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
-        else if($program_alias == 'EXCURIONS_FOREIGN_COUNTRY'){
+        else if($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY){
             $schools = (new \yii\db\Query())
                             ->select($tblprefix . 'schoolunit.*,')
                             ->from([$tblprefix . 'schoolunit', $tblprefix . 'directorate'])
@@ -138,7 +138,7 @@ class SchtransportTransportController extends Controller
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
                 
-                if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']) && 
+                if(in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY]) && 
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == ''))
                     throw new Exception("Please define the hosting school.");
                     
@@ -266,7 +266,7 @@ class SchtransportTransportController extends Controller
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())){
 
-                if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']) &&
+                if(in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY]) &&
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == ''))
                     throw new Exception("Please define the hosting school.");
                 
@@ -435,24 +435,29 @@ class SchtransportTransportController extends Controller
         
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
         $program_alias = SchtransportProgramcategory::getAlias($programcateg_model->programcategory_id);
-        if(in_array($program_alias, ['KA1_STUDENTS', 'KA2_STUDENTS', 'TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS', 
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
+        if(in_array($program_alias, [SchtransportTransport::KA1_STUDENTS, SchtransportTransport::KA2_STUDENTS, SchtransportTransport::TEACHING_VISITS, 
+                                    SchtransportTransport::EDUCATIONAL_VISITS, SchtransportTransport::EDUCATIONAL_EXCURSIONS, 
+                                    SchtransportTransport::SCHOOL_EXCURIONS, SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, 
+                                    SchtransportTransport::PARLIAMENT, SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, 
+                                    SchtransportTransport::ETWINNING_FOREIGN_COUNTRY])){
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
-        if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-                                     'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY'])){
+        if(in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS, 
+                                    SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS, 
+                                    SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT, 
+                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY])){
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
         }
-        if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY'])){
+        if(in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY])){
             $templateProcessor->setValue('host_school', $meeting_model->meeting_hostschool);            
         }
         
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
         $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
         $templateProcessor->setValue('phonenumber', $this->module->params['schooltransport_telephone']);
-        $templateProcessor->setValue('fax', Yii::$app->params['fax']);
+        $templateProcessor->setValue('fax', $this->module->params['schooltransport_fax']);
         $templateProcessor->setValue('email', Yii::$app->params['email']);
         $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
         $templateProcessor->setValue('date', date('d/m/Y'));
@@ -460,8 +465,10 @@ class SchtransportTransportController extends Controller
         $templateProcessor->setValue('school', $school_model->school_name);
         $templateProcessor->setValue('teachers', $transport_model['transport_teachers']);        
         $templateProcessor->setValue('country', $country_article . ' ' . $meeting_model['meeting_country']);
+        $templateProcessor->setValue('city', $meeting_model['meeting_city']);
         $templateProcessor->setValue('local_directorate_protocol', $transport_model['transport_localdirectorate_protocol']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
+        $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
         $templateProcessor->setValue('programcateg_title', $programcateg_model->programcategory_programtitle);
         $templateProcessor->setValue('programcateg_description', $programcateg_model->programcategory_programdescription);
         $templateProcessor->setValue('program_title', $program_model['program_title']);

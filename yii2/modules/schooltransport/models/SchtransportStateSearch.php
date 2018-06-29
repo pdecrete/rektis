@@ -41,7 +41,7 @@ class SchtransportStateSearch extends SchtransportState
      */
     public function search($params)
     {
-        $query = SchtransportState::find();
+        $query = SchtransportState::find()->orderBy('state_id');
 
         // add conditions that should always apply here
 

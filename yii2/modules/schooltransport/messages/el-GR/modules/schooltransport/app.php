@@ -77,7 +77,7 @@ return [
     'Backward to previous state' => 'Μετάβαση στην προηγούμενη κατάσταση',
     'View/edit states of a transportation approval' => 'Προβολή/επεξεργασία καταστάσεων διεκπεραίωσης έγκρισης μετακίνησης',
     'Transportation Approval States' => 'Καταστάσεις Διεκπεραίωσης Εγκρίσεων',
-    'Transport Approval States' => 'Καταστάσεις Έκρισης Μετακίνησης',
+    'Transport Approval States' => 'Καταστάσεις Έγκρισης Μετακίνησης',
     'The state was updated successfully.' => 'Η κατάσταση της έγκρισης μετακίνσης ενημερώθηκε επιτυχώς.',
     'View States' => 'Καταστάσεις Έγκρισης Μετακίνησης',
     'Update State Title' => 'Ενημέρωση Κατάστασης Έγκρισης',
