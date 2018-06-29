@@ -42,7 +42,9 @@ use yii\db\Expression;
  * @property integer $braille
  * @property string $comments
  * @property string $created_at
- * @property string $updated_at
+ * @property string $updated_at 
+ * @property string $passport_number
+
  *
  * @property Teacher[] $teachers
  * @property Specialisation[] $specialisations
@@ -94,12 +96,12 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
             [['home_address'], 'string', 'max' => 255],
             [['postal_code'], 'string', 'max' => 10],
-            [['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
+            //[['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
-            [['identity_number'], 'string', 'max' => 30],
+            [['identity_number', 'passport_number'], 'string', 'max' => 30],
             [['iban'], 'string', 'max' => 34],
             [['email'], 'email'],
-            [['identity_number'], 'unique'],
+            [['identity_number', 'passport_number'], 'unique'],
             [['social_security_number'], 'unique'],
             [['tax_identification_number'], 'unique'],
             [['gender'], 'in', 'range' => [self::GENDER_FEMALE, self::GENDER_MALE, self::GENDER_OTHER]],
@@ -110,9 +112,10 @@ class TeacherRegistry extends \yii\db\ActiveRecord
                 ]
             ],
             [
-                [ 'specialisation_ids', 'firstname', 'surname', 'fathername', 'mothername', 'gender', 'protected_children',
-                  'birthdate', 'birthplace', 'mobile_phone', 'home_address', 'city', 'postal_code',
-                  'tax_identification_number', 'tax_service', 'identity_number' ],
+                [ //'specialisation_ids', 'birthdate', 'gender', 'mothername', 'city', 'tax_service',
+                  //'birthplace', 'mobile_phone', 'home_address', 'postal_code',
+                  'firstname', 'surname', 'fathername', 'protected_children',                  
+                  'tax_identification_number', 'identity_number' ],
                 // [ 'marital_status', 'social_security_number',  'bank', 'iban', 'email' ],
                 'required'
             ],
@@ -175,6 +178,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
+            'passport_number' => Yii::t('substituteteacher', 'Passport Number'),
         ];
     }
 

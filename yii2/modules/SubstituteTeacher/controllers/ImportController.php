@@ -47,6 +47,35 @@ class ImportController extends Controller
             'B' => 'placement_preferences',
             'C' => 'order',
             'D' => 'points',
+        ],
+        'registry' => [
+            'B' => 'tax_identification_number',
+            'C' => 'id_type',
+            'D' => 'identity_number',
+            'E' => 'surname',
+            'F' => 'firstname',
+            'G' => 'fathername',
+            'H' => '',
+            'I' => '',
+            'J' => '',
+            'K' => '',
+            'L' => '',
+            'M' => '',
+            'N' => '',
+            'O' => '',
+            'P' => '',
+            'Q' => '',
+            'R' => '',
+            'S' => '',
+            'T' => 'sign_language',
+            'U' => '',
+            'V' => '',
+            'W' => '',
+            'X' => '',
+            'Y' => '',
+            'Z' => '',
+            'AA' => '',
+            'AB' => '',
         ]
     ];
 
@@ -95,6 +124,9 @@ class ImportController extends Controller
                 break;
             case 'teacher':
                 $route = 'import/teacher';
+                break;
+            case 'registry':
+                $route = 'import/registry';
                 break;
             default:
                 throw new BadRequestHttpException(Yii::t('substituteteacher', 'The requested import type is not handled.'));
@@ -150,6 +182,78 @@ class ImportController extends Controller
         ]);
     }
 
+    
+    public function actionRegistry($file_id, $sheet = 0){
+        
+        try {
+            $transaction = Yii::$app->db->beginTransaction();
+            list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
+
+            $teachersStartRow = $this->teachersStartRowIndex($worksheet);
+            $rowIterator = $worksheet->getRowIterator($teachersStartRow);
+        
+            foreach ($rowIterator as $row) {
+                $teacherrowArray = array();
+                $newteachersFlags = array_fill(1, $worksheet->getHighestDataRow() - $teachersStartRow + 1, 0);                
+                $celliterator = $row->getCellIterator();
+                foreach ($celliterator as $cell)
+                    $teacherrowArray[$cell->getColumn()] = $cell->getFormattedValue();
+                $existing_registry_teacher = TeacherRegistry::findOne(['tax_identification_number' => $teacherrowArray['B']]);
+                if(!is_null($existing_registry_teacher)){
+                    $newteachersFlags[$teacherrowArray['A']] = 1;
+                }
+                else {                
+                    $old_teacher = new TeacherRegistry();
+                    $old_teacher->loadDefaultValues(false);
+                    $old_teacher->surname = $teacherrowArray['E'];
+                    $old_teacher->firstname = $teacherrowArray['F'];
+                    $old_teacher->fathername = $teacherrowArray['G'];
+                    $old_teacher->tax_identification_number = $teacherrowArray['B'];
+                        $old_teacher->social_security_number = $teacherrowArray['B'];
+                    if($teacherrowArray['C'] == 'ΑΔΤ')
+                        $old_teacher->identity_number = $teacherrowArray['D'];
+                    else 
+                        $old_teacher->passport_number = $teacherrowArray['D'];
+                    
+                    //$old_teacher->disability_percentage = $teacherrowArray['Q'];
+                    //$old_teacher->disabled_children = $teacherrowArray['R'];
+                    //$old_teacher->many_children = $teacherrowArray['S'];
+                    //$old_teacher->sign_language = $teacherrowArray['T'];
+                    //echo "<pre>"; print_r($old_teacher->toArray()); echo "</pre>"; 
+                    if(!$old_teacher->save())
+                        //echo "<pre>"; print_r($old_teacher->getErrors()); echo "<pre>"; die();
+                        throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
+                }
+                
+                    //echo "--<pre>"; print_r($teacherrowArray); echo "</pre>";
+                if($row->getRowIndex() == $worksheet->getHighestDataRow())
+                    break;
+                
+                
+            }
+            //echo "--<pre>"; print_r($newteachersFlags); echo "</pre>";
+            $transaction->commit();
+        }
+        catch(Exception $exc) {
+            echo $exc->getMessage();
+            $transaction->rollBack();
+        }
+    }
+    
+    protected function teachersStartRowIndex($worksheet) {
+        foreach ($worksheet->getRowIterator() as $row) {
+            $rowArray = array();
+            $celliterator = $row->getCellIterator();
+            foreach ($celliterator as $cell) {
+                $cellvalue = $cell->getValue();                
+                if($cell->getColumn() == 'A' && is_numeric($cellvalue) && $cellvalue == 1)
+                    return $row->getRowIndex();
+                else continue;
+            }
+        }
+    }
+    
+        
     public function actionTeacher($file_id, $sheet = 0, $action = '', $year = '', $board_type = -1, $specialisation_id = -1)
     {
         // get file information and set basic parameters
@@ -701,7 +805,7 @@ class ImportController extends Controller
 
         return ($return_parsed === true) ? $placement_preferences_parsed : ($placement_preferences_parsed !== false);
     }
-
+    
     /**
      *
      * @param array $errors in the form of model errors after validation
