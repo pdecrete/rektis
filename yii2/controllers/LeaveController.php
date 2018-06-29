@@ -126,17 +126,13 @@ class LeaveController extends Controller
             $templateProcessor->setValue('ACCOMPANYING_DOCUMENT' . "#{$i}", $currentModel->accompanying_document_number);
             $templateProcessor->setValue('LEAVE_REASON' . "#{$i}", $currentModel->reason);
             $templateProcessor->setValue('LEAVE_TYPE' . "#{$i}", $currentModel->typeObj->name); // only on specific leaves...
-            if (($currentModel->extra_reason1 !== '') && ($currentModel->extra_reason1 !== null)) {
-                $k++;
-                $extra .= $k . '. ' . $currentModel->extra_reason1 . '<w:br/>';
-            }
-            if (($currentModel->extra_reason2 !== '') && ($currentModel->extra_reason2 !== null)) {
-                $k++;
-                $extra .= $k . '. ' . $currentModel->extra_reason2 . '<w:br/>';
-            }
-            if (($currentModel->extra_reason3 !== '') && ($currentModel->extra_reason3 !== null)) {
-                $k++;
-                $extra .= $k . '. ' . $currentModel->extra_reason3 . '<w:br/>';
+            // up to 10 extra reasons
+            for ($extrareason = 1; $extrareason <= 10; $extrareason++) {
+                $field = "extra_reason{$extrareason}";
+                if (!empty($currentModel->$field)) {
+                    $k++;
+                    $extra .= $k . '. ' . $currentModel->$field . '<w:br/>';
+                }
             }
         }
         $templateProcessor->setValue('EXTRA_REASON', $extra);

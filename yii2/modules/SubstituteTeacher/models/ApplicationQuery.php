@@ -9,11 +9,6 @@ namespace app\modules\SubstituteTeacher\models;
  */
 class ApplicationQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * @inheritdoc
      * @return Application[]|array

@@ -3,6 +3,7 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use app\modules\SubstituteTeacher\traits\Selectable;
 
 /**
  * This is the model class for table "{{%stteacher_board}}".
@@ -13,17 +14,20 @@ use Yii;
  * @property integer $board_type
  * @property string $points
  * @property integer $order
+ * @property integer $status @see Teacher model for STATUS definitions
  *
  * @property Specialisation $specialisation
  * @property Teacher $teacher
  */
 class TeacherBoard extends \yii\db\ActiveRecord
 {
+    use Selectable;
+
     const TEACHER_BOARD_TYPE_ANY = 0;
     const TEACHER_BOARD_TYPE_PRIMARY = 1;
     const TEACHER_BOARD_TYPE_SECONDARY = 2;
 
-    public $label;
+    public $label, $label_teacher;
 
     /**
      * @inheritdoc
@@ -39,8 +43,8 @@ class TeacherBoard extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teacher_id', 'specialisation_id'], 'integer'],
-            [['points'], 'default', 'value' => 0],
+            [['teacher_id', 'specialisation_id', 'status'], 'integer'],
+            [['points', 'status'], 'default', 'value' => 0],
             [['order'], 'integer', 'min' => 1],
             [['board_type'], 'default', 'value' => -1],
             [['board_type'], 'in', 'range' => [
@@ -68,6 +72,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
             'points' => Yii::t('substituteteacher', 'Points'),
             'order' => Yii::t('substituteteacher', 'Order'),
             'year' => Yii::t('substituteteacher', 'Year'),
+            'status' => Yii::t('substituteteacher', 'Status'),
         ];
     }
 
@@ -132,7 +137,15 @@ class TeacherBoard extends \yii\db\ActiveRecord
         $this->label = '(α/α: ' . $this->order . ') ' .
             TeacherBoard::boardTypeLabel($this->board_type) . ' ' .
             $this->specialisation->code . ' ' .
-            $this->points;
+            $this->points . ' ' .
+            '[' . Teacher::statusLabel($this->status) . ']';
+    }
+
+    public static function selectablesWithTeacherInfo()
+    {
+        return static::selectables('id', function ($data, $default) { return $data->teacher->name . ' ' . $data->label; }, 'teacher.name', function ($aq) {
+            return $aq->orderBy(['teacher_id' => SORT_ASC]);
+        });
     }
 
     /**

@@ -19,7 +19,7 @@ class TeacherBoardSearch extends TeacherBoard
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year'], 'integer'],
+            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year', 'status'], 'integer'],
             [['points'], 'number'],
         ];
     }
@@ -73,6 +73,7 @@ class TeacherBoardSearch extends TeacherBoard
             'board_type' => $this->board_type,
             'points' => $this->points,
             'order' => $this->order,
+            '{{%stteacher_board}}.status' => $this->status,
             '{{%stteacher}}.year' => $this->year,
         ]);
 

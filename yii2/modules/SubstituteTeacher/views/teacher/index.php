@@ -36,6 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 return ['class' => 'danger'];
             } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
                 return ['class' => 'success'];
+            } elseif ($model->status == Teacher::TEACHER_STATUS_PENDING) {
+                return ['class' => 'warning'];
             }
         },
         'columns' => [
@@ -90,41 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {appoint} {negate} {eligible}',
-                'buttons' => [
-                    'appoint' => function ($url, $model, $key) {
-                        return Html::a(
-                            '<span class="glyphicon glyphicon-ok-sign text-success"></span>',
-                            $url,
-                            ['title' => Yii::t('substituteteacher', 'Mark teacher as appointed.'), 'data-method' => 'post' ]
-                        );
-                    },
-                    'negate' => function ($url, $model, $key) {
-                        return Html::a(
-                            '<span class="glyphicon glyphicon-remove-sign text-danger"></span>',
-                            $url,
-                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as negated.'), 'data-method' => 'post' ]
-                        );
-                    },
-                    'eligible' => function ($url, $model, $key) {
-                        return Html::a(
-                            '<span class="glyphicon glyphicon-refresh text-info"></span>',
-                            $url,
-                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as eligible.'), 'data-method' => 'post' ]
-                        );
-                    }
-                ],
-                'visibleButtons' => [
-                    'appoint' => function ($model, $key, $index) {
-                        return $model->status != Teacher::TEACHER_STATUS_APPOINTED;
-                    },
-                    'negate' => function ($model, $key, $index) {
-                        return $model->status != Teacher::TEACHER_STATUS_NEGATION;
-                    },
-                    'eligible' => function ($model, $key, $index) {
-                        return $model->status != Teacher::TEACHER_STATUS_ELIGIBLE;
-                    },
-                ]
+                'template' => '{view} {update} {delete}',
             ],
         ],
     ]); ?>

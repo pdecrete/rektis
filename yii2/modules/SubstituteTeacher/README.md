@@ -8,6 +8,17 @@
     --templatePath=@app/modules/SubstituteTeacher/dbseed/faker-templates
 ```
 
+*Σημείωση* εφόσον το σύστημα έχει ήδη τροφοδοτηθεί με στοιχεία, η τροφοδότηση μπορεί
+να αποτύχει λόγω των προκαθορισμένων εξαρτήσεων. Για να εκτελεστεί η παραπάνω εντολή
+δοκιμάστε να αφαιρέσετε τις εξαρτήσεις που δημιουργούν πρόβλημα (π.χ. foreign keys constraints).
+Μία αλλαγή που πρέπει να κάνετε είναι να βάλετε σε σχόλια τη γραμμή 
+```php
+    'app\modules\SubstituteTeacher\dbseed\PrefectureFixture', // comment this if you do not run prefectures fixtures 
+```
+στο αρχείο `app\modules\SubstituteTeacher\dbseed\PlacementPreferenceFixture.php`.
+
+## Δημιουργία νέου σετ στοιχείων 
+
 Με χρήση του module [yii2-faker](https://github.com/yiisoft/yii2-faker) γίνεται δημιουργία των δοκιμαστικών
 αρχείων ορισμένων στοιχείων (π.χ. στοιχείων καταλόγου αναπλρωτών).
 

@@ -212,6 +212,32 @@ class CallPosition extends \yii\db\ActiveRecord
     }
 
     /**
+     * Convinience method to get a group of positions.
+     * If group is 0, assume sole position.
+     */
+    public function findAllInGroup()
+    {
+        if ($this->group == 0) {
+            return [ new static($this) ];
+        } else {
+            return CallPosition::find()
+                ->ofCall($this->call_id)
+                ->andWhere(['group' => $this->group])
+                ->all();
+            }
+    }
+
+    public static function findAllInGroupOfCallPosition($call_position_id)
+    {
+        $model = CallPosition::findOne($call_position_id);
+        if ($model) {
+            return $model->findAllInGroup();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @inheritdoc
      * @return CallPositionQuery the active query used by this AR class.
      */
