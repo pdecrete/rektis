@@ -30,4 +30,22 @@ trait DbMigrates
     {
         \Yii::$app->db->createCommand("SET SQL_MODE='ALLOW_INVALID_DATES'")->execute();
     }
+
+    /**
+     * Execute a command to enable foreign key checks 
+     * 
+     */
+    public function enableForeignKeyChecks()
+    {
+        \Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 1")->execute();
+    }
+
+    /**
+     * Execute a command to disable foreign key checks 
+     * 
+     */
+    public function disableForeignKeyChecks()
+    {
+        \Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 0")->execute();
+    }
 }

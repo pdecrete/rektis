@@ -158,7 +158,7 @@ class FinanceDeductionController extends Controller
             }
 
             $model->deduct_obsolete = 1;
-            if ($model->deduct_id == 1 || $model->deduct_id == 2 || $model->deduct_id == 3) {
+            if (in_array($model->deduct_alias, FinanceDeduction::getStandardFinanceDeductionsAlias())) {
                 throw new Exception("Deletion is not allowed for this type of deduction.");
             }
             if (!$model->save()) {

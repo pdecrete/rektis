@@ -17,7 +17,7 @@ class FinanceDeductionSearch extends FinanceDeduction
     {
         return [
             [['deduct_id', 'deduct_percentage', 'deduct_downlimit', 'deduct_uplimit', 'deduct_obsolete'], 'integer'],
-            [['deduct_name', 'deduct_description', 'deduct_date'], 'safe'],
+            [['deduct_name', 'deduct_alias', 'deduct_description', 'deduct_date'], 'safe'],
         ];
     }
 
@@ -66,6 +66,7 @@ class FinanceDeductionSearch extends FinanceDeduction
         ]);
 
         $query->andFilterWhere(['like', 'deduct_name', $this->deduct_name])
+            ->andFilterWhere(['like', 'deduct_alias', $this->deduct_alias])
             ->andFilterWhere(['like', 'deduct_description', $this->deduct_description]);
 
         return $dataProvider;

@@ -7,10 +7,13 @@ use app\modules\finance\Module;
 use kartik\select2\Select2;
 use app\modules\finance\components\Money;
 use dosamigos\chartjs\ChartJs;
+use app\modules\finance\models\FinanceDeduction;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
 /* @var $form yii\widgets\ActiveForm */
+
+//echo "<pre>"; print_r($deductions); echo "</pre>"; die();
 
 $model->exp_amount = Money::toCurrency($model->exp_amount);
 ?>
@@ -42,6 +45,10 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
                                                          'value'  => Money::toPercentage($model->fpa_value, true)]
     );
     ?>
+    
+    <?= $form->field($model, 'exp_notes')->textarea(['maxlength' => true]);
+    ?>
+    
     <hr />
     <h3><?= Module::t('modules/finance/app', 'Assign withdrawals');?></h3>
     <?php 
@@ -59,22 +66,25 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 	<hr />
 	<h3><?= Module::t('modules/finance/app', 'Assign deductions');?></h3>
     <?php 
-
-        //echo "<pre>"; print_r($expenddeduction_models); echo "</pre>"; die();
-
+    
         $index = 0;
+        $radiolist_array = array();
+        $standard_deductions_ids = FinanceDeduction::getStandardFinanceDeductionsIds();
+        foreach ($deductions as $index=>$deduction) {
+          if(in_array($deduction['deduct_id'], $standard_deductions_ids)){
+              $radiolist_array[$deductions[$index]['deduct_id']] = $deductions[$index]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')';
+          }
+        }
+        //echo "<pre>"; print_r($deductions); echo "</pre>"; //die();
+        for ($i = 0; $i < count($deductions); $i++) {
+            if(in_array($deductions[$i]['deduct_id'], $standard_deductions_ids)){
+                array_splice($deductions, $i--, 1);
+            }
+        }
 
-        echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList(
-        [
-            $deductions[$index]['deduct_id'] => $deductions[0]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
-            $deductions[++$index]['deduct_id'] => $deductions[1]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
-            $deductions[++$index]['deduct_id'] => $deductions[2]['deduct_name'] . ' (' . Money::toPercentage($deductions[$index]['deduct_percentage']) . ')',
-        ],
-        ['separator'=>'<br/>']
-        )->label(false);
-
-        for ($i = 1; $i < count($expenddeduction_models); $i++) {
-            ++$index;
+        echo $form->field($expenddeduction_models[0], '[0]deduct_id')->radioList($radiolist_array,['separator'=>'<br/>'])->label(false);        
+        $index = 0;
+        for ($i = 1; $i < count($expenddeduction_models); $i++, $index++) {            
             echo $form->field($expenddeduction_models[$i], "[{$i}]deduct_id")->checkbox(['label' => $deductions[$index]->deduct_name . ' (' . Money::toPercentage($deductions[$index]->deduct_percentage) . ')', 'value' => $deductions[$index]->deduct_id]);
         }
     ?>

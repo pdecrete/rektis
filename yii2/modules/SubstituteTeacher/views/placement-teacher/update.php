@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = Yii::t('substituteteacher', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'modelsPlacementPositions' => $modelsPlacementPositions
     ]) ?>
 
 </div>
