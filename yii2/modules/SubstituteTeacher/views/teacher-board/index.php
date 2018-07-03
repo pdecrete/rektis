@@ -26,6 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'rowOptions' => function ($model, $key, $index, $grid) {
+            if ($model->status == Teacher::TEACHER_STATUS_NEGATION) {
+                return ['class' => 'danger'];
+            } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
+                return ['class' => 'success'];
+            } elseif ($model->status == Teacher::TEACHER_STATUS_PENDING) {
+                return ['class' => 'warning'];
+            }
+        },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -79,10 +88,51 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'points',
             'order',
+            [
+                'attribute' => 'status',
+                'value' => function ($model) {
+                    return Teacher::statusLabel($model->status);
+                },
+                'filter' => Teacher::getChoices('status')
+            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete}',
+                'template' => '{update} {delete} {appoint} {negate} {eligible}',
+                'buttons' => [
+                    'appoint' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-ok-sign text-success"></span>',
+                            $url,
+                            ['title' => Yii::t('substituteteacher', 'Mark teacher as appointed.'), 'data-method' => 'post' ]
+                        );
+                    },
+                    'negate' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-remove-sign text-danger"></span>',
+                            $url,
+                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as negated.'), 'data-method' => 'post' ]
+                        );
+                    },
+                    'eligible' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-refresh text-info"></span>',
+                            $url,
+                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as eligible.'), 'data-method' => 'post' ]
+                        );
+                    }
+                ],
+                'visibleButtons' => [
+                    'appoint' => function ($model, $key, $index) {
+                        return $model->status != Teacher::TEACHER_STATUS_APPOINTED;
+                    },
+                    'negate' => function ($model, $key, $index) {
+                        return $model->status != Teacher::TEACHER_STATUS_NEGATION;
+                    },
+                    'eligible' => function ($model, $key, $index) {
+                        return $model->status != Teacher::TEACHER_STATUS_ELIGIBLE;
+                    },
+                ]
             ],
         ],
     ]); ?>

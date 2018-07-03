@@ -14,11 +14,6 @@ class TeacherQuery extends \yii\db\ActiveQuery
         return $this->andWhere(['year' => $year]);
     }
 
-    public function status($status)
-    {
-        return $this->andWhere(['status' => $status]);
-    }
-
     /**
      * @inheritdoc
      * @return Teacher[]|array

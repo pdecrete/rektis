@@ -1,7 +1,11 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
+use app\modules\SubstituteTeacher\models\Call;
+use kartik\select2\Select2;
+use app\modules\SubstituteTeacher\models\Teacher;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\ApplicationSearch */
@@ -22,18 +26,42 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'call_id',
-            'teacher_board_id',
-            'agreed_terms_ts',
-            'state',
-            // 'state_ts',
+            // 'id',
+            [
+                'attribute' => 'call_id',
+                'value' => 'call.title',
+                'filter' => Call::defaultSelectables()
+            ],
+            [
+                'attribute' => 'teacher_board_id',
+                'value' => function ($m) {
+                    return empty($m->teacherBoard) ? null : $m->teacherBoard->teacher->name . '<br>' . $m->teacherBoard->label;
+                },
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'teacher_board_id',
+                    'data' => TeacherBoard::selectables('id', 'teacher.name'),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+                'format' => 'html'
+            ],
+            'agreed_terms_ts:datetime',
+            [
+                'attribute' => 'state',
+                'value' => 'state_label',
+                'format' => 'html'
+            ],
             // 'reference:ntext',
+            'deleted:boolean',
             // 'created_at',
             // 'updated_at',
-            // 'deleted',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {delete}',
+            ],
         ],
     ]); ?>
 </div>

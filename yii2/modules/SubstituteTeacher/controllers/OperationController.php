@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\UnprocessableEntityHttpException;
 
 /**
  * OperationController implements the CRUD actions for Operation model.
@@ -160,6 +161,41 @@ class OperationController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     *
+     * @param integer $id The id of the operation 
+     * @param string $type Which template do download ('contract', 'summary')
+     * @throws yii\web\UnprocessableEntityHttpException 
+     * @throws yii\web\NotFoundHttpException 
+     */
+    public function actionDownloadTemplate($id, $type)
+    {
+        $model = $this->findModel($id);
+        switch ($type) {
+            case 'contract':
+                $attribute = 'contract_template';
+                break;
+            case 'summary':
+                $attribute = 'summary_template';
+                break;
+            default:
+                throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The template type parameter is not recognised.'));
+                break;
+        }
+
+        if (empty($model->$attribute)) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The template is not set.'));
+        }
+
+        $filename = Yii::getAlias("@vendor/admapp/resources/operations/{$model->$attribute}");
+        if (!is_readable($filename)) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The template does not exist.'));
+        }
+
+        Yii::$app->response->sendFile($filename);
+        Yii::$app->end();
     }
 
     /**

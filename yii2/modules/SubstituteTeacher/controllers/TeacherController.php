@@ -41,7 +41,7 @@ class TeacherController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'import', 'appoint', 'negate', 'eligible'],
+                        'actions' => ['index', 'view', 'create', 'update', 'import'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -52,69 +52,6 @@ class TeacherController extends Controller
                 ],
             ],
         ];
-    }
-
-    /**
-     *
-     * @return boolean whether the change (save) was succesful
-     */
-    protected function setStatus($id, $status)
-    {
-        $model = $this->findModel($id);
-        $model->status = $status;
-        if ($model->save()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Mark a teacher as appointed.
-     *
-     * @param int $id The identity of the teacher to mark as appointed
-     * @return mixed
-     */
-    public function actionAppoint($id)
-    {
-        if ($this->setStatus($id, Teacher::TEACHER_STATUS_APPOINTED)) {
-            Yii::$app->session->setFlash('success', 'Πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        } else {
-            Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        }
-        return $this->redirect(($index_url = Url::previous('teacherindex')) ? $index_url : ['index']);
-    }
-
-    /**
-     * Mark a teacher as negated.
-     *
-     * @param int $id The identity of the teacher to mark as negated
-     * @return mixed
-     */
-    public function actionNegate($id)
-    {
-        if ($this->setStatus($id, Teacher::TEACHER_STATUS_NEGATION)) {
-            Yii::$app->session->setFlash('success', 'Πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        } else {
-            Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        }
-        return $this->redirect(($index_url = Url::previous('teacherindex')) ? $index_url : ['index']);
-    }
-
-    /**
-     * Mark a teacher as eligible.
-     *
-     * @param int $id The identity of the teacher to mark as eligible
-     * @return mixed
-     */
-    public function actionEligible($id)
-    {
-        if ($this->setStatus($id, Teacher::TEACHER_STATUS_ELIGIBLE)) {
-            Yii::$app->session->setFlash('success', 'Πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        } else {
-            Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
-        }
-        return $this->redirect(($index_url = Url::previous('teacherindex')) ? $index_url : ['index']);
     }
 
     /**

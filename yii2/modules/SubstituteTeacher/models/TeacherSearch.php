@@ -16,7 +16,7 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year', 'status'], 'integer'],
+            [['id', 'registry_id', 'year'], 'integer'],
         ];
     }
 
@@ -59,7 +59,6 @@ class TeacherSearch extends Teacher
             'id' => $this->id,
             'registry_id' => $this->registry_id,
             'year' => $this->year,
-            'status' => $this->status,
         ]);
 
         return $dataProvider;

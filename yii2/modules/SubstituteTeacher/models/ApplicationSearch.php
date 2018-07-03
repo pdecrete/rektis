@@ -2,16 +2,20 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\SubstituteTeacher\models\Application;
 
 /**
  * ApplicationSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Application`.
  */
 class ApplicationSearch extends Application
 {
+    protected $default_filter = [
+        'ApplicationSearch' => [
+            'deleted' => Application::APPLICATION_NOT_DELETED
+        ]
+    ];
+
     /**
      * @inheritdoc
      */
@@ -48,6 +52,9 @@ class ApplicationSearch extends Application
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        // default filters
+        $params = array_merge($this->default_filter, $params);
 
         $this->load($params);
 
