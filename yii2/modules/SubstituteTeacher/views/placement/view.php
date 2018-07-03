@@ -27,10 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a(Yii::t('substituteteacher', 'Summary and contract REPRINT'), ['print', 'id' => $model->id], [
+        <?= Html::a(Yii::t('substituteteacher', 'Print summary and contract documents'), ['print', 'id' => $model->id], [
             'class' => 'btn btn-info',
             'data' => [
-                'confirm' => Yii::t('substituteteacher', 'Are you sure you want to print the summary and contract documents again?'),
+                'confirm' => Yii::t('substituteteacher', 'Are you sure you want to print the summary and contract documents? Previously printed documents will all be deleted.'),
                 'method' => 'post',
             ],
         ]) ?>

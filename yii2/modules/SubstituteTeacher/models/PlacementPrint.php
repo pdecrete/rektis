@@ -173,7 +173,7 @@ class PlacementPrint extends \yii\db\ActiveRecord
         } elseif ($this->type === PlacementPrint::TYPE_CONTRACT) {
             return $this->generateContractPrint($placement_teacher, $placement_related_ids);
         } else {
-            throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The requeseted document type is not recognised.'));
+            throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The requested document type is not recognised.'));
         }
     }
 
