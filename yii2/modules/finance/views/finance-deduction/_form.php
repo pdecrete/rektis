@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
+use app\modules\finance\models\FinanceDeduction;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceDeduction */
@@ -12,12 +13,22 @@ use app\modules\finance\components\Money;
 $model->deduct_downlimit = Money::toCurrency($model->deduct_downlimit);
 $model->deduct_uplimit = Money::toCurrency($model->deduct_uplimit);
 $model->deduct_percentage = Money::toPercentage($model->deduct_percentage);
+
+$disabled = false;
+if(in_array($model->deduct_alias, [ FinanceDeduction::ALIAS_SERVICES_GOODS_UNDER_150EURO, 
+                                    FinanceDeduction::ALIAS_SERVICES_OVER_150EURO,
+                                    FinanceDeduction::ALIAS_GOODS_OVER_150EURO,
+                                    FinanceDeduction::ALIAS_CLEANING]))
+    $disabled = true;
+
 ?>
 
 <div class="finance-deduction-form col-lg-6">
 
     <?php $form = ActiveForm::begin(); ?>
 
+	<?= $form->field($model, 'deduct_alias')->textInput(['maxlength' => true, 'disabled' => $disabled]) ?>
+	
     <?= $form->field($model, 'deduct_name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'deduct_description')->textInput(['maxlength' => true]) ?>
