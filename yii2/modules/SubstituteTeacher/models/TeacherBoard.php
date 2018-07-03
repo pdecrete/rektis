@@ -92,6 +92,15 @@ class TeacherBoard extends \yii\db\ActiveRecord
         return $this->hasOne(Teacher::className(), ['id' => 'teacher_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeacherRegistry()
+    {
+        return $this->hasOne(TeacherRegistry::className(), ['id' => 'registry_id'])
+            ->via('teacher');
+    }
+
     public static function boardTypeLabel($board_type)
     {
         switch ($board_type) {

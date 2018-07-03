@@ -28,6 +28,9 @@ class PlacementTeacher extends \yii\db\ActiveRecord
 {
     const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
 
+    const PLACEMENT_TEACHER_DELETED = 1;
+    const PLACEMENT_TEACHER_NOT_DELETED = 0;
+
     /**
      * @inheritdoc
      */
@@ -79,16 +82,16 @@ class PlacementTeacher extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'placement_id' => Yii::t('app', 'Placement ID'),
-            'teacher_board_id' => Yii::t('app', 'Teacher Board ID'),
-            'comments' => Yii::t('app', 'Comments'),
-            'altered' => Yii::t('app', 'Altered'),
-            'altered_at' => Yii::t('app', 'Altered At'),
-            'deleted' => Yii::t('app', 'Deleted'),
-            'deleted_at' => Yii::t('app', 'Deleted At'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'id' => Yii::t('substituteteacher', 'ID'),
+            'placement_id' => Yii::t('substituteteacher', 'Placement ID'),
+            'teacher_board_id' => Yii::t('substituteteacher', 'Teacher Board ID'),
+            'comments' => Yii::t('substituteteacher', 'Comments'),
+            'altered' => Yii::t('substituteteacher', 'Altered'),
+            'altered_at' => Yii::t('substituteteacher', 'Altered At'),
+            'deleted' => Yii::t('substituteteacher', 'Deleted'),
+            'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
+            'created_at' => Yii::t('substituteteacher', 'Created At'),
+            'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
     }
 
@@ -121,6 +124,39 @@ class PlacementTeacher extends \yii\db\ActiveRecord
     public function getPlacement()
     {
         return $this->hasOne(Placement::className(), ['id' => 'placement_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_teacher_id' => 'id'])
+            ->andOnCondition([PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContractPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_teacher_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_CONTRACT,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSummaryPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_teacher_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_SUMMARY,
+            ]);
     }
 
     /**

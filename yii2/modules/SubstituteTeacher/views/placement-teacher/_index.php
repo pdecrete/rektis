@@ -55,7 +55,7 @@ use yii\data\ArrayDataProvider;
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {alter}',
+                'template' => '{view} {update} {delete} {alter} {download-summary} {download-contract}',
                 'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
                     $params = is_array($key) ? $key : ['id' => (string) $key];
                     $params[0] = 'placement-teacher/' . $action;
@@ -74,6 +74,30 @@ use yii\data\ArrayDataProvider;
                                 ]
                         );
                     },
+                    'download-summary' => function ($url, $model, $key) {
+                        return Html::a(
+                                '<span class="glyphicon glyphicon-download"></span>',
+                                $url,
+                                [
+                                    'title' => Yii::t('substituteteacher', 'Download summary document'),
+                                    'data-method' => 'post',
+                                    'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to download the summary document?'),
+                                    'class' => 'text-primary'
+                                ]
+                        );
+                    },
+                    'download-contract' => function ($url, $model, $key) {
+                        return Html::a(
+                                '<span class="glyphicon glyphicon-download-alt"></span>',
+                                $url,
+                                [
+                                    'title' => Yii::t('substituteteacher', 'Download contract document'),
+                                    'data-method' => 'post',
+                                    'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to download the contract document?'),
+                                    'class' => 'text-info'
+                                ]
+                        );
+                    },
                 ],
                 'visibleButtons' => [
                     'delete' => function ($model, $key, $index) {
@@ -81,6 +105,12 @@ use yii\data\ArrayDataProvider;
                     },
                     'alter' => function ($model, $key, $index) {
                         return $model->altered != true;
+                    },
+                    'download-summary' => function ($model, $key, $index) {
+                        return !empty($model->summaryPrints);
+                    },
+                    'download-contract' => function ($model, $key, $index) {
+                        return !empty($model->contractPrints);
                     },
                 ],
                 'contentOptions' => [

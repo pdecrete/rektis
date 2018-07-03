@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\modules\SubstituteTeacher\traits\Selectable;
+use yii\db\Query;
 
 /**
  * This is the model class for table "{{%stplacement}}".
@@ -23,9 +24,12 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  *
  * @property Call $call
  * @property PlacementTeacher[] $placementTeachers
+ * @property PlacementPrint[] $placementPrints
  */
 class Placement extends \yii\db\ActiveRecord
 {
+    const PLACEMENT_DELETED = 1;
+    const PLACEMENT_NOT_DELETED = 0;
 
     use Selectable;
 
@@ -118,9 +122,80 @@ class Placement extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getPlacementPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getPlacementTeachers()
     {
         return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActivePlacementTeachers()
+    {
+        return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementTeacher::tableName() . '.[[deleted]]' => false,
+                PlacementTeacher::tableName() . '.[[altered]]' => false
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActivePlacementPositions()
+    {
+        return $this->hasMany(PlacementPosition ::className(), ['placement_teacher_id' => 'id'])
+                ->via('activePlacementTeachers');
+    }
+
+    /**
+     * This returns an array of all related entries ids. Useful for selecting a 'catalog'
+     * of ids in the form of:
+     * [
+     *  'placement_id' => '1'
+     *  'placement_teacher_id' => '5'
+     *  'placement_position_id' => '6'
+     *  'position_id' => '85'
+     *  'operation_id' => '4'
+     * ]
+     */
+    public static function getRelatedIds($placement_id)
+    {
+        $placement_tablename = Placement::tableName();
+        $placement_teacher_tablename = PlacementTeacher::tableName();
+        $placement_positions_tablename = PlacementPosition::tableName();
+        $positions_tablename = Position::tableName();
+        $operations_tablename = Operation::tableName();
+
+        $query = (new Query())
+            ->select([
+                "{$placement_tablename}.id AS placement_id",
+                "{$placement_teacher_tablename}.id AS placement_teacher_id",
+                "{$placement_positions_tablename}.id AS placement_position_id",
+                "{$positions_tablename}.id AS position_id",
+                "{$operations_tablename}.id AS operation_id",
+            ])
+            ->from($placement_tablename)
+            ->leftJoin($placement_teacher_tablename, "{$placement_teacher_tablename}.[[placement_id]] = {$placement_tablename}.[[id]]")
+            ->leftJoin($placement_positions_tablename, "{$placement_positions_tablename}.[[placement_teacher_id]] = {$placement_teacher_tablename}.[[id]]")
+            ->leftJoin($positions_tablename, "{$positions_tablename}.[[id]] = {$placement_positions_tablename}.[[position_id]]")
+            ->leftJoin($operations_tablename, "{$operations_tablename}.[[id]] = {$positions_tablename}.[[operation_id]]")
+            ->andWhere([
+                "{$placement_tablename}.[[id]]" => $placement_id,
+                "{$placement_tablename}.[[deleted]]" => false,
+                "{$placement_teacher_tablename}.[[deleted]]" => false,
+                "{$placement_teacher_tablename}.[[altered]]" => false,
+            ])
+            ;
+        return $query->all();
     }
 
     /**

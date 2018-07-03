@@ -16,6 +16,7 @@ use yii\filters\AccessControl;
 use yii\db\Expression;
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
+use app\modules\SubstituteTeacher\models\PlacementPrint;
 
 /**
  * PlacementTeacherController implements the CRUD actions for PlacementTeacher model.
@@ -33,13 +34,14 @@ class PlacementTeacherController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'alter' => ['POST'],
+                    'download-document' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update'],
+                        'actions' => ['index', 'view', 'create', 'update', 'download-summary', 'download-contract'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -290,6 +292,45 @@ class PlacementTeacherController extends Controller
             'model' => $model,
             'modelsPlacementPositions' => $modelsPlacementPositions ? $modelsPlacementPositions : [ new PlacementPosition]
         ]);
+    }
+
+    public function actionDownloadSummary($id)
+    {
+        return $this->downloadDocument($id, 'summary');
+    }
+
+    public function actionDownloadContract($id)
+    {
+        return $this->downloadDocument($id, 'contract');
+    }
+
+    protected function downloadDocument($id, $type)
+    {
+        $model = $this->findModel($id);
+        if ($model->deleted || $model->altered) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either deleted or altered.'));
+        }
+
+        if (($prints = $model->prints) != null) {
+            $applicable_prints = array_filter($prints, function ($m) use ($type) {
+                return $m->type === $type;
+            });
+            if (count($applicable_prints) == 1) {
+                $print = reset($applicable_prints);
+                $download_filename = PlacementPrint::getFilenameAbspath($print->filename, 'export');
+                if (is_file($download_filename) && is_readable($download_filename)) {
+                    Yii::$app->response->sendFile($download_filename);
+                    Yii::$app->end();
+                } else {
+                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'The placement document does not exist or it is not readable.'));
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There are {d} printed placement documents.', ['d' => count($applicable_prints)]));
+            }
+        } else {
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'No placement documents have been printed.'));
+        }
+        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
     }
 
     /**

@@ -11,6 +11,7 @@ use app\modules\SubstituteTeacher\models\AuditLog;
 use app\modules\SubstituteTeacher\models\PlacementTeacher;
 use app\modules\SubstituteTeacher\models\Placement;
 use app\modules\SubstituteTeacher\models\PlacementPosition;
+use app\modules\SubstituteTeacher\models\PlacementPrint;
 
 /**
  * This command clears redundant data; USE WITH CAUTION!
@@ -23,7 +24,7 @@ class ClearController extends Controller
 
     public function actionCheck()
     {
-        $total_tasks = 6;
+        $total_tasks = 7;
         $current_task = 0;
         Console::startProgress($current_task++, $total_tasks, "Checking: ");
 
@@ -50,6 +51,11 @@ class ClearController extends Controller
         $placements_deleted = $placements_qry->count();
         Console::updateProgress($current_task++, $total_tasks);
 
+        $placement_prints_deleted = PlacementPrint::find()
+            ->where(['[[deleted]]' => PlacementPrint::PRINT_DELETED])
+            ->count();
+        Console::updateProgress($current_task++, $total_tasks);
+
         $placements_deleted_ids = array_map(function ($m) {
             return $m->id;
         }, $placements_qry->all());
@@ -67,6 +73,7 @@ class ClearController extends Controller
         echo "- {$application_positions_orphaned} application positions orhpaned (null application)", PHP_EOL;
         echo "- {$placements_deleted} placements marked as deleted", PHP_EOL;
         echo "- {$placements_positions_deleted} placement positions linked to placements marked as deleted", PHP_EOL;
+        echo "- {$placement_prints_deleted} placement prints marked as deleted", PHP_EOL;
 
         return Controller::EXIT_CODE_NORMAL;
     }
@@ -146,6 +153,37 @@ class ClearController extends Controller
         echo "Cleared entries:", PHP_EOL;
         echo "- {$placements_deleted} placements marked as deleted", PHP_EOL;
         echo "- {$placements_positions_deleted} placement positions linked to placements marked as deleted", PHP_EOL;
+
+        return Controller::EXIT_CODE_NORMAL;
+    }
+
+    /**
+     * Clear placement prints that has been marked as deleted. Also remove corresponing files.
+     *
+     */
+    public function actionPlacementPrints()
+    {
+        if (false === Console::confirm(Console::ansiFormat("Clear placement prints marked with soft delete AND delete corresponding files?", [Console::BG_RED]))) {
+            echo "Abort.\n";
+            exit();
+        }
+
+        $placement_prints = PlacementPrint::find()
+            ->where(['[[deleted]]' => PlacementPrint::PRINT_DELETED])
+            ->all();
+        $deleted_files = 0;
+        array_walk($placement_prints, function ($model, $idx) use (&$deleted_files) {
+            $filename = PlacementPrint::getFilenameAbspath($model->filename, 'export');
+            if (is_file($filename)) {
+                @unlink($filename);
+                $deleted_files++;
+            }
+        });
+
+        $placement_prints_deleted = PlacementPrint::deleteAll(['[[deleted]]' => PlacementPrint::PRINT_DELETED]);
+        echo "Cleared entries:", PHP_EOL;
+        echo "- {$placement_prints_deleted} placement prints marked as deleted", PHP_EOL;
+        echo "- {$deleted_files} linked files deleted", PHP_EOL;
 
         return Controller::EXIT_CODE_NORMAL;
     }

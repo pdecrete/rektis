@@ -27,6 +27,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a(Yii::t('substituteteacher', 'Summary and contract REPRINT'), ['print', 'id' => $model->id], [
+            'class' => 'btn btn-info',
+            'data' => [
+                'confirm' => Yii::t('substituteteacher', 'Are you sure you want to print the summary and contract documents again?'),
+                'method' => 'post',
+            ],
+        ]) ?>
     </p>
 
     <?= DetailView::widget([

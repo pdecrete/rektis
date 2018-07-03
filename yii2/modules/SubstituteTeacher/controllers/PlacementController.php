@@ -16,6 +16,7 @@ use app\modules\SubstituteTeacher\models\Application;
 use yii\db\Expression;
 use app\modules\SubstituteTeacher\models\CallPosition;
 use app\modules\SubstituteTeacher\models\PlacementTeacher;
+use app\modules\SubstituteTeacher\models\PlacementPrint;
 
 /**
  * PlacementController implements the CRUD actions for Placement model.
@@ -33,13 +34,14 @@ class PlacementController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'place' => ['POST'],
+                    'print' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'place'],
+                        'actions' => ['index', 'view', 'create', 'update', 'place', 'print'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -233,6 +235,57 @@ class PlacementController extends Controller
     }
 
     /**
+     * Given a placement, locate all placements and generate placement documents.
+     *
+     * @throws NotFoundHttpException if placement cannot be found
+     */
+    public function actionPrint($id)
+    {
+        // get a list of ids to help navigate necessary models
+        $placement_related_ids = Placement::getRelatedIds($id);
+
+        $placement = $this->findModel($id);
+
+        // get a list of teacher placements
+        $placement_teachers = $placement->activePlacementTeachers;
+
+        // TODO wrap all in a transaction and perfmorm error control 
+
+        // some prints have to be generated per teacher
+        foreach ($placement_teachers as $placement_teacher) {
+            // mark previous data as deleted; just do this once
+            $deletions = PlacementPrint::updateAll([
+                'deleted' => PlacementPrint::PRINT_DELETED,
+                'deleted_at' => new Expression('NOW()'),
+                'updated_at' => new Expression('NOW()')
+            ], [
+                'deleted' => PlacementPrint::PRINT_NOT_DELETED,
+                'placement_id' => $placement->id,
+                'placement_teacher_id' => $placement_teacher->id
+            ]);
+
+            $summary_print = new PlacementPrint();
+            $summary_print->placement_id = $placement->id;
+            $summary_print->placement_teacher_id = $placement_teacher->id;
+            $summary_print->type = 'summary';
+            $summary_print->deleted = PlacementPrint::PRINT_NOT_DELETED;
+            $summary_print->generatePrint($placement_teacher, $placement_related_ids);
+            $summary_print->save(); // TODO add error control
+
+            $contract_print = new PlacementPrint();
+            $contract_print->placement_id = $placement->id;
+            $contract_print->placement_teacher_id = $placement_teacher->id;
+            $contract_print->type = 'contract';
+            $contract_print->deleted = PlacementPrint::PRINT_NOT_DELETED;
+            $contract_print->generatePrint($placement_teacher, $placement_related_ids);
+            $contract_print->save(); // TODO add error control
+        }
+        Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Summary and contract documents generated successfully.'));
+
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    /**
      * Finds the Placement model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
@@ -244,7 +297,7 @@ class PlacementController extends Controller
         if (($model = Placement::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement does not exist.'));
         }
     }
 }
