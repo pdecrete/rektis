@@ -130,7 +130,7 @@ use dosamigos\switchinput\SwitchBox;
     <div class="well well-sm">
         <h3>Τυπικά προσόντα</h3>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <?= $form->field($model, 'aei')->widget(SwitchBox::className(), [
                     'options' => [
                         'label' => '',
@@ -144,7 +144,7 @@ use dosamigos\switchinput\SwitchBox;
                 ]);
                 ?>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <?= $form->field($model, 'tei')->widget(SwitchBox::className(), [
                     'options' => [
                         'label' => '',
@@ -158,8 +158,22 @@ use dosamigos\switchinput\SwitchBox;
                 ]);
                 ?>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <?= $form->field($model, 'epal')->widget(SwitchBox::className(), [
+                    'options' => [
+                        'label' => '',
+                    ],
+                    'clientOptions' => [
+                       'size' => 'small',
+                        'onColor' => 'success',
+                        'onText' => Yii::t('substituteteacher', 'YES'),
+                        'offText' => Yii::t('substituteteacher', 'No'),
+                    ]
+                ]);
+                ?>
+            </div>
+            <div class="col-md-3">
+                <?= $form->field($model, 'iek')->widget(SwitchBox::className(), [
                     'options' => [
                         'label' => '',
                     ],
@@ -174,7 +188,7 @@ use dosamigos\switchinput\SwitchBox;
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <?= $form->field($model, 'sign_language')->widget(SwitchBox::className(), [
                     'options' => [
                         'label' => '',
@@ -188,7 +202,7 @@ use dosamigos\switchinput\SwitchBox;
                 ]);
                 ?>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <?= $form->field($model, 'braille')->widget(SwitchBox::className(), [
                     'options' => [
                         'label' => '',

@@ -93,6 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attributes' => [
                     'sign_language:boolean',
                     'braille:boolean',
+                    'iek:boolean',
                     'epal:boolean',
                     'tei:boolean',
                     'aei:boolean',
