@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a(Yii::t('substituteteacher', 'Batch Insert Teacher In Year'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher'], ['class' => 'btn btn-primary']) ?>
 
-            <?= Html::a(Yii::t('substituteteacher', 'Batch Insert Teachers'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'registry'], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a(Yii::t('substituteteacher', 'Batch insert teachers in Registry'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'registry'], ['class' => 'btn btn-primary']) ?>
 
             <?= Html::a(Yii::t('substituteteacher', 'Download import sample'), "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls", ['class' => 'btn btn-default']) ?>
         </p>

@@ -49,33 +49,33 @@ class ImportController extends Controller
             'D' => 'points',
         ],
         'registry' => [
-            'B' => 'tax_identification_number',
-            'C' => 'id_type',
-            'D' => 'identity_number',
-            'E' => 'surname',
-            'F' => 'firstname',
-            'G' => 'fathername',
-            'H' => '',
-            'I' => '',
-            'J' => '',
-            'K' => '',
-            'L' => '',
-            'M' => '',
-            'N' => '',
-            'O' => '',
-            'P' => '',
-            'Q' => '',
-            'R' => '',
-            'S' => '',
-            'T' => 'sign_language',
-            'U' => '',
-            'V' => '',
-            'W' => '',
-            'X' => '',
-            'Y' => '',
-            'Z' => '',
-            'AA' => '',
-            'AB' => '',
+            'tax_identification_number' => 'B',
+            'identity_type' => 'C',
+            'identity_number' => 'D',
+            'surname' => 'E',
+            'firstname' => 'F',
+            'fathername' => 'G',
+            'degree_categ' => 'H',
+            'degree_year' => 'I',
+            'degree_mark' => 'J',
+            'general_experience_years' => 'K',
+            'general_experience_months' => 'L',
+            'general_experience_days' => 'M',
+            'smeae_experience_years' => 'N',
+            'smeae_experience_months' => 'O',
+            'smeae_experience_days' => 'P',
+            'disability_percentage' => 'Q',
+            'disabled_children' => 'R',
+            'many_children' => 'S',
+            'sign_language' => 'T',
+            'academic_criteria_points' => 'U',
+            'general_experience_points' => 'V',
+            'smeae_experience_points' => 'W',
+            'disability_points' => 'X',
+            'disabled_children_points' => 'Y',
+            'many_children_points' => 'Z',
+            'social_criteria_points' => 'AA',
+            'total_points' => 'AB',
         ]
     ];
 
@@ -191,51 +191,102 @@ class ImportController extends Controller
 
             $teachersStartRow = $this->teachersStartRowIndex($worksheet);
             $rowIterator = $worksheet->getRowIterator($teachersStartRow);
-        
+            
+            $existing_teachers = array();
             foreach ($rowIterator as $row) {
                 $teacherrowArray = array();
-                $newteachersFlags = array_fill(1, $worksheet->getHighestDataRow() - $teachersStartRow + 1, 0);                
+                //$newteachersFlags = array_fill(1, $worksheet->getHighestDataRow() - $teachersStartRow + 1, 0);
+                //echo "<pre>"; print_r($newteachersFlags); echo "</pre>"; die();
+                $idnum_column = $this->_column_data_idx['registry']['tax_identification_number'];
+                 
                 $celliterator = $row->getCellIterator();
                 foreach ($celliterator as $cell)
                     $teacherrowArray[$cell->getColumn()] = $cell->getFormattedValue();
-                $existing_registry_teacher = TeacherRegistry::findOne(['tax_identification_number' => $teacherrowArray['B']]);
+                //echo "<pre>"; print_r($teacherrowArray); echo "</pre>"; die();
+                //echo $teacherrowArray[$idnum_column]; die();
+                $existing_registry_teacher = TeacherRegistry::findOne(['tax_identification_number' => $teacherrowArray[$idnum_column]]);
                 if(!is_null($existing_registry_teacher)){
-                    $newteachersFlags[$teacherrowArray['A']] = 1;
+                    $existing_teachers[$teacherrowArray[$idnum_column]] = 1;
                 }
-                else {                
+                else {
+                    $existing_teachers[$teacherrowArray[$idnum_column]] = 0;
                     $old_teacher = new TeacherRegistry();
                     $old_teacher->loadDefaultValues(false);
-                    $old_teacher->surname = $teacherrowArray['E'];
-                    $old_teacher->firstname = $teacherrowArray['F'];
-                    $old_teacher->fathername = $teacherrowArray['G'];
-                    $old_teacher->tax_identification_number = $teacherrowArray['B'];
-                        $old_teacher->social_security_number = $teacherrowArray['B'];
-                    if($teacherrowArray['C'] == 'ΑΔΤ')
-                        $old_teacher->identity_number = $teacherrowArray['D'];
+                    $old_teacher->gender = '';                    
+                    $old_teacher->surname = $teacherrowArray[$this->_column_data_idx['registry']['surname']];
+                    $old_teacher->firstname = $teacherrowArray[$this->_column_data_idx['registry']['firstname']];
+                    $old_teacher->fathername = $teacherrowArray[$this->_column_data_idx['registry']['fathername']];
+                    $old_teacher->mothername = '';
+                    $old_teacher->marital_status = '';
+                    $old_teacher->protected_children = 0;
+                    $old_teacher->mobile_phone = '';
+                    $old_teacher->home_phone = '';
+                    $old_teacher->work_phone = '';
+                    $old_teacher->home_address = '';
+                    $old_teacher->city = '';
+                    $old_teacher->postal_code = '';
+                    $old_teacher->social_security_number = '';                    
+                    $old_teacher->tax_identification_number = $teacherrowArray[$this->_column_data_idx['registry']['tax_identification_number']];
+                    $old_teacher->tax_service = '';
+                    if($teacherrowArray[$this->_column_data_idx['registry']['identity_type']] == 'ΑΔΤ')
+                        $old_teacher->identity_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
                     else 
-                        $old_teacher->passport_number = $teacherrowArray['D'];
+                        $old_teacher->passport_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
+                    $old_teacher->bank = '';
+                    $old_teacher->iban = '';
+                    $old_teacher->email = '';
+                    $old_teacher->birthdate = null;
+                    $old_teacher->birthplace = '';
                     
-                    //$old_teacher->disability_percentage = $teacherrowArray['Q'];
-                    //$old_teacher->disabled_children = $teacherrowArray['R'];
-                    //$old_teacher->many_children = $teacherrowArray['S'];
-                    //$old_teacher->sign_language = $teacherrowArray['T'];
-                    //echo "<pre>"; print_r($old_teacher->toArray()); echo "</pre>"; 
+                    $degree = $this->_column_data_idx['registry']['degree_categ'];
+                    $old_teacher->aei = false;
+                    $old_teacher->tei = false;
+                    $old_teacher->epal = false;
+                    $old_teacher->iek = false;
+                    if(strpos('ΑΕΙ', $degree) || strpos('AEI', $degree)) //written with greek or latin characters
+                        $old_teacher->aei = false;
+                    if(strpos('ΤΕΙ', $degree) || strpos('TEI', $degree)) //written with greek or latin characters
+                        $old_teacher->tei = true;
+                    if(strpos('ΕΠΑΛ', $degree) || strpos('TEE', $degree) || strpos('ΤΕΕ', $degree) || strpos('ΤΕΛ', $degree)) 
+                        $old_teacher->epal = true;
+                    if(strpos('ΙΕΚ', $degree) || strpos('IEK', $degree)) //written with greek or latin characters
+                        $old_teacher->iek = true;
+                    
+                    $old_teacher->military_service_certificate = false;
+                    if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI']))
+                        $old_teacher->sign_language = false;
+                    else if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΝΑΙ', 'NAI']))
+                        $old_teacher->sign_language = false;
+                    else
+                        throw new Exception('Unknown value in column "ΓΝΩΣΗ ΕΝΓ" for teacher with identity number = ' . $teacherrowArray[$this->_column_data_idx['registry']['identity_number']]);
+                    
+                    $old_teacher->braille = false;
                     if(!$old_teacher->save())
-                        //echo "<pre>"; print_r($old_teacher->getErrors()); echo "<pre>"; die();
                         throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
-                }
-                
-                    //echo "--<pre>"; print_r($teacherrowArray); echo "</pre>";
+                }                
                 if($row->getRowIndex() == $worksheet->getHighestDataRow())
                     break;
-                
-                
             }
-            //echo "--<pre>"; print_r($newteachersFlags); echo "</pre>";
+
             $transaction->commit();
+            
+            $counts = array_count_values($existing_teachers);            
+            if(!isset($counts['0']))
+                $counts['0'] = 0;
+            $feedback = 'Successfully imported ' . $counts['0'] . ' teachers.';            
+            if(count($existing_teachers) != $counts['0']){
+                $feedback .= '<br />The teachers with tax identity numbers';
+                foreach ($existing_teachers as $identity_number => $flag) {
+                    if($flag)
+                        $feedback .= " '" . $identity_number . "' ";                
+                }
+                $feedback .= 'were not imported because they already exist in the registry.';
+            }
+
+            return $this->render('file-registry-import-feedback', ['feedback' => $feedback]);
         }
         catch(Exception $exc) {
-            echo $exc->getMessage();
+            return $this->render('file-registry-import-feedback', ['feedback' => $exc->getMessage()]);
             $transaction->rollBack();
         }
     }
