@@ -12,6 +12,7 @@ use app\modules\SubstituteTeacher\models\PlacementTeacher;
 use app\modules\SubstituteTeacher\models\Placement;
 use app\modules\SubstituteTeacher\models\PlacementPosition;
 use app\modules\SubstituteTeacher\models\PlacementPrint;
+use app\modules\SubstituteTeacher\models\OperationSpecialisation;
 
 /**
  * This command clears redundant data; USE WITH CAUTION!
@@ -24,7 +25,7 @@ class ClearController extends Controller
 
     public function actionCheck()
     {
-        $total_tasks = 7;
+        $total_tasks = 8;
         $current_task = 0;
         Console::startProgress($current_task++, $total_tasks, "Checking: ");
 
@@ -64,6 +65,11 @@ class ClearController extends Controller
             ->count();
         Console::updateProgress($current_task++, $total_tasks);
 
+        $operation_specialisations_orphaned = OperationSpecialisation::find()
+            ->where(['[[operation_id]]' => null])
+            ->count();
+        Console::updateProgress($current_task++, $total_tasks);
+
         Console::endProgress();
 
         echo "Check results; entries that would have been deleted:", PHP_EOL;
@@ -74,6 +80,7 @@ class ClearController extends Controller
         echo "- {$placements_deleted} placements marked as deleted", PHP_EOL;
         echo "- {$placements_positions_deleted} placement positions linked to placements marked as deleted", PHP_EOL;
         echo "- {$placement_prints_deleted} placement prints marked as deleted", PHP_EOL;
+        echo "- {$operation_specialisations_orphaned} operation specialisations orphaned", PHP_EOL;
 
         return Controller::EXIT_CODE_NORMAL;
     }
@@ -187,4 +194,24 @@ class ClearController extends Controller
 
         return Controller::EXIT_CODE_NORMAL;
     }
+
+    /**
+     * Clear operation-specialisation mappings that has been orphaned.
+     *
+     */
+    public function actionOperationSpecialisations()
+    {
+        if (false === Console::confirm(Console::ansiFormat("Clear operation-specialisation mappings that have been orphaned?", [Console::BG_RED]))) {
+            echo "Abort.\n";
+            exit();
+        }
+
+        $operation_specialisations_orphaned = OperationSpecialisation::deleteAll(['[[operation_id]]' => null]);
+
+        echo "Cleared entries:", PHP_EOL;
+        echo "- {$operation_specialisations_orphaned} operation specialisations orphaned", PHP_EOL;
+
+        return Controller::EXIT_CODE_NORMAL;
+    }
+
 }

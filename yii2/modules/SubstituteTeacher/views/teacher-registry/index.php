@@ -30,8 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'specialisation_ids',
                 'value' => function ($m) {
-                    return implode(', ', $m->specialisation_labels);
+                    $all_labels = $m->specialisation_labels;
+                    return empty($all_labels) ? null : implode('<br/>', $all_labels);
                 },
+                'format' => 'html',
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'specialisation_ids',
