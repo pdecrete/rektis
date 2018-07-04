@@ -15,7 +15,8 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\Application;
 use yii\db\Expression;
 use app\modules\SubstituteTeacher\models\CallPosition;
-use yii\helpers\ArrayHelper;
+use app\modules\SubstituteTeacher\models\PlacementTeacher;
+use app\modules\SubstituteTeacher\models\PlacementPrint;
 
 /**
  * PlacementController implements the CRUD actions for Placement model.
@@ -32,15 +33,15 @@ class PlacementController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
-                    'alter' => ['POST'],
                     'place' => ['POST'],
+                    'print' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'place'],
+                        'actions' => ['index', 'view', 'create', 'update', 'place', 'print'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -85,19 +86,20 @@ class PlacementController extends Controller
      * Redirects back to the application.
      * @param int $application_id the application id
      * @param mixed payload(post) contains various parameters:
-     *      - int call_position_id MANDATORY 
-     *      - string date defaults to current_date()
-     *      - string decision_board
-     *      - string decision
-     *      - string comments automatically appended with one click info 
+     *      - int call_position_id MANDATORY
+     *      - int placement_id MANDATORY
      * @return mixed
      */
     public function actionPlace($application_id)
     {
-        // locate application
+        // locate application and placement
+        $placement_id = Yii::$app->request->post('placement_id', -1);
         $application = Application::findOne($application_id);
+        $placement = Placement::findOne($placement_id);
         if (empty($application)) {
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Application not found.'));
+        } elseif (empty($placement)) {
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement not found.' . var_export($placement_id, true)));
         } else {
             $call_position_id = Yii::$app->request->post('call_position_id', -1); // fails if not passed correctly
             $teacher_board = $application->teacherBoard;
@@ -110,24 +112,17 @@ class PlacementController extends Controller
             } else {
                 $transaction = \Yii::$app->db->beginTransaction();
 
-                $model = new Placement();
+                $model = new PlacementTeacher();
 
                 // get information for placement
                 $model->teacher_board_id = $teacher_board->id;
-                $model->call_id = $application->call_id;
-                $model->date = Yii::$app->request->post('date', '');
-                if (empty($model->date)) {
-                    $model->date = date('Y-m-d');
-                }
-                $model->decision_board = Yii::$app->request->post('decision_board', '');
-                $model->decision = Yii::$app->request->post('decision', '');
-                $model->comments = Yii::$app->request->post('comments', '') . " / ONE-CLICK PLACEMENT FROM APPLICATION {$application_id}, POSITION {$call_position_id}";
+                $model->placement_id = $placement_id;
                 $model->deleted = false;
                 $model->altered = false;
 
                 if (!$model->save()) {
                     $transaction->rollBack();
-                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error creating the placement.'));
+                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error creating the teacher placement.'));
                     Yii::$app->session->addFlash('danger', array_reduce(array_values($model->getErrors()), function ($c, $v) {
                         return $c . implode(' ', $v) . ' ';
                     }, ''));
@@ -136,7 +131,7 @@ class PlacementController extends Controller
                     $saved_positions = true;
                     foreach ($call_positions as $call_position) {
                         $placement_position_model = new PlacementPosition;
-                        $placement_position_model->placement_id = $model->id;
+                        $placement_position_model->placement_teacher_id = $model->id;
                         $placement_position_model->position_id = $call_position->position_id;
                         $placement_position_model->teachers_count = $call_position->teachers_count;
                         $placement_position_model->hours_count = $call_position->hours_count;
@@ -177,65 +172,13 @@ class PlacementController extends Controller
     public function actionCreate()
     {
         $model = new Placement();
-        $modelsPlacementPositions = [new PlacementPosition];
-
-        if ($model->load(Yii::$app->request->post())) {
-            $model->deleted = false;
-            $model->altered = false;
-
-            $post = \Yii::$app->request->post();
-
-            if (isset($post['PlacementPosition'])) {
-                $post['PlacementPosition'] = array_values($post['PlacementPosition']);
-            }
-            $modelsPlacementPositions = Model::createMultiple(PlacementPosition::classname(), $modelsPlacementPositions);
-            Model::loadMultiple($modelsPlacementPositions, Yii::$app->request->post());
-
-            $valid = $model->validate() && count($modelsPlacementPositions) > 0;
-
-            if ($valid) {
-                $transaction = \Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) { // already validated
-                        $model->refresh();
-
-                        // mark teacher as appointed
-                        $teacher_board = $model->teacherBoard;
-                        $teacher_board->status = Teacher::TEACHER_STATUS_APPOINTED;
-                        if ($flag = $teacher_board->save()) {
-                            // save placement positions
-                            $id = $model->id;
-                            array_walk($modelsPlacementPositions, function ($m) use ($id) {
-                                $m->placement_id = $id;
-                            });
-
-                            if ($flag = Model::validateMultiple($modelsPlacementPositions)) {
-                                foreach ($modelsPlacementPositions as $modelPlacementPosition) {
-                                    if (! ($flag = $modelPlacementPosition->save())) {
-                                        $transaction->rollBack();
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement created successfully.'));
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error creating the placement.'));
-                    Yii::$app->session->addFlash('danger', $e->getMessage());
-                }
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
         }
-
-        return $this->render('create', [
-            'model' => $model,
-            'modelsPlacementPositions' => $modelsPlacementPositions ? $modelsPlacementPositions : [ new PlacementPosition]
-        ]);
     }
 
     /**
@@ -247,62 +190,14 @@ class PlacementController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->setScenario(Placement::SCENARIO_UPDATE);
-        $modelsPlacementPositions = ($model->placementPositions ? $model->placementPositions : [new PlacementPosition]);
 
-        if ($model->load(Yii::$app->request->post())) {
-            $post = Yii::$app->request->post();
-
-            if (isset($post['PlacementPosition'])) {
-                $post['PlacementPosition'] = array_values($post['PlacementPosition']);
-            }
-            $oldIDs = ArrayHelper::map($modelsPlacementPositions, 'id', 'id');
-            $modelsPlacementPositions = Model::createMultiple(PlacementPosition::classname(), $modelsPlacementPositions);
-            Model::loadMultiple($modelsPlacementPositions, $post);
-            $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsPlacementPositions, 'id', 'id')));
-
-            array_walk($modelsPlacementPositions, function ($m) use ($id) {
-                $m->placement_id = $id;
-            });
-
-            $valid = $model->validate();
-            $valid = Model::validateMultiple($modelsPlacementPositions) && $valid;
-
-            if ($valid) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    if ($flag = $model->save(false)) { // validated beforehand
-                        if (! empty($deletedIDs)) {
-                            PlacementPosition::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelsPlacementPositions as $modelPlacementPosition) {
-                            if (! ($flag = $modelPlacementPosition->save(false))) {
-                                $transaction->rollBack();
-                                break;
-                            }
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement updated successfully.'));
-                        return $this->redirect(['view', 'id' => $model->id]);
-                    } else {
-                        Yii::$app->session->setFlash('info', "PAP!");
-                    }
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error updating the placement.'));
-                    Yii::$app->session->addFlash('danger', $e->getMessage());
-                }
-            } else {
-                Yii::$app->session->setFlash('info', "PAP PAP!" . print_r($model->getErrors(), true));
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $model,
-            'modelsPlacementPositions' => $modelsPlacementPositions ? $modelsPlacementPositions : [ new PlacementPosition]
-        ]);
     }
 
     /**
@@ -340,37 +235,54 @@ class PlacementController extends Controller
     }
 
     /**
-     * Mark an existing Placement model as altered.
-     * Also marks the teacher board as TEACHER_STATUS_PENDING.
+     * Given a placement, locate all placements and generate placement documents.
      *
-     * @param integer $id
-     * @return mixed
+     * @throws NotFoundHttpException if placement cannot be found
      */
-    public function actionAlter($id)
+    public function actionPrint($id)
     {
-        $transaction = \Yii::$app->db->beginTransaction();
+        // get a list of ids to help navigate necessary models
+        $placement_related_ids = Placement::getRelatedIds($id);
 
-        $model = $this->findModel($id);
-        $teacher_board = $model->teacherBoard;
-        $model->altered = true;
-        $model->altered_at = new  Expression('CURRENT_TIMESTAMP()');
+        $placement = $this->findModel($id);
 
-        if (!$model->save(false, ['altered', 'altered_at'])) {
-            $transaction->rollBack();
-            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as altered.'));
-        } else {
-            // mark teacher as pending
-            $teacher_board->status = Teacher::TEACHER_STATUS_PENDING;
-            if (!$teacher_board->save(false, ['status'])) {
-                $transaction->rollBack();
-                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
-            } else {
-                $transaction->commit();
-                Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as altered.'));
-            }
+        // get a list of teacher placements
+        $placement_teachers = $placement->activePlacementTeachers;
+
+        // TODO wrap all in a transaction and perfmorm error control 
+
+        // some prints have to be generated per teacher
+        foreach ($placement_teachers as $placement_teacher) {
+            // mark previous data as deleted; just do this once
+            $deletions = PlacementPrint::updateAll([
+                'deleted' => PlacementPrint::PRINT_DELETED,
+                'deleted_at' => new Expression('NOW()'),
+                'updated_at' => new Expression('NOW()')
+            ], [
+                'deleted' => PlacementPrint::PRINT_NOT_DELETED,
+                'placement_id' => $placement->id,
+                'placement_teacher_id' => $placement_teacher->id
+            ]);
+
+            $summary_print = new PlacementPrint();
+            $summary_print->placement_id = $placement->id;
+            $summary_print->placement_teacher_id = $placement_teacher->id;
+            $summary_print->type = 'summary';
+            $summary_print->deleted = PlacementPrint::PRINT_NOT_DELETED;
+            $summary_print->generatePrint($placement_teacher, $placement_related_ids);
+            $summary_print->save(); // TODO add error control
+
+            $contract_print = new PlacementPrint();
+            $contract_print->placement_id = $placement->id;
+            $contract_print->placement_teacher_id = $placement_teacher->id;
+            $contract_print->type = 'contract';
+            $contract_print->deleted = PlacementPrint::PRINT_NOT_DELETED;
+            $contract_print->generatePrint($placement_teacher, $placement_related_ids);
+            $contract_print->save(); // TODO add error control
         }
+        Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Summary and contract documents generated successfully.'));
 
-        return $this->redirect(['index']);
+        return $this->redirect(['view', 'id' => $id]);
     }
 
     /**
@@ -385,7 +297,7 @@ class PlacementController extends Controller
         if (($model = Placement::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement does not exist.'));
         }
     }
 }

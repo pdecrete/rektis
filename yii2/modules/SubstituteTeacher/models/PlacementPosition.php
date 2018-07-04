@@ -10,18 +10,21 @@ use yii\db\Expression;
  * This is the model class for table "{{%stplacement_position}}".
  *
  * @property integer $id
- * @property integer $placement_id
+ * @property integer $placement_teacher_id
  * @property integer $position_id
  * @property integer $teachers_count
  * @property integer $hours_count
  * @property string $created_at
  * @property string $updated_at
  *
- * @property Placement $placement
+ * @property PlacementTeacher $placementTeacher
  * @property Position $position
  */
 class PlacementPosition extends \yii\db\ActiveRecord
 {
+
+    public $position_label;
+
     /**
      * @inheritdoc
      */
@@ -36,10 +39,10 @@ class PlacementPosition extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['placement_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
-            [['placement_id', 'position_id', 'teachers_count', 'hours_count'], 'required'],
+            [['placement_teacher_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
+            [['placement_teacher_id', 'position_id', 'teachers_count', 'hours_count'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
-            [['placement_id'], 'exist', 'skipOnError' => true, 'targetClass' => Placement::className(), 'targetAttribute' => ['placement_id' => 'id']],
+            [['placement_teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => PlacementTeacher::className(), 'targetAttribute' => ['placement_teacher_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
         ];
     }
@@ -51,7 +54,7 @@ class PlacementPosition extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
-            'placement_id' => Yii::t('substituteteacher', 'Placement ID'),
+            'placement_teacher_id' => Yii::t('substituteteacher', 'Placement Teacher ID'),
             'position_id' => Yii::t('substituteteacher', 'Position ID'),
             'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
             'hours_count' => Yii::t('substituteteacher', 'Hours Count'),
@@ -60,6 +63,14 @@ class PlacementPosition extends \yii\db\ActiveRecord
         ];
     }
 
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->position_label = $this->position->title . ' ' . 
+            ($this->teachers_count > 0 ? Yii::t('substituteteacher', 'Covered Teachers Count') . ': ' . $this->teachers_count : '' ) .
+            ($this->hours_count > 0 ? Yii::t('substituteteacher', 'Covered Hours Count') . ': ' . $this->hours_count : '' ) .
+            '';
+    }
     /**
      * @inheritdoc
      */
@@ -78,9 +89,9 @@ class PlacementPosition extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPlacement()
+    public function getPlacementTeacher()
     {
-        return $this->hasOne(Placement::className(), ['id' => 'placement_id']);
+        return $this->hasOne(PlacementTeacher::className(), ['id' => 'placement_teacher_id']);
     }
 
     /**

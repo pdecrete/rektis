@@ -9,6 +9,7 @@ use kartik\select2\Select2;
 /* @var $model app\modules\SubstituteTeacher\models\Operation */
 /* @var $form yii\widgets\ActiveForm */
 
+$template_filenames = Operation::getAvailableTemplates();
 ?>
 
 <div class="operation-form">
@@ -33,6 +34,8 @@ use kartik\select2\Select2;
     ?>
 
     <?= $form->field($model, 'logo')->dropdownList(Operation::getLogoChoices()) ?>
+    <?= $form->field($model, 'contract_template')->dropdownList(array_combine($template_filenames, $template_filenames)) ?>
+    <?= $form->field($model, 'summary_template')->dropdownList(array_combine($template_filenames, $template_filenames)) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -278,6 +278,10 @@ AppAsset::register($this);
                             'label' => 'Τοποθετήσεις',
                             'url' => [ '/SubstituteTeacher/placement/index' ]
                         ],
+                        [
+                            'label' => 'Παραχθέντα έγγραφα',
+                            'url' => [ '/SubstituteTeacher/placement-print/index' ]
+                        ],
 
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-export"></i> Διαλειτουργικότητα</li>',

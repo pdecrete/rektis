@@ -2,13 +2,15 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\SubstituteTeacher\models\PlacementTeacher;
 
 /**
- * PlacementPositionSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\PlacementPosition`.
+ * PlacementTeacherSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\PlacementTeacher`.
  */
-class PlacementPositionSearch extends PlacementPosition
+class PlacementTeacherSearch extends PlacementTeacher
 {
     /**
      * @inheritdoc
@@ -16,8 +18,8 @@ class PlacementPositionSearch extends PlacementPosition
     public function rules()
     {
         return [
-            [['id', 'placement_teacher_id', 'position_id', 'teachers_count', 'hours_count'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['id', 'placement_id', 'teacher_board_id', 'altered', 'deleted'], 'integer'],
+            [['comments', 'altered_at', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -39,7 +41,7 @@ class PlacementPositionSearch extends PlacementPosition
      */
     public function search($params)
     {
-        $query = PlacementPosition::find();
+        $query = PlacementTeacher::find();
 
         // add conditions that should always apply here
 
@@ -58,13 +60,17 @@ class PlacementPositionSearch extends PlacementPosition
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'placement_teacher_id' => $this->placement_teacher_id,
-            'position_id' => $this->position_id,
-            'teachers_count' => $this->teachers_count,
-            'hours_count' => $this->hours_count,
+            'placement_id' => $this->placement_id,
+            'teacher_board_id' => $this->teacher_board_id,
+            'altered' => $this->altered,
+            'altered_at' => $this->altered_at,
+            'deleted' => $this->deleted,
+            'deleted_at' => $this->deleted_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+        $query->andFilterWhere(['like', 'comments', $this->comments]);
 
         return $dataProvider;
     }

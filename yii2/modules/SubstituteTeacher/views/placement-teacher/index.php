@@ -2,12 +2,9 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
-use app\modules\SubstituteTeacher\models\Call;
 use kartik\select2\Select2;
 use yii\helpers\Url;
-use kartik\datecontrol\DateControl;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
@@ -23,7 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Create Placement'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-    <?php Pjax::begin(); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -32,47 +28,55 @@ $this->params['breadcrumbs'][] = $this->title;
 
             // 'id',
             [
-                'attribute' => 'call_id',
+                'attribute' => 'teacher_board_id',
                 'value' => function ($model) {
-                    return empty($model->call_id) ? null : $model->call->title;
+                    return $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
                 },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
-                    'attribute' => 'call_id',
-                    'data' => Call::defaultSelectables(),
+                    'attribute' => 'teacher_board_id',
+                    'data' => TeacherBoard::selectablesWithTeacherInfo(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
                 ]),
+                'format' => 'html'
             ],
-            // 'date',
             [
-                'attribute' => 'date',
-                'value' => function ($m) {
-                    return \Yii::$app->formatter->asDate($m->date);
-                },
-                'filter' => DateControl::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'date',
-                    'type' => DateControl::FORMAT_DATE,
-                    'widgetOptions' => [
-                        'layout' => '{remove}{input}'
-                    ],
-                ])
+                'attribute' => 'placement_id',
+                'value' => function ($model) {
+                    return empty($model->placement_id) ? null : $model->placement->label;
+                }
             ],
-            'decision_board',
-            'decision',
-            // 'comments:ntext',
+            'comments:ntext',
+            'altered:boolean',
             'deleted:boolean',
             // 'created_at',
             // 'updated_at',
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete}',
+                'template' => '{view} {update} {delete} {alter}',
+                'buttons' => [
+                    'alter' => function ($url, $model, $key) {
+                        return Html::a(
+                                '<span class="glyphicon glyphicon-erase"></span>',
+                                $url,
+                                [
+                                    'title' => Yii::t('substituteteacher', 'Mark this placement as altered'),
+                                    'data-method' => 'post',
+                                    'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
+                                    'class' => 'text-danger'
+                                ]
+                        );
+                    },
+                ],
                 'visibleButtons' => [
                     'delete' => function ($model, $key, $index) {
                         return $model->deleted != true;
+                    },
+                    'alter' => function ($model, $key, $index) {
+                        return $model->altered != true;
                     },
                 ],
                 'contentOptions' => [
@@ -82,5 +86,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-    <?php Pjax::end(); ?>
 </div>

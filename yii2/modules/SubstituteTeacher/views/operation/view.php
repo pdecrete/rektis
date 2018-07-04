@@ -46,6 +46,30 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => '@web/images/' . $model->logo,
                 'format' => ['image', ['class' => 'img-responsive']]
             ],
+            [
+                'attribute' => 'contract_template',
+                'value' => $model->contract_template ? $model->contract_template . ' ' . Html::a(
+                    '<span class="glyphicon glyphicon-download"></span>',
+                    ['download-template', 'id' => $model->id, 'type' => 'contract'],
+                    [
+                        'title' => Yii::t('substituteteacher', 'Download this template'),
+                        'data-method' => 'post',
+                        'class' => 'btn btn-sm btn-default'
+                    ]) : null,
+                'format' => 'html'
+            ],
+            [
+                'attribute' => 'summary_template',
+                'value' => $model->summary_template ? $model->summary_template . ' ' . Html::a(
+                    '<span class="glyphicon glyphicon-download"></span>',
+                    ['download-template', 'id' => $model->id, 'type' => 'summary'],
+                    [
+                        'title' => Yii::t('substituteteacher', 'Download this template'),
+                        'data-method' => 'post',
+                        'class' => 'btn btn-sm btn-default'
+                    ]) : null,
+                'format' => 'html'
+            ],
             'created_at',
             'updated_at',
         ],
