@@ -2,11 +2,16 @@
 
 use yii\db\Migration;
 use yii\helpers\Console;
+use app\traits\DbMigrates;
 
 class m180629_115637_add_teacher_fields extends Migration
 {
+    use DbMigrates;
+
     public function safeUp()
     {
+        $this->allowInvalidDates();
+
         $registry_table = $this->db->tablePrefix . 'stteacher_registry';
         $yearteacher_table = $this->db->tablePrefix . 'stteacher';
         
@@ -30,6 +35,8 @@ class m180629_115637_add_teacher_fields extends Migration
 
     public function safeDown()
     {
+        $this->allowInvalidDates();
+
         $registry_table = $this->db->tablePrefix . 'stteacher_registry';
         $yearteacher_table = $this->db->tablePrefix . 'stteacher';
         
