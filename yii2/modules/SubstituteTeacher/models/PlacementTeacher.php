@@ -49,7 +49,7 @@ class PlacementTeacher extends \yii\db\ActiveRecord
             [['altered', 'deleted'], 'boolean'],
             [['teacher_board_id'], 'required'],
             ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
-            [['comments'], 'string'],
+            [['comments'], 'default', 'value' => ''],
             [['altered_at', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
             [['placement_id'], 'exist', 'skipOnError' => true, 'targetClass' => Placement::className(), 'targetAttribute' => ['placement_id' => 'id']],
             [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
