@@ -117,6 +117,18 @@ use dosamigos\switchinput\SwitchBox;
 
     <div class="row">
         <div class="col-md-4">
+            <?= $form->field($model, 'ama')->textInput(['maxlength' => true]) ?>
+        </div>
+        <div class="col-md-4">
+            <?= $form->field($model, 'efka_facility')->textInput(['maxlength' => true]) ?>
+        </div>
+        <div class="col-md-4">
+            <?= $form->field($model, 'municipality')->textInput(['maxlength' => true]) ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
             <?= $form->field($model, 'identity_number')->textInput(['maxlength' => true]) ?>
         </div>
         <div class="col-md-4">

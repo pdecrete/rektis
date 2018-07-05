@@ -19,7 +19,7 @@ class TeacherRegistrySearch extends TeacherRegistry
             [['id', 'protected_children', 'aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'integer'],
             // ['specialisation_ids', 'each', 'rule' => ['integer']],
             ['specialisation_ids', 'integer'],
-            [['gender', 'surname', 'firstname', 'fathername', 'mothername', 'marital_status', 'mobile_phone', 'home_phone', 'work_phone', 'home_address', 'city', 'postal_code', 'social_security_number', 'tax_identification_number', 'tax_service', 'identity_number', 'bank', 'iban', 'email', 'birthdate', 'birthplace', 'comments', 'created_at', 'updated_at'], 'safe'],
+            [['gender', 'surname', 'firstname', 'fathername', 'mothername', 'marital_status', 'mobile_phone', 'home_phone', 'work_phone', 'home_address', 'city', 'postal_code', 'social_security_number', 'tax_identification_number', 'tax_service', 'identity_number', 'bank', 'iban', 'email', 'birthdate', 'birthplace', 'comments', 'created_at', 'updated_at', 'ama', 'efka_facility', 'municipality'], 'safe'],
         ];
     }
 
@@ -87,7 +87,10 @@ class TeacherRegistrySearch extends TeacherRegistry
             ->andFilterWhere(['like', 'iban', $this->iban])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'birthplace', $this->birthplace])
-            ->andFilterWhere(['like', 'comments', $this->comments]);
+            ->andFilterWhere(['like', 'comments', $this->comments])
+            ->andFilterWhere(['like', 'ama', $this->email])
+            ->andFilterWhere(['like', 'efka_facility', $this->email])
+            ->andFilterWhere(['like', 'municipality', $this->email]);
 
         $query->andFilterWhere(['specialisations.id' => $this->specialisation_ids]);
 

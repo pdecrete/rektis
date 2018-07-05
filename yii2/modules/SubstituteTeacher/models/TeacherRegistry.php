@@ -41,6 +41,9 @@ use yii\db\Expression;
  * @property integer $sign_language
  * @property integer $braille
  * @property string $comments
+ * @property string $ama
+ * @property string $efka_facility
+ * @property string $municipality
  * @property string $created_at
  * @property string $updated_at
  *
@@ -88,7 +91,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['aei', 'tei', 'epal', 'iek', 'military_service_certificate', 'sign_language', 'braille'], 'boolean'],
             ['specialisation_ids', 'each', 'rule' => ['integer']],
             [['protected_children'], 'integer', 'min' => 0, 'max' => '15'],
-            [['comments'], 'string'],
+            [['comments', 'ama', 'efka_facility', 'municipality'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
             [['surname', 'firstname', 'fathername', 'mothername', 'city', 'tax_service', 'bank', 'birthplace'], 'string', 'max' => 100],
             [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
@@ -173,6 +176,9 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             'sign_language' => Yii::t('substituteteacher', 'Sign Language'),
             'braille' => Yii::t('substituteteacher', 'Braille'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
+            'ama' => Yii::t('substituteteacher', 'AMA'),
+            'efka_facility' => Yii::t('substituteteacher', 'EFKA Facility'),
+            'municipality' => Yii::t('substituteteacher', 'Registration Municipality'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
