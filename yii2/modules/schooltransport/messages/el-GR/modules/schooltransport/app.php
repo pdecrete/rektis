@@ -145,5 +145,6 @@ return [
     'Export transportations to Excel file.' => 'Εξαγωγή μετακινήσεων σε Excel αρχείο',
     'Current school year' => 'Τρέχοντος σχολικού έτους',
     'Previous school year' => 'Προηγούμενου σχολικού έτους',
-    'All years' => 'Συνολικά όλων των ετών'
+    'All years' => 'Συνολικά όλων των ετών',
+    'The are no school transportations to show statistics.' => 'Δεν υπάρχουν σχολικές μετακινήσεις για να προβληθούν στατιστικά.'
 ];

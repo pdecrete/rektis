@@ -48,6 +48,10 @@ class StatisticController extends \yii\web\Controller
     public function actionIndex()
     {
         $school_years = Statistic::getSchoolYearOptions();
+        if(is_null($school_years)){
+            Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The are no school transportations to show statistics."));
+            return $this->redirect(['schtransport-transport/index']);
+        }
 
         $countries['ALL'] = Module::t('modules/schooltransport/app', 'Όλες οι χώρες');
         $countries = array_merge($countries, Statistic::getCountryOptions());
@@ -72,7 +76,7 @@ class StatisticController extends \yii\web\Controller
         $model->statistic_groupby = Statistic::GROUPBY_PERFECTURE;
         $model->statistic_charttype = Statistic::CHARTTYPE_BAR;
         $result_data = $model->getStatistics();
-
+ 
         if (count($result_data['LABELS']) < 2) {
             $model->statistic_charttype = Statistic::CHARTTYPE_DOUGHNUT;
         }
