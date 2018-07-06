@@ -35,5 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
 			<p><?= Module::t('modules/schooltransport/app', 'Help regarding the application of the school transportations, the process of creating a school transportation approval as well as the related legislation.');?></p>
 			<p><?= Html::a(Module::t('modules/schooltransport/app', 'Help'), Url::to(['/schooltransport/default/help']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
+		<div class="col-lg-4">
+            <h3><?= Module::t('modules/schooltransport/app', 'Statistics');?></h3>
+			<p><?= Module::t('modules/schooltransport/app', 'View statistics of the carried out school transportations based on the parameters selected.');?></p>
+			<p><?= Html::a(Module::t('modules/schooltransport/app', 'Statistics'), Url::to(['/schooltransport/statistic/index']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>        
     </div>    
 </div>

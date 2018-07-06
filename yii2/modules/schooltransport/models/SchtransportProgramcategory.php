@@ -51,13 +51,13 @@ class SchtransportProgramcategory extends \yii\db\ActiveRecord
             'programcategory_programparent' => Yii::t('app', 'Programcategory Programparent'),
         ];
     }
-    
-    
+
+
     public static function getAlias($id)
     {
         return SchtransportProgramcategory::findOne(['programcategory_id' => $id])['programcategory_programalias'];
     }
-    
+
     public static function getTitle($id)
     {
         return SchtransportProgramcategory::findOne(['programcategory_id' => $id])['programcategory_programtitle'];
