@@ -48,7 +48,7 @@ class SchtransportTransportSearch extends SchtransportTransport
      */
     public function search($params, $archived = 0)
     {
-        $query = parent::getAllTransportsQuery(true, 0);
+        $query = parent::getAllTransportsQuery(true, $archived);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
