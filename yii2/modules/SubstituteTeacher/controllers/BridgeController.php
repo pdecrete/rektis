@@ -92,7 +92,7 @@ class BridgeController extends \yii\web\Controller
         ];
 
         if (\Yii::$app->request->isPost) {
-            $status_response = $this->client->post('index', null, $this->getHeaders())->send();
+            $status_response = $this->client->post('index', [], $this->getHeaders())->send();
             $status = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
             $data = $status_response->getData();
             $services_status = array_merge($services_status, $data['services']);
@@ -123,7 +123,7 @@ class BridgeController extends \yii\web\Controller
         if (!empty($call_model)) {
             if (\Yii::$app->request->isPost) {
                 \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
-                $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
+                $status_response = $this->client->post('unload', [], $this->getHeaders())->send();
                 $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_unload = $status_response->getData();
 
@@ -489,7 +489,7 @@ class BridgeController extends \yii\web\Controller
             if (\Yii::$app->request->isPost) {
                 // first issue a clear command
                 \Yii::info(['Call [clear] with [delete] method', $connection_options], __METHOD__);
-                $status_response = $this->client->delete('clear', null, $this->getHeaders())->send();
+                $status_response = $this->client->delete('clear', [], $this->getHeaders())->send();
                 $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_clear = $status_response->getData();
                 if ($status_clear !== true) {
