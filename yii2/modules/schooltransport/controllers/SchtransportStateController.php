@@ -94,19 +94,19 @@ class SchtransportStateController extends Controller
     {
         $model = $this->findModel($id);
         $old_name = $model['state_name'];
-        
-        if ($model->load(Yii::$app->request->post())){
-            try{
-                if(!$model->save())
+
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                if (!$model->save()) {
                     throw new Exception();
-            
+                }
+
                 $user = Yii::$app->user->identity->username;
                 Yii::info('User ' . $user . ' updated state from "' . $old_name . '" to "' . $model->state_name . '".', 'schooltransport');
-                
+
                 Yii::$app->session->addFlash('success', Module::t('modules/schooltransport/app', "The state was updated successfully."));
                 return $this->redirect(['index']);
-            }
-            catch(Exception $exc){
+            } catch (Exception $exc) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The state was not saved. Please try again."));
                 return $this->render('update', [
                     'model' => $model,

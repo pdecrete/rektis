@@ -23,7 +23,7 @@ class Module extends \yii\base\Module
         \Yii::configure($this, require __DIR__ . '/config/params.php');
         $this->registerTranslations();
     }
-    
+
     public function registerTranslations()
     {
         Yii::$app->i18n->translations['modules/schooltransport/*'] = [
@@ -36,7 +36,7 @@ class Module extends \yii\base\Module
             ],
         ];
     }
-    
+
     public static function t($category, $message, $params = [], $language = null)
     {
         //echo "<pre>"; print_r(Yii::$app->i18n->getMessageSource($category)); echo "</pre>"; die();

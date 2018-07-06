@@ -69,9 +69,9 @@ class m180529_111937_insert_help_page extends Migration
             <h4>3.3. Νομοθεσία σχολικών μετακινήσεων</h4>
             <p>Στην ενότητα αυτή υπάρχουν τα αρχεία με τη νομοθεσία που είναι σχετική με τις σχολικές μετακινήσεις.</p> ';
         $insert_command = "INSERT INTO " . $tbl_pages . "(identity, title, content) VALUES ";
-        Yii::$app->db->createCommand($insert_command . "('schtransport_apphelp', 'Βοήθεια σχετικά με την εφαρμογή των σχολικών μετακινήσεων.', '" 
+        Yii::$app->db->createCommand($insert_command . "('schtransport_apphelp', 'Βοήθεια σχετικά με την εφαρμογή των σχολικών μετακινήσεων.', '"
                                                         . $apphelp_content . "')")->execute();
-    
+
         $approvalhelp_content = '<p>Για την έγκριση μιας σχολικής μετακίνησης (εκτός αυτών που αφορούν το Σχολείο Ευρωπαϊκής Παιδείας) απαιτούνται τα ακόλουθα δικαιολογητικά
         που διαβιβάζονται στην Περιφερειακή Διεύθυνση Εκπαίδευσης μέσω της οικίας Διεύθυνσης Εκπαίδευσης του σχολείου:</p>
         <ol>
@@ -89,7 +89,7 @@ class m180529_111937_insert_help_page extends Migration
         </ol>';
         $insert_command = "INSERT INTO " . $tbl_pages . "(identity, title, content) VALUES ";
         echo Yii::$app->db->createCommand($insert_command . "('schtransport_approvalhelp', 'Βοήθεια σχετικά με τη δημιουργία έγκρισης σχολικής μετακίνησης.', '"
-                                        . $approvalhelp_content . "')")->execute();        
+                                        . $approvalhelp_content . "')")->execute();
     }
 
     public function safeDown()

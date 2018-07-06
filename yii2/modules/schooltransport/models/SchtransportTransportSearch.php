@@ -2,10 +2,8 @@
 
 namespace app\modules\schooltransport\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\schooltransport\models\SchtransportTransport;
 
 /**
  * SchtransportTransportSearch represents the model behind the search form about `app\modules\schooltransport\models\SchtransportTransport`.
@@ -18,17 +16,17 @@ class SchtransportTransportSearch extends SchtransportTransport
     public $meeting_startdate;
     public $meeting_enddate;
     public $programcategory_programtitle;
-    
+
     /**
      * @inheritdoc
      */
     public function rules()
-    {    
+    {
         return [[['transport_id', 'meeting_id', 'school_id'], 'integer'],
-                [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_creationdate', 'transport_teachers', 
-                'transport_students', 'transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_remarks', 
-                'transport_datesentapproval', 'transport_dateprotocolcompleted', 'transport_approvalfile',                     
-                'transport_signedapprovalfile', 'meeting_city' ,'meeting_country', 'meeting_startdate', 
+                [['transport_submissiondate', 'transport_startdate', 'transport_enddate', 'transport_creationdate', 'transport_teachers',
+                'transport_students', 'transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_remarks',
+                'transport_datesentapproval', 'transport_dateprotocolcompleted', 'transport_approvalfile',
+                'transport_signedapprovalfile', 'meeting_city' ,'meeting_country', 'meeting_startdate',
                 'meeting_enddate', 'programcategory_programtitle', 'school_name'], 'safe']];
     }
 
@@ -49,7 +47,7 @@ class SchtransportTransportSearch extends SchtransportTransport
      * @return ActiveDataProvider
      */
     public function search($params, $archived = 0)
-    {       
+    {
         $query = parent::getAllTransportsQuery(true, 0);
 
         $dataProvider = new ActiveDataProvider([
