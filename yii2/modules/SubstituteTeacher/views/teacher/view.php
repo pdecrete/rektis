@@ -33,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id',
                 'registry.name',
                 'year',
-                'status_label',
                 [
                     'attribute' => '',
                     'label' => Yii::t('substituteteacher', 'Teacher boards'),

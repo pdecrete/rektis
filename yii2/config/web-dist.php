@@ -16,6 +16,10 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
+        'session' => [
+            'class' => '\yii\web\Session',
+            'name' => 'pdekritis-adm',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'admpd1617shuyb2b4390xds83b34hf8dhjj',

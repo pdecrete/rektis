@@ -92,7 +92,7 @@ class BridgeController extends \yii\web\Controller
         ];
 
         if (\Yii::$app->request->isPost) {
-            $status_response = $this->client->post('index', null, $this->getHeaders())->send();
+            $status_response = $this->client->post('index', [], $this->getHeaders())->send();
             $status = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
             $data = $status_response->getData();
             $services_status = array_merge($services_status, $data['services']);
@@ -123,10 +123,10 @@ class BridgeController extends \yii\web\Controller
         if (!empty($call_model)) {
             if (\Yii::$app->request->isPost) {
                 \Yii::info(['Call [unload] with [post] method', $connection_options], __METHOD__);
-                $status_response = $this->client->post('unload', $data, $this->getHeaders())->send();
+                $status_response = $this->client->post('unload', [], $this->getHeaders())->send();
                 $status_unload = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_unload = $status_response->getData();
-                // dd($response_data_unload);
+
                 if ($status_unload !== true) {
                     \Yii::error([$status_unload, $response_data_unload], __METHOD__);
                 } else {
@@ -189,7 +189,7 @@ class BridgeController extends \yii\web\Controller
                             } else {
                                 $ids = [$v['reference']['id']];
                             }
-                            $choices = CallPosition::find()->andWhere(['id' => $ids])->count(); // TODO add group info lookup?
+                            $choices = CallPosition::find()->andWhere(['id' => $ids, 'group' => $v['reference']['group']])->count();
                             if (count($ids) != $choices) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Invalid reference to call position.'));
                             }
@@ -264,11 +264,18 @@ class BridgeController extends \yii\web\Controller
                                     }
                                 }
                             }
-                            // mark applicants that denied
-                            // mark applicants that applied to be used in placement procedures
+                            // mark applicants that denied or applied to be used in placement procedures
+                            $teacher_board = $application->teacherBoard;
+                            if ($application->state == Application::STATE_DENIED_TO_APPLY) {
+                                $teacher_board->status = Teacher::TEACHER_STATUS_NEGATION;
+                            } else {
+                                $teacher_board->status = Teacher::TEACHER_STATUS_PENDING;
+                            }
+                            if (false === $teacher_board->save()) {
+                                throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher status (denied).'));
+                            }
                         });
 
-                        // LOG everything
                         $transaction->commit();
                         $status_data = true;
                     } catch (WrongKeyOrModifiedCiphertextException $ex) {
@@ -286,7 +293,7 @@ class BridgeController extends \yii\web\Controller
                 $existing = Application::find()->andWhere([
                     'call_id' => $call_model->id,
                     'deleted' => Application::APPLICATION_NOT_DELETED
-                ])->count(); // TODO add group info lookup?
+                ])->count();
                 if ($existing > 0) {
                     Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There seem to be {n} existing application entries for this call. <strong>If you proceed these entries will be deleted and more side-effectes may occur (i.e. teacher status)</strong>', ['n' => $existing]));
                     \Yii::warning("Call [unload] with [get] method for call [{$call_model->id}] found [{$existing}] existing applications", __METHOD__);
@@ -331,11 +338,14 @@ class BridgeController extends \yii\web\Controller
      */
     public function actionSend($call_id = 0)
     {
+        \Yii::info([], __METHOD__);
         $connection_options = $this->options;
 
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
         if (!empty($call_model)) {
+            \Yii::info("Collecting info for call [{$call_id}]", __METHOD__);
+
             // no filtering on prefectures; catalogue only
             $prefectures = Prefecture::find()->all();
             $prefecture_substitutions = [];
@@ -391,10 +401,10 @@ class BridgeController extends \yii\web\Controller
                 $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
                 $call_specialisation_teachers_pool = Teacher::find()
                     ->year($call_model->year)
-                    ->status(Teacher::TEACHER_STATUS_ELIGIBLE)
                     ->joinWith(['boards', 'registry', 'registry.specialisations', 'placementPreferences'])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => $call_teacher_specialisation->specialisation_id])
                     ->andWhere(["{$teacherboard_table}.[[specialisation_id]]" => new Expression(TeacherRegistrySpecialisation::tableName() . '.[[specialisation_id]]')])
+                    ->andWhere(["{$teacherboard_table}.[[status]]" => Teacher::TEACHER_STATUS_ELIGIBLE])
                     // ->andWhere([PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_positions_prefectures])
                     ->andWhere([
                         PlacementPreference::tableName() . ".[[prefecture_id]]" => $call_pos_pref_by_specialisation["{$call_teacher_specialisation->specialisation_id}"],
@@ -479,7 +489,7 @@ class BridgeController extends \yii\web\Controller
             if (\Yii::$app->request->isPost) {
                 // first issue a clear command
                 \Yii::info(['Call [clear] with [delete] method', $connection_options], __METHOD__);
-                $status_response = $this->client->delete('clear', null, $this->getHeaders())->send();
+                $status_response = $this->client->delete('clear', [], $this->getHeaders())->send();
                 $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
                 $response_data_clear = $status_response->getData();
                 if ($status_clear !== true) {

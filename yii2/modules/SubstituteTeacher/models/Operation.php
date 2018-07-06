@@ -15,6 +15,9 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property string $title
  * @property string $description
  * @property string $logo The filename of the logo, relative to the images folder
+ * @property string $contract_template
+ * @property string $summary_template 
+ * @property string $export_template 
  * @property string $created_at
  * @property string $updated_at
  *
@@ -49,7 +52,7 @@ class Operation extends \yii\db\ActiveRecord
                 ]
             ],
             [['created_at', 'updated_at'], 'safe'],
-            [['title', 'logo'], 'string', 'max' => 500],
+            [['title', 'logo', 'contract_template', 'summary_template', 'export_template'], 'string', 'max' => 500],
             [['description'], 'string', 'max' => 90],
         ];
     }
@@ -80,6 +83,9 @@ class Operation extends \yii\db\ActiveRecord
             'title' => Yii::t('substituteteacher', 'Title'),
             'description' => Yii::t('substituteteacher', 'Description'),
             'logo' => Yii::t('substituteteacher', 'Logo'),
+            'contract_template' => Yii::t('substituteteacher', 'Contact template'),
+            'summary_template' => Yii::t('substituteteacher', 'Summary template'),
+            'export_template' => Yii::t('substituteteacher', 'Export template'),
             'specialisation_labels' => Yii::t('substituteteacher', 'Specialisation Labels'),
             'specialisation_ids' => Yii::t('substituteteacher', 'Specialisation Ids'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
@@ -116,16 +122,29 @@ class Operation extends \yii\db\ActiveRecord
 
     public static function getLogoChoices()
     {
-        $images_dir = Yii::getAlias("@webroot/images/");
+        $files = self::filesList(Yii::getAlias("@webroot/images/"), true);
+        return array_combine($files, $files);
+    }
 
-        $files = FileHelper::findFiles($images_dir, ['recursive' => true]);
+    public static function getAvailableTemplates()
+    {
+        return self::filesList(Yii::getAlias("@vendor/admapp/resources/operations/"), false);
+    }
+
+    /**
+     * Return an alphabetically sorted list of filenames from the designated basedir. 
+     * 
+     */
+    public static function filesList($basedir, $recursive = false)
+    {
+        $files = FileHelper::findFiles($basedir, ['recursive' => $recursive]);
         if (count($files) > 0) {
             array_walk($files, function (&$item, $key) {
                 $item = basename($item);
             });
         }
         sort($files, SORT_STRING);
-        return array_combine($files, $files);
+        return $files;
     }
 
     /**

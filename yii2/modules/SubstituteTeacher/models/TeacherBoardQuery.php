@@ -10,6 +10,11 @@ namespace app\modules\SubstituteTeacher\models;
 class TeacherBoardQuery extends \yii\db\ActiveQuery
 {
 
+    public function status($status)
+    {
+        return $this->andWhere(['status' => $status]);
+    }
+
     /**
      * @inheritdoc
      * @return TeacherBoard[]|array
