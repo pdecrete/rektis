@@ -139,5 +139,11 @@ return [
     'Vertical Bars' => 'Κάθετες Μπάρες',
     'Horizontal Bars' => 'Οριζόντιες Μπάρες',
     'Export to PDF' => 'Εξαγωγή σε PDF',
-    'Error in creating pdf file.' => 'Σφάλμα κατά τη δημιουργία του pdf αρχείου.'
+    'Error in creating pdf file.' => 'Σφάλμα κατά τη δημιουργία του pdf αρχείου.',
+    'PRIMARY' => 'Πρωτοβάθμια',
+    'SECONDARY' => 'Δευτεροβάθμια',
+    'Export transportations to Excel file.' => 'Εξαγωγή μετακινήσεων σε Excel αρχείο',
+    'Current school year' => 'Τρέχοντος σχολικού έτους',
+    'Previous school year' => 'Προηγούμενου σχολικού έτους',
+    'All years' => 'Συνολικά όλων των ετών'
 ];

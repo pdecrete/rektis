@@ -4,6 +4,7 @@ namespace app\modules\schooltransport\models;
 
 use app\modules\schooltransport\Module;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "{{%schtransport_transport}}".
@@ -22,6 +23,9 @@ use Yii;
  */
 class SchtransportTransport extends \yii\db\ActiveRecord
 {
+    const EUROPEAN = 'EUROPEAN';
+    const INTERNATIONAL = 'INTERNATIONAL';
+    const EUROPEAN_SCHOOL = 'EUROPEAN_SCHOOL';
     const KA1 = 'KA1';
     const KA2 = 'KA2';
     const KA1_STUDENTS = 'KA1_STUDENTS';
@@ -158,6 +162,43 @@ class SchtransportTransport extends \yii\db\ActiveRecord
         else {
             return false;
         }
+    }
+    
+    public static function getAllTransportsQuery($withstatescount = true, $archived = -1){
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $transport_states = $tblprefix . 'schtransport_transportstate';
+        $transports = $tblprefix . 'schtransport_transport';
+        
+        $count_states = '';
+        if($withstatescount)
+            $count_states = ",(SELECT COUNT(transport_id) FROM " . $transport_states .
+                            " WHERE " . $transport_states . ".transport_id = " . $transports . ".transport_id)" . " AS statescount";
+        
+        $query = (new \yii\db\Query())
+        ->select($tblprefix . 'schtransport_transport.*,' . $tblprefix . 'schtransport_meeting.*,' . $tblprefix . 'schoolunit.*,'.
+            $tblprefix . 'schtransport_program.*,' . $tblprefix . 'schtransport_programcategory.*' . $count_states)
+        ->from($tblprefix . 'schtransport_transport,' . $tblprefix . 'schtransport_meeting,' .
+                $tblprefix . 'schoolunit,' . $tblprefix . 'schtransport_program,' . $tblprefix . 'schtransport_programcategory')        
+        ->where($tblprefix . 'schtransport_transport.meeting_id  = ' . $tblprefix . 'schtransport_meeting.meeting_id')
+        ->andWhere($tblprefix . 'schtransport_transport.school_id  = ' . $tblprefix . 'schoolunit.school_id')
+        ->andWhere($tblprefix . 'schtransport_meeting.program_id = ' . $tblprefix . 'schtransport_program.program_id')
+        ->andWhere($tblprefix . 'schtransport_program.programcategory_id = ' . $tblprefix . 'schtransport_programcategory.programcategory_id');
+        
+        if($archived != -1) //Show only the archived or the unarchived
+            $query = $query->andWhere($tblprefix . 'schtransport_transport.transport_isarchived = ' . $archived);
+        return $query;
+    }
+
+    
+    public static function getSchoolYearTransports($school_year = -1){
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $t = $tblprefix . 'schtransport_transport';
+        $query = self::getAllTransportsQuery(false, -1);
+            
+        if($school_year != -1)
+            $query = $query->andWhere(  $t . ".transport_startdate >= '" . $school_year . "-09-01' AND " .
+                                        $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'");        
+        return $query->all();
     }
 
     /**

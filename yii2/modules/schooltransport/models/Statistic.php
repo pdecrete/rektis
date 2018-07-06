@@ -60,6 +60,11 @@ class Statistic extends Model
                ];
     }
     
+    /**
+     * Returns the description of the statistic as it has benn defined through the instance variables.
+     * 
+     * @return string
+     */
     public function getStatisticLiteral(){
         $years = $this->statistic_schoolyear;
         $years_count = count($years);
@@ -71,8 +76,7 @@ class Statistic extends Model
         $prefecture_literal = '';
         $level_literal = '';
         $program_literal = '';
-        $country_literal = '';
-        
+        $country_literal = '';       
         
         $counter = 0;
         foreach ($years as $year){
@@ -107,7 +111,13 @@ class Statistic extends Model
         return $literal;        
     }
 
+    /**
+     * Returns the statistics based on the values of the instance variables.
+     * 
+     * @return array
+     */
     public function getStatistics(){
+        //echo "<pre>"; print_r($this); echo "</pre>"; die();
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'schtransport_transport';
         $m = $tblprefix . 'schtransport_meeting';
@@ -146,15 +156,6 @@ class Statistic extends Model
                 $index++;
             }            
         }
-        else if($this->statistic_groupby == Statistic::GROUPBY_PERFECTURE){
-            $prefectures = Statistic::getPrefectureOptions();
-            foreach ($prefectures as $prefecture){                
-                $andWhereCondition = $d . ".directorate_name LIKE '%" . $prefecture . "%'";
-                $data['LABELS'][$index] = $prefecture;
-                $data['TRANSPORTS_COUNT'][$index] = Statistic::countTransports($andWhereCondition);
-                $index++;
-            }
-        }
         else if($this->statistic_groupby == Statistic::GROUPBY_PROGRAM){
             $program_categs = Statistic::getProgramCategoryOptions();
             foreach ($program_categs as $program_alias => $program_title){                
@@ -167,11 +168,26 @@ class Statistic extends Model
                 }
             }
         }
+        else {//if($this->statistic_groupby == Statistic::GROUPBY_PERFECTURE){
+            $prefectures = Statistic::getPrefectureOptions();
+            foreach ($prefectures as $prefecture){
+                $andWhereCondition = $d . ".directorate_name LIKE '%" . $prefecture . "%'";
+                $data['LABELS'][$index] = $prefecture;
+                $data['TRANSPORTS_COUNT'][$index] = Statistic::countTransports($andWhereCondition);
+                $index++;
+            }
+        }
         
         return $data;
     }
     
+    /**
+     * Returns the school years options based on the dates of the school transports saved in the database.
+     * 
+     * @return string[]
+     */
     public static function getSchoolYearOptions(){
+        $school_years = array();
         $min_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", SchtransportTransport::find()->min('transport_startdate')));
         $max_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", SchtransportTransport::find()->max('transport_startdate')));
         for($i = $min_year; $i <= $max_year; $i++)
@@ -180,22 +196,42 @@ class Statistic extends Model
         return $school_years;
     }
     
+    /**
+     * Returns an array with the prefectures options.
+     *  
+     * @return string[]
+     */
     public static function getPrefectureOptions()
     {        
         return ['Ηρακλείου' => 'Ηρακλείου', 'Λασιθίου' => 'Λασιθίου', 
                 'Ρεθύμνου' => 'Ρεθύμνου', 'Χανίων' => 'Χανίων'];
     }
     
+    /**
+     * Returns the educational levels options.
+     * 
+     * @return string[]
+     */
     public static function getEducationalLevelOptions()
     {  
         return ['Πρωτοβάθμιας' => 'Πρωτοβάθμια', 'Δευτεροβάθμιας' => 'Δευτεροβάθμια'];
     }
     
+    /**
+     * Returns the country options based on the countries for which there is a school transport in the database.
+     * 
+     * @return array
+     */
     public static function getCountryOptions()
     {        
         return SchtransportMeeting::find()->select('meeting_country')->distinct()->orderBy('meeting_country')->indexBy('meeting_country')->column();        
     }
     
+    /**
+     * Returns the group by options of the statistics.
+     * 
+     * @return NULL[]|string[]
+     */
     public static function getGroupByOptions()
     {
         return [ Statistic::GROUPBY_YEAR => Module::t('modules/schooltransport/app', "By school year"),
@@ -206,6 +242,11 @@ class Statistic extends Model
         ];
     }
     
+    /**
+     * Retrurns the program category options.
+     * 
+     * @return string[]
+     */
     public static function getProgramCategoryOptions()
     {
         $program_options = array();
@@ -218,6 +259,11 @@ class Statistic extends Model
         return $program_options;        
     }
     
+    /**
+     * Returns the chart type options supported by the statistics. 
+     * 
+     * @return NULL[]|string[]
+     */
     public static function getChartTypeOptions()
     {
         return [Statistic::CHARTTYPE_BAR => Module::t('modules/schooltransport/app', "Vertical Bars"),
@@ -228,7 +274,12 @@ class Statistic extends Model
         ];
     }
     
-    protected function countTransports($andWhereCondition)
+    /**
+     * Returns the number of transports based on the condition passed as parameter.
+     * 
+     * @param string $andWhereCondition
+     */
+    protected function countTransports(string $andWhereCondition)
     {
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'schtransport_transport';
@@ -258,19 +309,19 @@ class Statistic extends Model
         
         if($this->statistic_program != 'ALL')
             $query = $query->andWhere($pc . ".programcategory_programalias='" . $this->statistic_program . "'");
-               
+                    
         $firstyear_flag = false;
         foreach ($this->statistic_schoolyear as $school_year) {
             if(!$firstyear_flag){
-                $query = $query->andWhere($t . ".transport_startdate >= '" . $school_year . "-09-01' AND " . 
-                                          $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'");
+                $subquery = "(" . $t . ".transport_startdate >= '" . $school_year . "-09-01' AND " . 
+                            $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31')";
                 $firstyear_flag = true;
             }
             else
-                $query = $query->orWhere($t . ".transport_startdate >= '" . $school_year . "-09-01' AND " .
-                                          $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'");
+                $subquery .= " OR " . "(" . $t . ".transport_startdate >= '" . $school_year . "-09-01' AND " .
+                                           $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31')";
         }
-        
+        $query = $query->andWhere($subquery);
         $query = $query->andWhere($andWhereCondition);        
         //echo $query->createCommand()->rawSql; die();  
         return $query->one()['TRNSPRTS_COUNT'];

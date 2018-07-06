@@ -4,6 +4,7 @@ use app\modules\schooltransport\Module;
 use dosamigos\chartjs\ChartJs;
 use kartik\select2\Select2;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use app\modules\schooltransport\models\Statistic;
@@ -31,8 +32,33 @@ $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/
 $this->title = Module::t('modules/schooltransport/app', 'Statistics');
 $this->params['breadcrumbs'][] = $this->title;
 
+$current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", date("Y-m-d")));
+//echo "<pre>"; print_r($model); echo "</pre>";die();
 ?>
 
+<div class="text-right">
+	<form method="post" id="exportStatistic" action="exportstatistic">
+        <div class="btn-group">
+      		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      			<?= Module::t('modules/schooltransport/app', 'Export transportations to Excel file.'); ?> <span class="caret"></span>
+  			</button>
+  			<ul class="dropdown-menu" role="menu">
+    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => $current_startyear]);?>">
+					<?= Module::t('modules/schooltransport/app', 'Current school year'); ?></a>
+				</li>
+    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => ($current_startyear-1)]);?>">
+    				<?= Module::t('modules/schooltransport/app', 'Previous school year'); ?>
+    				</a>
+				</li>
+    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => -1]);?>">
+					<?= Module::t('modules/schooltransport/app', 'All years'); ?>
+					</a>
+				</li>
+  			</ul>
+    	</div>
+    </form>
+</div>
+<?php ?>
 <h1>Επιλογή Παραμέτρων</h1>
 <div class="well container-fluid">
 <?php $form = ActiveForm::begin(); ?>
@@ -109,7 +135,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $height = 100;
                     $clientOptions['clientOptions'] = '';
                     if($selected_chart_type == Statistic::CHARTTYPE_HORIZONTALBAR){
-                        $height = 15*count($result_data['TRANSPORTS_COUNT']);
+                        $height = 15*count($result_data['TRANSPORTS_COUNT']) + 30;
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false],
                             'responsive' => true,
@@ -121,8 +147,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                         'max' => max($result_data['TRANSPORTS_COUNT']) + 1
                                     ],
                                     'scaleLabel' => [
-                                        'display' => false,
-                                        //'labelString' => 'Πλήθος Μετακινήσεων',
+                                        'display' => true,
+                                        'labelString' => 'Πλήθος Μετακινήσεων',
                                     ],
                                 ]],
                             ]
