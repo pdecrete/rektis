@@ -12,7 +12,7 @@ class m180403_094056_schooltransport_init extends Migration
             // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
-        
+
         $dbTrnsprtTables = [
             'table_programcategory' => $this->db->tablePrefix . 'schtransport_programcategory',
             'table_program' => $this->db->tablePrefix . 'schtransport_program',
@@ -56,9 +56,9 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('ETWINNING_FOREIGN_COUNTRY', 'Πρόγραμμα eTwinning', '', 'INTERNATIONAL')")->execute();
         Yii::$app->db->createCommand($insert_command . "('SCH_TWINNING_FOREIGN_COUNTRY', 'Αδελφοποίηση με σχολείο εξωτερικού', '', 'INTERNATIONAL')")->execute();
         Yii::$app->db->createCommand($insert_command . "('PARLIAMENT', 'Βουλή των Ελλήνων', '', NULL)")->execute();
-        
-        
-        
+
+
+
         /* CREATE TABLE admapp_trnsprt_program */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_program'] .
                           " (`program_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -72,8 +72,8 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_programcategory'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_trnsprt_meeting */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_meeting'] .
                           " (`meeting_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -89,8 +89,8 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_meeting'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_directorate */
         /* TODO prefecture_id*/
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_directorate'] .
@@ -115,8 +115,8 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "(100, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Ρεθύμνου', 'ΔΔΕ Ρεθύμνου', 'SECONDARY')")->execute();
         Yii::$app->db->createCommand($insert_command . "(72, 'Διεύθυνση Πρωτοβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΠΕ Λασιθίου', 'PRIMARY')")->execute();
         Yii::$app->db->createCommand($insert_command . "(95, 'Διεύθυνση Δευτεροβάθμιας Εκπαίδευσης Νομού Λασιθίου', 'ΔΔΕ Λασιθίου', 'SECONDARY')")->execute();
-        
-        /* CREATE TABLE admapp_school 
+
+        /* CREATE TABLE admapp_school
          * `school_mm_id` INTEGER NOT NULL COMMENT 'mm_id of school as set in MySchool',
          * */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_school'] .
@@ -130,7 +130,7 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_school'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
 
         /* CREATE TABLE admapp_trnsprt_transport */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_transport'] .
@@ -162,7 +162,7 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbTrnsprtTables['table_transport'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
 
         /* CREATE TABLE admapp_country */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_country'] .
@@ -213,7 +213,7 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('Νορβηγία', 'στη')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Λιχτενστάιν', 'στο')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Τουρκία', 'στην')")->execute();
-       
+
         /* CREATE TABLE admapp_schtrnsport_state */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_state'] .
                           "(`state_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -228,8 +228,8 @@ class m180403_094056_schooltransport_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('Υπογραφή Σχεδίου')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Διεκπεραιώθηκε')")->execute();
         Yii::$app->db->createCommand($insert_command . "('Πρωτοκολλήθηκε/Ξεχρεώθηκε')")->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_schtrnsport_transportstate */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbTrnsprtTables['table_transportstate'] .
                           "(`transport_id` INTEGER NOT NULL,
@@ -244,7 +244,7 @@ class m180403_094056_schooltransport_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
     }
-    
+
     public function safeDown()
     {
         $dbTrnsprtTables = [
@@ -258,7 +258,7 @@ class m180403_094056_schooltransport_init extends Migration
             'table_state' => $this->db->tablePrefix . 'schtransport_state',
             'table_transportstate' => $this->db->tablePrefix . 'schtransport_transportstate'
         ];
-        
+
         $dbTrnsprtTables = array_reverse($dbTrnsprtTables);
         $i = 0;
         foreach ($dbTrnsprtTables as $dbtable) {
@@ -266,5 +266,4 @@ class m180403_094056_schooltransport_init extends Migration
             $this->dropTable($dbtable);
         }
     }
-    
 }

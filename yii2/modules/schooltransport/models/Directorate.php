@@ -3,7 +3,6 @@
 namespace app\modules\schooltransport\models;
 
 use app\modules\schooltransport\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%directorate}}".
