@@ -17,6 +17,8 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
 use yii\console\Exception;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
+use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
+use yii\helpers\Json;
 
 /**
  * Description of ImportController
@@ -184,7 +186,9 @@ class ImportController extends Controller
 
     
     public function actionRegistry($file_id, $sheet = 0){
-        
+        $year = 2018;
+        $specialisation_code = 'ΕΒΠ';
+        $specialisation_id = \app\modules\SubstituteTeacher\models\Specialisation::findOne(['code' => $specialisation_code])->id; 
         try {
             $transaction = Yii::$app->db->beginTransaction();
             list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
@@ -204,70 +208,136 @@ class ImportController extends Controller
                     $teacherrowArray[$cell->getColumn()] = $cell->getFormattedValue();
                 //echo "<pre>"; print_r($teacherrowArray); echo "</pre>"; die();
                 //echo $teacherrowArray[$idnum_column]; die();
-                $existing_registry_teacher = TeacherRegistry::findOne(['tax_identification_number' => $teacherrowArray[$idnum_column]]);
-                if(!is_null($existing_registry_teacher)){
+                $registry_teacher = TeacherRegistry::findOne(['tax_identification_number' => $teacherrowArray[$idnum_column]]);
+                if(!is_null($registry_teacher)){
                     $existing_teachers[$teacherrowArray[$idnum_column]] = 1;
                 }
                 else {
                     $existing_teachers[$teacherrowArray[$idnum_column]] = 0;
-                    $old_teacher = new TeacherRegistry();
-                    $old_teacher->loadDefaultValues(false);
-                    $old_teacher->gender = '';                    
-                    $old_teacher->surname = $teacherrowArray[$this->_column_data_idx['registry']['surname']];
-                    $old_teacher->firstname = $teacherrowArray[$this->_column_data_idx['registry']['firstname']];
-                    $old_teacher->fathername = $teacherrowArray[$this->_column_data_idx['registry']['fathername']];
-                    $old_teacher->mothername = '';
-                    $old_teacher->marital_status = '';
-                    $old_teacher->protected_children = 0;
-                    $old_teacher->mobile_phone = '';
-                    $old_teacher->home_phone = '';
-                    $old_teacher->work_phone = '';
-                    $old_teacher->home_address = '';
-                    $old_teacher->city = '';
-                    $old_teacher->postal_code = '';
-                    $old_teacher->social_security_number = '';                    
-                    $old_teacher->tax_identification_number = $teacherrowArray[$this->_column_data_idx['registry']['tax_identification_number']];
-                    $old_teacher->tax_service = '';
-                    if($teacherrowArray[$this->_column_data_idx['registry']['identity_type']] == 'ΑΔΤ')
-                        $old_teacher->identity_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
-                    else 
-                        $old_teacher->passport_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
-                    $old_teacher->bank = '';
-                    $old_teacher->iban = '';
-                    $old_teacher->email = '';
-                    $old_teacher->birthdate = null;
-                    $old_teacher->birthplace = '';
+                    $registry_teacher = new TeacherRegistry();
+                }
+                $registry_teacher->loadDefaultValues(false);
+                $registry_teacher->gender = '';                    
+                $registry_teacher->surname = $teacherrowArray[$this->_column_data_idx['registry']['surname']];
+                $registry_teacher->firstname = $teacherrowArray[$this->_column_data_idx['registry']['firstname']];
+                $registry_teacher->fathername = $teacherrowArray[$this->_column_data_idx['registry']['fathername']];
+                $registry_teacher->mothername = '';
+                $registry_teacher->marital_status = '';
+                $registry_teacher->protected_children = 0;
+                $registry_teacher->mobile_phone = '';
+                $registry_teacher->home_phone = '';
+                $registry_teacher->work_phone = '';
+                $registry_teacher->home_address = '';
+                $registry_teacher->city = '';
+                $registry_teacher->postal_code = '';
+                $registry_teacher->social_security_number = '';                    
+                $registry_teacher->tax_identification_number = $teacherrowArray[$this->_column_data_idx['registry']['tax_identification_number']];
+                $registry_teacher->tax_service = '';
+                if($teacherrowArray[$this->_column_data_idx['registry']['identity_type']] == 'ΑΔΤ')
+                    $registry_teacher->identity_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
+                else 
+                    $registry_teacher->passport_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
+                $registry_teacher->bank = '';
+                $registry_teacher->iban = '';
+                $registry_teacher->email = '';
+                $registry_teacher->birthdate = null;
+                $registry_teacher->birthplace = '';
+                
+                $degree = $this->_column_data_idx['registry']['degree_categ'];
+                $registry_teacher->aei = false;
+                $registry_teacher->tei = false;
+                $registry_teacher->epal = false;
+                $registry_teacher->iek = false;
+                if(strpos('ΑΕΙ', $degree) || strpos('AEI', $degree)) //written with greek or latin characters
+                    $registry_teacher->aei = false;
+                if(strpos('ΤΕΙ', $degree) || strpos('TEI', $degree)) //written with greek or latin characters
+                    $registry_teacher->tei = true;
+                if(strpos('ΕΠΑΛ', $degree) || strpos('TEE', $degree) || strpos('ΤΕΕ', $degree) || strpos('ΤΕΛ', $degree)) 
+                    $registry_teacher->epal = true;
+                if(strpos('ΙΕΚ', $degree) || strpos('IEK', $degree)) //written with greek or latin characters
+                    $registry_teacher->iek = true;
+                
+                $registry_teacher->military_service_certificate = false;
+                if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI']))
+                    $registry_teacher->sign_language = false;
+                else if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΝΑΙ', 'NAI']))
+                    $registry_teacher->sign_language = false;
+                else
+                    throw new Exception('Unknown value in column "ΓΝΩΣΗ ΕΝΓ" for teacher with identity number = ' . $teacherrowArray[$this->_column_data_idx['registry']['identity_number']]);
+                
+                $registry_teacher->braille = false;
+                
+                $registry_teacher->specialisation_ids = [$specialisation_id];
+                
+                if(!$registry_teacher->save())
+                    throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
                     
-                    $degree = $this->_column_data_idx['registry']['degree_categ'];
-                    $old_teacher->aei = false;
-                    $old_teacher->tei = false;
-                    $old_teacher->epal = false;
-                    $old_teacher->iek = false;
-                    if(strpos('ΑΕΙ', $degree) || strpos('AEI', $degree)) //written with greek or latin characters
-                        $old_teacher->aei = false;
-                    if(strpos('ΤΕΙ', $degree) || strpos('TEI', $degree)) //written with greek or latin characters
-                        $old_teacher->tei = true;
-                    if(strpos('ΕΠΑΛ', $degree) || strpos('TEE', $degree) || strpos('ΤΕΕ', $degree) || strpos('ΤΕΛ', $degree)) 
-                        $old_teacher->epal = true;
-                    if(strpos('ΙΕΚ', $degree) || strpos('IEK', $degree)) //written with greek or latin characters
-                        $old_teacher->iek = true;
+                $registry_specialization = TeacherRegistrySpecialisation::findOne([ 'registry_id' => $registry_teacher,
+                                                                                    'specialisation_id' => $specialisation_id]);
+                if($registry_specialization == null)                    
+                    $registry_specialization = new TeacherRegistrySpecialisation();
+                $registry_specialization->registry_id = $registry_teacher->id;
+                $registry_specialization->specialisation_id = $specialisation_id;
+                
+                if(!$registry_specialization->save())
+                    throw new Exception("Error saving in Registry table.");
                     
-                    $old_teacher->military_service_certificate = false;
-                    if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI']))
-                        $old_teacher->sign_language = false;
-                    else if(in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΝΑΙ', 'NAI']))
-                        $old_teacher->sign_language = false;
-                    else
-                        throw new Exception('Unknown value in column "ΓΝΩΣΗ ΕΝΓ" for teacher with identity number = ' . $teacherrowArray[$this->_column_data_idx['registry']['identity_number']]);
+                $year_teacher = Teacher::findOne(['registry_id' => $registry_teacher->id, 'year' => $year]);
+                if($year_teacher == null)
+                    $year_teacher = new Teacher();
+                $year_teacher->registry_id = $registry_teacher->id;
+                $year_teacher->year = $year;
+                $year_teacher->status = Teacher::TEACHER_STATUS_ELIGIBLE;
+                $year_teacher->public_experience =  $teacherrowArray[$this->_column_data_idx['registry']['general_experience_years']]*365 +
+                                                    $teacherrowArray[$this->_column_data_idx['registry']['general_experience_months']]*30 +
+                                                    $teacherrowArray[$this->_column_data_idx['registry']['general_experience_days']];
+                $year_teacher->smeae_keddy_experience = $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_years']]*365 +
+                                                        $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_months']]*30 +
+                                                        $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_days']];
+                $year_teacher->disability_percentage = str_replace('%', '', $teacherrowArray[$this->_column_data_idx['registry']['disability_percentage']]);
+                $year_teacher->disabled_children = $teacherrowArray[$this->_column_data_idx['registry']['disabled_children']];
+                
+                $year_teacher->three_children = 0;
+                $year_teacher->many_children = 0;
+                if($teacherrowArray[$this->_column_data_idx['registry']['many_children']] == 'ΠΟΛΥΤΕΚΝΟΣ')
+                    $year_teacher->many_children = 1;
+                else if($teacherrowArray[$this->_column_data_idx['registry']['many_children']] == 'ΤΡΙΤΕΚΝΟΣ')
+                    $year_teacher->three_children = 1;                  
+
+                $json_fields = ['degree_type' => $teacherrowArray[$this->_column_data_idx['registry']['degree_categ']],
+                                'degree_date' => $teacherrowArray[$this->_column_data_idx['registry']['degree_year']],
+                                'degree_mark' => $teacherrowArray[$this->_column_data_idx['registry']['degree_mark']],
+                                'academic_criteria_points' => $teacherrowArray[$this->_column_data_idx['registry']['academic_criteria_points']],
+                                'general_experience_points' => $teacherrowArray[$this->_column_data_idx['registry']['general_experience_points']],
+                                'smeae_experience_points' => $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_points']],
+                                'disability_points' => $teacherrowArray[$this->_column_data_idx['registry']['disability_points']],
+                                'disabled_children_points' => $teacherrowArray[$this->_column_data_idx['registry']['disabled_children_points']],
+                                'children_points' => $teacherrowArray[$this->_column_data_idx['registry']['many_children_points']],
+                                'social_criteria_points' => $teacherrowArray[$this->_column_data_idx['registry']['social_criteria_points']],
+                                'total_points' => $teacherrowArray[$this->_column_data_idx['registry']['total_points']]];
+                $json = Json::encode($json_fields);
+                $year_teacher->data = $json;
                     
-                    $old_teacher->braille = false;
-                    if(!$old_teacher->save())
-                        throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
+                if(!$year_teacher->save()){                        
+                    throw new Exception("Error saving in Teacher table.");
+                }
+
+                $teacher_board = TeacherBoard::findOne(['teacher_id' => $year_teacher->id, 'specialisation_id' => $specialisation_id]);
+                if($teacher_board == null)
+                    $teacher_board = new TeacherBoard();
+                $teacher_board->teacher_id = $year_teacher->id;
+                $teacher_board->specialisation_id = $specialisation_id;
+                $teacher_board->board_type = TeacherBoard::TEACHER_BOARD_TYPE_ANY;
+                $teacher_board->points = $teacherrowArray[$this->_column_data_idx['registry']['total_points']];
+                $teacher_board->order = 1;
+                    
+                if(!$teacher_board->save()){
+                    //echo "<pre>"; print_r($teacher_board->errors); echo "</pre>"; die();
+                    throw new Exception("Error saving in Teacher board.");
                 }                
                 if($row->getRowIndex() == $worksheet->getHighestDataRow())
                     break;
             }
-
             $transaction->commit();
             
             $counts = array_count_values($existing_teachers);            

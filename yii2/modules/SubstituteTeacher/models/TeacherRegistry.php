@@ -96,7 +96,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
             [['home_address'], 'string', 'max' => 255],
             [['postal_code'], 'string', 'max' => 10],
-            //[['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
+            [['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
             [['identity_number', 'passport_number'], 'string', 'max' => 30],
             [['iban'], 'string', 'max' => 34],
@@ -112,7 +112,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
                 ]
             ],
             [
-                [ //'specialisation_ids', 'birthdate', 'gender', 'mothername', 'city', 'tax_service',
+                [ 'specialisation_ids', //'birthdate', 'gender', 'mothername', 'city', 'tax_service',
                   //'birthplace', 'mobile_phone', 'home_address', 'postal_code',
                   'firstname', 'surname', 'fathername', 'protected_children',                  
                   'tax_identification_number', 'identity_number' ],

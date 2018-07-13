@@ -88,7 +88,8 @@ class TeacherRegistrySearch extends TeacherRegistry
             ->andFilterWhere(['like', 'iban', $this->iban])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'birthplace', $this->birthplace])
-            ->andFilterWhere(['like', 'comments', $this->comments]);
+            ->andFilterWhere(['like', 'comments', $this->comments])
+            ->andFilterWhere(['like', 'passport_number', $this->passport_number]);
 
         $query->andFilterWhere(['specialisations.id' => $this->specialisation_ids]);
 

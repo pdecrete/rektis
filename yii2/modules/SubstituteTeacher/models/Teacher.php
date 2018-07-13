@@ -12,6 +12,12 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $id
  * @property integer $registry_id
  * @property integer $year
+ * @property integer $public_experience
+ * @property integer $smeae_keddy_experience
+ * @property integer $disability_percentage
+ * @property integer $disabled_children
+ * @property integer $three_children
+ * @property integer $many_children
  *
  * @property string $name
  *
@@ -51,8 +57,10 @@ class Teacher extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registry_id', 'year'], 'integer'],
-            [['registry_id', 'year'], 'required'],
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disability_percentage', 'disabled_children',
+              'three_children', 'many_children'], 'integer'],
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disability_percentage', 'disabled_children',
+              'three_children', 'many_children'], 'required'],
             [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
             [['call_use_specialisation_id'], 'required', 'on' => self::SCENARIO_CALL_FETCH],
@@ -69,6 +77,12 @@ class Teacher extends \yii\db\ActiveRecord
             'registry_id' => Yii::t('substituteteacher', 'Registry ID'),
             'year' => Yii::t('substituteteacher', 'Year'),
             'status' => Yii::t('substituteteacher', 'Status'),
+            'public_experience' => Yii::t('substituteteacher', 'Public experience'),
+            'smeae_keddy_experience' => Yii::t('substituteteacher', 'SMEAE/KEDDY experience'),
+            'disability_percentage' => Yii::t('substituteteacher', 'Disability percentage'),
+            'disabled_children' => Yii::t('substituteteacher', 'Disabled children'),
+            'three_children' => Yii::t('substituteteacher', 'Three children'),
+            'many_children' => Yii::t('substituteteacher', 'Many children'),
         ];
     }
 

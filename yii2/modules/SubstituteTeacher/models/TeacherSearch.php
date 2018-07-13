@@ -16,7 +16,9 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year'], 'integer'],
+            [['id', 'registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children'], 'integer'],
+            [['disability_percentage'], 'integer', 'min' => 0, 'max' => 100],
+            [['three_children', 'many_children'], 'boolean']
         ];
     }
 
@@ -59,6 +61,12 @@ class TeacherSearch extends Teacher
             'id' => $this->id,
             'registry_id' => $this->registry_id,
             'year' => $this->year,
+            'public_experience' => $this->public_experience, 
+            'smeae_keddy_experience' => $this->smeae_keddy_experience,
+            'disabled_children' => $this->disabled_children,
+            'disability_percentage' => $this->disability_percentage,
+            'three_children' => $this->three_children, 
+            'many_children' => $this->many_children
         ]);
 
         return $dataProvider;

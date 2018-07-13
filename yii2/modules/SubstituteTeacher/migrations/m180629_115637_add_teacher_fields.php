@@ -21,7 +21,8 @@ class m180629_115637_add_teacher_fields extends Migration
                                       ADD COLUMN `smeae_keddy_experience` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Προϋπηρεσία στο σε ΣΜΕΑΕ/ΚΕΔΔΥ',
                                       ADD COLUMN `disability_percentage` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Ποσοστό Αναπηρίας',
                                       ADD COLUMN `disabled_children` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Αριθμός Τέκνων με Αναπηρία',
-                                      ADD COLUMN `many_children` VARCHAR(15) NOT NULL DEFAULT '' COMMENT 'Πολύτεκνος/Τρίτεκνος';";
+                                      ADD COLUMN `three_children` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Τρίτεκνος',
+                                      ADD COLUMN `many_children` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Πολύτεκνος';";
         Console::stdout("\n*** Adding new columns (public_experience, smeae_keddy_experience, disability_percentage, disabled_children, many_children)
                                       in table " . $yearteacher_table . ". *** \n");
         Console::stdout("SQL Command: " . $alter_yearteacher_command . "\n");
@@ -40,7 +41,7 @@ class m180629_115637_add_teacher_fields extends Migration
         
         $alter_yearteacher_command = "ALTER TABLE " . $yearteacher_table . " DROP COLUMN `public_experience`,
                                       DROP COLUMN `smeae_keddy_experience`,  DROP COLUMN `disability_percentage`,
-                                      DROP COLUMN `disabled_children`,  DROP COLUMN `many_children`;";
+                                      DROP COLUMN `disabled_children`,  DROP COLUMN `many_children`, DROP COLUMN `three_children`;";
         
         Console::stdout("\n*** Dropping columns (public_experience, smeae_keddy_experience, disability_percentage, disabled_children, many_children)
                                from table " . $yearteacher_table . ". *** \n");
