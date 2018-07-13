@@ -37,7 +37,6 @@ $current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-
 ?>
 
 <div class="text-right">
-	<form method="post" id="exportStatistic" action="exportstatistic">
         <div class="btn-group">
       		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
       			<?= Module::t('modules/schooltransport/app', 'Export transportations to Excel file.'); ?> <span class="caret"></span>
@@ -56,7 +55,6 @@ $current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-
 				</li>
   			</ul>
     	</div>
-    </form>
 </div>
 <?php ?>
 <h1>Επιλογή Παραμέτρων</h1>
