@@ -7,6 +7,7 @@ use kartik\typeahead\Typeahead;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\modules\schooltransport\models\SchtransportTransport;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\schooltransport\models\SchtransportTransport */
@@ -81,7 +82,7 @@ if($program_alias == 'PARLIAMENT'){
            endif;
     ?>
     
-    <?php if(in_array($program_alias, ['OMOGENEIA_FOREIGN_COUNTRY']))
+    <?php if(in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY]))
                echo $form->field($meeting_model, 'meeting_hostschool')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
     ?>
     
@@ -96,24 +97,29 @@ if($program_alias == 'PARLIAMENT'){
 
     <?= $form->field($model, 'transport_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'disabled' => $disabled]); ?>
 
-	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY']))
+	<?php  if(in_array($program_alias, [   SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS, 
+	                                       SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS, 
+	                                       SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT, 
+	                                       SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY]))
                echo $form->field($model, 'transport_headteacher')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
     <?= $form->field($model, 'transport_teachers')->textarea(['rows' => '6', 'disabled' => $disabled]) ?>
 
-	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT']))
+	<?php  if(in_array($program_alias, [   SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS, 
+	                                       SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS, 
+	                                       SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT]))
 	           echo $form->field($model, 'transport_class')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
 
-	<?php  if($program_alias != "KA1")
+	<?php  if(!in_array($program_alias, [SchtransportTransport::KA1, SchtransportTransport::KA2]))
 	           echo $form->field($model, 'transport_students')->textarea(['rows' => '6', 'disabled' => $disabled]);
 	?>	
    
-   	<?php  if(in_array($program_alias, ['TEACHING_VISITS', 'EDUCATIONAL_VISITS', 'EDUCATIONAL_EXCURSIONS',
-   	                                    'SCHOOL_EXCURIONS', 'EXCURIONS_FOREIGN_COUNTRY', 'PARLIAMENT', 'OMOGENEIA_FOREIGN_COUNTRY', 'ETWINNING_FOREIGN_COUNTRY']))
+   	<?php  if(in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS, 
+   	                                    SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS, 
+   	                                    SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT, 
+   	                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY]))
    	           echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
 	?>
    

@@ -6,7 +6,6 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
-
 /**
  * SchoolunitSearch represents the model behind the search form about `app\modules\schooltransport\models\Schoolunit`.
  */
@@ -47,7 +46,7 @@ class SchoolunitSearch extends Schoolunit
                     ->select($tblprefix . 'schoolunit.*,' . $tblprefix . 'directorate.*')
                     ->from($tblprefix . 'schoolunit,' . $tblprefix . 'directorate')
                     ->where($tblprefix . 'schoolunit.directorate_id =' . $tblprefix . 'directorate.directorate_id');
-        
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

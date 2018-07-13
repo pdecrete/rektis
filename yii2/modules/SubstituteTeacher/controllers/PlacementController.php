@@ -212,24 +212,44 @@ class PlacementController extends Controller
         $transaction = \Yii::$app->db->beginTransaction();
 
         $model = $this->findModel($id);
-        $teacher_board = $model->teacherBoard;
-        $model->deleted = true;
-        $model->deleted_at = new  Expression('CURRENT_TIMESTAMP()');
+        $ok = true;
 
-        if (!$model->save(false, ['deleted', 'deleted_at'])) {
-            $transaction->rollBack();
-            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as deleted.'));
-        } else {
-            // mark teacher as eligible again
-            $teacher_board->status = Teacher::TEACHER_STATUS_ELIGIBLE;
-            if (!$teacher_board->save(false, ['status'])) {
+        // first, delete any dependent teachers placements
+        $placement_teachers = $model->placementTeachers;
+        if (!empty($placement_teachers)) {
+            foreach ($placement_teachers as $placement_teacher_model) {
+                $teacher_board = $placement_teacher_model->teacherBoard;
+                $placement_teacher_model->deleted = true;
+                $placement_teacher_model->deleted_at = new  Expression('CURRENT_TIMESTAMP()');
+
+                if (!$placement_teacher_model->save(false, ['deleted', 'deleted_at'])) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher placement could not be marked as deleted.'));
+                    $ok = false;
+                } else {
+                    // mark teacher as eligible again
+                    $teacher_board->status = Teacher::TEACHER_STATUS_ELIGIBLE;
+                    if (!$teacher_board->save(false, ['status'])) {
+                        $transaction->rollBack();
+                        Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+                        $ok = false;
+                    }
+                }
+            }
+        }
+
+        if ($ok === true) {
+            $model->deleted = true;
+            $model->deleted_at = new Expression('CURRENT_TIMESTAMP()');
+
+            if (!$model->save(false, ['deleted', 'deleted_at'])) {
                 $transaction->rollBack();
-                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as deleted.'));
             } else {
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as deleted.'));
             }
-        }
+        } 
 
         return $this->redirect(['index']);
     }
@@ -249,7 +269,7 @@ class PlacementController extends Controller
         // get a list of teacher placements
         $placement_teachers = $placement->activePlacementTeachers;
 
-        // TODO wrap all in a transaction and perfmorm error control 
+        // TODO wrap all in a transaction and perfmorm error control
 
         // some prints have to be generated per teacher
         foreach ($placement_teachers as $placement_teacher) {

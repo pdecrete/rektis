@@ -3,7 +3,6 @@
 namespace app\modules\schooltransport\models;
 
 use app\modules\schooltransport\Module;
-use Yii;
 
 /**
  * This is the model class for table "{{%schoolunit}}".
@@ -73,6 +72,6 @@ class Schoolunit extends \yii\db\ActiveRecord
      */
     public static function find()
     {
-        return new SchoolunitQuery(get_called_class()); 
+        return new SchoolunitQuery(get_called_class());
     }
 }

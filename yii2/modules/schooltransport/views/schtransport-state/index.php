@@ -9,7 +9,7 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/schooltransport/app', 'School Transportations'), 'url' => ['/schooltransport/default']];
-$this->title = Module::t('modules/schooltransport/app', 'Transport Approval States');
+$this->title = Module::t('modules/schooltransport/app', 'Transportation Approval States');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="schtransport-state-index">
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //['class' => 'yii\grid\SerialColumn'],
 
             ['attribute' => 'state_id',
-             'label' => '',
+             'label' => 'A/A',
              'headerOptions' => ['style' => 'max-width: 100px']
             ],
             'state_name',

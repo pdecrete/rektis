@@ -66,6 +66,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'social_security_number',
                     'identity_number',
                     'email:email',
+                    'ama',
+                    'efka_facility',
+                    'municipality',
                     'birthdate',
                     'birthplace',
                     'comments:ntext',
@@ -93,6 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attributes' => [
                     'sign_language:boolean',
                     'braille:boolean',
+                    'iek:boolean',
                     'epal:boolean',
                     'tei:boolean',
                     'aei:boolean',

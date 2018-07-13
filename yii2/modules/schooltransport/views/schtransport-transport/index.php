@@ -138,7 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['attribute' => 'transport_creationdate',
                 'label' => Module::t('modules/schooltransport/app', 'Created'),
-                'format' => ['datetime', 'php:d-m-Y H:i:s'],
+                'format' => ['datetime', Yii::$app->formatter->datetimeFormat], //['datetime', 'dd/MM/yyyy, hh:mm'],
                 'headerOptions' => ['class'=> 'text-center'],
             ],
             ['attribute' => 'statescount',

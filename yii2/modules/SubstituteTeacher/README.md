@@ -22,7 +22,18 @@
 Με χρήση του module [yii2-faker](https://github.com/yiisoft/yii2-faker) γίνεται δημιουργία των δοκιμαστικών
 αρχείων ορισμένων στοιχείων (π.χ. στοιχείων καταλόγου αναπλρωτών).
 
-Για δημιουργία αρχείων με δοκιμαστικά δεδομένα 
+Για δημιουργία αρχείων με δοκιμαστικά δεδομένα δώστε κατάλληλα τροποποιημένη την παρακάτω εντολή: 
+
+```
+./yii2/yii fixture/generate-all \
+    --count=200 \
+    --templatePath=@app/modules/SubstituteTeacher/dbseed/faker-templates \
+    --fixtureDataPath=@app/modules/SubstituteTeacher/dbseed/data
+```
+
+Για δημιουργία αρχείων με δοκιμαστικά δεδομένα για συγκεκριμένη οντότητα (π.χ. TeacherRegistry)
+δώστε κατάλληλα τροποποιημένη την παρακάτω εντολή: 
+
 ```
 ./yii2/yii fixture/generate TeacherRegistry \
     --count=20 \
