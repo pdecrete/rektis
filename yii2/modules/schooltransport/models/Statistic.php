@@ -189,8 +189,13 @@ class Statistic extends Model
     public static function getSchoolYearOptions()
     {
         $school_years = [];
-        $min_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", SchtransportTransport::find()->min('transport_startdate')));
-        $max_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", SchtransportTransport::find()->max('transport_startdate')));
+        $min_startdate = SchtransportTransport::find()->min('transport_startdate');
+        if(is_null($min_startdate))
+            return null;
+        $max_startdate = SchtransportTransport::find()->max('transport_startdate');
+            
+        $min_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $min_startdate));
+        $max_year = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $max_startdate));
         for ($i = $min_year; $i <= $max_year; $i++) {
             $school_years[$i] = (string)$i . '-' . (string)($i+1);
         }
