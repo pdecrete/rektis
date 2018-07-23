@@ -389,4 +389,5 @@ return [
     '{n} applicants parsed.' => '{n} αναπληρωτές αναλύθηκαν.',
     '{n} applications parsed.' => '{n} αιτήσεις αναλύθηκαν.',
     '{n} choices parsed.' => '{n} κενά αναλύθηκαν.',
+    'Batch insert teachers in Registry' => 'Μαζική εισαγωγή αναπληρωτών στο Μητρώο'
 ];
