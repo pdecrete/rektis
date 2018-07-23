@@ -41,7 +41,8 @@ class StatisticController extends \yii\web\Controller
 
     public function beforeAction($action)
     {
-        $this->enableCsrfValidation = false;
+        if($action->id == 'exportstatistic')
+            $this->enableCsrfValidation = false;
         return parent::beforeAction($action);
     }
 
