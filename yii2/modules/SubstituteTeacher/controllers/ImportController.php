@@ -15,7 +15,6 @@ use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
-use yii\console\Exception;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
 use yii\helpers\Json;
@@ -51,33 +50,78 @@ class ImportController extends Controller
             'D' => 'points',
         ],
         'registry' => [
-            'tax_identification_number' => 'B',
-            'identity_type' => 'C',
-            'identity_number' => 'D',
-            'surname' => 'E',
-            'firstname' => 'F',
-            'fathername' => 'G',
-            'degree_categ' => 'H',
-            'degree_year' => 'I',
-            'degree_mark' => 'J',
-            'general_experience_years' => 'K',
-            'general_experience_months' => 'L',
-            'general_experience_days' => 'M',
-            'smeae_experience_years' => 'N',
-            'smeae_experience_months' => 'O',
-            'smeae_experience_days' => 'P',
-            'disability_percentage' => 'Q',
-            'disabled_children' => 'R',
-            'many_children' => 'S',
-            'sign_language' => 'T',
-            'academic_criteria_points' => 'U',
-            'general_experience_points' => 'V',
-            'smeae_experience_points' => 'W',
-            'disability_points' => 'X',
-            'disabled_children_points' => 'Y',
-            'many_children_points' => 'Z',
-            'social_criteria_points' => 'AA',
-            'total_points' => 'AB',
+            'default' => [
+                'tax_identification_number' => 'B',
+                'identity_type' => 'C',
+                'identity_number' => 'D',
+                'passport_number' => 'D',
+                'surname' => 'E',
+                'firstname' => 'F',
+                'fathername' => 'G',
+                'specialisation' => 'H',
+                'degree_categ' => 'I',
+                'pedagogical_competence_required' => 'J',
+                'pedagogical_competence' => 'K',
+                'teacher_board_type' => 'L',
+                'degree_year' => 'M',
+                'degree_mark' => 'N',
+                'has_doctorate' => 'O',
+                'has_master' => 'P',
+                'has_doctorate_special_education' => 'Q',
+                'has_master_special_education' => 'R',
+                'general_experience_years' => 'S',
+                'general_experience_months' => 'T',
+                'general_experience_days' => 'U',
+                'smeae_experience_years' => 'V',
+                'smeae_experience_months' => 'W',
+                'smeae_experience_days' => 'X',
+                'disability_percentage' => 'Y',
+                'disabled_children' => 'Z',
+                'many_children' => 'AA',
+                'braille' => 'AB',
+                'sign_language' => 'AC',
+                'degree_points' => 'AD',
+                'master_doctorate_spoecialisation_points' => 'AE',
+                'master_doctorate_special_education_points' => 'AF',
+                'master_doctorate_points' => 'AG',
+                'general_experience_points' => 'AH',
+                'smeae_experience_points' => 'AI',
+                'disability_points' => 'AJ',
+                'disabled_children_points' => 'AK',
+                'many_children_points' => 'AL',
+                'social_criteria_points' => 'AM',
+                'total_points' => 'AN',
+            ],
+            'ebp' => [
+                'tax_identification_number' => 'B',
+                'identity_type' => 'C',
+                'identity_number' => 'D',
+                'passport_number' => 'D',
+                'surname' => 'E',
+                'firstname' => 'F',
+                'fathername' => 'G',
+                'degree_categ' => 'H',
+                'degree_year' => 'I',
+                'degree_mark' => 'J',
+                'general_experience_years' => 'K',
+                'general_experience_months' => 'L',
+                'general_experience_days' => 'M',
+                'smeae_experience_years' => 'N',
+                'smeae_experience_months' => 'O',
+                'smeae_experience_days' => 'P',
+                'disability_percentage' => 'Q',
+                'disabled_children' => 'R',
+                'many_children' => 'S',
+                'sign_language' => 'T',
+                'academic_criteria_points' => 'U',
+                'general_experience_points' => 'V',
+                'smeae_experience_points' => 'W',
+                'disability_points' => 'X',
+                'disabled_children_points' => 'Y',
+                'many_children_points' => 'Z',
+                'social_criteria_points' => 'AA',
+                'total_points' => 'AB',
+            ]
         ]
     ];
 
@@ -184,11 +228,42 @@ class ImportController extends Controller
         ]);
     }
 
+    /**
+     * 
+     * @return boolean|null True if value is a YES, False if value is a NO, 
+     *      $default_on_empty (default false) if empty value, 
+     *      $default_on_other (default null) if none of the previous conditions apply
+     */
+    protected function isYesNo($value, $default_on_empty = false, $default_on_other = null)
+    {
+        if (empty($value)) {
+            return $default_on_empty;
+        } elseif (in_array($value, ['ΟΧΙ', 'ΌΧΙ', 'OXI'], true)) {
+            return false;
+        } elseif (in_array($value, ['ΝΑΙ', 'NAI'], true)) {
+            return true;
+        } else {
+            return $default_on_other;
+        }
+    }
+
     protected function importRegistry($year, $board_type, $specialisation_id, $worksheet)
     {
         $import_status = false;
 
         try {
+            // decide import data sequencing 
+            $ebp_spec = Specialisation::findOne(['code' => 'ΕΒΠ']);
+            if (empty($ebp_spec)) {
+                throw new \Exception(Yii::t('substituteteacher', 'Cannot locate necessary specialisation id.'));
+            }
+
+            if ($ebp_spec->id == $specialisation_id) {
+                $attribute_map = $this->_column_data_idx['registry']['ebp'];
+            } else {
+                $attribute_map = $this->_column_data_idx['registry']['default'];
+            }
+
             $transaction = Yii::$app->db->beginTransaction();
             $highestDataRow = $worksheet->getHighestDataRow(); 
             $teachersStartRow = $this->teachersStartRowIndex($worksheet);
@@ -198,7 +273,7 @@ class ImportController extends Controller
             foreach ($rowIterator as $row) {
                 $row_index = $row->getRowIndex();
                 $teacherrowArray = [];
-                $idnum_column = $this->_column_data_idx['registry']['tax_identification_number'];
+                $idnum_column = $attribute_map['tax_identification_number'];
 
                 $celliterator = $row->getCellIterator();
                 foreach ($celliterator as $cell) {
@@ -230,17 +305,17 @@ class ImportController extends Controller
                     $registry_teacher->birthplace = '';
                     $registry_teacher->comments = '';
                 }
-                $registry_teacher->surname = $teacherrowArray[$this->_column_data_idx['registry']['surname']];
-                $registry_teacher->firstname = $teacherrowArray[$this->_column_data_idx['registry']['firstname']];
-                $registry_teacher->fathername = $teacherrowArray[$this->_column_data_idx['registry']['fathername']];
-                $registry_teacher->tax_identification_number = $teacherrowArray[$this->_column_data_idx['registry']['tax_identification_number']];
-                if ($teacherrowArray[$this->_column_data_idx['registry']['identity_type']] == 'ΑΔΤ') {
-                    $registry_teacher->identity_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
+                $registry_teacher->surname = $teacherrowArray[$attribute_map['surname']];
+                $registry_teacher->firstname = $teacherrowArray[$attribute_map['firstname']];
+                $registry_teacher->fathername = $teacherrowArray[$attribute_map['fathername']];
+                $registry_teacher->tax_identification_number = $teacherrowArray[$attribute_map['tax_identification_number']];
+                if ($teacherrowArray[$attribute_map['identity_type']] == 'ΑΔΤ') {
+                    $registry_teacher->identity_number = $teacherrowArray[$attribute_map['identity_number']];
                 } else {
-                    $registry_teacher->passport_number = $teacherrowArray[$this->_column_data_idx['registry']['identity_number']];
+                    $registry_teacher->passport_number = $teacherrowArray[$attribute_map['passport_number']];
                 }
 
-                $degree = $teacherrowArray[$this->_column_data_idx['registry']['degree_categ']];
+                $degree = $teacherrowArray[$attribute_map['degree_categ']];
                 $registry_teacher->aei = false;
                 $registry_teacher->tei = false;
                 $registry_teacher->epal = false;
@@ -260,24 +335,35 @@ class ImportController extends Controller
 
                 $registry_teacher->military_service_certificate = false;
 
-                if (in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI'], true)) {
-                    $registry_teacher->sign_language = false;
-                } elseif (in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΝΑΙ', 'NAI'], true)) {
-                    $registry_teacher->sign_language = true;
-                } else {
-                    throw new Exception('Unknown value in column "ΓΝΩΣΗ ΕΝΓ" for teacher with identity number = ' . $teacherrowArray[$this->_column_data_idx['registry']['identity_number']]);
+                $registry_teacher->sign_language = $this->isYesNo($teacherrowArray[$attribute_map['sign_language']]);
+                if ($registry_teacher->sign_language === null) {
+                    throw new \Exception(Yii::t('substituteteacher', 'Unknown value in column "{col}" for teacher with identity number {id}.', ['col' => 'ΓΝΩΣΗ ΕΝΓ', 'id' => $teacherrowArray[$attribute_map['identity_number']]]));
                 }
 
-                $registry_teacher->braille = false;
+                if (array_key_exists('braille', $attribute_map)) {
+                    $registry_teacher->braille = $this->isYesNo($teacherrowArray[$attribute_map['braille']]);
+                    if ($registry_teacher->braille === null) {
+                        throw new \Exception(Yii::t('substituteteacher', 'Unknown value in column "{col}" for teacher with identity number {id}.', ['col' => 'ΓΝΩΣΗ BRAILLE', 'id' => $teacherrowArray[$attribute_map['identity_number']]]));
+                    }
+                } else {
+                    $registry_teacher->braille = false;
+                }
 
                 $registry_teacher->specialisation_ids = [$specialisation_id];
 
                 if (!$registry_teacher->save()) {
-                    throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
+                    throw new \Exception(
+                        "An error occured while saving teacher with VAT number {$teacherrowArray[$idnum_column]}" .
+                        array_reduce(array_values($registry_teacher->getErrors()), function ($c, $v) {
+                            return $c . implode(' ', $v) . ' ';
+                        }, '')
+                    );
+                } else {
+                    $registry_teacher->refresh();
                 }
 
                 $registry_specialization = TeacherRegistrySpecialisation::findOne([
-                    'registry_id' => $registry_teacher,
+                    'registry_id' => $registry_teacher->id,
                     'specialisation_id' => $specialisation_id
                 ]);
                 if ($registry_specialization == null) {
@@ -285,8 +371,10 @@ class ImportController extends Controller
                     $registry_specialization->registry_id = $registry_teacher->id;
                     $registry_specialization->specialisation_id = $specialisation_id;
                     if (!$registry_specialization->save()) {
-                        throw new Exception("Error saving in Registry table.");
+                        throw new \Exception("Error saving in Registry table.");
                     }
+                } else {
+                    \Yii::$app->session->addFlash('info', "found {$registry_teacher->id}/{$specialisation_id}");
                 }
 
                 $year_teacher = Teacher::findOne([
@@ -299,41 +387,65 @@ class ImportController extends Controller
                     $year_teacher->year = $year;
                 }
                 $year_teacher->status = Teacher::TEACHER_STATUS_ELIGIBLE;
-                $year_teacher->public_experience =  $teacherrowArray[$this->_column_data_idx['registry']['general_experience_years']]*365 +
-                                                    $teacherrowArray[$this->_column_data_idx['registry']['general_experience_months']]*30 +
-                                                    $teacherrowArray[$this->_column_data_idx['registry']['general_experience_days']];
-                $year_teacher->smeae_keddy_experience = $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_years']]*365 +
-                                                        $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_months']]*30 +
-                                                        $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_days']];
-                $year_teacher->disability_percentage = str_replace('%', '', $teacherrowArray[$this->_column_data_idx['registry']['disability_percentage']]);
-                $year_teacher->disabled_children = $teacherrowArray[$this->_column_data_idx['registry']['disabled_children']];
+                $year_teacher->public_experience =  $teacherrowArray[$attribute_map['general_experience_years']]*365 +
+                                                    $teacherrowArray[$attribute_map['general_experience_months']]*30 +
+                                                    $teacherrowArray[$attribute_map['general_experience_days']];
+                $year_teacher->smeae_keddy_experience = $teacherrowArray[$attribute_map['smeae_experience_years']]*365 +
+                                                        $teacherrowArray[$attribute_map['smeae_experience_months']]*30 +
+                                                        $teacherrowArray[$attribute_map['smeae_experience_days']];
+                $year_teacher->disability_percentage = empty($teacherrowArray[$attribute_map['disability_percentage']]) ? 0 : str_replace('%', '', $teacherrowArray[$attribute_map['disability_percentage']]);
+                $year_teacher->disabled_children = empty($teacherrowArray[$attribute_map['disabled_children']]) ? 0 : $teacherrowArray[$attribute_map['disabled_children']];
 
                 $year_teacher->three_children = 0;
                 $year_teacher->many_children = 0;
-                if ($teacherrowArray[$this->_column_data_idx['registry']['many_children']] == 'ΠΟΛΥΤΕΚΝΟΣ') {
+                if ($teacherrowArray[$attribute_map['many_children']] == 'ΠΟΛΥΤΕΚΝΟΣ') {
                     $year_teacher->many_children = 1;
-                } elseif ($teacherrowArray[$this->_column_data_idx['registry']['many_children']] == 'ΤΡΙΤΕΚΝΟΣ') {
+                } elseif ($teacherrowArray[$attribute_map['many_children']] == 'ΤΡΙΤΕΚΝΟΣ') {
                     $year_teacher->three_children = 1;
                 }
 
-                $json_fields = [
-                    'degree_type' => $teacherrowArray[$this->_column_data_idx['registry']['degree_categ']],
-                    'degree_date' => $teacherrowArray[$this->_column_data_idx['registry']['degree_year']],
-                    'degree_mark' => $teacherrowArray[$this->_column_data_idx['registry']['degree_mark']],
-                    'academic_criteria_points' => $teacherrowArray[$this->_column_data_idx['registry']['academic_criteria_points']],
-                    'general_experience_points' => $teacherrowArray[$this->_column_data_idx['registry']['general_experience_points']],
-                    'smeae_experience_points' => $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_points']],
-                    'disability_points' => $teacherrowArray[$this->_column_data_idx['registry']['disability_points']],
-                    'disabled_children_points' => $teacherrowArray[$this->_column_data_idx['registry']['disabled_children_points']],
-                    'children_points' => $teacherrowArray[$this->_column_data_idx['registry']['many_children_points']],
-                    'social_criteria_points' => $teacherrowArray[$this->_column_data_idx['registry']['social_criteria_points']],
-                    'total_points' => $teacherrowArray[$this->_column_data_idx['registry']['total_points']]
-                ];
+                $json_fields = array_fill_keys([
+                    // common
+                    'degree_categ',
+                    'degree_year',
+                    'degree_mark',
+                    'general_experience_points',
+                    'smeae_experience_points',
+                    'disability_points',
+                    'disabled_children_points',
+                    'many_children_points',
+                    'social_criteria_points',
+                    'total_points',
+                    // default
+                    'has_doctorate',
+                    'has_master',
+                    'has_doctorate_special_education',
+                    'has_master_special_education',
+                    'degree_points',
+                    'master_doctorate_spoecialisation_points',
+                    'master_doctorate_special_education_points',
+                    'master_doctorate_points',
+                    // ebp 
+                    'academic_criteria_points',
+                ], null);
+
+                array_walk($json_fields, function (&$value, $key) use ($teacherrowArray, $attribute_map) {
+                    if (array_key_exists($key, $attribute_map)) {
+                        $value = $teacherrowArray[$attribute_map[$key]];
+                    }
+                });
                 $json = Json::encode($json_fields);
                 $year_teacher->data = $json;
 
                 if (!$year_teacher->save()) {
-                    throw new Exception("Error saving in Teacher table.");
+                    throw new \Exception(
+                        "Error saving in Teacher table." . 
+                        array_reduce(array_values($year_teacher->getErrors()), function ($c, $v) {
+                            return $c . implode(' ', $v) . ' ';
+                        }, '')
+                    );
+                } else {
+                    $year_teacher->refresh();
                 }
 
                 $teacher_board = TeacherBoard::findOne([
@@ -346,11 +458,11 @@ class ImportController extends Controller
                 $teacher_board->teacher_id = $year_teacher->id;
                 $teacher_board->specialisation_id = $specialisation_id;
                 $teacher_board->board_type = $board_type;
-                $teacher_board->points = $teacherrowArray[$this->_column_data_idx['registry']['total_points']];
+                $teacher_board->points = $teacherrowArray[$attribute_map['total_points']];
                 $teacher_board->order = 1 + $row_index - $teachersStartRow;
 
                 if (!$teacher_board->save()) {
-                    throw new Exception("Error saving in Teacher board.");
+                    throw new \Exception("Error saving in Teacher board.");
                 }
 
                 if ($row_index == $highestDataRow) {
@@ -370,7 +482,7 @@ class ImportController extends Controller
                 \Yii::$app->session->addFlash('info', Yii::t('substituteteacher', 'The teachers with tax identity numbers <em>{ids}</em> were not imported because they already exist in the registry.', ['ids' => implode(', ', $existing_teachers_ids)]));
             }
             $import_status = true;
-        } catch (Exception $exc) {
+        } catch (\Exception $exc) {
             $transaction->rollBack();
             \Yii::$app->session->addFlash('danger', $exc->getMessage());
             $import_status = false;
@@ -392,11 +504,16 @@ class ImportController extends Controller
                 $year = filter_var($year, FILTER_SANITIZE_NUMBER_INT);
                 $board_type = filter_var($board_type, FILTER_SANITIZE_NUMBER_INT);
                 $specialisation_id = filter_var($specialisation_id, FILTER_SANITIZE_NUMBER_INT);
-                $import_ok = $this->importRegistry($year, $board_type, $specialisation_id, $worksheet);
-                if ($import_ok === true) {
-                    return $this->redirect(['teacher/index']);    
+                // TODO check input 
+                if (empty($year) || empty($board_type) || empty($specialisation_id)) {
+                    \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'Year, board type and specialisation are mandatory.'));
                 } else {
-                    return $this->redirect(['registry', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                    $import_ok = $this->importRegistry($year, $board_type, $specialisation_id, $worksheet);
+                    if ($import_ok === true) {
+                        return $this->redirect(['teacher/index']);
+                    } else {
+                        return $this->redirect(['registry', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                    }
                 }
             }
         }
@@ -579,7 +696,7 @@ class ImportController extends Controller
                 // add all new positions
                 foreach ($positions as $position) {
                     if (!$position->save()) {
-                        throw new Exception(Yii::t('substituteteacher', 'An error occured while saving a position.'));
+                        throw new \Exception(Yii::t('substituteteacher', 'An error occured while saving a position.'));
                     }
                 }
                 $transaction->commit();
@@ -769,7 +886,7 @@ class ImportController extends Controller
                 // add all new teachers
                 foreach ($teachers as $teacher) {
                     if (!$teacher->save()) {
-                        throw new Exception(Yii::t('substituteteacher', 'An error occured while saving a teacher.'));
+                        throw new \Exception(Yii::t('substituteteacher', 'An error occured while saving a teacher.'));
                     }
                 }
 
