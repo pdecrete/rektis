@@ -260,7 +260,8 @@ class ImportController extends Controller
 
                 $registry_teacher->military_service_certificate = false;
 
-                if (in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI'], true)) {
+                if (empty($teacherrowArray[$this->_column_data_idx['registry']['sign_language']]) 
+                    || in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΟΧΙ', 'ΌΧΙ', 'OXI'], true)) {
                     $registry_teacher->sign_language = false;
                 } elseif (in_array($teacherrowArray[$this->_column_data_idx['registry']['sign_language']], ['ΝΑΙ', 'NAI'], true)) {
                     $registry_teacher->sign_language = true;
@@ -274,6 +275,8 @@ class ImportController extends Controller
 
                 if (!$registry_teacher->save()) {
                     throw new Exception("An error occured while saving teacher with VAT number " . $teacherrowArray['B']);
+                } else {
+                    $registry_teacher->refresh();
                 }
 
                 $registry_specialization = TeacherRegistrySpecialisation::findOne([
@@ -305,8 +308,8 @@ class ImportController extends Controller
                 $year_teacher->smeae_keddy_experience = $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_years']]*365 +
                                                         $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_months']]*30 +
                                                         $teacherrowArray[$this->_column_data_idx['registry']['smeae_experience_days']];
-                $year_teacher->disability_percentage = str_replace('%', '', $teacherrowArray[$this->_column_data_idx['registry']['disability_percentage']]);
-                $year_teacher->disabled_children = $teacherrowArray[$this->_column_data_idx['registry']['disabled_children']];
+                $year_teacher->disability_percentage = empty($teacherrowArray[$this->_column_data_idx['registry']['disability_percentage']]) ? 0 : str_replace('%', '', $teacherrowArray[$this->_column_data_idx['registry']['disability_percentage']]);
+                $year_teacher->disabled_children = empty($teacherrowArray[$this->_column_data_idx['registry']['disabled_children']]) ? 0 : $teacherrowArray[$this->_column_data_idx['registry']['disabled_children']];
 
                 $year_teacher->three_children = 0;
                 $year_teacher->many_children = 0;
@@ -333,7 +336,14 @@ class ImportController extends Controller
                 $year_teacher->data = $json;
 
                 if (!$year_teacher->save()) {
-                    throw new Exception("Error saving in Teacher table.");
+                    throw new Exception(
+                        array_reduce(array_values($year_teacher->getErrors()), function ($c, $v) {
+                            return $c . implode(' ', $v) . ' ';
+                        }, '') . 
+                        "Error saving in Teacher table."
+                    );
+                } else {
+                    $year_teacher->refresh();
                 }
 
                 $teacher_board = TeacherBoard::findOne([
@@ -392,11 +402,16 @@ class ImportController extends Controller
                 $year = filter_var($year, FILTER_SANITIZE_NUMBER_INT);
                 $board_type = filter_var($board_type, FILTER_SANITIZE_NUMBER_INT);
                 $specialisation_id = filter_var($specialisation_id, FILTER_SANITIZE_NUMBER_INT);
-                $import_ok = $this->importRegistry($year, $board_type, $specialisation_id, $worksheet);
-                if ($import_ok === true) {
-                    return $this->redirect(['teacher/index']);    
+                // TODO check input 
+                if (empty($year) || empty($board_type) || empty($specialisation_id)) {
+                    \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'Year, board type and specialisation are mandatory.'));
                 } else {
-                    return $this->redirect(['registry', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                    $import_ok = $this->importRegistry($year, $board_type, $specialisation_id, $worksheet);
+                    if ($import_ok === true) {
+                        return $this->redirect(['teacher/index']);
+                    } else {
+                        return $this->redirect(['registry', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                    }
                 }
             }
         }
