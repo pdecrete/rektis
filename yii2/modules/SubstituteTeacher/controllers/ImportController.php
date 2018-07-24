@@ -243,7 +243,7 @@ class ImportController extends Controller
         } elseif (in_array($value, ['ΝΑΙ', 'NAI'], true)) {
             return true;
         } else {
-            return null;
+            return $default_on_other;
         }
     }
 
