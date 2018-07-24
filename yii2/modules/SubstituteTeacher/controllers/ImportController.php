@@ -184,18 +184,13 @@ class ImportController extends Controller
         ]);
     }
 
-
-    public function actionRegistry($file_id, $sheet = 0)
+    protected function importRegistry($year, $board_type, $specialisation_id, $worksheet)
     {
-        $year = 2018;
-        $specialisation_code = 'ΕΒΠ';
-        $specialisation_id = \app\modules\SubstituteTeacher\models\Specialisation::findOne(['code' => $specialisation_code])->id;
+        $import_status = false;
 
         try {
             $transaction = Yii::$app->db->beginTransaction();
-            list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
             $highestDataRow = $worksheet->getHighestDataRow(); 
-
             $teachersStartRow = $this->teachersStartRowIndex($worksheet);
             $rowIterator = $worksheet->getRowIterator($teachersStartRow);
 
@@ -350,7 +345,7 @@ class ImportController extends Controller
                 }
                 $teacher_board->teacher_id = $year_teacher->id;
                 $teacher_board->specialisation_id = $specialisation_id;
-                $teacher_board->board_type = TeacherBoard::TEACHER_BOARD_TYPE_ANY;
+                $teacher_board->board_type = $board_type;
                 $teacher_board->points = $teacherrowArray[$this->_column_data_idx['registry']['total_points']];
                 $teacher_board->order = 1 + $row_index - $teachersStartRow;
 
@@ -378,12 +373,52 @@ class ImportController extends Controller
                 }
                 $feedback .= 'were not imported because they already exist in the registry.';
             }
-
-            return $this->render('file-registry-import-feedback', ['feedback' => $feedback]);
+            \Yii::$app->session->addFlash('info', $feedback);
+            $import_status = true;
         } catch (Exception $exc) {
-            return $this->render('file-registry-import-feedback', ['feedback' => $exc->getMessage()]);
             $transaction->rollBack();
+            \Yii::$app->session->addFlash('danger', $exc->getMessage());
+            $import_status = false;
         }
+        return $import_status;
+    }
+
+    public function actionRegistry($file_id, $sheet = 0, $action = '', $year = '', $board_type = -1, $specialisation_id = -1)
+    {
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
+        $highestDataRow = $worksheet->getHighestDataRow(); 
+        $teachersStartRow = $this->teachersStartRowIndex($worksheet);
+
+        if ($teachersStartRow <= 0) {
+            \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'There seems to be no data in the worksheet.'));
+        } else {
+            // only import action for now 
+            if ($action == 'import') {
+                $year = filter_var($year, FILTER_SANITIZE_NUMBER_INT);
+                $board_type = filter_var($board_type, FILTER_SANITIZE_NUMBER_INT);
+                $specialisation_id = filter_var($specialisation_id, FILTER_SANITIZE_NUMBER_INT);
+                $import_ok = $this->importRegistry($year, $board_type, $specialisation_id, $worksheet);
+                if ($import_ok === true) {
+                    return $this->redirect(['teacher/index']);    
+                } else {
+                    return $this->redirect(['registry', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                }
+            }
+        }
+
+        return $this->render('file-preview-registry', [
+            'action' => $action,
+            'sheet' => $sheet,
+            'model' => $model,
+            'file_id' => $file_id,
+            'worksheet' => $worksheet,
+            'highestRow' => $highestRow,
+            'line_limit' => $line_limit + $teachersStartRow - 1,
+            'highestColumn' => $highestColumn,
+            'highestColumnIndex' => $highestColumnIndex,
+            'teachersStartRow' => $teachersStartRow - 1,
+            'hasData' => $teachersStartRow > 0
+        ]);
     }
 
     protected function teachersStartRowIndex($worksheet)
