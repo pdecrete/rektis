@@ -363,17 +363,12 @@ class ImportController extends Controller
             if (!isset($counts['0'])) {
                 $counts['0'] = 0;
             }
-            $feedback = 'Successfully imported ' . $counts['0'] . ' teachers.';
+
+            \Yii::$app->session->addFlash('info', Yii::t('substituteteacher', 'Successfully imported {n} teachers.', ['n' => $counts['0']]));
             if (count($existing_teachers) != $counts['0']) {
-                $feedback .= '<br />The teachers with tax identity numbers';
-                foreach ($existing_teachers as $identity_number => $flag) {
-                    if ($flag) {
-                        $feedback .= " '" . $identity_number . "' ";
-                    }
-                }
-                $feedback .= 'were not imported because they already exist in the registry.';
+                $existing_teachers_ids = array_keys(array_filter($existing_teachers, function ($flag) { return $flag == 1; }));
+                \Yii::$app->session->addFlash('info', Yii::t('substituteteacher', 'The teachers with tax identity numbers <em>{ids}</em> were not imported because they already exist in the registry.', ['ids' => implode(', ', $existing_teachers_ids)]));
             }
-            \Yii::$app->session->addFlash('info', $feedback);
             $import_status = true;
         } catch (Exception $exc) {
             $transaction->rollBack();
