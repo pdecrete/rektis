@@ -75,7 +75,8 @@ $firstCallTeacherModel = reset($modelsCallTeacherSpecialisation);
         'formId' => 'dynamic-form',
         'formFields' => [
             'specialisation_id',
-            'teachers'
+            'teachers',
+            'teachers_call'
         ],
     ]);
     ?>
@@ -93,6 +94,7 @@ $firstCallTeacherModel = reset($modelsCallTeacherSpecialisation);
                         <th class="col-xs-1">#</th>
                         <th><?php echo $firstCallTeacherModel->getAttributeLabel('specialisation_id'); ?></th>
                         <th><?php echo $firstCallTeacherModel->getAttributeLabel('teachers'); ?></th>
+                        <th><?php echo $firstCallTeacherModel->getAttributeLabel('teachers_call'); ?></th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
@@ -119,6 +121,9 @@ $firstCallTeacherModel = reset($modelsCallTeacherSpecialisation);
                         </td>
                         <td class="col-sm-2">
                             <?= $form->field($modelCTS, "[{$index}]teachers")->textInput(['type' => 'number', 'min' => 0])->label(false) ?>
+                        </td>
+                        <td class="col-sm-2">
+                            <?= $form->field($modelCTS, "[{$index}]teachers_call")->textInput(['type' => 'number', 'min' => 0])->label(false) ?>
                         </td>
                         <td class="col-sm-1 text-center">
                             <button type="button" class="remove-item btn btn-danger btn-sm"><span class="glyphicon glyphicon-minus"></span></button>
