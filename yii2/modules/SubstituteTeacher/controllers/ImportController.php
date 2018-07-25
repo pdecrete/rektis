@@ -18,6 +18,7 @@ use app\modules\SubstituteTeacher\models\PlacementPreference;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
 use yii\helpers\Json;
+use yii\base\NotSupportedException;
 
 /**
  * Description of ImportController
@@ -48,6 +49,10 @@ class ImportController extends Controller
             'B' => 'placement_preferences',
             'C' => 'order',
             'D' => 'points',
+        ],
+        'placement-preference' => [
+            'A' => 'vat_number',
+            'B' => 'placement_preferences',
         ],
         'registry' => [
             'default' => [
@@ -170,6 +175,9 @@ class ImportController extends Controller
                 break;
             case 'teacher':
                 $route = 'import/teacher';
+                break;
+            case 'placement-preference':
+                $route = 'import/placement-preference';
                 break;
             case 'registry':
                 $route = 'import/registry';
@@ -549,19 +557,165 @@ class ImportController extends Controller
         }
     }
 
+    /**
+     * Assigns teacher placement preferences for existing teachers. 
+     * 
+     */
+    public function actionPlacementPreference($file_id, $sheet = 0, $action = '', $year = '', $specialisation_id = -1)
+    {
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
 
+        $is_valid = true;
+        if ($action == 'validate') {
+            $is_valid = $this->validateTeacher($this->_column_data_idx['placement-preference'], $year, TeacherBoard::TEACHER_BOARD_TYPE_ANY, $specialisation_id, $worksheet);
+        }
+
+        if ($action == 'import') {
+            if (!$this->validateTeacher($this->_column_data_idx['placement-preference'], $year, TeacherBoard::TEACHER_BOARD_TYPE_ANY, $specialisation_id, $worksheet, ['existing-teacher'])) {
+                return $this->redirect(['placement-preference', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            }
+            Yii::$app->session->removeAllFlashes(); // supress messages
+
+            if (!$this->importPlacementPreferences($year, $specialisation_id, $worksheet, $highestColumn)) {
+                return $this->redirect(['placement-preference', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            } else {
+                return $this->redirect(['teacher/index']);
+            }
+        }
+
+        return $this->render('file-preview-placement-preference', [
+                'action' => $action,
+                'sheet' => $sheet,
+                'model' => $model,
+                'file_id' => $file_id,
+                'worksheet' => $worksheet,
+                'highestRow' => $highestRow,
+                'line_limit' => $line_limit,
+                'highestColumn' => $highestColumn,
+                'highestColumnIndex' => $highestColumnIndex,
+        ]);
+    }
+
+    /**
+     *
+     * @param int $year Year teacher should be already inserted to
+     * @param int $specialisation_id The teacher board AND teacher specialisation (should match registry and board)
+     *
+     * @return boolean whether the import succeeded or not
+     */
+    protected function importPlacementPreferences($year, $specialisation_id, $worksheet, $highestColumn)
+    {
+        $errors = [];
+        $stop_at_errorcount = 1; // skip rest of the process if this many errors occur
+        $placement_preferences_data = []; // array of placement preferences
+        // keep ids for fks
+        $vat_numbers = [];
+
+        foreach ($worksheet->getRowIterator() as $row) {
+            $row_index = $row->getRowIndex();
+            if ($row_index == 1) {
+                continue;
+            }
+
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $data = [];
+            foreach ($cellIterator as $cell) {
+                $data[$this->_column_data_idx['placement-preference'][$cell->getColumn()]] = $cell->getFormattedValue();
+            }
+
+            if (!array_key_exists($data['vat_number'], $vat_numbers)) {
+                $teacher_registry_model = TeacherRegistry::find()
+                            ->joinWith('teacherRegistrySpecialisations')
+                            ->andWhere([
+                                '{{%stteacher_registry}}.tax_identification_number' => $data['vat_number'],
+                                '{{%stteacher_registry_specialisation}}.specialisation_id' => $specialisation_id,
+                                ])
+                            ->one();
+                if ($teacher_registry_model) {
+                    $vat_numbers[$data['vat_number']] = $teacher_registry_model->id;
+                } else {
+                    $vat_numbers[$data['vat_number']] = null; // this will cause a problem later, but we want that
+                }
+            }
+
+            $teacher_registry_id = $vat_numbers[$data['vat_number']];
+            $placement_preferences_data = array_merge($placement_preferences_data, array_map(function ($v) use ($teacher_registry_id) {
+                return array_merge($v, ['teacher_id' => $teacher_registry_id]);
+            }, $this->parsePlacementPreferences($data['placement_preferences'], true)));
+
+            $teacher = Teacher::findOne([
+                'registry_id' => $vat_numbers[$data['vat_number']],
+                'year' => $year
+            ]);
+            if (empty($teacher)) {
+                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'y' => $year]);
+                if (count($errors) >= $stop_at_errorcount) {
+                    break;
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                // find teacher ids
+                $year_teacher_info = Teacher::find()
+                    ->select(['id', 'registry_id'])
+                    ->andWhere(['year' => $year])
+                    ->asArray()
+                    ->all();
+                $year_teacher_ids = [];
+                array_walk($year_teacher_info, function ($v, $k) use (&$year_teacher_ids) {
+                    $year_teacher_ids[$v['registry_id']] = $v['id'];
+                });
+
+                // clear any existing placement preferences information for this teacher
+                PlacementPreference::deleteAll(['teacher_id' => array_values($year_teacher_ids)]);
+
+                // placement preferences were checked with validateTeacher
+                Yii::$app->db->createCommand()->batchInsert(PlacementPreference::tableName(), ['teacher_id', 'prefecture_id', 'school_type', 'order'], array_map(function ($v) use ($year_teacher_ids) {
+                    return [
+                        $year_teacher_ids[$v['teacher_id']], $v['prefecture_id'], $v['school_type'], $v['order']
+                    ];
+                }, $placement_preferences_data))->execute();
+
+                $transaction->commit();
+                \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
+            } catch (\Exception $ex) {
+                $transaction->rollBack();
+                \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Import failed') . '</h3>');
+                \Yii::$app->session->addFlash('danger', $ex->getMessage());
+                \Yii::$app->session->addFlash('danger', print_r($ex->getLine(), true));
+            }
+        } else {
+            \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Problems discovered') . '</h3>');
+            $never_mind = array_walk($errors, function ($v, $k) {
+                \Yii::$app->session->addFlash('danger', $v);
+            });
+            \Yii::$app->session->addFlash('danger', 'ccccccc');
+        }
+
+        return empty($errors);
+    }
+
+    /**
+     * Obsolete
+     */
     public function actionTeacher($file_id, $sheet = 0, $action = '', $year = '', $board_type = -1, $specialisation_id = -1)
     {
+        throw new NotSupportedException();
+
         // get file information and set basic parameters
         list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
 
         $is_valid = true;
         if ($action == 'validate') {
-            $is_valid = $this->validateTeacher($year, $board_type, $specialisation_id, $worksheet);
+            $is_valid = $this->validateTeacher($this->_column_data_idx['teacher'], $year, $board_type, $specialisation_id, $worksheet);
         }
 
         if ($action == 'import') {
-            if (!$this->validateTeacher($year, $board_type, $specialisation_id, $worksheet)) {
+            if (!$this->validateTeacher($this->_column_data_idx['teacher'], $year, $board_type, $specialisation_id, $worksheet)) {
                 return $this->redirect(['teacher', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
             }
             Yii::$app->session->removeAllFlashes(); // supress success message
@@ -939,13 +1093,15 @@ class ImportController extends Controller
      * - placement preferences seem valid (letter order, etc)
      * - board_type is valid
      *
+     * @param array $attribute_map The attributes => column mapping i.e. $this->_column_data_idx['teacher']
      * @param int $year Year inserting teacher to
      * @param int $board_type The teacher board to insert to (@see TeacherBoard)
      * @param int $specialisation_id The teacher board AND teacher specialisation (should match registry and board)
+     * @param array $do_not_validate skip any of these checks: ['teacher-board', 'existing-teacher', 'tax-id-specialisation-combination']
      *
      * @return boolean whether the validation succeeded or not
      */
-    protected function validateTeacher($year, $board_type, $specialisation_id, $worksheet)
+    protected function validateTeacher($attribute_map, $year, $board_type, $specialisation_id, $worksheet, $do_not_validate = [])
     {
         $errors = [];
         $vat_numbers = [];
@@ -963,8 +1119,8 @@ class ImportController extends Controller
             foreach ($cellIterator as $cell) {
                 $cell_column = $cell->getColumn();
 
-                if (isset($this->_column_data_idx['teacher'][$cell_column])) {
-                    $data_key = $this->_column_data_idx['teacher'][$cell_column];
+                if (isset($attribute_map[$cell_column])) {
+                    $data_key = $attribute_map[$cell_column];
                     $$data_key = BaseImportModel::getCalculatedValue($cell);
                     if ($data_key == 'vat_number') {
                         $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
@@ -995,35 +1151,42 @@ class ImportController extends Controller
 
         // get unique FK values
         $vat_numbers = array_unique($vat_numbers);
-        $located_count_vat_numbers = TeacherRegistry::find()
-            ->joinWith('teacherRegistrySpecialisations')
-            ->andWhere([
-                '{{%stteacher_registry}}.tax_identification_number' => $vat_numbers,
-                '{{%stteacher_registry_specialisation}}.specialisation_id' => $specialisation_id,
-                ])
-            ->count();
 
-        if (($diff = count($vat_numbers) - $located_count_vat_numbers) > 0) {
-            $errors[] = Yii::t('substituteteacher', '<strong>Could not locate {n,plural,=1{1 tax identification number and specialisation combination} other{# tax identification numbers and specialisation combinations}}</strong> out of {m} total.', ['n' => $diff, 'm' => count($vat_numbers)]);
-        }
-
-        // check if there are entries already in the requested year; don't mind about teacher boards, all will be deleted
-        if ($year > 1900) {
-            $located_count_teachers_in_year = TeacherRegistry::find()
-                ->joinWith('teachers')
+        if (!in_array('tax-id-specialisation-combination', $do_not_validate)) {
+            $located_count_vat_numbers = TeacherRegistry::find()
+                ->joinWith('teacherRegistrySpecialisations')
                 ->andWhere([
-                    'tax_identification_number' => $vat_numbers,
-                    Teacher::tableName() . '.year' => $year
-                ])
+                    '{{%stteacher_registry}}.tax_identification_number' => $vat_numbers,
+                    '{{%stteacher_registry_specialisation}}.specialisation_id' => $specialisation_id,
+                    ])
                 ->count();
-            if ($located_count_teachers_in_year > 0) {
-                $errors[] = Yii::t('substituteteacher', '<strong>{n,plural,=1{1 teacher} other{# teachers}}</strong> are <strong>already included</strong> in the year {y} lists.', ['n' => $located_count_teachers_in_year, 'y' => $year]);
+
+            if (($diff = count($vat_numbers) - $located_count_vat_numbers) > 0) {
+                $errors[] = Yii::t('substituteteacher', '<strong>Could not locate {n,plural,=1{1 tax identification number and specialisation combination} other{# tax identification numbers and specialisation combinations}}</strong> out of {m} total.', ['n' => $diff, 'm' => count($vat_numbers)]);
             }
         }
 
-        // check if board type is valid
-        if (!in_array($board_type, $board_types, true)) {
-            $errors[] = Yii::t('substituteteacher', 'Board type is not valid.');
+        if (!in_array('existing-teacher', $do_not_validate, true)) {
+            // check if there are entries already in the requested year; don't mind about teacher boards, all will be deleted
+            if ($year > 1900) {
+                $located_count_teachers_in_year = TeacherRegistry::find()
+                    ->joinWith('teachers')
+                    ->andWhere([
+                        'tax_identification_number' => $vat_numbers,
+                        Teacher::tableName() . '.year' => $year
+                    ])
+                    ->count();
+                if ($located_count_teachers_in_year > 0) {
+                    $errors[] = Yii::t('substituteteacher', '<strong>{n,plural,=1{1 teacher} other{# teachers}}</strong> are <strong>already included</strong> in the year {y} lists.', ['n' => $located_count_teachers_in_year, 'y' => $year]);
+                }
+            }
+        }
+
+        if (!in_array('teacher-board', $do_not_validate, true)) {
+            // check if board type is valid
+            if (!in_array($board_type, $board_types, true)) {
+                $errors[] = Yii::t('substituteteacher', 'Board type is not valid.');
+            }
         }
 
         if (empty($errors)) {

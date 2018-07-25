@@ -35,6 +35,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 '<li class="divider"></li>',
                 [
+                    'label' => Yii::t('substituteteacher', 'Batch Insert Placement Preferences'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'placement-preference']
+                ],
+                [
+                    'label' => Yii::t('substituteteacher', 'Download import sample'),
+                    'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΠΡΟΤΙΜΗΣΕΩΝ ΤΟΠΟΘΕΤΗΣΗΣ ΕΤΟΥΣ.xls"
+                ],
+                '<li class="divider"></li>',
+                [
                     'label' => Yii::t('substituteteacher', 'Batch Insert Teacher In Year'),
                     'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher']
                 ],
