@@ -63,7 +63,9 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <?php 
             $searchModel = new PlacementTeacherSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $params = Yii::$app->request->queryParams;
+            $params['PlacementTeacherSearch']['placement_id'] = $model->id;
+            $dataProvider = $searchModel->search($params);
     ?>
     <?= $this->render('/placement-teacher/_index', compact('searchModel', 'dataProvider')) ?>
 </div>
