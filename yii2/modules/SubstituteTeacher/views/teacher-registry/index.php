@@ -4,6 +4,7 @@ use yii\bootstrap\Html;
 use yii\grid\GridView;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Specialisation;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherRegistrySearch */
@@ -23,10 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            // 'id',
-
+            // ['class' => 'yii\grid\SerialColumn'],
+            'id',
             [
                 'attribute' => 'specialisation_ids',
                 'value' => function ($m) {
@@ -58,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'city',
             // 'postal_code',
             // 'social_security_number',
-            // 'tax_identification_number',
+            'tax_identification_number',
             // 'tax_service',
             // 'identity_number',
             // 'bank',
@@ -71,7 +70,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'updated_at',
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'visibleButtons' => [
                     'delete' => \Yii::$app->user->can('admin'),
                 ],
