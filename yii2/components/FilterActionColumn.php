@@ -19,6 +19,11 @@ class FilterActionColumn extends ActionColumn
     public $filter;
 
     /**
+     * Message to display for the LINK_INDEX_CONFIRM data-confirm message.
+     */
+    public $filterConfirmMessage;
+
+    /**
      * Provide mechanism to render content in filter cell
      */
     protected function renderFilterCellContent()
@@ -28,7 +33,7 @@ class FilterActionColumn extends ActionColumn
         } elseif ($this->filter === self::LINK_INDEX) {
             return Html::a(Html::icon('repeat'), ['index'], ['class' => 'btn text-warning']);
         } elseif ($this->filter === self::LINK_INDEX_CONFIRM) {
-            return Html::a(Html::icon('repeat'), ['index'], ['class' => 'btn text-warning', 'data-confirm' => \Yii::t('app', 'Go back to index?')]);
+            return Html::a(Html::icon('repeat'), ['index'], ['class' => 'btn text-warning', 'data-confirm' => empty($this->filterConfirmMessage) ? \Yii::t('app', 'Go back to index?') : $this->filterConfirmMessage]);
         } elseif ($this->filter instanceof \Closure) {
             return call_user_func($this->filter);
         } else {

@@ -6,6 +6,7 @@ use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 use yii\bootstrap\ButtonDropdown;
+use app\components\FilterActionColumn;
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 
@@ -21,13 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::encode($this->title) ?>
     </h1>
 
-    <p>
-        <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success pull-left', 'style' => 'margin-right: 0.5em;']) ?>
-    </p>
-    <?= ButtonDropdown::widget([
-        'label' => Yii::t('substituteteacher', 'Batch Insert Teachers'),
-        'options' => ['class' => 'btn-primary'],
-        'dropdown' => [
+    <div class="btn-group-container">
+        <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= ButtonDropdown::widget([
+            'label' => Yii::t('substituteteacher', 'Batch Insert Teachers'),
+            'options' => ['class' => 'btn-primary'],
+            'dropdown' => [
             'items' => [
                 [
                     'label' => Yii::t('substituteteacher', 'Batch insert teachers in Registry'),
@@ -53,9 +53,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ],
-    ]);
-    ?>
-    <p class="clearfix"></p>
+        ]);
+        ?>
+    </div>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -120,7 +120,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{view} {update} {delete}',
             ],
         ],

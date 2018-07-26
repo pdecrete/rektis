@@ -1,12 +1,13 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 use yii\data\ArrayDataProvider;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
@@ -54,8 +55,9 @@ use yii\data\ArrayDataProvider;
                 'format' => 'html'
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {alter} {download-summary} {download-contract}',
+                'class' => FilterActionColumn::className(),
+                'filter' => Html::a(Html::icon('repeat'), ['placement/view', 'id' => $placement_model_id], ['class' => 'btn text-warning']),
+                'template' => '{view} {update} {delete}<br>{alter} {download-summary} {download-contract}',
                 'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
                     $params = is_array($key) ? $key : ['id' => (string) $key];
                     $params[0] = 'placement-teacher/' . $action;
@@ -114,8 +116,7 @@ use yii\data\ArrayDataProvider;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

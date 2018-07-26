@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\select2\Select2;
+use app\components\FilterActionColumn;
+use yii\bootstrap\ButtonDropdown;
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 
@@ -18,11 +20,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
+    <div class="btn-group-container">
         <?= Html::a(Yii::t('substituteteacher', 'Create Position'), ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a(Yii::t('substituteteacher', 'Import Positions'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'position'], ['class' => 'btn btn-info']) ?>
-        <?= Html::a(Yii::t('substituteteacher', 'Download import sample'), "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΚΕΝΩΝ.xls", ['class' => 'btn btn-default']) ?>
-    </p>
+        <?= ButtonDropdown::widget([
+            'label' => Yii::t('substituteteacher', 'Batch Import Positions'),
+            'options' => ['class' => 'btn-primary'],
+            'dropdown' => [
+                'items' => [
+                    [
+                        'label' => Yii::t('substituteteacher', 'Import Positions'),
+                        'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'position'],
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Download import sample'),
+                        'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΚΕΝΩΝ.xls"
+                    ],
+                ],
+            ],
+        ]);
+        ?>
+    </div>
+
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -107,7 +125,10 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'whole_teacher_hours',
             // 'created_at',
             // 'updated_at',
-            [ 'class' => 'yii\grid\ActionColumn' ],
+            [
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+            ],
         ],
     ]);
 

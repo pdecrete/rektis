@@ -6,6 +6,7 @@ use app\modules\SubstituteTeacher\models\Call;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\ApplicationSearch */
@@ -59,7 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'updated_at',
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{view} {delete}',
             ],
         ],

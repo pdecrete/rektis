@@ -80,8 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

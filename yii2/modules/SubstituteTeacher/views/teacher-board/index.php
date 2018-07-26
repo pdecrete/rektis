@@ -6,6 +6,7 @@ use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherBoardSearch */
@@ -97,8 +98,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete} {appoint} {negate} {eligible}',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+                'template' => '{update} {delete}<br>{appoint} {negate} {eligible}',
+                'contentOptions' => [
+                    'class' => 'text-center text-nowrap'
+                ],
                 'buttons' => [
                     'appoint' => function ($url, $model, $key) {
                         return Html::a(
