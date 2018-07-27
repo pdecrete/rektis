@@ -54,61 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </p>
 
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <caption>Προεπισκόπηση στοιχείων. Εμφανίζονται οι πρώτες
-                <?= $line_limit ?>γραμμές του φύλλου εργασίας. Συνολικά υπάρχουν
-                <?= $highestRow ?>γραμμές στο φύλλο εργασίας.</caption>
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <?php
-                    $clbl = 'A';
-                    for ($i = 1; $i <= $highestColumnIndex; $i++) :
-                        ?>
-                    <th>
-                        <?php echo $clbl++; ?>
-                    </th>
-                    <?php endfor; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($worksheet->getRowIterator() as $row) : ?>
-                <?php $row_index = $row->getRowIndex(); ?>
-                <tr>
-                    <th>
-                        <?php echo $row_index; ?>
-                    </th>
-                    <?php
-                        $cellIterator = $row->getCellIterator();
-                        $cellIterator->setIterateOnlyExistingCells(false);
-                        foreach ($cellIterator as $cell) :
-                            $column_ltr = $cell->getColumn();
-                            $col = PHPExcel_Cell::columnIndexFromString($column_ltr);
-                            $row = $cell->getRow();
-
-                            $cell_value = $cell->getValue();
-                            $calc_value = BaseImportModel::getCalculatedValue($cell);
-                            $cell_is_set = (!is_null($cell_value) && trim($calc_value) != '');
-
-                            $hint_class = '';
-                            if (!$cell_is_set) {
-                                $hint_class = 'warning';
-                            }
-
-                            ?>
-                    <td class="<?php echo $hint_class; ?>">
-                        <?php echo $calc_value, ((BaseImportModel::isFormula($cell_value)) ? " <span class=\"text-info\">formula</span>" : ""); ?>
-                    </td>
-                    <?php endforeach; ?>
-                </tr>
-                <?php if ($row_index >= $line_limit) {
-                                break;
-                            } ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+    <?= $this->render('_data_table', ['worksheet' => $worksheet, 'line_limit' => $line_limit, 'startRow' => 1, 'highestRow' => $highestRow, 'highestColumnIndex' => $highestColumnIndex]) ?>
 </div>
 
 <?php

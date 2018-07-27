@@ -18,40 +18,31 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="file-preview">
 
-    <h1>
-        <?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?>
-    </h1>
-    <h1>
-        <small>Οι επιλογές παρακάτω αφορούν στοιχεία
-            <strong>αναπληρωτών</strong>
-        </small>
-    </h1>
+    <h1><?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?></h1>
+    <h1><small>Οι επιλογές παρακάτω αφορούν στοιχεία <strong>αναπληρωτών για ενημέρωση</strong></small></h1>
     <p>
-        <?php
-        $button_options = [
+        <?=
+        Html::button(Yii::t('substituteteacher', 'Import data'), [
             'class' => 'btn btn-primary',
             'data' => [
                 'toggle' => 'modal',
                 'target' => '#choose-year-modal',
                 'daction' => 'import',
                 'dbtnlabel' => Yii::t('substituteteacher', 'Import'),
-                'dbtnconfirm' => Yii::t('substituteteacher', 'Are you certain?')
+                'dbtnconfirm' => Yii::t('substituteteacher', 'Update teachers information. Are you certain?')
             ],
-        ];
-        if ($hasData === false) {
-            $button_options['disabled'] = 'disabled';
-        }
-        echo Html::button(Yii::t('substituteteacher', 'Import data'), $button_options);
+        ])
+
         ?>
     </p>
 
-    <?= $this->render('_data_table', ['worksheet' => $worksheet, 'line_limit' => $line_limit, 'startRow' => $teachersStartRow, 'highestRow' => $highestRow, 'highestColumnIndex' => $highestColumnIndex]) ?>
+    <?= $this->render('_data_table', compact('worksheet', 'line_limit', 'highestRow', 'highestColumnIndex')) ?>
 </div>
 
 <?php
 Modal::begin([
     'id' => 'choose-year-modal',
-    'header' => '<h3>' . Yii::t('substituteteacher', 'Select year to import teachers to') . '</h3>',
+    'header' => '<h3>' . Yii::t('substituteteacher', 'Select year to update pottential yearly information of teacher') . '</h3>',
     'clientOptions' => ['backdrop' => 'static', 'keyboard' => false]
 ]);
 
@@ -59,7 +50,7 @@ $form = ActiveForm::begin([
         'id' => 'year-choose-form',
         'method' => 'GET',
         'action' => [
-            'registry',
+            'generic-update-teacher',
             'file_id' => $file_id,
             'sheet' => $sheet
         ],
@@ -76,33 +67,13 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
         </div>
         <div class="col-sm-8">
             <?= Html::dropDownList('year', null, Operation::selectables('year', 'year', null, function ($aq) {
-                return $aq->orderBy(['year' => SORT_DESC]);
-            }), ['class' => 'form-control']) ?>
+                    return $aq->orderBy(['year' => SORT_DESC]);
+                }), ['class' => 'form-control']) ?>
         </div>
     </div>
-    <div class="row form-group">
-        <div class="col-sm-4">
-            <?= Yii::t('substituteteacher', 'Teacher board') ?>
-        </div>
-        <div class="col-sm-8">
-            <?= Html::dropDownList('board_type', null, TeacherBoard::getChoices('board_type'), ['class' => 'form-control']) ?>
-        </div>
-    </div>
-    <div class="row form-group">
-        <div class="col-sm-4">
-            <?= Yii::t('substituteteacher', 'Specialisation') ?>
-        </div>
-        <div class="col-sm-8">
-            <?=
-                Select2::widget([
-                    'name' => 'specialisation_id',
-                    'data' => Specialisation::selectables(),
-                    'options' => [
-                        'placeholder' => Yii::t('substituteteacher', 'Choose...'),
-                        'multiple' => false
-                    ],
-                ]);
-            ?>
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="text-warning"><?= Yii::t('substituteteacher', 'Data provided in the worksheet will update currently saved information of teachers.') ?></p>
         </div>
     </div>
     <div class="row">
@@ -122,7 +93,7 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
                 Html::submitButton(Yii::t('substituteteacher', 'Import'), [
                     'id' => 'action-submit-btn',
                     'class' => 'btn btn-primary',
-                    'data-confirm' => Yii::t('substituteteacher', 'Are you certain?'),
+                    'data-confirm' => Yii::t('substituteteacher', 'Update teachers information. Are you certain?'),
                 ])
 
                 ?>

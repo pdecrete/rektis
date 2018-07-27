@@ -44,6 +44,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 '<li class="divider"></li>',
                 [
+                    'label' => Yii::t('substituteteacher', 'Batch Update Teacher Information'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'update-teacher']
+                ],
+                '<li class="divider"></li>',
+                [
                     'label' => Yii::t('substituteteacher', 'Batch Insert Teacher In Year'),
                     'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher']
                 ],
