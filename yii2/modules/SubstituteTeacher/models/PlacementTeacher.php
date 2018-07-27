@@ -15,8 +15,8 @@ use yii\db\Expression;
  * @property string $comments
  * @property integer $altered
  * @property string $altered_at
- * @property integer $deleted
- * @property string $deleted_at
+ * @property integer $dismissed
+ * @property string $dismissed_at
  * @property string $created_at
  * @property string $updated_at
  *
@@ -27,9 +27,6 @@ use yii\db\Expression;
 class PlacementTeacher extends \yii\db\ActiveRecord
 {
     const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
-
-    const PLACEMENT_TEACHER_DELETED = 1;
-    const PLACEMENT_TEACHER_NOT_DELETED = 0;
 
     /**
      * @inheritdoc
@@ -46,11 +43,11 @@ class PlacementTeacher extends \yii\db\ActiveRecord
     {
         return [
             [['placement_id', 'teacher_board_id'], 'integer'],
-            [['altered', 'deleted'], 'boolean'],
+            [['altered', 'dismissed'], 'boolean'],
             [['teacher_board_id'], 'required'],
             ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
             [['comments'], 'default', 'value' => ''],
-            [['altered_at', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
+            [['altered_at', 'dismissed_at', 'created_at', 'updated_at'], 'safe'],
             [['placement_id'], 'exist', 'skipOnError' => true, 'targetClass' => Placement::className(), 'targetAttribute' => ['placement_id' => 'id']],
             [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
         ];
@@ -88,8 +85,8 @@ class PlacementTeacher extends \yii\db\ActiveRecord
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'altered' => Yii::t('substituteteacher', 'Altered'),
             'altered_at' => Yii::t('substituteteacher', 'Altered At'),
-            'deleted' => Yii::t('substituteteacher', 'Deleted'),
-            'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
+            'dismissed' => Yii::t('substituteteacher', 'Dismissed'),
+            'dismissed_at' => Yii::t('substituteteacher', 'Dismissed At'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];

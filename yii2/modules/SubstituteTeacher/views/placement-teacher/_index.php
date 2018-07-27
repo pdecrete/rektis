@@ -39,7 +39,7 @@ use app\components\FilterActionColumn;
             ],
             'comments:ntext',
             'altered:boolean',
-            'deleted:boolean',
+            'dismissed:boolean',
             // 'created_at',
             // 'updated_at',
 
@@ -57,7 +57,7 @@ use app\components\FilterActionColumn;
             [
                 'class' => FilterActionColumn::className(),
                 'filter' => Html::a(Html::icon('repeat'), ['placement/view', 'id' => $placement_model_id], ['class' => 'btn text-warning']),
-                'template' => '{view} {update} {delete}<br>{alter} {download-summary} {download-contract}',
+                'template' => '{view} {update} {delete}<br>{alter} {dismiss} {download-summary} {download-contract}',
                 'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
                     $params = is_array($key) ? $key : ['id' => (string) $key];
                     $params[0] = 'placement-teacher/' . $action;
@@ -74,6 +74,17 @@ use app\components\FilterActionColumn;
                                     'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
                                     'class' => 'text-danger'
                                 ]
+                        );
+                    },
+                    'dismiss' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-ban-circle text-danger"></span>',
+                            $url,
+                            [
+                                'title' => Yii::t('substituteteacher', 'Mark teacher as dismissed.'),
+                                'data-method' => 'post',
+                                'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as dismissed?')
+                            ]
                         );
                     },
                     'download-summary' => function ($url, $model, $key) {
@@ -102,11 +113,11 @@ use app\components\FilterActionColumn;
                     },
                 ],
                 'visibleButtons' => [
-                    'delete' => function ($model, $key, $index) {
-                        return $model->deleted != true;
-                    },
                     'alter' => function ($model, $key, $index) {
                         return $model->altered != true;
+                    },
+                    'dismiss' => function ($model, $key, $index) {
+                        return $model->altered != true && $model->dismissed != true;
                     },
                     'download-summary' => function ($model, $key, $index) {
                         return !empty($model->summaryPrints);

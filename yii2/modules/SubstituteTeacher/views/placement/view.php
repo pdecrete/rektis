@@ -9,7 +9,7 @@ use app\modules\SubstituteTeacher\models\PlacementTeacherSearch;
 
 $placement_model_id = $model->id;
 $this->title = $model->label;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placements'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placement decisions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

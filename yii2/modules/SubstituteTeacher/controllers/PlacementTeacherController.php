@@ -34,6 +34,7 @@ class PlacementTeacherController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'alter' => ['POST'],
+                    'dismiss' => ['POST'],
                     'download-document' => ['POST'],
                 ],
             ],
@@ -41,7 +42,7 @@ class PlacementTeacherController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'download-summary', 'download-contract'],
+                        'actions' => ['index', 'view', 'create', 'update', 'download-summary', 'download-contract', 'alter', 'dismiss'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -95,7 +96,7 @@ class PlacementTeacherController extends Controller
         $model = $this->findModel($id);
         $teacher_board = $model->teacherBoard;
         $model->altered = true;
-        $model->altered_at = new  Expression('CURRENT_TIMESTAMP()');
+        $model->altered_at = new Expression('CURRENT_TIMESTAMP()');
 
         if (!$model->save(false, ['altered', 'altered_at'])) {
             $transaction->rollBack();
@@ -116,9 +117,9 @@ class PlacementTeacherController extends Controller
     }
 
     /**
-     * Deletes an existing PlacementTeacher model.
+     * Permanenlty deletes an existing PlacementTeacher model.
      * Also marks the teacher board as TEACHER_STATUS_ELIGIBLE.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * 
      * @param integer $id
      * @return mixed
      */
@@ -128,10 +129,8 @@ class PlacementTeacherController extends Controller
 
         $model = $this->findModel($id);
         $teacher_board = $model->teacherBoard;
-        $model->deleted = true;
-        $model->deleted_at = new  Expression('CURRENT_TIMESTAMP()');
 
-        if (!$model->save(false, ['deleted', 'deleted_at'])) {
+        if ($model->delete() === false) {
             $transaction->rollBack();
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as deleted.'));
         } else {
@@ -143,6 +142,40 @@ class PlacementTeacherController extends Controller
             } else {
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as deleted.'));
+            }
+        }
+
+        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+    }
+
+    /**
+     * Marks the teacher as dismisssed and updates the existing PlacementTeacher model.
+     * Also marks the teacher board as TEACHER_STATUS_DISMISSES.
+     * 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDismiss($id)
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+
+        $model = $this->findModel($id);
+        $teacher_board = $model->teacherBoard;
+        $model->dismissed = true;
+        $model->dismissed_at = new  Expression('CURRENT_TIMESTAMP()');
+
+        if (!$model->save(false, ['dismissed', 'dismissed_at'])) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as dismissed.'));
+        } else {
+            // mark teacher as eligible again
+            $teacher_board->status = Teacher::TEACHER_STATUS_DISMISSED;
+            if (!$teacher_board->save(false, ['status'])) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+            } else {
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as dismissed.'));
             }
         }
 
@@ -164,7 +197,7 @@ class PlacementTeacherController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             // this enables the placement_id to change too but that's ok
-            $model->deleted = false;
+            $model->dismissed = false;
             $model->altered = false;
 
             $post = \Yii::$app->request->post();
@@ -307,8 +340,8 @@ class PlacementTeacherController extends Controller
     protected function downloadDocument($id, $type)
     {
         $model = $this->findModel($id);
-        if ($model->deleted || $model->altered) {
-            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either deleted or altered.'));
+        if ($model->dismissed || $model->altered) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either dismissed or altered.'));
         }
 
         if (($prints = $model->prints) != null) {

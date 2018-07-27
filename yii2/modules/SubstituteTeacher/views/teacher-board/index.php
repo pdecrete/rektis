@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'rowOptions' => function ($model, $key, $index, $grid) {
-            if ($model->status == Teacher::TEACHER_STATUS_NEGATION) {
+            if (($model->status == Teacher::TEACHER_STATUS_NEGATION) || ($model->status == Teacher::TEACHER_STATUS_DISMISSED)) {
                 return ['class' => 'danger'];
             } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
                 return ['class' => 'success'];
@@ -100,7 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'class' => FilterActionColumn::className(),
                 'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
-                'template' => '{update} {delete}<br>{appoint} {negate} {eligible}',
+                'template' => '{update} {delete}<br>{appoint} {negate} {eligible} {dismiss}',
                 'contentOptions' => [
                     'class' => 'text-center text-nowrap'
                 ],
@@ -109,21 +109,28 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a(
                             '<span class="glyphicon glyphicon-ok-sign text-success"></span>',
                             $url,
-                            ['title' => Yii::t('substituteteacher', 'Mark teacher as appointed.'), 'data-method' => 'post' ]
+                            ['title' => Yii::t('substituteteacher', 'Mark teacher as appointed.'), 'data-method' => 'post', 'data-confirm' => Yii::t('substituteteacher', 'This will change the board status but it will not modify any placement information.') ]
                         );
                     },
                     'negate' => function ($url, $model, $key) {
                         return Html::a(
                             '<span class="glyphicon glyphicon-remove-sign text-danger"></span>',
                             $url,
-                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as negated.'), 'data-method' => 'post' ]
+                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as negated.'), 'data-method' => 'post', 'data-confirm' => Yii::t('substituteteacher', 'This will change the board status but it will not modify any placement information.') ]
                         );
                     },
                     'eligible' => function ($url, $model, $key) {
                         return Html::a(
                             '<span class="glyphicon glyphicon-refresh text-info"></span>',
                             $url,
-                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as eligible.'), 'data-method' => 'post' ]
+                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as eligible.'), 'data-method' => 'post', 'data-confirm' => Yii::t('substituteteacher', 'This will change the board status but it will not modify any placement information.') ]
+                        );
+                    },
+                    'dismiss' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-ban-circle text-danger"></span>',
+                            $url,
+                            [ 'title' => Yii::t('substituteteacher', 'Mark teacher as dismissed.'), 'data-method' => 'post', 'data-confirm' => Yii::t('substituteteacher', 'This will change the board status but it will not modify any placement information.') ]
                         );
                     }
                 ],
@@ -137,6 +144,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'eligible' => function ($model, $key, $index) {
                         return $model->status != Teacher::TEACHER_STATUS_ELIGIBLE;
                     },
+                    'dismiss' => function ($model, $key, $index) {
+                        return $model->status == Teacher::TEACHER_STATUS_APPOINTED;
+                    }
                 ]
             ],
         ],

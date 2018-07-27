@@ -75,6 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             [
                 'attribute' => 'registry_id',
+                'label' => Yii::t('substituteteacher', 'Teacher'),
                 'value' => 'registry.name',
                 'filter' => Select2::widget([
                     'model' => $searchModel,

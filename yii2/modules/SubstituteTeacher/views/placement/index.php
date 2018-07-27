@@ -14,7 +14,7 @@ use app\components\FilterActionColumn;
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('substituteteacher', 'Placements');
+$this->title = Yii::t('substituteteacher', 'Placement decisions');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="placement-index">
