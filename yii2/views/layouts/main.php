@@ -236,7 +236,7 @@ AppAsset::register($this);
                             'url' => [ '/specialisation/index' ]
                         ],
                         [
-                            'label' => 'Κατάλογος αναπληρωτών',
+                            'label' => 'Μητρώο αναπληρωτών',
                             'url' => [ '/SubstituteTeacher/teacher-registry/index' ]
                         ],
 

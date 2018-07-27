@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\PlacementPrint;
 use app\modules\SubstituteTeacher\models\Placement;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementPrintSearch */
@@ -52,7 +53,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'updated_at:datetime',
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{update} {delete}'
             ],
         ],

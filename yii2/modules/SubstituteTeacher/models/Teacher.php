@@ -38,6 +38,7 @@ class Teacher extends \yii\db\ActiveRecord
     const TEACHER_STATUS_APPOINTED = 1; // is already appointed 
     const TEACHER_STATUS_NEGATION = 2; // has neglected all appointments 
     const TEACHER_STATUS_PENDING = 3; // is included in an open appointment process 
+    const TEACHER_STATUS_DISMISSED = 4; // has been appointed and then dismissed/fired
 
     public $status, $status_label;
     public $name;
@@ -143,6 +144,7 @@ class Teacher extends \yii\db\ActiveRecord
                 self::TEACHER_STATUS_APPOINTED => Yii::t('substituteteacher', 'Teacher appointed'),
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
                 self::TEACHER_STATUS_PENDING => Yii::t('substituteteacher', 'Teacher status pending'),
+                self::TEACHER_STATUS_DISMISSED => Yii::t('substituteteacher', 'Teacher dismissed'),
             ];
         } elseif ($for === 'year') {
             // one year before and 2 ahead...
@@ -168,6 +170,9 @@ class Teacher extends \yii\db\ActiveRecord
             case self::TEACHER_STATUS_PENDING:
                 $status_label = Yii::t('substituteteacher', 'Teacher status pending');
                 break;
+            case self::TEACHER_STATUS_DISMISSED:
+                $status_label = Yii::t('substituteteacher', 'Teacher dismissed');
+                break;
             default:
                 $status_label = null;
                 break;
@@ -180,6 +185,13 @@ class Teacher extends \yii\db\ActiveRecord
         return static::selectables($index_property, $label_property, $group_property, null);
     }
 
+    /**
+     * The status of the teacher is calculcated with the following logic:
+     * - If she/he has been appointed in any of the boards, set to appointed 
+     * - If she/he is currenlty involved in an appointment process, set to pending 
+     * - If she/he has declined from a board, it does not affect eligibility, unless this was the only board
+     * - If she/he has been dismissed from a board, it does not affect eligibility, unless this was the only board
+     */
     public function afterFind()
     {
         parent::afterFind();
@@ -203,6 +215,8 @@ class Teacher extends \yii\db\ActiveRecord
                 $this->status = self::TEACHER_STATUS_PENDING;
             } elseif (in_array(self::TEACHER_STATUS_ELIGIBLE, $statuses)) {
                 $this->status = self::TEACHER_STATUS_ELIGIBLE;
+            } elseif (in_array(self::TEACHER_STATUS_DISMISSED, $statuses)) {
+                $this->status = self::TEACHER_STATUS_DISMISSED;
             } else {
                 $this->status = self::TEACHER_STATUS_NEGATION;
             }

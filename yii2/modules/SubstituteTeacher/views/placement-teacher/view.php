@@ -9,7 +9,8 @@ use yii\grid\GridView;
 /* @var $model app\modules\SubstituteTeacher\models\Placement */
 
 $this->title = $model->teacherBoard->label;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placements'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placement decisions'), 'url' => ['placement/index']];
+$this->params['breadcrumbs'][] = ['label' => $model->placement->label, 'url' => ['placement/view', 'id' => $model->placement_id]];
 $this->params['breadcrumbs'][] = $this->title;
 
 $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPositions]);
@@ -21,17 +22,24 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
 
     <p>
         <?= Html::a(Yii::t('substituteteacher', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= $model->deleted ? '' : Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
+        <?= Html::a(Yii::t('substituteteacher', 'Delete'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('substituteteacher', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
         ]) ?>
-        <?= $model->altered ? '' : Html::a(Yii::t('substituteteacher', 'Alter'), ['alter', 'id' => $model->id], [
+        <?= $model->altered ? '' : Html::a(Yii::t('substituteteacher', 'Alter placement'), ['alter', 'id' => $model->id], [
             'class' => 'btn btn-warning',
             'data' => [
                 'confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
+                'method' => 'post',
+            ],
+        ]) ?>
+        <?= $model->altered ? '' : Html::a(Yii::t('substituteteacher', 'Dismiss teacher'), ['dismiss', 'id' => $model->id], [
+            'class' => 'btn btn-warning',
+            'data' => [
+                'confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as dismissed?'),
                 'method' => 'post',
             ],
         ]) ?>
@@ -52,8 +60,8 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
             'comments:ntext',
             'altered:boolean',
             'altered_at:datetime',
-            'deleted:boolean',
-            'deleted_at:datetime',
+            'dismissed:boolean',
+            'dismissed_at:datetime',
             'created_at:datetime',
             'updated_at:datetime',
         ],

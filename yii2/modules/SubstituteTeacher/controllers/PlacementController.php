@@ -219,10 +219,7 @@ class PlacementController extends Controller
         if (!empty($placement_teachers)) {
             foreach ($placement_teachers as $placement_teacher_model) {
                 $teacher_board = $placement_teacher_model->teacherBoard;
-                $placement_teacher_model->deleted = true;
-                $placement_teacher_model->deleted_at = new  Expression('CURRENT_TIMESTAMP()');
-
-                if (!$placement_teacher_model->save(false, ['deleted', 'deleted_at'])) {
+                if ($placement_teacher_model->delete() === false) {
                     $transaction->rollBack();
                     Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher placement could not be marked as deleted.'));
                     $ok = false;

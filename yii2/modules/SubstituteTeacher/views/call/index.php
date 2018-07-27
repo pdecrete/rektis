@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\CallSearch */
@@ -27,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             'title',
             'year',
-            'description:ntext',
+            // 'description:ntext',
             [
                 'attribute' => 'application_start',
                 'value' => function ($m) {
@@ -44,7 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             // 'created_at',
             // 'updated_at',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+            ],
         ],
     ]);
 

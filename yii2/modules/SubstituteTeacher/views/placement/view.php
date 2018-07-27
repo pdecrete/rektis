@@ -7,8 +7,9 @@ use app\modules\SubstituteTeacher\models\PlacementTeacherSearch;
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\Placement */
 
-$this->title = $model->decision;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placements'), 'url' => ['index']];
+$placement_model_id = $model->id;
+$this->title = $model->label;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('substituteteacher', 'Placement decisions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -67,5 +68,5 @@ $this->params['breadcrumbs'][] = $this->title;
             $params['PlacementTeacherSearch']['placement_id'] = $model->id;
             $dataProvider = $searchModel->search($params);
     ?>
-    <?= $this->render('/placement-teacher/_index', compact('searchModel', 'dataProvider')) ?>
+    <?= $this->render('/placement-teacher/_index', compact('searchModel', 'dataProvider', 'placement_model_id')) ?>
 </div>

@@ -8,6 +8,7 @@ use yii\helpers\Url;
 use app\modules\SubstituteTeacher\models\Position;
 use yii\bootstrap\Modal;
 use yii\bootstrap\ActiveForm;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $form yii\widgets\ActiveForm */
@@ -20,7 +21,8 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
 
 ?>
 
-<div class="call-distribution-form">
+<div class="call-distribution-select-form">
+    <h2><?= Yii::t('substituteteacher', 'Available positions'); ?></h2>
     <?php Pjax::begin(); ?>
     <?=
     GridView::widget([
@@ -110,7 +112,8 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
             // 'created_at',
             // 'updated_at',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => Html::a(Html::icon('repeat'), ['distribute', 'call' => $callModel->id], ['class' => 'btn text-warning']),
                 'template' => '{add} {addpartial}',
                 'buttons' => [
                     'add' => function ($url, $model, $key) use ($callModel) {
@@ -146,7 +149,7 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],
@@ -154,8 +157,10 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
 
     ?>
     <?php Pjax::end(); ?>
-
-    <hr/>
+</div>
+<hr/>
+<div class="call-distribution-form">
+    <h2><?= Yii::t('substituteteacher', 'Positions distributed in call'); ?></h2>
 
     <?= Html::beginForm(['distribution-group', 'call' => $callModel->id], 'post'); ?>
     <?php // Pjax::begin();?>
@@ -248,10 +253,11 @@ $callPositionsDataProvider->sort->sortParam = 'call-pos-sort';
                 ]
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => Html::a(Html::icon('repeat'), ['distribute', 'call' => $callModel->id], ['class' => 'btn text-warning']),
                 'template' => '{view} {update}',
                 'contentOptions' => [
-                    'class' => 'text-center'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
             [

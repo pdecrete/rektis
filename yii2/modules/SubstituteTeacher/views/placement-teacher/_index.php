@@ -1,12 +1,13 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 use yii\data\ArrayDataProvider;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
@@ -38,7 +39,7 @@ use yii\data\ArrayDataProvider;
             ],
             'comments:ntext',
             'altered:boolean',
-            'deleted:boolean',
+            'dismissed:boolean',
             // 'created_at',
             // 'updated_at',
 
@@ -54,8 +55,9 @@ use yii\data\ArrayDataProvider;
                 'format' => 'html'
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {alter} {download-summary} {download-contract}',
+                'class' => FilterActionColumn::className(),
+                'filter' => Html::a(Html::icon('repeat'), ['placement/view', 'id' => $placement_model_id], ['class' => 'btn text-warning']),
+                'template' => '{view} {update} {delete}<br>{alter} {dismiss} {download-summary} {download-contract}',
                 'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
                     $params = is_array($key) ? $key : ['id' => (string) $key];
                     $params[0] = 'placement-teacher/' . $action;
@@ -72,6 +74,17 @@ use yii\data\ArrayDataProvider;
                                     'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as altered?'),
                                     'class' => 'text-danger'
                                 ]
+                        );
+                    },
+                    'dismiss' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-ban-circle text-danger"></span>',
+                            $url,
+                            [
+                                'title' => Yii::t('substituteteacher', 'Mark teacher as dismissed.'),
+                                'data-method' => 'post',
+                                'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as dismissed?')
+                            ]
                         );
                     },
                     'download-summary' => function ($url, $model, $key) {
@@ -100,11 +113,11 @@ use yii\data\ArrayDataProvider;
                     },
                 ],
                 'visibleButtons' => [
-                    'delete' => function ($model, $key, $index) {
-                        return $model->deleted != true;
-                    },
                     'alter' => function ($model, $key, $index) {
                         return $model->altered != true;
+                    },
+                    'dismiss' => function ($model, $key, $index) {
+                        return $model->altered != true && $model->dismissed != true;
                     },
                     'download-summary' => function ($model, $key, $index) {
                         return !empty($model->summaryPrints);
@@ -114,8 +127,7 @@ use yii\data\ArrayDataProvider;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'comments:ntext',
             'altered:boolean',
-            'deleted:boolean',
+            'dismissed:boolean',
             // 'created_at',
             // 'updated_at',
 
@@ -72,16 +72,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                 ],
                 'visibleButtons' => [
-                    'delete' => function ($model, $key, $index) {
-                        return $model->deleted != true;
-                    },
                     'alter' => function ($model, $key, $index) {
                         return $model->altered != true;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

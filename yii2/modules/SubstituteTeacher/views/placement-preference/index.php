@@ -6,6 +6,7 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementPreferenceSearch */
@@ -78,7 +79,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'order',
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{update} {delete}',
             ],
         ],

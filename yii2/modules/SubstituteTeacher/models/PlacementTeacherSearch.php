@@ -18,8 +18,8 @@ class PlacementTeacherSearch extends PlacementTeacher
     public function rules()
     {
         return [
-            [['id', 'placement_id', 'teacher_board_id', 'altered', 'deleted'], 'integer'],
-            [['comments', 'altered_at', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'placement_id', 'teacher_board_id', 'altered', 'dismissed'], 'integer'],
+            [['comments', 'altered_at', 'dismissed_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -64,8 +64,8 @@ class PlacementTeacherSearch extends PlacementTeacher
             'teacher_board_id' => $this->teacher_board_id,
             'altered' => $this->altered,
             'altered_at' => $this->altered_at,
-            'deleted' => $this->deleted,
-            'deleted_at' => $this->deleted_at,
+            'dismissed' => $this->dismissed,
+            'dismissed_at' => $this->dismissed_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
