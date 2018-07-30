@@ -44,26 +44,31 @@ if (!isset($startRow)) {
                     <?php echo $row_index; ?>
                 </th>
                 <?php
-                        $cellIterator = $row->getCellIterator();
-                        $cellIterator->setIterateOnlyExistingCells(false);
-                        foreach ($cellIterator as $cell) :
-                            $column_ltr = $cell->getColumn();
-                            $col = PHPExcel_Cell::columnIndexFromString($column_ltr);
-                            $row = $cell->getRow();
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(false);
+                    foreach ($cellIterator as $cell) :
+                        $column_ltr = $cell->getColumn();
+                        $col = PHPExcel_Cell::columnIndexFromString($column_ltr);
+                        // $row = $cell->getRow();
 
-                            $cell_value = $cell->getValue();
-                            $calc_value = BaseImportModel::getCalculatedValue($cell);
-                            $cell_is_set = (!is_null($cell_value) && trim($calc_value) != '');
+                        $cell_value = $cell->getValue();
+                        $calc_value = BaseImportModel::getCalculatedValue($cell);
+                        $cell_is_set = (!is_null($cell_value) && trim($calc_value) != '');
 
-                            $hint_class = '';
-                            if (!$cell_is_set) {
-                                $hint_class = 'warning';
-                            }
+                        $hint_class = '';
+                        if (!$cell_is_set) {
+                            $hint_class = 'warning';
+                        }
 
-                            ?>
+                ?>
                 <td class="<?php echo $hint_class; ?>">
                     <?php echo $calc_value, ((BaseImportModel::isFormula($cell_value)) ? " <span class=\"text-info\">formula</span>" : ""); ?>
                 </td>
+                <?php 
+                    if ($col >= $highestColumnIndex) {
+                        break;
+                    }
+                ?>
                 <?php endforeach; ?>
             </tr>
             <?php

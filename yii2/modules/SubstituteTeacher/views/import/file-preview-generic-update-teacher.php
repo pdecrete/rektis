@@ -22,19 +22,39 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><small>Οι επιλογές παρακάτω αφορούν στοιχεία <strong>αναπληρωτών για ενημέρωση</strong></small></h1>
     <p>
         <?=
-        Html::button(Yii::t('substituteteacher', 'Import data'), [
+        Html::button(Yii::t('substituteteacher', 'Update data'), [
             'class' => 'btn btn-primary',
             'data' => [
                 'toggle' => 'modal',
                 'target' => '#choose-year-modal',
                 'daction' => 'import',
-                'dbtnlabel' => Yii::t('substituteteacher', 'Import'),
+                'dbtnlabel' => Yii::t('substituteteacher', 'Update'),
                 'dbtnconfirm' => Yii::t('substituteteacher', 'Update teachers information. Are you certain?')
             ],
         ])
 
         ?>
+        <a class="btn btn-info" role="button" data-toggle="collapse" href="#headersInfo" aria-expanded="false" aria-controls="headersInfo">Αποδεκτά στοιχεία</a>
     </p>
+
+    <div class="collapse" id="headersInfo">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+            <h3 class="panel-title">Αποδεκτά λεκτικά</h3>
+            </div>
+            <div class="panel-body">
+                <p>Τα παρακάτω λεκτικά για τον προσδιορισμό των στοιχείων είναι αποδεκτά και μπορείτε να τα χρησιμοποιήσετε ως επικεφαλίδα.
+                    Το λεκτικό <?= $key_field ?> είναι απαραίτητο να υπάρχει.</p>
+                <p>
+                <?php 
+                    array_walk($supported_fields_wlabels, function ($v, $k) {
+                        echo "&mdash; {$v} ή '{$k}'<br>"; 
+                    });
+                ?>
+                </p>
+            </div>
+        </div>
+    </div>
 
     <?= $this->render('_data_table', compact('worksheet', 'line_limit', 'highestRow', 'highestColumnIndex')) ?>
 </div>
