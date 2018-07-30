@@ -27,14 +27,15 @@ use app\components\FilterActionColumn;
                 'value' => function ($model) {
                     return $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
                 },
-                'filter' => Select2::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'teacher_board_id',
-                    'data' => TeacherBoard::selectablesWithTeacherInfo(),
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                    'options' => ['placeholder' => '...'],
-                    'pluginOptions' => ['allowClear' => true],
-                ]),
+                'filter' => false,
+                // 'filter' => Select2::widget([
+                //     'model' => $searchModel,
+                //     'attribute' => 'teacher_board_id',
+                //     'data' => TeacherBoard::selectablesWithTeacherInfo(),
+                //     'theme' => Select2::THEME_BOOTSTRAP,
+                //     'options' => ['placeholder' => '...'],
+                //     'pluginOptions' => ['allowClear' => true],
+                // ]),
                 'format' => 'html'
             ],
             'comments:ntext',
