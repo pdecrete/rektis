@@ -382,6 +382,7 @@ return [
     'The teacher does not exist.' => 'Ο αναπληρωτής δεν υπάρχει.',
     'The teacher status does not allow for placement ({statuslabel}).' => 'Η κατάσταση του αναπληρωτή δεν επιτρέπει την τοποθέτηση του ({statuslabel}).',
     'The teacher with identification {id} could not be located in the registry.' => 'Ο αναπληρωτής με αναγνωριστικό {id} δεν εντοπίστηκε στο μητρώο.',
+    'The teacher with identification {id} could not be located in year {year}.' => 'Ο αναπληρωτής με αναγνωριστικό {id} δεν εντοπίστηκε στο έτος {year}.',
     'The teachers with tax identity numbers <em>{ids}</em> were not imported because they already exist in the registry.' => 'Οι αναπληρωτές με Α.Φ.Μ. <em>{ids}</em> δεν εισήχθησαν στο μητρώο καθώς προϋπήρχαν εκεί.',
     'The template does not exist.' => 'Το πρότυπο δεν υπάρχει.',
     'The template is not set.' => 'Το πρότυπο δεν έχει οριστεί.',

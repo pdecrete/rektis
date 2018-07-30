@@ -599,6 +599,14 @@ class ImportController extends Controller
             return false;
         }
 
+        // check if yearly data is available
+        $yearly_mapped_fields = array_filter($mapped_fields, function ($v) {
+            return strpos($v, 'teacher.') === 0;
+        });
+        $yearly_mapped_fields_count = count($yearly_mapped_fields);
+        $has_yearly_fields = $yearly_mapped_fields_count > 0;
+        $has_registry_fields = count($mapped_fields) - $yearly_mapped_fields_count - 1 > 0; // all but key and yearly ones
+
         foreach ($worksheet->getRowIterator(2) as $row) {
             $row_index = $row->getRowIndex();
 
@@ -608,7 +616,8 @@ class ImportController extends Controller
             $data_row = $worksheet->rangeToArray("A{$row_index}:{$highestColumn}{$row_index}");
             $data = array_combine($mapped_fields, $data_row[0]);
 
-            // Check updated teacher for existance 
+            // Check updated teacher for existance; teacher must be fetched either way
+            $teacherModel = $teacherYearModel = null;
             $teacherModel = TeacherRegistry::findOne([$key_field => $data[$key_field]]);
             if (empty($teacherModel)) {
                 $errors[] = Yii::t('substituteteacher', 'The teacher with identification {id} could not be located in the registry.', ['id' => $data[$key_field]]);
@@ -616,6 +625,16 @@ class ImportController extends Controller
                     break;
                 }
             };
+            if ($has_yearly_fields) {
+                // get yearly information 
+                $teacherYearModel = Teacher::findOne(['registry_id' => $teacherModel->id, 'year' => $year]);
+                if (empty($teacherYearModel)) {
+                    $errors[] = Yii::t('substituteteacher', 'The teacher with identification {id} could not be located in year {year}.', ['id' => $data[$key_field], 'year' => $year]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                };
+            }
 
             // Prepare or manipulate any data to be updated 
             $data = array_filter($data, function ($v) {
@@ -643,18 +662,42 @@ class ImportController extends Controller
                 }
             });
             
-            // possibly move this to model; set safe attributes for specific batch update scenario and use setAttributes
-            $teacherModel->setAttributes($data, false);
-            if (!$teacherModel->validate(array_keys($data))) {
-                $errors[] = Yii::t('substituteteacher', 'There were errors validating the update information for teacher {id}: {msgs}', ['id' => $data[$key_field], 'msgs' => $this->extractErrorMessages($teacherModel->getErrors())]);
-                if (count($errors) >= $stop_at_errorcount) {
-                    break;
+            // possibly move this to model; set safe attributes for specific batch update scenario and use setAttributes(..., true)
+            $yearly_data_base = array_intersect_key($data, array_flip($yearly_mapped_fields));
+            $teacher_data = array_diff($data, $yearly_data_base);
+            // filter field prefix out
+            $yearly_data = [];
+            foreach ($yearly_data_base as $key => $value){
+                $yearly_data[substr($key, 8)] = $value;
+            }
+
+            if ($has_registry_fields && !empty($teacherModel) && !empty($teacher_data)) {
+                $teacherModel->setAttributes($teacher_data, false);
+                if (!$teacherModel->validate(array_keys($teacher_data))) {
+                    $errors[] = Yii::t('substituteteacher', 'There were errors validating the update information for teacher {id}: {msgs}', ['id' => $data[$key_field], 'msgs' => $this->extractErrorMessages($teacherModel->getErrors())]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                } else {
+                    $update_models[] = [
+                        'model' => $teacherModel,
+                        'attributes' => array_keys($teacher_data)
+                    ];
                 }
-            } else {
-                $update_models[] = [
-                    'model' => $teacherModel,
-                    'attributes' => array_keys($data)
-                ];
+            }
+            if ($has_yearly_fields && !empty($teacherYearModel) && !empty($yearly_data)) {
+                $teacherYearModel->setAttributes($yearly_data, false);
+                if (!$teacherYearModel->validate(array_keys($yearly_data))) {
+                    $errors[] = Yii::t('substituteteacher', 'There were errors validating the update information for teacher {id}: {msgs}', ['id' => $data[$key_field], 'msgs' => $this->extractErrorMessages($teacherYearModel->getErrors())]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                } else {
+                    $update_models[] = [
+                        'model' => $teacherYearModel,
+                        'attributes' => array_keys($yearly_data)
+                    ];
+                }
             }
         }
 
@@ -723,17 +766,27 @@ class ImportController extends Controller
             'passport_number',
             'ama',
             'efka_facility',
-            'municipality'
+            'municipality',
+            'teacher.disability_percentage',
+            'teacher.disabled_children',
+            'teacher.many_children',
+            'teacher.three_children'
         ];
         // for field that need some manipulation 
         $supported_fields_types = [
             'birthdate' => 'date'
         ];
         $baseModel = new TeacherRegistry();
-        $supported_fields_wlabels = array_combine(array_map(function ($v) use ($baseModel) {
-            return $baseModel->getAttributeLabel($v);
+        $baseTeacherModel = new Teacher();
+        $supported_fields_wlabels = array_combine(array_map(function ($v) use ($baseModel, $baseTeacherModel) {
+            $match = [];
+            if (preg_match('/^teacher\.(.+)$/', $v, $match) === 1) {
+                return $baseTeacherModel->getAttributeLabel($match[1]);
+            } else {
+                return $baseModel->getAttributeLabel($v);
+            }
         }, $supported_fields), $supported_fields);
-        
+
         list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
         if ($highestRow <= 1) {
             \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'There seems to be no data in the worksheet.'));
