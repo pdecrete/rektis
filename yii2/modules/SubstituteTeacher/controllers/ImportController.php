@@ -179,6 +179,9 @@ class ImportController extends Controller
             case 'placement-preference':
                 $route = 'import/placement-preference';
                 break;
+            case 'update-teacher':
+                $route = 'import/generic-update-teacher';
+                break;
             case 'registry':
                 $route = 'import/registry';
                 break;
@@ -558,6 +561,269 @@ class ImportController extends Controller
     }
 
     /**
+     * This process expects to find headers on first line
+     * and data on the following lines. 
+     * 
+     * @return boolean whether the import succeeded or not
+     */
+    protected function importGenericUpdateTeacher($key_field, $supported_fields_wlabels, $supported_fields_types, $year, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex)
+    {
+        $errors = [];
+        $stop_at_errorcount = 10; // skip rest of the process if this many errors occur
+        $update_models = [];
+
+        // get headers and check for validity 
+        $headers = $worksheet->rangeToArray("A1:{$highestColumn}1");
+        $headers_row = reset($headers);
+        $invalid_fields = array_filter($headers_row, function ($v) use ($supported_fields_wlabels) {
+            return !in_array($v, $supported_fields_wlabels) && !array_key_exists($v, $supported_fields_wlabels);
+        });
+        if (!empty($invalid_fields)) {
+            \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'The following fields are not supported or recognised: {fields}', ['fields' => implode(', ', $invalid_fields)]));
+            return false;
+        }
+
+        $mapped_fields = array_map(function ($v) use ($supported_fields_wlabels) {
+            if (in_array($v, $supported_fields_wlabels)) {
+                return $v;
+            } elseif (array_key_exists($v, $supported_fields_wlabels)) {
+                return $supported_fields_wlabels[$v];
+            } else {
+                return null;
+            }
+        }, $headers_row);
+
+        // check index key existance 
+        if (!in_array($key_field, $mapped_fields)) {
+            \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'The identification key is not amongst the provided information.'));
+            return false;
+        }
+
+        // check if yearly data is available
+        $yearly_mapped_fields = array_filter($mapped_fields, function ($v) {
+            return strpos($v, 'teacher.') === 0;
+        });
+        $yearly_mapped_fields_count = count($yearly_mapped_fields);
+        $has_yearly_fields = $yearly_mapped_fields_count > 0;
+        $has_registry_fields = count($mapped_fields) - $yearly_mapped_fields_count - 1 > 0; // all but key and yearly ones
+
+        foreach ($worksheet->getRowIterator(2) as $row) {
+            $row_index = $row->getRowIndex();
+
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+
+            $data_row = $worksheet->rangeToArray("A{$row_index}:{$highestColumn}{$row_index}");
+            $data = array_combine($mapped_fields, $data_row[0]);
+
+            // Check updated teacher for existance; teacher must be fetched either way
+            $teacherModel = $teacherYearModel = null;
+            $teacherModel = TeacherRegistry::findOne([$key_field => $data[$key_field]]);
+            if (empty($teacherModel)) {
+                $errors[] = Yii::t('substituteteacher', 'The teacher with identification {id} could not be located in the registry.', ['id' => $data[$key_field]]);
+                if (count($errors) >= $stop_at_errorcount) {
+                    break;
+                }
+            };
+            if ($has_yearly_fields) {
+                // get yearly information 
+                $teacherYearModel = Teacher::findOne(['registry_id' => $teacherModel->id, 'year' => $year]);
+                if (empty($teacherYearModel)) {
+                    $errors[] = Yii::t('substituteteacher', 'The teacher with identification {id} could not be located in year {year}.', ['id' => $data[$key_field], 'year' => $year]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                };
+            }
+
+            // Prepare or manipulate any data to be updated 
+            $data = array_filter($data, function ($v) {
+                return trim($v) !== ''; // skip empty cells
+            });
+            array_walk($data, function (&$v, $k) use ($supported_fields_types) {
+                if (array_key_exists($k, $supported_fields_types)) {
+                    switch ($supported_fields_types[$k]) {
+                        case 'date':
+                            // date: if not empty, try to get standard representation Y-m-d
+                            $backup_v = $v;
+                            $v = trim($v);
+                            if (!empty($v)) {
+                                $v = strtotime($v);
+                            }
+                            if (empty($v)) {
+                                $v = $backup_v;
+                            } else {
+                                $v = date('Y-m-d', $v);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+            
+            // possibly move this to model; set safe attributes for specific batch update scenario and use setAttributes(..., true)
+            $yearly_data_base = array_intersect_key($data, array_flip($yearly_mapped_fields));
+            $teacher_data = array_diff($data, $yearly_data_base);
+            // filter field prefix out
+            $yearly_data = [];
+            foreach ($yearly_data_base as $key => $value){
+                $yearly_data[substr($key, 8)] = $value;
+            }
+
+            if ($has_registry_fields && !empty($teacherModel) && !empty($teacher_data)) {
+                $teacherModel->setAttributes($teacher_data, false);
+                if (!$teacherModel->validate(array_keys($teacher_data))) {
+                    $errors[] = Yii::t('substituteteacher', 'There were errors validating the update information for teacher {id}: {msgs}', ['id' => $data[$key_field], 'msgs' => $this->extractErrorMessages($teacherModel->getErrors())]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                } else {
+                    $update_models[] = [
+                        'model' => $teacherModel,
+                        'attributes' => array_keys($teacher_data)
+                    ];
+                }
+            }
+            if ($has_yearly_fields && !empty($teacherYearModel) && !empty($yearly_data)) {
+                $teacherYearModel->setAttributes($yearly_data, false);
+                if (!$teacherYearModel->validate(array_keys($yearly_data))) {
+                    $errors[] = Yii::t('substituteteacher', 'There were errors validating the update information for teacher {id}: {msgs}', ['id' => $data[$key_field], 'msgs' => $this->extractErrorMessages($teacherYearModel->getErrors())]);
+                    if (count($errors) >= $stop_at_errorcount) {
+                        break;
+                    }
+                } else {
+                    $update_models[] = [
+                        'model' => $teacherYearModel,
+                        'attributes' => array_keys($yearly_data)
+                    ];
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                foreach ($update_models as $update_model) {
+                    if (!$update_model['model']->save(false, $update_model['attributes'])) {
+                        throw new \Exception(Yii::t('substituteteacher', 'An error occured while updating teacher {id}.', ['id' => $update_model['model']->tax_identification_number]));
+                    }
+                }
+                $transaction->commit();
+                \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Update completed'));
+            } catch (\Exception $ex) {
+                $transaction->rollBack();
+                \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Update failed') . '</h3>');
+                \Yii::$app->session->addFlash('danger', $ex->getMessage());
+            }
+        } else {
+            \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Problems discovered') . '</h3>');
+            array_walk($errors, function ($v, $k) {
+                \Yii::$app->session->addFlash('danger', $v);
+            });
+        }
+
+        return empty($errors);
+    }
+
+    /**
+     * Update fields from the teacher registry table. 
+     * 
+     */
+    public function actionGenericUpdateTeacher($file_id, $sheet = 0, $action = '', $year = '')
+    {
+        $key_field = 'tax_identification_number';
+        $supported_fields = [
+            'gender',
+            'surname',
+            'firstname',
+            'fathername',
+            'mothername',
+            'marital_status',
+            'protected_children',
+            'mobile_phone',
+            'home_phone',
+            'work_phone',
+            'home_address',
+            'city',
+            'postal_code',
+            'social_security_number',
+            'tax_identification_number',
+            'tax_service',
+            'identity_number',
+            'bank',
+            'iban',
+            'email',
+            'birthdate',
+            'birthplace',
+            'aei',
+            'tei',
+            'epal',
+            'iek',
+            'military_service_certificate',
+            'sign_language',
+            'braille',
+            'passport_number',
+            'ama',
+            'efka_facility',
+            'municipality',
+            'teacher.disability_percentage',
+            'teacher.disabled_children',
+            'teacher.many_children',
+            'teacher.three_children'
+        ];
+        // for field that need some manipulation 
+        $supported_fields_types = [
+            'birthdate' => 'date'
+        ];
+        $baseModel = new TeacherRegistry();
+        $baseTeacherModel = new Teacher();
+        $supported_fields_wlabels = array_combine(array_map(function ($v) use ($baseModel, $baseTeacherModel) {
+            $match = [];
+            if (preg_match('/^teacher\.(.+)$/', $v, $match) === 1) {
+                return $baseTeacherModel->getAttributeLabel($match[1]);
+            } else {
+                return $baseModel->getAttributeLabel($v);
+            }
+        }, $supported_fields), $supported_fields);
+
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
+        if ($highestRow <= 1) {
+            \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'There seems to be no data in the worksheet.'));
+        } else {
+            // only import action for now 
+            if ($action == 'import') {
+                $year = filter_var($year, FILTER_SANITIZE_NUMBER_INT);
+                if (empty($year)) {
+                    \Yii::$app->session->addFlash('danger', Yii::t('substituteteacher', 'Year is mandatory.'));
+                } else {
+                    $import_ok = $this->importGenericUpdateTeacher($key_field, $supported_fields_wlabels, $supported_fields_types, $year, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex);
+                    if ($import_ok === true) {
+                        return $this->redirect(['teacher/index']);
+                    } else {
+                        return $this->redirect(['generic-update-teacher', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+                    }
+                }
+            }
+        }
+
+        return $this->render('file-preview-generic-update-teacher', [
+            'action' => $action,
+            'sheet' => $sheet,
+            'model' => $model,
+            'file_id' => $file_id,
+            'worksheet' => $worksheet,
+            'highestRow' => $highestRow,
+            'line_limit' => $line_limit,
+            'highestColumn' => $highestColumn,
+            'highestColumnIndex' => $highestColumnIndex,
+            'hasData' => $highestRow > 1,
+            'key_field' => $key_field,
+            'supported_fields_wlabels' => $supported_fields_wlabels
+        ]);
+    }
+
+    /**
      * Assigns teacher placement preferences for existing teachers. 
      * 
      */
@@ -758,9 +1024,9 @@ class ImportController extends Controller
 
         $model->phpexcelfile->setActiveSheetIndex($sheet);
         $worksheet = $model->phpexcelfile->getActiveSheet();
-        $highestRow = $worksheet->getHighestRow();
+        $highestRow = $worksheet->getHighestDataRow();
         $line_limit = min([$highestRow, 50]);
-        $highestColumn = $worksheet->getHighestColumn();
+        $highestColumn = $worksheet->getHighestDataColumn();
         $highestColumnIndex = \PHPExcel_Cell::columnIndexFromString($highestColumn);
 
         return [$file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex];
