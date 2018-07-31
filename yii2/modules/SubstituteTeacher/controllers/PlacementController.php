@@ -37,6 +37,8 @@ class PlacementController extends Controller
                     'print' => ['POST'],
                     'placement-print' => ['POST'],
                     'download-decision' => ['POST'],
+                    'download-summary' => ['POST'],
+                    'download-contract' => ['POST'],
                     'download-all' => ['POST'],
                 ],
             ],
