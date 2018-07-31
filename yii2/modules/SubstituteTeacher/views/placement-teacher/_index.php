@@ -27,14 +27,15 @@ use app\components\FilterActionColumn;
                 'value' => function ($model) {
                     return $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
                 },
-                'filter' => Select2::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'teacher_board_id',
-                    'data' => TeacherBoard::selectablesWithTeacherInfo(),
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                    'options' => ['placeholder' => '...'],
-                    'pluginOptions' => ['allowClear' => true],
-                ]),
+                'filter' => false,
+                // 'filter' => Select2::widget([
+                //     'model' => $searchModel,
+                //     'attribute' => 'teacher_board_id',
+                //     'data' => TeacherBoard::selectablesWithTeacherInfo(),
+                //     'theme' => Select2::THEME_BOOTSTRAP,
+                //     'options' => ['placeholder' => '...'],
+                //     'pluginOptions' => ['allowClear' => true],
+                // ]),
                 'format' => 'html'
             ],
             'comments:ntext',
@@ -90,7 +91,7 @@ use app\components\FilterActionColumn;
                     'download-summary' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download"></span>',
-                                $url,
+                                ['placement/download-summary', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download summary document'),
                                     'data-method' => 'post',
@@ -102,7 +103,7 @@ use app\components\FilterActionColumn;
                     'download-contract' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download-alt"></span>',
-                                $url,
+                                ['placement/download-contact', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download contract document'),
                                     'data-method' => 'post',

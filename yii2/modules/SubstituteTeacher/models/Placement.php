@@ -122,9 +122,54 @@ class Placement extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPlacementPrints()
+    public function getAllPrints()
     {
         return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDecisionPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_DECISION,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContractPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_CONTRACT,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSummaryPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_SUMMARY,
+            ]);
     }
 
     /**

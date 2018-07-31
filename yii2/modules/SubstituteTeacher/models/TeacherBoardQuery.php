@@ -21,6 +21,7 @@ class TeacherBoardQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
+        $this->with(['specialisation']);
         return parent::all($db);
     }
 

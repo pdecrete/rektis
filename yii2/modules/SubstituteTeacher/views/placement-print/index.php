@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'placement_teacher_id',
                 'value' => function ($m) {
-                    return $m->placementTeacher->teacherBoard->teacher->name . '<br>' . $m->placementTeacher->teacherBoard->label;
+                    return $m->placementTeacher ? $m->placementTeacher->teacherBoard->teacher->name . '<br>' . $m->placementTeacher->teacherBoard->label : null;
                 },
                 'format' => 'html',
                 'filter' => false

@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'teacher_board_id',
-                    'data' => TeacherBoard::selectables('id', 'teacher.name'),
+                    'data' => TeacherBoard::selectables('id', 'label'), // teacher.name
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
