@@ -180,6 +180,9 @@ class OperationController extends Controller
             case 'summary':
                 $attribute = 'summary_template';
                 break;
+            case 'decision':
+                $attribute = 'decision_template';
+                break;
             default:
                 throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The template type parameter is not recognised.'));
                 break;

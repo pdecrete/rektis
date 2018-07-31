@@ -112,7 +112,11 @@ class PlacementTeacher extends \yii\db\ActiveRecord
      */
     public function getPlacementPositions()
     {
-        return $this->hasMany(PlacementPosition::className(), ['placement_teacher_id' => 'id']);
+        return $this->hasMany(PlacementPosition::className(), ['placement_teacher_id' => 'id'])
+            ->orderBy([
+                PlacementPosition::tableName() . '.[[hours_count]]' => SORT_DESC,
+                PlacementPosition::tableName() . '.[[teachers_count]]' => SORT_DESC,
+            ]);
     }
 
     /**

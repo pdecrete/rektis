@@ -18,6 +18,7 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property string $contract_template
  * @property string $summary_template 
  * @property string $export_template 
+ * @property string $decision_template 
  * @property string $created_at
  * @property string $updated_at
  *
@@ -52,7 +53,7 @@ class Operation extends \yii\db\ActiveRecord
                 ]
             ],
             [['created_at', 'updated_at'], 'safe'],
-            [['title', 'logo', 'contract_template', 'summary_template', 'export_template'], 'string', 'max' => 500],
+            [['title', 'logo', 'contract_template', 'summary_template', 'export_template', 'decision_template'], 'string', 'max' => 500],
             [['description'], 'string', 'max' => 90],
         ];
     }
@@ -86,6 +87,7 @@ class Operation extends \yii\db\ActiveRecord
             'contract_template' => Yii::t('substituteteacher', 'Contact template'),
             'summary_template' => Yii::t('substituteteacher', 'Summary template'),
             'export_template' => Yii::t('substituteteacher', 'Export template'),
+            'decision_template' => Yii::t('substituteteacher', 'Decision template'),
             'specialisation_labels' => Yii::t('substituteteacher', 'Specialisation Labels'),
             'specialisation_ids' => Yii::t('substituteteacher', 'Specialisation Ids'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
