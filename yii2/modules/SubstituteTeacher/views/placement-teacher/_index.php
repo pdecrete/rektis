@@ -91,7 +91,7 @@ use app\components\FilterActionColumn;
                     'download-summary' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download"></span>',
-                                $url,
+                                ['placement/download-summary', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download summary document'),
                                     'data-method' => 'post',
@@ -103,7 +103,7 @@ use app\components\FilterActionColumn;
                     'download-contract' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download-alt"></span>',
-                                $url,
+                                ['placement/download-contact', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download contract document'),
                                     'data-method' => 'post',

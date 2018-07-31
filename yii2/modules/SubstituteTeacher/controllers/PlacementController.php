@@ -298,6 +298,22 @@ class PlacementController extends Controller
         return $this->downloadDocument($id, null, 'decision');
     }
 
+    /**
+     * The id here is for the placementTeacher model
+     */
+    public function actionDownloadSummary($id)
+    {
+        return $this->downloadDocument(null, $id, 'summary');
+    }
+
+    /**
+     * The id here is for the placementTeacher model
+     */
+    public function actionDownloadContract($id)
+    {
+        return $this->downloadDocument(null, $id, 'contract');
+    }
+
     public function actionDownloadAll($id) 
     {
         $sanitize_filename_pattern = '/[^\wΑ-Ζα-ζ\s\d\.\-_,]/';
