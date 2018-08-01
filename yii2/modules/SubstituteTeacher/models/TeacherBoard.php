@@ -17,6 +17,8 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property integer $status @see Teacher model for STATUS definitions
  *
  * @property Specialisation $specialisation
+ * @property PlacementTeacher[] $placementTeachers 
+ * @property Applications[] getApplications
  * @property Teacher $teacher
  */
 class TeacherBoard extends \yii\db\ActiveRecord
@@ -99,6 +101,22 @@ class TeacherBoard extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TeacherRegistry::className(), ['id' => 'registry_id'])
             ->via('teacher');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlacementTeachers()
+    {
+        return $this->hasMany(PlacementTeacher::className(), ['teacher_board_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplications()
+    {
+        return $this->hasMany(Application::className(), ['teacher_board_id' => 'id']);
     }
 
     public static function boardTypeLabel($board_type)

@@ -23,7 +23,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a(Yii::t('substituteteacher', 'Create Teacher Board'), ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a(Yii::t('substituteteacher', 'Teacher boards overview'), ['overview'], ['class' => 'btn btn-primary']) ?>
         </p>
+
         <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
