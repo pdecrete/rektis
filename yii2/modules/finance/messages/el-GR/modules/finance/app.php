@@ -303,5 +303,6 @@ return [
     'Expenditures Sum' => 'Σύνολο Δαπανών',
     'Initial Amount' => 'Αρχικό Ποσό',
     'Notes' => 'Σημειώσεις',
-    'Text Key' => 'Λεκτικό Κλειδί'
+    'Text Key' => 'Λεκτικό Κλειδί',
+    'Flat Taxes' => 'Σταθεροί Φόροι'
 ];

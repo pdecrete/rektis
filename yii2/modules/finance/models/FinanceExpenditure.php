@@ -15,6 +15,8 @@ use app\modules\finance\components\Money;
  * @property integer $exp_deleted
  * @property integer $suppl_id
  * @property integer $fpa_value
+ * @property string $exp_flattaxes
+ * @property array $flat_taxes
  *
  * @property FinanceExpenddeduction[] $financeExpenddeductions
  * @property FinanceDeduction[] $deducts
@@ -27,6 +29,8 @@ use app\modules\finance\components\Money;
  */
 class FinanceExpenditure extends \yii\db\ActiveRecord
 {
+    public $flat_taxes;
+    
     /**
      * @inheritdoc
      */
@@ -44,9 +48,10 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
             [['exp_amount', 'exp_date', 'exp_description', 'exp_lock', 'suppl_id', 'fpa_value'], 'required'],
             [['exp_lock', 'exp_deleted', 'suppl_id'], 'integer'],
             [['exp_amount'], 'number'],
-            [['exp_notes'], 'string', 'max' => 400],
+            [['exp_notes', 'exp_flattaxes'], 'string', 'max' => 400],
             [['exp_date'], 'safe'],
             [['suppl_id'], 'exist', 'skipOnError' => true, 'targetClass' => FinanceSupplier::className(), 'targetAttribute' => ['suppl_id' => 'suppl_id']],
+            [['flat_taxes'], 'each', 'rule' => ['number']]
         ];
     }
 
@@ -63,6 +68,7 @@ class FinanceExpenditure extends \yii\db\ActiveRecord
             'exp_lock' => Module::t('modules/finance/app', 'Locked'),
             'exp_deleted' => Module::t('modules/finance/app', 'Deleted'),
             'exp_notes' => Module::t('modules/finance/app', 'Notes'),
+            'exp_flattaxes' => Module::t('modules/finance/app', 'Flat taxes'),
             'suppl_id' => Module::t('modules/finance/app', 'Supplier'),
             'fpa_value' => Module::t('modules/finance/app', 'VAT')
         ];

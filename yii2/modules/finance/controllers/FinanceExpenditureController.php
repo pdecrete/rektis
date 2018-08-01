@@ -13,6 +13,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 use app\modules\finance\models\FinanceFpa;
 use app\modules\finance\components\Integrity;
 use app\modules\finance\components\Money;
@@ -184,6 +185,9 @@ class FinanceExpenditureController extends Controller
         }
         
         $model = new FinanceExpenditure();
+        $model->flat_taxes = array();
+        $model->flat_taxes[0] = null;
+        
         $vat_levels = FinanceFpa::find()->all();
 
         foreach ($vat_levels as $vat_level) {
@@ -193,7 +197,8 @@ class FinanceExpenditureController extends Controller
         if ($model->load(Yii::$app->request->post())
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
-            //$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models);
+            $model->flat_taxes = array_values(array_filter($model->flat_taxes)); //remove the 0 values
+            $model->exp_flattaxes = Json::encode($model->flat_taxes);
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models)) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates)."));
                 return $this->render('create', [
@@ -243,6 +248,11 @@ class FinanceExpenditureController extends Controller
         }
 
         $model = $this->findModel($id);
+        $model->flat_taxes = json_decode($model->exp_flattaxes);
+        if(empty($model->flat_taxes))
+            $model->flat_taxes[0] = null;
+            
+//        echo "<pre>"; print_r($model->flat_taxes); echo "</pre>"; die();
 
         $suppliers = FinanceSupplier::find()->all();
 
@@ -306,7 +316,9 @@ class FinanceExpenditureController extends Controller
         if ($model->load(Yii::$app->request->post())
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
-            
+            $model->flat_taxes = array_values(array_filter($model->flat_taxes)); //remove the 0 values
+            $model->exp_flattaxes = Json::encode($model->flat_taxes);
+            //echo "<pre>"; print_r($model->exp_flattaxes); echo "</pre>";die();
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models, false)) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates)."));
                 //echo $model->exp_amount; die();
@@ -704,6 +716,8 @@ class FinanceExpenditureController extends Controller
             }
             foreach ($exp_ids as $index=>$id) {
                 $expenditure_model = FinanceExpenditure::findOne(['exp_id' => $id]);
+                $expenditure_model->flat_taxes = json_decode($expenditure_model->exp_flattaxes);
+
                 $supplier_model = FinanceSupplier::findOne(['suppl_id' => $expenditure_model['suppl_id']]);
                 $invoice_model = FinanceInvoice::findOne(['exp_id' => $expenditure_model['exp_id']]);
 
@@ -768,7 +782,7 @@ class FinanceExpenditureController extends Controller
             'mode' => Pdf::MODE_UTF8,
             'format' => Pdf::FORMAT_A4,
             'orientation' => Pdf::ORIENT_LANDSCAPE,
-            'filename' => 'aitisi.pdf',
+            'filename' => 'payment_report.pdf',
             'destination' => Pdf::DEST_DOWNLOAD,
             'content' => $content,
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
