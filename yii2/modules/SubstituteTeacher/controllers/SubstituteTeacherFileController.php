@@ -115,11 +115,13 @@ class SubstituteTeacherFileController extends Controller
      */
     public function actionFileUpload()
     {
+        
         $model = new SubstituteTeacherFile(['scenario' => SubstituteTeacherFile::SCENARIO_UPLOAD_FILE]);
 
         $uploadedFile = UploadedFile::getInstance($model, 'uploadfile');
 
         $directory = $model->getSavepath();
+       
         if (!is_dir($directory)) {
             FileHelper::createDirectory($directory);
         }
