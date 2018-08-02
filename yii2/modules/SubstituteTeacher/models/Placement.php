@@ -14,8 +14,11 @@ use yii\db\Query;
  * @property integer $id
  * @property integer $call_id
  * @property string $date
+ * @property string $base_contract_start_date
+ * @property string $base_contract_end_date
  * @property string $decision_board
  * @property string $decision
+ * @property string $ada
  * @property string $comments
  * @property integer $deleted
  * @property string $deleted_at
@@ -52,9 +55,10 @@ class Placement extends \yii\db\ActiveRecord
             [['date'], 'required'],
             [['call_id'], 'integer'],
             [['deleted'], 'boolean'],
-            [['date'], 'date', 'format' => 'php:Y-m-d'],
+            [['date', 'base_contract_start_date', 'base_contract_end_date'], 'date', 'format' => 'php:Y-m-d'],
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
+            ['ada', 'string', 'max' => 200],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
         ];
     }
@@ -68,8 +72,11 @@ class Placement extends \yii\db\ActiveRecord
             'id' => Yii::t('substituteteacher', 'ID'),
             'call_id' => Yii::t('substituteteacher', 'Call'),
             'date' => Yii::t('substituteteacher', 'Date'),
+            'base_contract_start_date' => Yii::t('substituteteacher', 'Base date for contract start'),
+            'base_contract_end_date' => Yii::t('substituteteacher', 'Base date for contract end'),
             'decision_board' => Yii::t('substituteteacher', 'Decision Board'),
             'decision' => Yii::t('substituteteacher', 'Decision'),
+            'ada' => Yii::t('substituteteacher', 'Placement decision ADA'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'deleted' => Yii::t('substituteteacher', 'Deleted'),
             'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
@@ -108,7 +115,7 @@ class Placement extends \yii\db\ActiveRecord
     {
         parent::afterFind();
 
-        $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision;
+        $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision . ' ' . $this->ada;
     }
 
     /**

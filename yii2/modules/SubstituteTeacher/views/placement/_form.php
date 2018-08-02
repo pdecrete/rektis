@@ -47,6 +47,21 @@ use kartik\datecontrol\DateControl;
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'base_contract_start_date')->widget(DateControl::classname(), [
+                    'type' => DateControl::FORMAT_DATE
+                ]);
+            ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'base_contract_end_date')->widget(DateControl::classname(), [
+                    'type' => DateControl::FORMAT_DATE
+                ]);
+            ?>
+        </div>
+    </div>
+
     <?= $form->field($model, 'comments')->textarea(['rows' => 3]) ?>
 
     <?php if (!$model->isNewRecord): ?>
