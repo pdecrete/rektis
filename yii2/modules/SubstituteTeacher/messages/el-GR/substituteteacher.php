@@ -356,6 +356,8 @@ return [
     'Teacher boards overview' => 'Επισκόπηση πινάκων',
     'Teacher denied appointment' => 'Άρνηση τοποθέτησης',
     'Teacher dismissed' => 'Απολυμένος αναπληρωτής',
+    'Teacher is already located in this year.' => 'Ο αναπληρωτής βρίσκεται ήδη καταχωρημένος στο έτος.',
+    'Teacher is already located with this specialisation.' => 'Ο αναπληρωτής είναι ήδη καταχωρημένος με την ειδικότητα αυτή.',
     'Teacher placement could not be marked as deleted.' => 'Η τοποθέτηση του αναπληρωτή δεν χαρακτηρίστικε ως διεγραμμένη.',
     'Teacher placement created successfully.' => 'Η τοποθέτηση του αναπληρωτή δημιουργήθηκε με επιτυχία.',
     'Teacher placements' => 'Τοποθετήσεις αναπληρωτών',
@@ -460,4 +462,5 @@ return [
     '{n} applicants parsed.' => '{n} αναπληρωτές αναλύθηκαν.',
     '{n} applications parsed.' => '{n} αιτήσεις αναλύθηκαν.',
     '{n} choices parsed.' => '{n} κενά αναλύθηκαν.',
+    '{y,plural,=0{} =1{# year, } other{# years, }}{m,plural,=0{} =1{# month, } other{# months, }}{d,plural,=0{} =1{# day} other{# days}}' => '{y,plural,=0{} =1{# έτος, } other{# έτη, }}{m,plural,=0{} =1{# μήνας, } other{# μήνες, }}{d,plural,=0{} =1{# ημέρα} other{# ημέρες}}',
 ];

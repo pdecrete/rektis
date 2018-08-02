@@ -55,11 +55,30 @@ class TeacherBoard extends \yii\db\ActiveRecord
                 TeacherBoard::TEACHER_BOARD_TYPE_SECONDARY
             ]],
             [['points'], 'number'],
-            [['teacher_id', 'specialisation_id'], 'unique', 'targetAttribute' => ['teacher_id', 'specialisation_id'], 'message' => 'The combination of Teacher ID and Specialisation ID has already been taken.'],
+            // this fails after adding with() on main activequery [['teacher_id', 'specialisation_id'], 'unique', 'targetAttribute' => ['teacher_id', 'specialisation_id'], 'message' => 'The combination of Teacher ID and Specialisation ID has already been taken.'],
+            ['teacher_id', 'validateUniqueWithSpecialisation'],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'id']],
         ];
     }
+
+    public function validateUniqueWithSpecialisation($attribute, $params, $validator)
+    {
+        $boards = TeacherBoard::find()
+            ->andWhere([
+                'teacher_id' => $this->$attribute,
+                'specialisation_id' => $this->specialisation_id
+            ])
+            ->andWhere([
+                'not', ['id' => $this->id]
+            ])
+            ->one();
+
+        if (!empty($boards)) {
+            $this->addError($attribute, Yii::t('substituteteacher', 'Teacher is already located with this specialisation.'));
+        }
+    }
+
 
     /**
      * @inheritdoc
