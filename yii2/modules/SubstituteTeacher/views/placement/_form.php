@@ -16,6 +16,16 @@ use kartik\datecontrol\DateControl;
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
+    <?= $form->field($model, 'call_id')->widget(Select2::classname(), [
+        'data' => Call::defaultSelectables(),
+        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+        'pluginOptions' => [
+            'multiple' => false,
+            'allowClear' => false
+        ],
+    ])->hint(Yii::t('substituteteacher', 'Select only if placement is performed in the context of a call'));
+    ?>
+
     <div class="row">
         <div class="col-md-6">
             <?= $form->field($model, 'date')->widget(DateControl::classname(), [
@@ -24,26 +34,16 @@ use kartik\datecontrol\DateControl;
             ?>
         </div>
         <div class="col-md-6">
-            <?=
-            $form->field($model, 'call_id')->widget(Select2::classname(), [
-                'data' => Call::defaultSelectables(),
-                'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-                'pluginOptions' => [
-                    'multiple' => false,
-                    'allowClear' => false
-                ],
-            ])->hint(Yii::t('substituteteacher', 'Select only if placement is performed in the context of a call'));
-
-            ?>
+            <?= $form->field($model, 'decision')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6">
-            <?= $form->field($model, 'decision')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'decision_board')->textInput(['maxlength' => true]) ?>
         </div>
         <div class="col-md-6">
-            <?= $form->field($model, 'decision_board')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'ada')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
 

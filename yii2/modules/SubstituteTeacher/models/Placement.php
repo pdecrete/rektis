@@ -75,7 +75,7 @@ class Placement extends \yii\db\ActiveRecord
             'base_contract_start_date' => Yii::t('substituteteacher', 'Base date for contract start'),
             'base_contract_end_date' => Yii::t('substituteteacher', 'Base date for contract end'),
             'decision_board' => Yii::t('substituteteacher', 'Decision Board'),
-            'decision' => Yii::t('substituteteacher', 'Decision'),
+            'decision' => Yii::t('substituteteacher', 'Decision protocol'),
             'ada' => Yii::t('substituteteacher', 'Placement decision ADA'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'deleted' => Yii::t('substituteteacher', 'Deleted'),

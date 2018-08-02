@@ -133,6 +133,7 @@ return [
     'Date' => 'Ημερομηνία',
     'Decision' => 'Απόφαση',
     'Decision Board' => 'Επιτροπή',
+    'Decision protocol' => 'Πρωτ. Απόφασης',
     'Decision template' => 'Πρότυπο εγγράφου απόφασης',
     'Delete' => 'Διαγραφή',
     'Deleted' => 'Διαγράφηκε',
