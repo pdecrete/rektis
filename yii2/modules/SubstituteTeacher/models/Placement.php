@@ -59,6 +59,7 @@ class Placement extends \yii\db\ActiveRecord
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
             ['ada', 'string', 'max' => 200],
+            ['ada', 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['ada-validate-pattern']],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
         ];
     }

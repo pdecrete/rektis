@@ -260,7 +260,6 @@ class PlacementTeacherController extends Controller
     }
 
     /**
-     * Updates an existing Placement model. The teacher board should not be altered.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -306,7 +305,7 @@ class PlacementTeacherController extends Controller
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement updated successfully.'));
-                        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+                        return $this->redirect(['view', 'id' => $model->id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));
                     }

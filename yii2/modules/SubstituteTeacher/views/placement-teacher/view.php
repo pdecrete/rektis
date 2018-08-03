@@ -1,6 +1,6 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\widgets\DetailView;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
@@ -58,10 +58,38 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
                 'value' => empty($model->placement_id) ? null : $model->placement_id . ' (' . $model->placement->id . ')'
             ],
             'comments:ntext',
+            'contract_start_date:date',
+            'contract_end_date:date',
+            'service_start_date:date',
+            'service_end_date:date',
             'altered:boolean',
             'altered_at:datetime',
+            'cancelled:boolean',
+            'cancelled_at:datetime',
+            [
+                'attribute' => 'cancelled_ada',
+                'value' => function ($model) {
+                    if (empty($model->cancelled_ada)) {
+                        return null;
+                    } else {
+                        return Html::a($model->cancelled_ada . Html::icon('link'), \Yii::$app->getModule('SubstituteTeacher')->params['ada-view-baseurl'] . urlencode($model->cancelled_ada), ['target' => '_blank']);
+                    }
+                },
+                'format' => 'raw'
+            ],
             'dismissed:boolean',
             'dismissed_at:datetime',
+            [
+                'attribute' => 'dismissed_ada',
+                'value' => function ($model) {
+                    if (empty($model->dismissed_ada)) {
+                        return null;
+                    } else {
+                        return Html::a($model->dismissed_ada . Html::icon('link'), \Yii::$app->getModule('SubstituteTeacher')->params['ada-view-baseurl'] . urlencode($model->dismissed_ada), ['target' => '_blank']);
+                    }
+                },
+                'format' => 'raw'
+            ],
             'created_at:datetime',
             'updated_at:datetime',
         ],
@@ -79,6 +107,7 @@ $positions_provider = new ArrayDataProvider(['allModels' => $model->placementPos
                 ],
             ],
             'position.title',
+            'unified_hours_count',
             'teachers_count',
             'hours_count',
             'created_at:datetime',

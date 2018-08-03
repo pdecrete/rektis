@@ -103,7 +103,17 @@ if ($have_decision_prints) {
             'base_contract_end_date:date',
             'decision_board',
             'decision',
-            'ada',
+            [
+                'attribute' => 'ada',
+                'value' => function ($model) {
+                    if (empty($model->ada)) {
+                        return null;
+                    } else {
+                        return Html::a($model->ada . Html::icon('link'), \Yii::$app->getModule('SubstituteTeacher')->params['ada-view-baseurl'] . urlencode($model->ada), ['target' => '_blank']);
+                    }
+                },
+                'format' => 'raw'
+            ],
             'comments:ntext',
             'deleted:boolean',
             'deleted_at:datetime',
