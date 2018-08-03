@@ -18,7 +18,7 @@ class PlacementTeacherSearch extends PlacementTeacher
     public function rules()
     {
         return [
-            [['id', 'placement_id', 'teacher_board_id', 'altered', 'dismissed'], 'integer'],
+            [['id', 'placement_id', 'teacher_board_id', 'cancelled', 'altered', 'dismissed'], 'integer'],
             [['comments', 'altered_at', 'dismissed_at', 'dismissed_ada', 'cancelled_ada', 'contract_start_date', 'contract_end_date', 'service_start_date', 'service_end_date'], 'safe'],
         ];
     }

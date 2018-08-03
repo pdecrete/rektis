@@ -39,6 +39,7 @@ class Teacher extends \yii\db\ActiveRecord
     const TEACHER_STATUS_NEGATION = 2; // has neglected all appointments 
     const TEACHER_STATUS_PENDING = 3; // is included in an open appointment process 
     const TEACHER_STATUS_DISMISSED = 4; // has been appointed and then dismissed/fired
+    const TEACHER_STATUS_CANCELLED = 5; // has been appointed and then cancelled appointment
 
     public $status, $status_label;
     public $name;
@@ -166,6 +167,7 @@ class Teacher extends \yii\db\ActiveRecord
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
                 self::TEACHER_STATUS_PENDING => Yii::t('substituteteacher', 'Teacher status pending'),
                 self::TEACHER_STATUS_DISMISSED => Yii::t('substituteteacher', 'Teacher dismissed'),
+                self::TEACHER_STATUS_CANCELLED => Yii::t('substituteteacher', 'Teacher appointment cancelled'),
             ];
         } elseif ($for === 'year') {
             // one year before and 2 ahead...
@@ -193,6 +195,9 @@ class Teacher extends \yii\db\ActiveRecord
                 break;
             case self::TEACHER_STATUS_DISMISSED:
                 $status_label = Yii::t('substituteteacher', 'Teacher dismissed');
+                break;
+            case self::TEACHER_STATUS_CANCELLED:
+                $status_label = Yii::t('substituteteacher', 'Teacher appointment cancelled');
                 break;
             default:
                 $status_label = null;
@@ -238,6 +243,8 @@ class Teacher extends \yii\db\ActiveRecord
                 $this->status = self::TEACHER_STATUS_ELIGIBLE;
             } elseif (in_array(self::TEACHER_STATUS_DISMISSED, $statuses)) {
                 $this->status = self::TEACHER_STATUS_DISMISSED;
+            } elseif (in_array(self::TEACHER_STATUS_CANCELLED, $statuses)) {
+                $this->status = self::TEACHER_STATUS_CANCELLED;
             } else {
                 $this->status = self::TEACHER_STATUS_NEGATION;
             }

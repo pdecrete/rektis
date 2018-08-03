@@ -195,6 +195,7 @@ class Placement extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id'])
             ->andOnCondition([
+                PlacementTeacher::tableName() . '.[[cancelled]]' => false,
                 PlacementTeacher::tableName() . '.[[dismissed]]' => false,
                 PlacementTeacher::tableName() . '.[[altered]]' => false
             ]);
@@ -244,6 +245,7 @@ class Placement extends \yii\db\ActiveRecord
             ->andWhere([
                 "{$placement_tablename}.[[id]]" => $placement_id,
                 "{$placement_tablename}.[[deleted]]" => false,
+                "{$placement_teacher_tablename}.[[cancelled]]" => false,
                 "{$placement_teacher_tablename}.[[dismissed]]" => false,
                 "{$placement_teacher_tablename}.[[altered]]" => false,
             ])

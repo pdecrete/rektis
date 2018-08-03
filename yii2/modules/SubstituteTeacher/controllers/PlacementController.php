@@ -261,8 +261,8 @@ class PlacementController extends Controller
         // provided a specific placement teacher (ptid), use that one only!
         if (!empty($ptid)) {
             $model = PlacementTeacher::findOne($ptid);
-            if (!empty($model) && ($model->dismissed || $model->altered)) {
-                throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either dismissed or altered.'));
+            if (!empty($model) && ($model->cancelled || $model->dismissed || $model->altered)) {
+                throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either cancelled, dismissed or altered.'));
             }
             $redirect_placement_id = $model->placement_id;
         } else {
