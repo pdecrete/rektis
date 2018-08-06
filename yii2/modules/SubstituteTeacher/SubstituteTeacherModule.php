@@ -15,7 +15,7 @@ class SubstituteTeacherModule extends Module implements BootstrapInterface
         $this->registerTranslations();
 
         \Yii::configure($this, array_merge_recursive(
-            require(__DIR__ . '/config/core.php'),
+            require(__DIR__ . '/config/params-core.php'),
             require(__DIR__ . '/config/params.php')
         ));
 
