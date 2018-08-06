@@ -14,8 +14,10 @@ class SubstituteTeacherModule extends Module implements BootstrapInterface
 
         $this->registerTranslations();
 
-        $this->params['foo'] = 'bar';
-        \Yii::configure($this, require(__DIR__ . '/config/params.php'));
+        \Yii::configure($this, array_merge_recursive(
+            require(__DIR__ . '/config/core.php'),
+            require(__DIR__ . '/config/params.php')
+        ));
 
         // set log target for module
         \Yii::$app->log->targets[] = Yii::createObject(require(__DIR__ . '/config/log.php'));

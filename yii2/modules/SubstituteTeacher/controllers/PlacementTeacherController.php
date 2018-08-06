@@ -35,13 +35,14 @@ class PlacementTeacherController extends Controller
                     'delete' => ['POST'],
                     'alter' => ['POST'],
                     'dismiss' => ['POST'],
+                    'cancel' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'alter', 'dismiss'],
+                        'actions' => ['index', 'view', 'create', 'update', 'alter', 'dismiss', 'cancel'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -182,6 +183,40 @@ class PlacementTeacherController extends Controller
     }
 
     /**
+     * Marks the teacher as cancelled and updates the existing PlacementTeacher model.
+     * Also marks the teacher board as TEACHER_STATUS_CANCELLED.
+     * 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionCancel($id)
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+
+        $model = $this->findModel($id);
+        $teacher_board = $model->teacherBoard;
+        $model->cancelled = true;
+        $model->cancelled_at = new  Expression('CURRENT_TIMESTAMP()');
+
+        if (!$model->save(false, ['cancelled', 'cancelled_at'])) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as cancelled.'));
+        } else {
+            // mark teacher as eligible again
+            $teacher_board->status = Teacher::TEACHER_STATUS_CANCELLED;
+            if (!$teacher_board->save(false, ['status'])) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+            } else {
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as cancelled.'));
+            }
+        }
+
+        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+    }
+
+    /**
      * Creates a new PlacementTeacher model.
      * If creation is successful, the browser will be redirected to the
      * corresponding placement's view page.
@@ -198,6 +233,7 @@ class PlacementTeacherController extends Controller
             // this enables the placement_id to change too but that's ok
             $model->dismissed = false;
             $model->altered = false;
+            $model->cancelled = false;
 
             $post = \Yii::$app->request->post();
 
@@ -260,7 +296,6 @@ class PlacementTeacherController extends Controller
     }
 
     /**
-     * Updates an existing Placement model. The teacher board should not be altered.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -306,7 +341,7 @@ class PlacementTeacherController extends Controller
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement updated successfully.'));
-                        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+                        return $this->redirect(['view', 'id' => $model->id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));
                     }

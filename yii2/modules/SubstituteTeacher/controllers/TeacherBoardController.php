@@ -36,7 +36,7 @@ class TeacherBoardController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'appoint', 'negate', 'eligible', 'dismiss'],
+                        'actions' => ['index', 'appoint', 'negate', 'eligible', 'dismiss', 'overview'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -47,6 +47,39 @@ class TeacherBoardController extends Controller
                 ],
             ],
         ];
+    }
+
+    /**
+     * Display a detailed overview of the teacher board. 
+     * This action will query specific teacher boards; a GET request allows for
+     * selection, a POST request displays information based on selections.
+     * 
+     */
+    public function actionOverview($year = null, $specialisation = null, $board_type = null)
+    {
+        Url::remember('', 'teacherboardoverview');
+
+        $over_query_params = ['TeacherBoardSearch' => []];
+        if (!empty($year)) {
+            $over_query_params['TeacherBoardSearch']['year'] = $year;
+        }
+        if (!empty($specialisation)) {
+            $over_query_params['TeacherBoardSearch']['specialisation_id'] = $specialisation;
+        }
+        if (!empty($board_type)) {
+            $over_query_params['TeacherBoardSearch']['board_type'] = $board_type;
+        }
+
+        $searchModel = new TeacherBoardSearch();
+        $dataProvider = $searchModel->search(array_merge_recursive(Yii::$app->request->queryParams, $over_query_params));
+
+        return $this->render('overview', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'year' => $year,
+            'specialisation' => $specialisation,
+            'board_type' => $board_type
+        ]);
     }
 
     /**

@@ -18,8 +18,8 @@ class PlacementTeacherSearch extends PlacementTeacher
     public function rules()
     {
         return [
-            [['id', 'placement_id', 'teacher_board_id', 'altered', 'dismissed'], 'integer'],
-            [['comments', 'altered_at', 'dismissed_at', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'placement_id', 'teacher_board_id', 'cancelled', 'altered', 'dismissed'], 'integer'],
+            [['comments', 'altered_at', 'dismissed_at', 'dismissed_ada', 'cancelled_ada', 'contract_start_date', 'contract_end_date', 'service_start_date', 'service_end_date'], 'safe'],
         ];
     }
 
@@ -66,11 +66,19 @@ class PlacementTeacherSearch extends PlacementTeacher
             'altered_at' => $this->altered_at,
             'dismissed' => $this->dismissed,
             'dismissed_at' => $this->dismissed_at,
+            'cancelled' => $this->cancelled,
+            'cancelled_at' => $this->cancelled_at,
+            'contract_start_date' => $this->contract_start_date,
+            'contract_end_date' => $this->contract_end_date,
+            'service_start_date' => $this->service_start_date,
+            'service_end_date' => $this->service_end_date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'comments', $this->comments]);
+        $query->andFilterWhere(['like', 'comments', $this->comments])
+            ->andFilterWhere(['like', 'dismissed_ada', $this->dismissed_ada])
+            ->andFilterWhere(['like', 'cancelled_ada', $this->cancelled_ada]);
 
         return $dataProvider;
     }

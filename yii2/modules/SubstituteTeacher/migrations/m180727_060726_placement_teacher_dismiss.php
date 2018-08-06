@@ -11,7 +11,7 @@ class m180727_060726_placement_teacher_dismiss extends Migration
     {
         $this->allowInvalidDates();
 
-        $this->addColumn('{{%stplacement_teacher}}', 'dismissed', $this->boolean()->notNull()->defaultValue(false)->comment('Απόλυση'));
+        $this->addColumn('{{%stplacement_teacher}}', 'dismissed', $this->boolean()->notNull()->defaultValue(false)->comment('Απόλυση/λύση σύμβασης'));
         $this->addColumn('{{%stplacement_teacher}}', 'dismissed_at', $this->timestamp()->null()->defaultValue(null));
         $this->dropColumn('{{%stplacement_teacher}}', 'deleted');
         $this->dropColumn('{{%stplacement_teacher}}', 'deleted_at');

@@ -99,8 +99,21 @@ if ($have_decision_prints) {
                 'value' => empty($model->call_id) ? null : $model->call->title
             ],
             'date:date',
+            'base_contract_start_date:date',
+            'base_contract_end_date:date',
             'decision_board',
             'decision',
+            [
+                'attribute' => 'ada',
+                'value' => function ($model) {
+                    if (empty($model->ada)) {
+                        return null;
+                    } else {
+                        return Html::a($model->ada . Html::icon('link'), \Yii::$app->getModule('SubstituteTeacher')->params['ada-view-baseurl'] . urlencode($model->ada), ['target' => '_blank']);
+                    }
+                },
+                'format' => 'raw'
+            ],
             'comments:ntext',
             'deleted:boolean',
             'deleted_at:datetime',

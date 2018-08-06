@@ -58,6 +58,7 @@ class PlacementPosition extends \yii\db\ActiveRecord
             'placement_teacher_id' => Yii::t('substituteteacher', 'Placement Teacher ID'),
             'position_id' => Yii::t('substituteteacher', 'Position ID'),
             'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
+            'unified_hours_count' => Yii::t('substituteteacher', 'Calculated hours count'),
             'hours_count' => Yii::t('substituteteacher', 'Hours Count'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),

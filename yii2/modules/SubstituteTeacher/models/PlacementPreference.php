@@ -15,6 +15,7 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $order
  *
  * @property string $label_for_teacher
+ * @property string $label_short
  * @property string $school_type_label
  *
  * @property Prefecture $prefecture
@@ -33,6 +34,7 @@ class PlacementPreference extends \yii\db\ActiveRecord
     const SCHOOL_TYPE_KEDDY_SYMBOL = 'Κ';
 
     public $label_for_teacher;
+    public $label_short;
     public $school_type_label;
 
     /**
@@ -216,23 +218,28 @@ class PlacementPreference extends \yii\db\ActiveRecord
     {
         parent::afterFind();
 
+        $school_type_symbol = '';
         switch ($this->school_type) {
             case self::SCHOOL_TYPE_SCHOOL:
                 $this->school_type_label = Yii::t('substituteteacher', 'School units');
+                $school_type_symbol = self::SCHOOL_TYPE_SCHOOL_SYMBOL;
                 break;
             case self::SCHOOL_TYPE_KEDDY:
                 $this->school_type_label = Yii::t('substituteteacher', 'KEDDY');
+                $school_type_symbol = self::SCHOOL_TYPE_KEDDY_SYMBOL;
                 break;
             case self::SCHOOL_TYPE_ANY:
                 $this->school_type_label = Yii::t('substituteteacher', 'Any kind of school');
                 break;
             default:
                 $this->school_type_label = Yii::t('substituteteacher', 'Unknown');
+                $school_type_symbol = '-';
                 break;
         }
 
         $this->label_for_teacher = $this->order . ': ' . ($this->prefecture ? $this->prefecture->label : '-')  .
             ', ' . $this->school_type_label;
+        $this->label_short = $this->order . ':' . ($this->prefecture ? $this->prefecture->symbol : '-')  . $school_type_symbol;
     }
 
     /**

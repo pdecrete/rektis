@@ -39,10 +39,13 @@ class Teacher extends \yii\db\ActiveRecord
     const TEACHER_STATUS_NEGATION = 2; // has neglected all appointments 
     const TEACHER_STATUS_PENDING = 3; // is included in an open appointment process 
     const TEACHER_STATUS_DISMISSED = 4; // has been appointed and then dismissed/fired
+    const TEACHER_STATUS_CANCELLED = 5; // has been appointed and then cancelled appointment
 
     public $status, $status_label;
     public $name;
     public $call_use_specialisation_id; // property to hold the specialisation used in a specific call; used in SCENARIO_CALL_FETCH
+    public $public_experience_label;
+    public $smeae_keddy_experience_label;
 
     /**
      * @inheritdoc
@@ -58,14 +61,33 @@ class Teacher extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disability_percentage', 'disabled_children',
-              'three_children', 'many_children'], 'integer'],
-            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disability_percentage', 'disabled_children',
-              'three_children', 'many_children'], 'required'],
-            [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
+            [['disability_percentage', 'disabled_children', 'three_children', 'many_children'], 'default', 'value' => 0],
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children'], 'integer', 'min' => 0],
+            ['disability_percentage', 'integer', 'min' => 0, 'max' => 100],
+            [['three_children', 'many_children'], 'integer', 'min' => 0, 'max' => 1],
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disability_percentage', 'disabled_children', 'three_children', 'many_children'], 'required'],
+            // this fails after adding with() on main activequery [['year', 'registry_id'], 'unique', 'targetAttribute' => ['year', 'registry_id'], 'message' => 'The combination of Registry ID and Year has already been taken.'],
+            ['registry_id', 'validateUniqueInYear'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
             [['call_use_specialisation_id'], 'required', 'on' => self::SCENARIO_CALL_FETCH],
         ];
+    }
+
+    public function validateUniqueInYear($attribute, $params, $validator)
+    {
+        $teachers = Teacher::find()
+            ->andWhere([
+                'registry_id' => $this->$attribute,
+                'year' => $this->year
+            ])
+            ->andWhere([
+                'not', ['id' => $this->id]
+            ])
+            ->one();
+
+        if (!empty($teachers)) {
+            $this->addError($attribute, Yii::t('substituteteacher', 'Teacher is already located in this year.'));
+        }
     }
 
     /**
@@ -145,6 +167,7 @@ class Teacher extends \yii\db\ActiveRecord
                 self::TEACHER_STATUS_NEGATION => Yii::t('substituteteacher', 'Teacher denied appointment'),
                 self::TEACHER_STATUS_PENDING => Yii::t('substituteteacher', 'Teacher status pending'),
                 self::TEACHER_STATUS_DISMISSED => Yii::t('substituteteacher', 'Teacher dismissed'),
+                self::TEACHER_STATUS_CANCELLED => Yii::t('substituteteacher', 'Teacher appointment cancelled'),
             ];
         } elseif ($for === 'year') {
             // one year before and 2 ahead...
@@ -172,6 +195,9 @@ class Teacher extends \yii\db\ActiveRecord
                 break;
             case self::TEACHER_STATUS_DISMISSED:
                 $status_label = Yii::t('substituteteacher', 'Teacher dismissed');
+                break;
+            case self::TEACHER_STATUS_CANCELLED:
+                $status_label = Yii::t('substituteteacher', 'Teacher appointment cancelled');
                 break;
             default:
                 $status_label = null;
@@ -217,11 +243,22 @@ class Teacher extends \yii\db\ActiveRecord
                 $this->status = self::TEACHER_STATUS_ELIGIBLE;
             } elseif (in_array(self::TEACHER_STATUS_DISMISSED, $statuses)) {
                 $this->status = self::TEACHER_STATUS_DISMISSED;
+            } elseif (in_array(self::TEACHER_STATUS_CANCELLED, $statuses)) {
+                $this->status = self::TEACHER_STATUS_CANCELLED;
             } else {
                 $this->status = self::TEACHER_STATUS_NEGATION;
             }
         }
         $this->status_label = self::statusLabel($this->status);
+
+        foreach (['public_experience', 'smeae_keddy_experience'] as $field) {
+            $days = intval($this->$field % 30);
+            $months_rem = intval(($this->$field - $days) / 30);
+            $months = $months_rem % 12;
+            $years = intval($months_rem / 12);
+            $label_field = "{$field}_label";
+            $this->$label_field = Yii::t('substituteteacher', '{y,plural,=0{} =1{# year, } other{# years, }}{m,plural,=0{} =1{# month, } other{# months, }}{d,plural,=0{} =1{# day} other{# days}}', ['d' => $days, 'm' => $months, 'y' => $years]);
+        }
     }
 
     /**
