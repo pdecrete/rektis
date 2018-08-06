@@ -152,7 +152,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
 
     public static function selectablesWithTeacherInfo()
     {
-        return static::selectables('id', function ($data, $default) { return $data->teacher->name . ' ' . $data->label; }, 'teacher.name', function ($aq) {
+        return static::selectables('id', function ($data, $default) { return  ' ' . $data->label; }, 'teacher.name', function ($aq) {
             return $aq->orderBy(['teacher_id' => SORT_ASC]);
         });
     }

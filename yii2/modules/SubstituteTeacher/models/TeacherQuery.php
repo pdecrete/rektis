@@ -20,6 +20,7 @@ class TeacherQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
+        $this->with(['registry', 'boards']);
         return parent::all($db);
     }
 

@@ -15,6 +15,7 @@ class ApplicationQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
+        // $this->with(['teacherBoard', 'teacherBoard.teacher']);
         return parent::all($db);
     }
 

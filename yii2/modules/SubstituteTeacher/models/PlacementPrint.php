@@ -34,6 +34,7 @@ class PlacementPrint extends \yii\db\ActiveRecord
 
     const TYPE_SUMMARY = 'summary';
     const TYPE_CONTRACT = 'contract';
+    const TYPE_DECISION = 'decision';
 
     /**
      * @inheritdoc
@@ -99,7 +100,8 @@ class PlacementPrint extends \yii\db\ActiveRecord
     {
         return [
             self::TYPE_CONTRACT => 'Contract',
-            self::TYPE_SUMMARY => 'Summary'
+            self::TYPE_SUMMARY => 'Summary',
+            self::TYPE_DECISION => 'Decision',
         ];
     }
 
@@ -133,7 +135,7 @@ class PlacementPrint extends \yii\db\ActiveRecord
 
         // get teacher placement if not set
         if (empty($placement_teacher)) {
-            $placement_teacher = PlacementTeacher::findOne($this->placement_id);
+            $placement_teacher = PlacementTeacher::findOne(['placement_id' => $this->placement_id]);
             if (empty($placement_teacher)) {
                 throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested teacher placement does not exist.'));
             }
@@ -141,7 +143,7 @@ class PlacementPrint extends \yii\db\ActiveRecord
 
         // get related ids if not set
         if (empty($placement_related_ids)) {
-            $placement_related_ids = Placement::getRelatedIds($id);
+            $placement_related_ids = Placement::getRelatedIds($placement_teacher->id);
         }
 
         // get the positions and operations; use first as the one for the templates
@@ -150,8 +152,16 @@ class PlacementPrint extends \yii\db\ActiveRecord
         $operation = $first_position->position->operation;
         if ($type === PlacementPrint::TYPE_SUMMARY) {
             $template_filename = $operation->summary_template;
-        } else {
+        } elseif ($type === PlacementPrint::TYPE_CONTRACT) {
             $template_filename = $operation->contract_template;
+        } elseif ($type === PlacementPrint::TYPE_DECISION) {
+            $template_filename = $operation->decision_template;
+        } else {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement print type is not recognised.'));
+        }
+
+        if (empty($template_filename)) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement print template does not exist.'));
         }
 
         return [$dts, $template_filename, $placement_teacher, $placement_related_ids];
@@ -162,19 +172,84 @@ class PlacementPrint extends \yii\db\ActiveRecord
      * Sets the model filename and data properties.
      * Document type is denoted by property $type
      *
+     * @param Placement $placement the placement model to use; if not set, use $this->placement_id to locate
      * @param PlacementTeacher $placement_teacher the teacher placement model to use; if not set, use $this->placement_id to locate
      * @param array $placement_related_ids list of placement related ids; if not set they will be retrieved
      * @throws yii\web\UnprocessableEntityHttpException
      */
-    public function generatePrint($placement_teacher = null, $placement_related_ids = null)
+    public function generatePrint($placement = null, $placement_teacher = null, $placement_related_ids = null)
     {
         if ($this->type === PlacementPrint::TYPE_SUMMARY) {
             return $this->generateSummaryPrint($placement_teacher, $placement_related_ids);
         } elseif ($this->type === PlacementPrint::TYPE_CONTRACT) {
             return $this->generateContractPrint($placement_teacher, $placement_related_ids);
+        } elseif ($this->type === PlacementPrint::TYPE_DECISION) {
+            return $this->generateDecisionPrint($placement);
         } else {
             throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The requested document type is not recognised.'));
         }
+    }
+
+    public function generateDecisionPrint($placement)
+    {
+        list($dts, $template_filename, $placement_teacher, $placement_related_ids) = $this->fetchPrintInformation(PlacementPrint::TYPE_DECISION, null, null);
+
+        $filename = sprintf("%s_%08d_%s", $dts, $placement_teacher->id, $template_filename);
+        $export_filename = PlacementPrint::getFilenameAbspath($filename, 'export');
+        $templateProcessor = new TemplateProcessor(PlacementPrint::getFilenameAbspath($template_filename, 'template'));
+        $backup_data = [];
+
+        $templateProcessor->setValue('DATE', \Yii::$app->formatter->asDate($placement->date, 'php:d/m/Y'));
+        $templateProcessor->setValue('PROT', $placement->decision);
+
+        $active_placements = $placement->activePlacementTeachers;
+        $active_placements_count = count($active_placements);
+
+        $templateProcessor->cloneRow('SN', $active_placements_count);
+        foreach ($active_placements as $idx => $placement_teacher) {
+            $sn = $idx + 1;
+            $registry = $placement_teacher->teacherBoard->teacherRegistry;
+            $positions = $placement_teacher->placementPositions; // must be ordered... 
+
+            $data = [
+                "SN#{$sn}" => $sn,
+                "SURNAME#{$sn}" => $registry->surname,
+                "NAME#{$sn}" => $registry->firstname,
+                "FATHERNAME#{$sn}" => $registry->fathername,
+                "SPECIALISATION#{$sn}" => $registry->surname,
+            ];
+
+            $data["PLACEMENT_UNITS_EXTRA#{$sn}"] = '';
+            $data["PLACEMENT_HOURS_EXTRA#{$sn}"] = '';
+            $first_position = array_shift($positions);
+            if (count($positions) > 1) {
+                $data["PLACEMENT_UNITS#{$sn}"] = $first_position->position->title;
+                $data["PLACEMENT_HOURS#{$sn}"] = $first_position->unified_hours_count;
+                foreach ($positions as $pidx => $position) {
+                    $i = $pidx + 1;
+                    $data["PLACEMENT_UNITS_EXTRA#{$sn}"] .= "{$i}. {$position->position->title} \n<w:br/>";
+                    $data["PLACEMENT_HOURS_EXTRA#{$sn}"] .= "{$i}. {$position->unified_hours_count} \n<w:br/>";
+                }
+            } else {
+                $data["PLACEMENT_UNITS#{$sn}"] = $first_position->position->title;
+                $data["PLACEMENT_HOURS#{$sn}"] = $first_position->unified_hours_count;
+            }
+
+            array_walk($data, function ($v, $k) use ($templateProcessor) {
+                $templateProcessor->setValue($k, $v);
+            });
+
+            $backup_data[] = $data;
+        }
+
+        $templateProcessor->saveAs($export_filename);
+        if (!is_readable($export_filename)) {
+            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The placement decision document was not generated.'));
+        }
+
+        $this->filename = basename($export_filename);
+        $this->data = Json::encode($backup_data);
+        return true;
     }
 
     /**

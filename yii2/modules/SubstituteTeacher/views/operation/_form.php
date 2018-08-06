@@ -10,6 +10,7 @@ use kartik\select2\Select2;
 /* @var $form yii\widgets\ActiveForm */
 
 $template_filenames = Operation::getAvailableTemplates();
+$template_filenames_choices = array_combine($template_filenames, $template_filenames);
 ?>
 
 <div class="operation-form">
@@ -34,8 +35,9 @@ $template_filenames = Operation::getAvailableTemplates();
     ?>
 
     <?= $form->field($model, 'logo')->dropdownList(Operation::getLogoChoices()) ?>
-    <?= $form->field($model, 'contract_template')->dropdownList(array_combine($template_filenames, $template_filenames)) ?>
-    <?= $form->field($model, 'summary_template')->dropdownList(array_combine($template_filenames, $template_filenames)) ?>
+    <?= $form->field($model, 'contract_template')->dropdownList($template_filenames_choices) ?>
+    <?= $form->field($model, 'summary_template')->dropdownList($template_filenames_choices) ?>
+    <?= $form->field($model, 'decision_template')->dropdownList($template_filenames_choices) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

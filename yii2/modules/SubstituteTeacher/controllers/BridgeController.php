@@ -398,7 +398,10 @@ class BridgeController extends \yii\web\Controller
                 }
                 $school_types = array_merge([0], array_keys(array_filter($call_positions_school_types["{$call_teacher_specialisation->specialisation_id}"])));
 
-                $extra_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
+                // if call does not provide number of teachers to call, calculate with defined factor 
+                if (($call_wanted = intval($call_teacher_specialisation->teachers_call)) == 0) {
+                    $call_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
+                }
                 $call_specialisation_teachers_pool = Teacher::find()
                     ->year($call_model->year)
                     ->joinWith(['boards', 'registry', 'registry.specialisations', 'placementPreferences'])
@@ -426,7 +429,7 @@ class BridgeController extends \yii\web\Controller
                         ->distinct()
                         ->from(['au' => $call_specialisation_teachers_pool])
                     ])
-                    ->limit($extra_wanted) // only get the number of teachers wanted
+                    ->limit($call_wanted) // only get the number of teachers wanted
                     ->all();
                 array_walk($call_specialisation_teachers, function ($model, $k) use ($call_teacher_specialisation) {
                     $model->setScenario(Teacher::SCENARIO_CALL_FETCH);
@@ -438,7 +441,7 @@ class BridgeController extends \yii\web\Controller
                 $teacher_counts[] = [
                     'specialisation' => $call_teacher_specialisation->specialisation->label,
                     'wanted' => $call_teacher_specialisation->teachers,
-                    'extra_wanted' => $extra_wanted,
+                    'call_wanted' => $call_wanted,
                     'available' => count($call_specialisation_teachers)
                 ];
                 $teachers = array_merge($teachers, $call_specialisation_teachers);

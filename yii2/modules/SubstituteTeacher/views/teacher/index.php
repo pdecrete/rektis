@@ -5,6 +5,8 @@ use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
+use yii\bootstrap\ButtonDropdown;
+use app\components\FilterActionColumn;
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 
@@ -15,20 +17,52 @@ $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 $this->title = Yii::t('substituteteacher', 'Teachers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-    <div class="teacher-index">
-        <h1>
-            <?= Html::encode($this->title) ?>
-        </h1>
+<div class="teacher-index">
+    <h1>
+        <?= Html::encode($this->title) ?>
+    </h1>
 
-        <p>
-            <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a(Yii::t('substituteteacher', 'Batch Insert Teacher In Year'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher'], ['class' => 'btn btn-primary']) ?>
+    <div class="btn-group-container">
+        <?= Html::a(Yii::t('substituteteacher', 'Create Teacher'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= ButtonDropdown::widget([
+            'label' => Yii::t('substituteteacher', 'Batch Insert Teachers'),
+            'options' => ['class' => 'btn-primary'],
+            'dropdown' => [
+            'items' => [
+                [
+                    'label' => Yii::t('substituteteacher', 'Batch insert teachers in Registry'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'registry']
+                ],
+                '<li class="divider"></li>',
+                [
+                    'label' => Yii::t('substituteteacher', 'Batch Insert Placement Preferences'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'placement-preference']
+                ],
+                [
+                    'label' => Yii::t('substituteteacher', 'Download import sample'),
+                    'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΠΡΟΤΙΜΗΣΕΩΝ ΤΟΠΟΘΕΤΗΣΗΣ ΕΤΟΥΣ.xls"
+                ],
+                '<li class="divider"></li>',
+                [
+                    'label' => Yii::t('substituteteacher', 'Batch Update Teacher Information'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'update-teacher']
+                ],
+                '<li class="divider"></li>',
+                [
+                    'label' => Yii::t('substituteteacher', 'Batch Insert Teacher In Year'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'teacher']
+                ],
+                [
+                    'label' => Yii::t('substituteteacher', 'Download import sample'),
+                    'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls"
+                ],
+            ],
+        ],
+        ]);
+        ?>
+    </div>
 
-            <?= Html::a(Yii::t('substituteteacher', 'Batch Insert Teachers'), ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'registry'], ['class' => 'btn btn-primary']) ?>
-
-            <?= Html::a(Yii::t('substituteteacher', 'Download import sample'), "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls", ['class' => 'btn btn-default']) ?>
-        </p>
-        <?= GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'rowOptions' => function ($model, $key, $index, $grid) {
@@ -46,6 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             [
                 'attribute' => 'registry_id',
+                'label' => Yii::t('substituteteacher', 'Teacher'),
                 'value' => 'registry.name',
                 'filter' => Select2::widget([
                     'model' => $searchModel,
@@ -91,9 +126,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{view} {update} {delete}',
             ],
         ],
     ]); ?>
-    </div>
+</div>

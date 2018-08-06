@@ -8,12 +8,13 @@ use app\modules\SubstituteTeacher\models\Call;
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use kartik\datecontrol\DateControl;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('substituteteacher', 'Placements');
+$this->title = Yii::t('substituteteacher', 'Placement decisions');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="placement-index">
@@ -21,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('substituteteacher', 'Create Placement'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('substituteteacher', 'Create Placement Decision'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?php Pjax::begin(); ?>
     <?= GridView::widget([
@@ -68,7 +69,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'updated_at',
 
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{view} {update} {delete}',
                 'visibleButtons' => [
                     'delete' => function ($model, $key, $index) {
@@ -76,8 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

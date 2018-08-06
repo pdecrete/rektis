@@ -18,38 +18,34 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="file-preview">
 
-    <h1><?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?></h1>
-    <h1><small>Οι επιλογές παρακάτω αφορούν στοιχεία <strong>πινάκων αναπληρωτών</strong></small></h1>
+    <h1>
+        <?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?>
+    </h1>
+    <h1>
+        <small>Οι επιλογές παρακάτω αφορούν στοιχεία
+            <strong>αναπληρωτών</strong>
+        </small>
+    </h1>
     <p>
-        <?=
-        Html::button(Yii::t('substituteteacher', 'Validate data'), [
-            'class' => 'btn btn-success',
-            'data' => [
-                'toggle' => 'modal',
-                'target' => '#choose-year-modal',
-                'daction' => 'validate',
-                'dbtnlabel' => Yii::t('substituteteacher', 'Validate'),
-                'dbtnconfirm' => Yii::t('substituteteacher', 'Validate import data?')
-            ],
-        ])
-
-        ?>
-        <?=
-        Html::button(Yii::t('substituteteacher', 'Import data'), [
+        <?php
+        $button_options = [
             'class' => 'btn btn-primary',
             'data' => [
                 'toggle' => 'modal',
                 'target' => '#choose-year-modal',
                 'daction' => 'import',
                 'dbtnlabel' => Yii::t('substituteteacher', 'Import'),
-                'dbtnconfirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?')
+                'dbtnconfirm' => Yii::t('substituteteacher', 'Are you certain?')
             ],
-        ])
-
+        ];
+        if ($hasData === false) {
+            $button_options['disabled'] = 'disabled';
+        }
+        echo Html::button(Yii::t('substituteteacher', 'Import data'), $button_options);
         ?>
     </p>
 
-    <?= $this->render('_data_table', ['worksheet' => $worksheet, 'line_limit' => $line_limit, 'startRow' => 1, 'highestRow' => $highestRow, 'highestColumnIndex' => $highestColumnIndex]) ?>
+    <?= $this->render('_data_table', ['worksheet' => $worksheet, 'line_limit' => $line_limit, 'startRow' => $teachersStartRow, 'highestRow' => $highestRow, 'highestColumnIndex' => $highestColumnIndex]) ?>
 </div>
 
 <?php
@@ -63,7 +59,7 @@ $form = ActiveForm::begin([
         'id' => 'year-choose-form',
         'method' => 'GET',
         'action' => [
-            'teacher',
+            'registry',
             'file_id' => $file_id,
             'sheet' => $sheet
         ],
@@ -80,8 +76,8 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
         </div>
         <div class="col-sm-8">
             <?= Html::dropDownList('year', null, Operation::selectables('year', 'year', null, function ($aq) {
-                    return $aq->orderBy(['year' => SORT_DESC]);
-                }), ['class' => 'form-control']) ?>
+                return $aq->orderBy(['year' => SORT_DESC]);
+            }), ['class' => 'form-control']) ?>
         </div>
     </div>
     <div class="row form-group">
@@ -97,7 +93,7 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
             <?= Yii::t('substituteteacher', 'Specialisation') ?>
         </div>
         <div class="col-sm-8">
-            <?= 
+            <?=
                 Select2::widget([
                     'name' => 'specialisation_id',
                     'data' => Specialisation::selectables(),
@@ -107,11 +103,6 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
                     ],
                 ]);
             ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <p class="text-warning"><?= Yii::t('substituteteacher', 'After selecting the year, all existing data linked to it will be cleared before import.') ?></p>
         </div>
     </div>
     <div class="row">
@@ -131,7 +122,7 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
                 Html::submitButton(Yii::t('substituteteacher', 'Import'), [
                     'id' => 'action-submit-btn',
                     'class' => 'btn btn-primary',
-                    'data-confirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?'),
+                    'data-confirm' => Yii::t('substituteteacher', 'Are you certain?'),
                 ])
 
                 ?>

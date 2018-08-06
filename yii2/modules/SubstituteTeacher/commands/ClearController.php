@@ -25,7 +25,7 @@ class ClearController extends Controller
 
     public function actionCheck()
     {
-        $total_tasks = 8;
+        $total_tasks = 7;
         $current_task = 0;
         Console::startProgress($current_task++, $total_tasks, "Checking: ");
 
@@ -45,11 +45,6 @@ class ClearController extends Controller
         Console::updateProgress($current_task++, $total_tasks);
 
         $audit_log_entries = AuditLog::find()->count();
-        Console::updateProgress($current_task++, $total_tasks);
-
-        $placements_qry = PlacementTeacher::find()
-            ->where(['[[deleted]]' => PlacementTeacher::PLACEMENT_TEACHER_DELETED]);
-        $placements_deleted = $placements_qry->count();
         Console::updateProgress($current_task++, $total_tasks);
 
         $placement_prints_deleted = PlacementPrint::find()
@@ -77,7 +72,6 @@ class ClearController extends Controller
         echo "- {$applications_deleted} applications marked as deleted", PHP_EOL;
         echo "- {$application_positions_deleted} application positions marked as deleted", PHP_EOL;
         echo "- {$application_positions_orphaned} application positions orhpaned (null application)", PHP_EOL;
-        echo "- {$placements_deleted} placements marked as deleted", PHP_EOL;
         echo "- {$placements_positions_deleted} placement positions linked to placements marked as deleted", PHP_EOL;
         echo "- {$placement_prints_deleted} placement prints marked as deleted", PHP_EOL;
         echo "- {$operation_specialisations_orphaned} operation specialisations orphaned", PHP_EOL;
@@ -133,33 +127,6 @@ class ClearController extends Controller
         $truncate = Yii::$app->db->createCommand()->truncateTable('{{%staudit_log}}')->execute();
 
         echo "Cleared audit log [{$truncate}]", PHP_EOL;
-
-        return Controller::EXIT_CODE_NORMAL;
-    }
-
-    /**
-     * Clear placements that has been marked as deleted.
-     *
-     */
-    public function actionPlacement()
-    {
-        if (false === Console::confirm(Console::ansiFormat("Clear placement data marked with soft delete?", [Console::BG_RED]))) {
-            echo "Abort.\n";
-            exit();
-        }
-
-        $placements_qry = PlacementTeacher::find()
-            ->where(['[[deleted]]' => PlacementTeacher::PLACEMENT_TEACHER_DELETED]);
-        $placements_deleted_ids = array_map(function ($m) {
-            return $m->id;
-        }, $placements_qry->all());
-
-        $placements_positions_deleted = PlacementPosition::deleteAll(['[[placement_teacher_id]]' => $placements_deleted_ids]);
-
-        $placements_deleted = PlacementTeacher::deleteAll(['[[deleted]]' => PlacementTeacher::PLACEMENT_TEACHER_DELETED, '[[id]]' => $placements_deleted_ids]);
-        echo "Cleared entries:", PHP_EOL;
-        echo "- {$placements_deleted} placements marked as deleted", PHP_EOL;
-        echo "- {$placements_positions_deleted} placement positions linked to placements marked as deleted", PHP_EOL;
 
         return Controller::EXIT_CODE_NORMAL;
     }

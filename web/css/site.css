@@ -97,3 +97,5 @@ table.detail-view th {
 table.detail-view td {
     width: 62%;
 }
+
+.btn-group-container { margin: 0 0 10px; }

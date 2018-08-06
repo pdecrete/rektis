@@ -36,7 +36,7 @@ class TeacherBoardController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'appoint', 'negate', 'eligible'],
+                        'actions' => ['index', 'appoint', 'negate', 'eligible', 'dismiss'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -76,7 +76,7 @@ class TeacherBoardController extends Controller
         $model = new TeacherBoard();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -95,7 +95,7 @@ class TeacherBoardController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+            return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -113,11 +113,12 @@ class TeacherBoardController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
     }
 
     /**
-     *
+     * TODO / TBD log actions and possibly modify related/dependent information 
+     * 
      * @return boolean whether the change (save) was succesful
      */
     protected function setStatus($id, $status)
@@ -129,6 +130,22 @@ class TeacherBoardController extends Controller
         } else {
             return false;
         }
+    }
+
+    /**
+     * Mark a teacher board entry as dismissed.
+     *
+     * @param int $id The identity of the teacher board to mark as dismissed
+     * @return mixed
+     */
+    public function actionDismiss($id)
+    {
+        if ($this->setStatus($id, Teacher::TEACHER_STATUS_DISMISSED)) {
+            Yii::$app->session->setFlash('success', 'Πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
+        } else {
+            Yii::$app->session->setFlash('danger', 'Δεν πραγματοποιήθηκε αλλαγή της κατάστασης του αναπληρωτή.');
+        }
+        return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
     }
 
     /**

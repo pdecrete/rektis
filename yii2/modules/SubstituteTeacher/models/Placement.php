@@ -122,9 +122,54 @@ class Placement extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPlacementPrints()
+    public function getAllPrints()
     {
         return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDecisionPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_DECISION,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContractPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_CONTRACT,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSummaryPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_SUMMARY,
+            ]);
     }
 
     /**
@@ -142,7 +187,7 @@ class Placement extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id'])
             ->andOnCondition([
-                PlacementTeacher::tableName() . '.[[deleted]]' => false,
+                PlacementTeacher::tableName() . '.[[dismissed]]' => false,
                 PlacementTeacher::tableName() . '.[[altered]]' => false
             ]);
     }
@@ -191,7 +236,7 @@ class Placement extends \yii\db\ActiveRecord
             ->andWhere([
                 "{$placement_tablename}.[[id]]" => $placement_id,
                 "{$placement_tablename}.[[deleted]]" => false,
-                "{$placement_teacher_tablename}.[[deleted]]" => false,
+                "{$placement_teacher_tablename}.[[dismissed]]" => false,
                 "{$placement_teacher_tablename}.[[altered]]" => false,
             ])
             ;

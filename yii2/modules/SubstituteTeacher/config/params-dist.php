@@ -12,6 +12,6 @@ return [
             'ΠΕ 3000',
             'ΕΒΠ'
         ],
-        'extra-call-teachers-percent' => 0.2, // call an extra 20% of teachers to cover loses 
+        'extra-call-teachers-percent' => 0.2, // call an extra 20% of teachers to cover loses; ONLY USED WHEN call does not explicitely define number of teachers to call 
     ]
 ];

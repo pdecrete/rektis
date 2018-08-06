@@ -61,7 +61,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 ,
                 'format' => 'html'
             ],
-        'created_at',
+            [
+                'attribute' => '',
+                'label' => Yii::t('substituteteacher', 'Teachers to call'),
+                'value' => $model->callTeacherSpecialisations ? implode(
+                    '<br>',
+                        array_map(function ($m) {
+                            return "{$m->teachers_call}, {$m->specialisation->label}";
+                        }, $model->callTeacherSpecialisations)
+                    ) : null
+                ,
+                'format' => 'html'
+            ],
+            'created_at',
             'updated_at',
         ],
     ])

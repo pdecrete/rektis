@@ -4,12 +4,13 @@ use yii\bootstrap\Html;
 use yii\grid\GridView;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Modal;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\CallPositionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('substituteteacher', 'Call Positions');
+$this->title = Yii::t('substituteteacher', 'PYSEEP positions distribution');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -66,7 +67,8 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'created_at',
             // 'updated_at',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{view} {delete}'
             ],
         ],

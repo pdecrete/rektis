@@ -115,7 +115,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
                 ]
             ],
             [
-                [ //'specialisation_ids', 'birthdate', 'gender', 'mothername', 'city', 'tax_service',
+                [ 'specialisation_ids', //'birthdate', 'gender', 'mothername', 'city', 'tax_service',
                   //'birthplace', 'mobile_phone', 'home_address', 'postal_code',
                   'firstname', 'surname', 'fathername', 'protected_children',                  
                   'tax_identification_number', 'identity_number' ],

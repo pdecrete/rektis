@@ -5,7 +5,6 @@ use yii\bootstrap\Modal;
 use yii\bootstrap\ActiveForm;
 use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Teacher;
-use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\Specialisation;
 use kartik\select2\Select2;
 use yii\web\View;
@@ -18,8 +17,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="file-preview">
 
-    <h1><?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?></h1>
-    <h1><small>Οι επιλογές παρακάτω αφορούν στοιχεία <strong>πινάκων αναπληρωτών</strong></small></h1>
+    <h1>
+        <?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?>
+    </h1>
+    <h1>
+        <small>Οι επιλογές παρακάτω αφορούν στοιχεία
+            <strong>προτιμήσεων τοποθέτησης αναπληρωτών</strong>
+        </small>
+    </h1>
     <p>
         <?=
         Html::button(Yii::t('substituteteacher', 'Validate data'), [
@@ -42,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'target' => '#choose-year-modal',
                 'daction' => 'import',
                 'dbtnlabel' => Yii::t('substituteteacher', 'Import'),
-                'dbtnconfirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?')
+                'dbtnconfirm' => Yii::t('substituteteacher', 'Clear previous placement preferences and import? Are you certain?')
             ],
         ])
 
@@ -55,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 Modal::begin([
     'id' => 'choose-year-modal',
-    'header' => '<h3>' . Yii::t('substituteteacher', 'Select year to import teachers to') . '</h3>',
+    'header' => '<h3>' . Yii::t('substituteteacher', 'Select year of placement preferences') . '</h3>',
     'clientOptions' => ['backdrop' => 'static', 'keyboard' => false]
 ]);
 
@@ -63,7 +68,7 @@ $form = ActiveForm::begin([
         'id' => 'year-choose-form',
         'method' => 'GET',
         'action' => [
-            'teacher',
+            'placement-preference',
             'file_id' => $file_id,
             'sheet' => $sheet
         ],
@@ -80,16 +85,8 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
         </div>
         <div class="col-sm-8">
             <?= Html::dropDownList('year', null, Operation::selectables('year', 'year', null, function ($aq) {
-                    return $aq->orderBy(['year' => SORT_DESC]);
-                }), ['class' => 'form-control']) ?>
-        </div>
-    </div>
-    <div class="row form-group">
-        <div class="col-sm-4">
-            <?= Yii::t('substituteteacher', 'Teacher board') ?>
-        </div>
-        <div class="col-sm-8">
-            <?= Html::dropDownList('board_type', null, TeacherBoard::getChoices('board_type'), ['class' => 'form-control']) ?>
+    return $aq->orderBy(['year' => SORT_DESC]);
+}), ['class' => 'form-control']) ?>
         </div>
     </div>
     <div class="row form-group">
@@ -97,7 +94,7 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
             <?= Yii::t('substituteteacher', 'Specialisation') ?>
         </div>
         <div class="col-sm-8">
-            <?= 
+            <?=
                 Select2::widget([
                     'name' => 'specialisation_id',
                     'data' => Specialisation::selectables(),
@@ -111,7 +108,9 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <p class="text-warning"><?= Yii::t('substituteteacher', 'After selecting the year, all existing data linked to it will be cleared before import.') ?></p>
+            <p class="text-warning">
+                <?= Yii::t('substituteteacher', 'After selecting the year, all existing placement preferences of the selected teachers in that year will be cleared before import.') ?>
+            </p>
         </div>
     </div>
     <div class="row">
@@ -131,7 +130,7 @@ echo Html::hiddenInput('action', 'import', ['id' => 'action-input-container']);
                 Html::submitButton(Yii::t('substituteteacher', 'Import'), [
                     'id' => 'action-submit-btn',
                     'class' => 'btn btn-primary',
-                    'data-confirm' => Yii::t('substituteteacher', 'Clear all data and import? Are you certain?'),
+                    'data-confirm' => Yii::t('substituteteacher', 'Clear previous placement preferences and import? Are you certain?'),
                 ])
 
                 ?>
