@@ -34,6 +34,8 @@ class PlacementTeacher extends \yii\db\ActiveRecord
 {
     const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
 
+    public $status_label; 
+
     /**
      * @inheritdoc
      */
@@ -144,6 +146,16 @@ class PlacementTeacher extends \yii\db\ActiveRecord
         }
 
         return true;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->status_label = '' 
+            . ($this->altered ? 'altered ' : '')
+            . ($this->cancelled ? 'cancelled ' : '')
+            . ($this->dismissed ? 'dismissed ' : '');
     }
 
     /**

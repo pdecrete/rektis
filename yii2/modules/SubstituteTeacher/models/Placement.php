@@ -37,6 +37,7 @@ class Placement extends \yii\db\ActiveRecord
     use Selectable;
 
     public $label;
+    public $protocol_label;
 
     /**
      * @inheritdoc
@@ -117,6 +118,7 @@ class Placement extends \yii\db\ActiveRecord
         parent::afterFind();
 
         $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision . ' ' . $this->ada;
+        $this->protocol_label = $this->decision . '/' . Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board;
     }
 
     /**

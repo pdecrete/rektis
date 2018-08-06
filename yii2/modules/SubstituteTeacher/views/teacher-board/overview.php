@@ -8,6 +8,8 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use yii\helpers\VarDumper;
+use yii\widgets\ListView;
+use yii\data\ArrayDataProvider;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherBoardSearch */
@@ -95,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'board_type' => $searchModel->board_type,
                 ],
                 'rowOptions' => function ($model, $key, $index, $grid) {
-                    if (($model->status == Teacher::TEACHER_STATUS_NEGATION) || ($model->status == Teacher::TEACHER_STATUS_DISMISSED)) {
+                    if (($model->status == Teacher::TEACHER_STATUS_NEGATION) || ($model->status == Teacher::TEACHER_STATUS_DISMISSED) || ($model->status == Teacher::TEACHER_STATUS_CANCELLED)) {
                         return ['class' => 'danger'];
                     } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
                         return ['class' => 'success'];
@@ -170,6 +172,105 @@ $this->params['breadcrumbs'][] = $this->title;
                     'teacherRegistry.birthplace',
                     'teacherRegistry.birthdate',
 
+                    [
+                        'header' => 'tst',
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return count($model->placementTeachers);
+                            }
+                        }
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Operation'),
+                        'value' => function ($model) {
+//                            $model->position->operation->label
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    if (empty($m->placementPositions)) {
+                                        return $c . '<li>' . '-';
+                                    } else {
+                                        return $c . '<li>' . array_reduce($m->placementPositions, function ($carry, $mp) {
+                                            return '&mdash; ' . $mp->position->operation->label;
+                                        }, '');
+                                    }
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Position placements'),
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    return $c . '<li>' . $m->status_label . ListView::widget([
+                                        'dataProvider' => new ArrayDataProvider(['allModels' => $m->placementPositions]),
+                                        'itemView' => '/placement-teacher/_position_list_item',
+                                        'summary' => ''
+                                    ]);
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Decision protocol'),
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    return $c . '<li>' . $m->placement->protocol_label;
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Placement decision ADA'),
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    return $c . '<li>' . (empty($m->placement->ada) ? '-' : $m->placement->ada);
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Contract start date'),
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    return $c . '<li>' . empty($m->contract_start_date) ? '-' : $m->contract_start_date;
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
+                    [
+                        'label' => Yii::t('substituteteacher', 'Contract end date') . ' / ' . Yii::t('substituteteacher', 'Service end date'),
+                        'value' => function ($model) {
+                            if (empty($model->placementTeachers)) {
+                                return null;
+                            } else {
+                                return '<ol class="compactgrid">' . array_reduce($model->placementTeachers, function ($c, $m) {
+                                    return $c . '<li>' . (empty($m->contract_end_date) ? '-' : $m->contract_end_date) . ' / ' . (empty($m->service_end_date) ? '-' : $m->service_end_date);
+                                }, '') . '</ol>';
+                            }
+                        },
+                        'format' => 'html'        
+                    ],
                 ],
             ]);
             ?>
