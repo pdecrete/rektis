@@ -9,6 +9,8 @@ use wbraganca\dynamicform\DynamicFormWidget;
 use app\modules\SubstituteTeacher\models\Placement;
 use kartik\datecontrol\DateControl;
 use dosamigos\switchinput\SwitchBox;
+use yii\helpers\Url;
+use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\Placement */
@@ -37,15 +39,40 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
     <?php if ($model->isNewRecord): ?>
-    <?=
-    $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
-        'data' => TeacherBoard::selectablesWithTeacherInfo(),
-        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-        'pluginOptions' => [
-            'multiple' => false,
-            'allowClear' => false
+    <?php
+    $url = Url::to(['teacher-board/choose']);
+    //// $cityDesc = empty($model->city) ? '' : City::findOne($model->city)->description;
+ 
+    echo $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
+        'initValueText' => 'zz', //// $cityDesc, // set the initial display text
+        'options' => [
+            'placeholder' => Yii::t('substituteteacher', 'Search for teacher...')
         ],
-    ]);
+        'pluginOptions' => [
+            'allowClear' => true,
+            'minimumInputLength' => 3,
+            'language' => [
+                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            ],
+            'ajax' => [
+                'url' => $url,
+                'dataType' => 'json',
+                'data' => new JsExpression('function(params) { return {term:params.term}; }'),
+                'delay' => 500
+            ],
+            // 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            'templateResult' => new JsExpression('function (res) { return res.text; }'),
+            'templateSelection' => new JsExpression('function (res) { return res.text; }'),
+        ],
+    ])->hint(Yii::t('substituteteacher', 'Type three letter to search surname or name; if searching for both, use surname first.'));
+    // $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
+    //     'data' => TeacherBoard::selectablesWithTeacherInfo(),
+    //     'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+    //     'pluginOptions' => [
+    //         'multiple' => false,
+    //         'allowClear' => false
+    //     ],
+    // ]);
     ?>
     <?php else: ?>
     <h3>

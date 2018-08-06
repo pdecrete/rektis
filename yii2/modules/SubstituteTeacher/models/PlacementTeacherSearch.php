@@ -41,7 +41,8 @@ class PlacementTeacherSearch extends PlacementTeacher
      */
     public function search($params)
     {
-        $query = PlacementTeacher::find();
+        $query = PlacementTeacher::find()
+            ->with(['summaryPrints', 'contractPrints']);
 
         // add conditions that should always apply here
 
