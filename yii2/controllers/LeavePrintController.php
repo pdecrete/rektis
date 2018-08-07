@@ -21,14 +21,14 @@ class LeavePrintController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    // [
+                    //     'actions' => ['index', 'view'],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
                     [
-                        'actions' => ['index', 'view'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['admin', 'user', 'leave_user'],
+                        'roles' => ['admin', 'leave_user'],
                     ],
                 ],
             ],

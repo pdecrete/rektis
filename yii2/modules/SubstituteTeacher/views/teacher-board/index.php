@@ -23,12 +23,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a(Yii::t('substituteteacher', 'Create Teacher Board'), ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a(Yii::t('substituteteacher', 'Teacher boards overview'), ['overview'], ['class' => 'btn btn-primary']) ?>
         </p>
+
         <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'rowOptions' => function ($model, $key, $index, $grid) {
-            if (($model->status == Teacher::TEACHER_STATUS_NEGATION) || ($model->status == Teacher::TEACHER_STATUS_DISMISSED)) {
+            if (($model->status == Teacher::TEACHER_STATUS_NEGATION) || ($model->status == Teacher::TEACHER_STATUS_DISMISSED) || ($model->status == Teacher::TEACHER_STATUS_CANCELLED)) {
                 return ['class' => 'danger'];
             } elseif ($model->status == Teacher::TEACHER_STATUS_APPOINTED) {
                 return ['class' => 'success'];

@@ -99,3 +99,8 @@ table.detail-view td {
 }
 
 .btn-group-container { margin: 0 0 10px; }
+
+ol.compactgrid, ul.compactgrid {
+    padding-left: 1em;
+    list-style-type: decimal-leading-zero;
+}

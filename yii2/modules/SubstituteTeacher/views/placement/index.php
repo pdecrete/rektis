@@ -63,6 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'decision_board',
             'decision',
+            'ada',
             // 'comments:ntext',
             'deleted:boolean',
             // 'created_at',

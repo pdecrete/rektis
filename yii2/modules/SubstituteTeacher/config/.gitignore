@@ -1,3 +1,4 @@
 *
 !.gitignore
 !*-dist.php
+!*-core.php

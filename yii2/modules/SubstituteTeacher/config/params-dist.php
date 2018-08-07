@@ -1,4 +1,7 @@
 <?php
+
+// you should copy this to a params.php file and make any modifications 
+
 return [
     'params' => [
         'maxFileSize' => 200000,

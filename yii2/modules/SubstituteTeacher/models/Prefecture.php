@@ -11,6 +11,7 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $id
  * @property string $region
  * @property string $prefecture
+ * @property string $symbol 1-letter symbol
  *
  * @property Position[] $positions
  */

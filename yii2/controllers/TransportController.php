@@ -41,14 +41,14 @@ class TransportController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    // [
+                    //     'actions' => ['index', 'view', 'download', 'kae'],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
                     [
-                        'actions' => ['index', 'view', 'download', 'kae'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['admin', 'user', 'transport_user'],
+                        'roles' => ['admin', 'transport_user'],
                     ],
                 ],
             ],

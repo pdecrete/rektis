@@ -102,6 +102,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             //[['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
             [['identity_number', 'passport_number'], 'string', 'max' => 30],
+            [['identity_number'], 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['identity-number-pattern']],
             [['iban'], 'string', 'max' => 34],
             [['email'], 'email'],
             [['identity_number', 'passport_number'], 'unique'],

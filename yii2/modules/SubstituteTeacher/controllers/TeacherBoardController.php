@@ -11,6 +11,10 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
+use yii\db\Query;
+use app\modules\SubstituteTeacher\models\TeacherRegistry;
+use yii\db\Expression;
+use app\modules\SubstituteTeacher\models\Specialisation;
 
 /**
  * TeacherBoardController implements the CRUD actions for TeacherBoard model.
@@ -29,14 +33,15 @@ class TeacherBoardController extends Controller
                     'delete' => ['POST'],
                     'appoint' => ['POST'],
                     'negate' => ['POST'],
-                    'eligible' => ['POST']
+                    'eligible' => ['POST'],
+                    'choose' => ['GET']
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'appoint', 'negate', 'eligible', 'dismiss'],
+                        'actions' => ['index', 'appoint', 'negate', 'eligible', 'dismiss', 'overview', 'choose'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -47,6 +52,77 @@ class TeacherBoardController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionChoose($term = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = [
+            'results' => [
+                ['id' => '', 'text' => '' . $term]
+            ]
+        ];
+
+        $term = filter_var(trim($term), FILTER_SANITIZE_MAGIC_QUOTES);
+        if (!empty($term) && mb_strlen($term) >= 3) {
+            $term = '%' . strtr($term, ' ', '%') . '%';
+            $query = TeacherBoard::find()
+                ->joinWith(['teacherRegistry', 'specialisation'])
+                ->select([
+                    TeacherBoard::tableName() . '.[[id]]',
+                    new Expression(
+                        'CONCAT(' .
+                        TeacherRegistry::tableName() . '.surname' . ',\' \',' .
+                        TeacherRegistry::tableName() . '.firstname' . ',\' \',' .
+                        Specialisation::tableName() . '.code' . ',\' \',' .
+                        '\'α/α \', ' . TeacherBoard::tableName() . '.order' . ',\' \',' .
+                        Teacher::tableName() . '.year' . ',\' \'' .
+                        ') AS text'
+                    )
+                ])
+                ->andWhere([
+                    'like', new Expression('CONCAT (' . TeacherRegistry::tableName() . '.surname' . ',' . TeacherRegistry::tableName() . '.firstname' . ')'), $term, false
+                ])
+                ->limit(10);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+
+        return $out;
+    }
+
+    /**
+     * Display a detailed overview of the teacher board. 
+     * This action will query specific teacher boards; a GET request allows for
+     * selection, a POST request displays information based on selections.
+     * 
+     */
+    public function actionOverview($year = null, $specialisation = null, $board_type = null)
+    {
+        Url::remember('', 'teacherboardoverview');
+
+        $over_query_params = ['TeacherBoardSearch' => []];
+        if (!empty($year)) {
+            $over_query_params['TeacherBoardSearch']['year'] = $year;
+        }
+        if (!empty($specialisation)) {
+            $over_query_params['TeacherBoardSearch']['specialisation_id'] = $specialisation;
+        }
+        if (!empty($board_type)) {
+            $over_query_params['TeacherBoardSearch']['board_type'] = $board_type;
+        }
+
+        $searchModel = new TeacherBoardSearch();
+        $dataProvider = $searchModel->search(array_merge_recursive(Yii::$app->request->queryParams, $over_query_params));
+
+        return $this->render('overview', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'year' => $year,
+            'specialisation' => $specialisation,
+            'board_type' => $board_type
+        ]);
     }
 
     /**

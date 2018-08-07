@@ -27,13 +27,18 @@ class ServiceController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    // [
+                    //     'actions' => ['index','view'],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
+                    // [
+                    //     'actions' => ['create', 'update'],
+                    //     'allow' => true,
+                    //     'roles' => ['admin', 'user'],
+                    // ],
                     [
-                        'actions' => ['index','view'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['create', 'update'],
+                        'actions' => ['index', 'view', 'create', 'update'],
                         'allow' => true,
                         'roles' => ['admin', 'user'],
                     ],
