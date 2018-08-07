@@ -204,7 +204,7 @@ AppAsset::register($this);
 
                 [
                     'label' => 'Αναπληρωτές',
-                    'visible' => Yii::$app->user->can('spedu_user'), // TODO change when role is applicable
+                    'visible' => Yii::$app->user->can('spedu_user'), 
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-file"></i> Αρχεία δεδομένων</li>',
                         [
@@ -260,7 +260,8 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Προτιμήσεις τοποθέτησης αναπληρωτών',
-                            'url' => [ '/SubstituteTeacher/placement-preference/index' ]
+                            'url' => [ '/SubstituteTeacher/placement-preference/index' ],
+                            'visible' => Yii::$app->user->can('admin'),
                         ],
                         [
                             'label' => 'Πίνακες διορισμών',
@@ -280,7 +281,8 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Παραχθέντα έγγραφα',
-                            'url' => [ '/SubstituteTeacher/placement-print/index' ]
+                            'url' => [ '/SubstituteTeacher/placement-print/index' ],
+                            'visible' => Yii::$app->user->can('admin'),
                         ],
 
                         '<li class="divider"></li>',
@@ -309,7 +311,7 @@ AppAsset::register($this);
 
                 [
                     'label' => 'Διαχείριση Δαπανών',
-                    'visible' => !Yii::$app->user->isGuest,
+                    'visible' => Yii::$app->user->can('financial_director') || Yii::$app->user->can('financial_editor') || Yii::$app->user->can('financial_viewer'),
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Ενότητες</li>',
                         [
@@ -342,7 +344,7 @@ AppAsset::register($this);
                 ],
                 [
                     'label' => 'Σχολικές Μετακινήσεις',
-                    'visible' => !Yii::$app->user->isGuest,
+                    'visible' => Yii::$app->user->can('schtransport_director') || Yii::$app->user->can('schtransport_editor') || Yii::$app->user->can('schtransport_viewer'),
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
                         [
