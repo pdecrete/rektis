@@ -17,6 +17,8 @@ use app\modules\SubstituteTeacher\traits\Selectable;
  * @property integer $status @see Teacher model for STATUS definitions
  *
  * @property Specialisation $specialisation
+ * @property PlacementTeacher[] $placementTeachers 
+ * @property Applications[] getApplications
  * @property Teacher $teacher
  */
 class TeacherBoard extends \yii\db\ActiveRecord
@@ -53,11 +55,30 @@ class TeacherBoard extends \yii\db\ActiveRecord
                 TeacherBoard::TEACHER_BOARD_TYPE_SECONDARY
             ]],
             [['points'], 'number'],
-            [['teacher_id', 'specialisation_id'], 'unique', 'targetAttribute' => ['teacher_id', 'specialisation_id'], 'message' => 'The combination of Teacher ID and Specialisation ID has already been taken.'],
+            // this fails after adding with() on main activequery [['teacher_id', 'specialisation_id'], 'unique', 'targetAttribute' => ['teacher_id', 'specialisation_id'], 'message' => 'The combination of Teacher ID and Specialisation ID has already been taken.'],
+            ['teacher_id', 'validateUniqueWithSpecialisation'],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'id']],
         ];
     }
+
+    public function validateUniqueWithSpecialisation($attribute, $params, $validator)
+    {
+        $boards = TeacherBoard::find()
+            ->andWhere([
+                'teacher_id' => $this->$attribute,
+                'specialisation_id' => $this->specialisation_id
+            ])
+            ->andWhere([
+                'not', ['id' => $this->id]
+            ])
+            ->one();
+
+        if (!empty($boards)) {
+            $this->addError($attribute, Yii::t('substituteteacher', 'Teacher is already located with this specialisation.'));
+        }
+    }
+
 
     /**
      * @inheritdoc
@@ -99,6 +120,22 @@ class TeacherBoard extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TeacherRegistry::className(), ['id' => 'registry_id'])
             ->via('teacher');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlacementTeachers()
+    {
+        return $this->hasMany(PlacementTeacher::className(), ['teacher_board_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplications()
+    {
+        return $this->hasMany(Application::className(), ['teacher_board_id' => 'id']);
     }
 
     public static function boardTypeLabel($board_type)
@@ -152,7 +189,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
 
     public static function selectablesWithTeacherInfo()
     {
-        return static::selectables('id', function ($data, $default) { return $data->teacher->name . ' ' . $data->label; }, 'teacher.name', function ($aq) {
+        return static::selectables('id', function ($data, $default) { return  ' ' . $data->label; }, 'teacher.name', function ($aq) {
             return $aq->orderBy(['teacher_id' => SORT_ASC]);
         });
     }

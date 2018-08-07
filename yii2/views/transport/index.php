@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TransportSearch */
@@ -91,7 +92,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ])
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+                'filterConfirmMessage' => 'Επαναφορά ταξινόμησης και φίλτρων αναζήτησης;',
                 'template' => '{view} {update} {printButton} {delete}',
                 'buttons' => [
                     'printButton' => function ($url, $model, $key) {
@@ -107,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 ],
                 'contentOptions' => [
-                    'class' => 'text-nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ]
         ],

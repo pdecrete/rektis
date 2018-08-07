@@ -57,6 +57,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     ,
                     'format' => 'html'
                 ],
+                [
+                    'attribute' => 'public_experience',
+                    'value' => "{$model->public_experience_label} ({$model->public_experience})",
+                ],
+                [
+                    'attribute' => 'smeae_keddy_experience',
+                    'value' => "{$model->smeae_keddy_experience_label} ({$model->smeae_keddy_experience})",
+                ],
+                [
+                    'attribute' => 'disability_percentage',
+                    'value' => "{$model->disability_percentage}%",
+                ],
+                'disabled_children',
+                'many_children:boolean',
+                'three_children:boolean',
             ],
         ]) ?>
 

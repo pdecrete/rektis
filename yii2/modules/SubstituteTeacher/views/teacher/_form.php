@@ -6,6 +6,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
 use kartik\select2\Select2;
+use dosamigos\switchinput\SwitchBox;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
@@ -22,6 +23,31 @@ jQuery(".dynamicform_wrapper").on("afterDelete", function(e) {
         jQuery(this).html("" + (index + 1))
     });
 });
+
+var expconvert = function (value) {
+    var days = value % 30;
+    var months_rem = parseInt((value - days) / 30);
+    var months = months_rem % 12;
+    var years = parseInt(months_rem / 12);
+    return "" + years + "E " + months + "M " + days + "H";
+};
+
+var expdisplay = function (elem) {
+    var value = parseInt(elem.val()); 
+    if (value > 0) {
+        elem.next(".hinter").html(expconvert(value));
+    } else {
+        elem.next(".hinter").html("...");
+    }
+}
+
+$(".expconv").each(function (idx) {
+    expdisplay($(this));
+});
+
+$(".expconv").on("change paste keyup", function() {
+    expdisplay($(this));
+});
 ';
 
 $this->registerJs($js);
@@ -32,20 +58,65 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
-    <?=
-    $form->field($model, 'registry_id')->widget(Select2::classname(), [
-        'data' => TeacherRegistry::defaultSelectables(),
-        'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
-        'pluginOptions' => [
-            'multiple' => false,
-            'allowClear' => true
-        ],
-    ]);
-    ?>
-
+    <div class="row">
+        <div class="col-md-9">
+            <?=
+        $form->field($model, 'registry_id')->widget(Select2::classname(), [
+            'data' => TeacherRegistry::defaultSelectables(),
+            'options' => ['placeholder' => Yii::t('substituteteacher', 'Choose...')],
+            'pluginOptions' => [
+                'multiple' => false,
+                'allowClear' => true
+            ],
+        ]);
+        ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-6">
-            <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
+            <?= $form->field($model, 'public_experience')->textInput(['type' => 'number', 'class' => 'form-control expconv'])->hint('...', ['class' => 'hinter']) ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'smeae_keddy_experience')->textInput(['type' => 'number', 'class' => 'form-control expconv'])->hint('...', ['class' => 'hinter']) ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <?= $form->field($model, 'disability_percentage')->textInput(['type' => 'number']) ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'disabled_children')->textInput(['type' => 'number']) ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'many_children')->widget(SwitchBox::className(), [
+                'options' => [
+                    'label' => '',
+                ],
+                'clientOptions' => [
+                    'size' => 'small',
+                    'onColor' => 'success',
+                    'onText' => Yii::t('substituteteacher', 'YES'),
+                    'offText' => Yii::t('substituteteacher', 'No'),
+                ]
+            ]);
+            ?>
+        </div>
+        <div class="col-md-3">
+            <?= $form->field($model, 'three_children')->widget(SwitchBox::className(), [
+                'options' => [
+                    'label' => '',
+                ],
+                'clientOptions' => [
+                    'size' => 'small',
+                    'onColor' => 'success',
+                    'onText' => Yii::t('substituteteacher', 'YES'),
+                    'offText' => Yii::t('substituteteacher', 'No'),
+                ]
+            ]);
+            ?>
         </div>
     </div>
 
@@ -55,7 +126,8 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
         </div>
         <div class="panel-body">
             <?php if (!isset($modelsBoards)) : ?>
-            <p>Μπορείτε να προσθέσετε στοιχεία πινάκων διορισμών <strong>μετά την δημιουργία</strong>.</p>
+            <p>Μπορείτε να προσθέσετε στοιχεία πινάκων διορισμών
+                <strong>μετά την δημιουργία</strong>.</p>
             <?php elseif (empty($modelsBoards)) : ?>
             <p>Δεν υπάρχουν στοιχεία.</p>
             <?php else: ?>
@@ -63,18 +135,29 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
             $firstModelBoard = reset($modelsBoards);
             ?>
             <table class="table table-striped table-hover">
-                <caption>Εάν ο καθηγητής δεν υπάγεται σε πίνακα κάποιας ειδικότητας, εισάγετε κενό στην αντίστοιχη σειρά κατάταξης στον πίνακα και στα μόρια και αφαιρέστε την επιλογή τύπου πίνακα διορισμού.</caption>
+                <caption>Εάν ο καθηγητής δεν υπάγεται σε πίνακα κάποιας ειδικότητας, εισάγετε κενό στην αντίστοιχη σειρά κατάταξης
+                    στον πίνακα και στα μόρια και αφαιρέστε την επιλογή τύπου πίνακα διορισμού.</caption>
                 <thead>
                     <tr>
-                        <th><?php echo Yii::t('substituteteacher', 'Order in board'); ?></th>
-                        <th><?php echo $firstModelBoard->getAttributeLabel('board_type'); ?></th>
-                        <th><?php echo Yii::t('substituteteacher', 'Specialisation'); ?></th>
-                        <th><?php echo $firstModelBoard->getAttributeLabel('points'); ?></th>
-                        <th><?php echo Yii::t('substituteteacher', 'Status'); ?></th>
+                        <th>
+                            <?php echo Yii::t('substituteteacher', 'Order in board'); ?>
+                        </th>
+                        <th>
+                            <?php echo $firstModelBoard->getAttributeLabel('board_type'); ?>
+                        </th>
+                        <th>
+                            <?php echo Yii::t('substituteteacher', 'Specialisation'); ?>
+                        </th>
+                        <th>
+                            <?php echo $firstModelBoard->getAttributeLabel('points'); ?>
+                        </th>
+                        <th>
+                            <?php echo Yii::t('substituteteacher', 'Status'); ?>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($modelsBoards as $index => $modelBoard): ?>
+                    <?php foreach ($modelsBoards as $index => $modelBoard): ?>
                     <tr class="item">
                         <td>
                             <?php
@@ -88,7 +171,9 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                                 $teacher_errors = $modelBoard->getErrors('teacher_id');
                                 if (!empty($teacher_errors)) :
                             ?>
-                                <div class="text-danger"><?= implode(', ', $teacher_errors) ?></div>
+                            <div class="text-danger">
+                                <?= implode(', ', $teacher_errors) ?>
+                            </div>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -105,7 +190,7 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                             <?= $form->field($modelBoard, "[{$index}]status")->dropDownList(Teacher::getChoices('status'), ['prompt' => Yii::t('substituteteacher', 'Choose...')])->label(false) ?>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
             <?php endif; ?>
@@ -133,24 +218,38 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
     <div class="panel panel-default">
         <div class="panel-heading">
             <?php echo Yii::t('substituteteacher', 'Placement preferences'); ?>
-            <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span> <?php echo Yii::t('substituteteacher', 'Add new preference'); ?></button>
+            <button type="button" class="add-item btn btn-success btn-xs">
+                <span class="glyphicon glyphicon-plus"></span>
+                <?php echo Yii::t('substituteteacher', 'Add new preference'); ?>
+            </button>
             <div class="clearfix"></div>
         </div>
-        <div class="panel-body"><!-- widgetContainer -->
+        <div class="panel-body">
+            <!-- widgetContainer -->
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th class="col-xs-1">#</th>
-                        <th><?php echo $firstModelPlacementPreference->getAttributeLabel('prefecture_id'); ?></th>
-                        <th><?php echo $firstModelPlacementPreference->getAttributeLabel('school_type'); ?></th>
-                        <th><?php echo $firstModelPlacementPreference->getAttributeLabel('order'); ?></th>
+                        <th>
+                            <?php echo $firstModelPlacementPreference->getAttributeLabel('prefecture_id'); ?>
+                        </th>
+                        <th>
+                            <?php echo $firstModelPlacementPreference->getAttributeLabel('school_type'); ?>
+                        </th>
+                        <th>
+                            <?php echo $firstModelPlacementPreference->getAttributeLabel('order'); ?>
+                        </th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody class="container-items">
-                <?php foreach ($modelsPlacementPreferences as $index => $modelPlacementPreference): ?>
+                    <?php foreach ($modelsPlacementPreferences as $index => $modelPlacementPreference): ?>
                     <tr class="item">
-                        <td><span class="badge panel-serial-number"><?php echo $index + 1; ?></span></td>
+                        <td>
+                            <span class="badge panel-serial-number">
+                                <?php echo $index + 1; ?>
+                            </span>
+                        </td>
                         <td>
                             <?php
                                 // necessary for update action.
@@ -163,7 +262,9 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                                 $teacher_errors = $modelPlacementPreference->getErrors('teacher_id');
                                 if (!empty($teacher_errors)) :
                             ?>
-                                <div class="text-danger"><?= implode(', ', $teacher_errors) ?></div>
+                            <div class="text-danger">
+                                <?= implode(', ', $teacher_errors) ?>
+                            </div>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -173,10 +274,12 @@ $firstModelPlacementPreference = reset($modelsPlacementPreferences);
                             <?= $form->field($modelPlacementPreference, "[{$index}]order")->textInput(['type' => 'number', 'min' => 0])->label(false) ?>
                         </td>
                         <td class="col-sm-1 text-center">
-                            <button type="button" class="remove-item btn btn-danger btn-sm"><span class="glyphicon glyphicon-minus"></span></button>
+                            <button type="button" class="remove-item btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

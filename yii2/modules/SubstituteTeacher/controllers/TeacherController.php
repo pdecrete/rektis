@@ -193,7 +193,7 @@ class TeacherController extends Controller
                 }
             });
             Model::loadMultiple($modelsBoards, $post);
-
+// dd($modelsBoards);
             if (isset($post['PlacementPreference'])) {
                 $post['PlacementPreference'] = array_values($post['PlacementPreference']);
             }
@@ -236,13 +236,15 @@ class TeacherController extends Controller
                             }
                         }
 
-                        if (! empty($deletedIDs)) {
-                            PlacementPreference::deleteAll(['id' => $deletedIDs]);
-                        }
-                        foreach ($modelsPlacementPreferences as $modelPlacementPreference) {
-                            if (! ($flag = $modelPlacementPreference->save(false))) {
-                                $transaction->rollBack();
-                                break;
+                        if ($flag) {
+                            if (! empty($deletedIDs)) {
+                                PlacementPreference::deleteAll(['id' => $deletedIDs]);
+                            }
+                            foreach ($modelsPlacementPreferences as $modelPlacementPreference) {
+                                if (! ($flag = $modelPlacementPreference->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
                             }
                         }
                     }

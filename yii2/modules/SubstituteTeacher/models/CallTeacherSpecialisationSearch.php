@@ -16,7 +16,7 @@ class CallTeacherSpecialisationSearch extends CallTeacherSpecialisation
     public function rules()
     {
         return [
-            [['id', 'call_id', 'specialisation_id', 'teachers'], 'integer'],
+            [['id', 'call_id', 'specialisation_id', 'teachers', 'teachers_call'], 'integer'],
             [['teachers_called'], 'safe'],
         ];
     }
@@ -61,6 +61,7 @@ class CallTeacherSpecialisationSearch extends CallTeacherSpecialisation
             'call_id' => $this->call_id,
             'specialisation_id' => $this->specialisation_id,
             'teachers' => $this->teachers,
+            'teachers_call' => $this->teachers_call
         ]);
 
         $query->andFilterWhere(['like', 'teachers_called', $this->teachers_called]);

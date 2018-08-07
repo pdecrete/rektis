@@ -43,6 +43,7 @@ class TeacherBoardSearch extends TeacherBoard
     public function search($params)
     {
         $query = TeacherBoard::find()
+            ->with('teacherRegistry')
             ->joinWith('teacher');
 
         // add conditions that should always apply here

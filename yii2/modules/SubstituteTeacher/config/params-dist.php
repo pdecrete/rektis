@@ -1,4 +1,7 @@
 <?php
+
+// you should copy this to a params.php file and make any modifications 
+
 return [
     'params' => [
         'maxFileSize' => 200000,
@@ -12,6 +15,6 @@ return [
             'ΠΕ 3000',
             'ΕΒΠ'
         ],
-        'extra-call-teachers-percent' => 0.2, // call an extra 20% of teachers to cover loses 
+        'extra-call-teachers-percent' => 0.2, // call an extra 20% of teachers to cover loses; ONLY USED WHEN call does not explicitely define number of teachers to call 
     ]
 ];

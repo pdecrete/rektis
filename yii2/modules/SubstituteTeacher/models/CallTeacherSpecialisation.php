@@ -11,6 +11,7 @@ use Yii;
  * @property integer $call_id
  * @property integer $specialisation_id
  * @property integer $teachers
+ * @property integer $teachers_call
  * @property string $teachers_called
  *
  * @property Call $call
@@ -33,12 +34,15 @@ class CallTeacherSpecialisation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            ['teachers', 'required'],
+            [['teachers', 'teachers_call'], 'required'],
             [['call_id', 'specialisation_id', 'teachers'], 'integer'],
             [['teachers_called'], 'string'],
             [['call_id', 'specialisation_id'], 'unique', 'targetAttribute' => ['call_id', 'specialisation_id'], 'message' => 'The combination of Call ID and Specialisation ID has already been taken.'],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
+            ['teachers_call', 'compare', 'compareAttribute' => 'teachers', 'operator' => '>=', 'type' => 'number', 'whenClient' => "function (value, attribute) {
+                return false; /* improper handling of tabular data... */
+            }"],
         ];
     }
 
@@ -51,7 +55,8 @@ class CallTeacherSpecialisation extends \yii\db\ActiveRecord
             'id' => Yii::t('substituteteacher', 'ID'),
             'call_id' => Yii::t('substituteteacher', 'Call'),
             'specialisation_id' => Yii::t('substituteteacher', 'Specialisation'),
-            'teachers' => Yii::t('substituteteacher', 'Number of teachers'),
+            'teachers' => Yii::t('substituteteacher', 'Number of teachers to appoint'),
+            'teachers_call' => Yii::t('substituteteacher', 'Number of teachers to call'),
             'teachers_called' => Yii::t('substituteteacher', 'Teachers Called'),
         ];
     }

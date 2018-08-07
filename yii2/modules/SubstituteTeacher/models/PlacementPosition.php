@@ -24,6 +24,7 @@ class PlacementPosition extends \yii\db\ActiveRecord
 {
 
     public $position_label;
+    public $unified_hours_count; // converts teachers count to hours 
 
     /**
      * @inheritdoc
@@ -57,6 +58,7 @@ class PlacementPosition extends \yii\db\ActiveRecord
             'placement_teacher_id' => Yii::t('substituteteacher', 'Placement Teacher ID'),
             'position_id' => Yii::t('substituteteacher', 'Position ID'),
             'teachers_count' => Yii::t('substituteteacher', 'Teachers Count'),
+            'unified_hours_count' => Yii::t('substituteteacher', 'Calculated hours count'),
             'hours_count' => Yii::t('substituteteacher', 'Hours Count'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
@@ -70,7 +72,13 @@ class PlacementPosition extends \yii\db\ActiveRecord
             ($this->teachers_count > 0 ? Yii::t('substituteteacher', 'Covered Teachers Count') . ': ' . $this->teachers_count : '' ) .
             ($this->hours_count > 0 ? Yii::t('substituteteacher', 'Covered Hours Count') . ': ' . $this->hours_count : '' ) .
             '';
+        if ($this->hours_count > 0) {
+            $this->unified_hours_count = $this->hours_count;
+        } else {
+            $this->unified_hours_count = $this->teachers_count * $this->position->whole_teacher_hours;
+        }
     }
+
     /**
      * @inheritdoc
      */

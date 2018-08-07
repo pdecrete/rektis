@@ -15,8 +15,14 @@ use yii\db\Expression;
  * @property string $comments
  * @property integer $altered
  * @property string $altered_at
- * @property integer $deleted
- * @property string $deleted_at
+ * @property integer $dismissed
+ * @property string $dismissed_at
+ * @property integer $cancelled
+ * @property string $cancelled_at
+ * @property string $contract_start_date
+ * @property string $contract_end_date
+ * @property string $service_start_date
+ * @property string $service_end_date
  * @property string $created_at
  * @property string $updated_at
  *
@@ -28,8 +34,7 @@ class PlacementTeacher extends \yii\db\ActiveRecord
 {
     const SCENARIO_UPDATE = 'UPDATE_PLACEMENT';
 
-    const PLACEMENT_TEACHER_DELETED = 1;
-    const PLACEMENT_TEACHER_NOT_DELETED = 0;
+    public $status_label; 
 
     /**
      * @inheritdoc
@@ -46,13 +51,17 @@ class PlacementTeacher extends \yii\db\ActiveRecord
     {
         return [
             [['placement_id', 'teacher_board_id'], 'integer'],
-            [['altered', 'deleted'], 'boolean'],
+            [['dismissed_ada', 'cancelled_ada'], 'string', 'max' => 200],
+            [['dismissed_ada', 'cancelled_ada'], 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['ada-validate-pattern']],
+            [['altered', 'dismissed', 'cancelled'], 'boolean'],
+            [['altered', 'dismissed', 'cancelled'], 'filter', 'filter' => 'intval'],
             [['teacher_board_id'], 'required'],
             ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
             [['comments'], 'default', 'value' => ''],
-            [['altered_at', 'deleted_at', 'created_at', 'updated_at'], 'safe'],
+            [['altered_at', 'dismissed_at', 'cancelled_at', 'created_at', 'updated_at'], 'safe'],
             [['placement_id'], 'exist', 'skipOnError' => true, 'targetClass' => Placement::className(), 'targetAttribute' => ['placement_id' => 'id']],
             [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
+            [['contract_start_date', 'contract_end_date', 'service_start_date', 'service_end_date'], 'date', 'format' => 'php:Y-m-d'],
         ];
     }
 
@@ -88,8 +97,16 @@ class PlacementTeacher extends \yii\db\ActiveRecord
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'altered' => Yii::t('substituteteacher', 'Altered'),
             'altered_at' => Yii::t('substituteteacher', 'Altered At'),
-            'deleted' => Yii::t('substituteteacher', 'Deleted'),
-            'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
+            'dismissed' => Yii::t('substituteteacher', 'Dismissed'),
+            'dismissed_at' => Yii::t('substituteteacher', 'Dismissed At'),
+            'dismissed_ada' => Yii::t('substituteteacher', 'Dismissed ADA'),
+            'cancelled' => Yii::t('substituteteacher', 'Cancelled'),
+            'cancelled_at' => Yii::t('substituteteacher', 'Cancelled At'),
+            'cancelled_ada' => Yii::t('substituteteacher', 'Cancelled ADA'),
+            'contract_start_date' => Yii::t('substituteteacher', 'Contract start date'),
+            'contract_end_date' => Yii::t('substituteteacher', 'Contract end date'),
+            'service_start_date' => Yii::t('substituteteacher', 'Service start date'),
+            'service_end_date' => Yii::t('substituteteacher', 'Service end date'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
         ];
@@ -110,12 +127,47 @@ class PlacementTeacher extends \yii\db\ActiveRecord
         ];
     }
 
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        $dirty_attributes = $this->getDirtyAttributes();
+        $dirty_attributes_names = array_keys($dirty_attributes);
+        if (in_array('altered', $dirty_attributes_names)) {
+            $this->altered_at = new Expression('NOW()');
+        }
+        if (in_array('cancelled', $dirty_attributes_names)) {
+            $this->cancelled_at = new Expression('NOW()');
+        }
+        if (in_array('dismissed', $dirty_attributes_names)) {
+            $this->dismissed_at = new Expression('NOW()');
+        }
+
+        return true;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->status_label = '' 
+            . ($this->altered ? 'altered ' : '')
+            . ($this->cancelled ? 'cancelled ' : '')
+            . ($this->dismissed ? 'dismissed ' : '');
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getPlacementPositions()
     {
-        return $this->hasMany(PlacementPosition::className(), ['placement_teacher_id' => 'id']);
+        return $this->hasMany(PlacementPosition::className(), ['placement_teacher_id' => 'id'])
+            ->orderBy([
+                PlacementPosition::tableName() . '.[[hours_count]]' => SORT_DESC,
+                PlacementPosition::tableName() . '.[[teachers_count]]' => SORT_DESC,
+            ]);
     }
 
     /**

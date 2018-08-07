@@ -70,6 +70,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) : null,
                 'format' => 'html'
             ],
+            [
+                'attribute' => 'decision_template',
+                'value' => $model->decision_template ? $model->decision_template . ' ' . Html::a(
+                    '<span class="glyphicon glyphicon-download"></span>',
+                    ['download-template', 'id' => $model->id, 'type' => 'decision'],
+                    [
+                        'title' => Yii::t('substituteteacher', 'Download this template'),
+                        'data-method' => 'post',
+                        'class' => 'btn btn-sm btn-default'
+                    ]) : null,
+                'format' => 'html'
+            ],
             'created_at',
             'updated_at',
         ],

@@ -5,6 +5,7 @@ use yii\grid\GridView;
 use yii\widgets\Pjax;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LeaveSearch */
@@ -108,7 +109,9 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'create_ts',
             // 'update_ts',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+                'filterConfirmMessage' => 'Επαναφορά ταξινόμησης και φίλτρων αναζήτησης;',
                 'template' => '{view} {update} {delete} {download}',
                 'buttons' => [
                     'download' => function ($url, $model, $key) {
@@ -123,7 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                 ],
                 'contentOptions' => [
-                    'class' => 'text-nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

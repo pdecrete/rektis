@@ -14,8 +14,11 @@ use yii\db\Query;
  * @property integer $id
  * @property integer $call_id
  * @property string $date
+ * @property string $base_contract_start_date
+ * @property string $base_contract_end_date
  * @property string $decision_board
  * @property string $decision
+ * @property string $ada
  * @property string $comments
  * @property integer $deleted
  * @property string $deleted_at
@@ -34,6 +37,7 @@ class Placement extends \yii\db\ActiveRecord
     use Selectable;
 
     public $label;
+    public $protocol_label;
 
     /**
      * @inheritdoc
@@ -52,9 +56,11 @@ class Placement extends \yii\db\ActiveRecord
             [['date'], 'required'],
             [['call_id'], 'integer'],
             [['deleted'], 'boolean'],
-            [['date'], 'date', 'format' => 'php:Y-m-d'],
+            [['date', 'base_contract_start_date', 'base_contract_end_date'], 'date', 'format' => 'php:Y-m-d'],
             [['comments'], 'string'],
             [['decision_board', 'decision'], 'string', 'max' => 500],
+            ['ada', 'string', 'max' => 200],
+            ['ada', 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['ada-validate-pattern']],
             [['call_id'], 'exist', 'skipOnError' => true, 'targetClass' => Call::className(), 'targetAttribute' => ['call_id' => 'id']],
         ];
     }
@@ -68,8 +74,11 @@ class Placement extends \yii\db\ActiveRecord
             'id' => Yii::t('substituteteacher', 'ID'),
             'call_id' => Yii::t('substituteteacher', 'Call'),
             'date' => Yii::t('substituteteacher', 'Date'),
+            'base_contract_start_date' => Yii::t('substituteteacher', 'Base date for contract start'),
+            'base_contract_end_date' => Yii::t('substituteteacher', 'Base date for contract end'),
             'decision_board' => Yii::t('substituteteacher', 'Decision Board'),
-            'decision' => Yii::t('substituteteacher', 'Decision'),
+            'decision' => Yii::t('substituteteacher', 'Decision protocol'),
+            'ada' => Yii::t('substituteteacher', 'Placement decision ADA'),
             'comments' => Yii::t('substituteteacher', 'Comments'),
             'deleted' => Yii::t('substituteteacher', 'Deleted'),
             'deleted_at' => Yii::t('substituteteacher', 'Deleted At'),
@@ -108,7 +117,8 @@ class Placement extends \yii\db\ActiveRecord
     {
         parent::afterFind();
 
-        $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision;
+        $this->label = Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board . ' ' . $this->decision . ' ' . $this->ada;
+        $this->protocol_label = $this->decision . '/' . Yii::$app->formatter->asDate($this->date) . ' ' . $this->decision_board;
     }
 
     /**
@@ -122,9 +132,54 @@ class Placement extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPlacementPrints()
+    public function getAllPrints()
     {
         return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDecisionPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_DECISION,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContractPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_CONTRACT,
+            ]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSummaryPrints()
+    {
+        return $this->hasMany(PlacementPrint::className(), ['placement_id' => 'id'])
+            ->andOnCondition([
+                PlacementPrint::tableName() . '.[[deleted]]' => PlacementPrint::PRINT_NOT_DELETED,
+                PlacementPrint::tableName() . '.[[type]]' => PlacementPrint::TYPE_SUMMARY,
+            ]);
     }
 
     /**
@@ -142,7 +197,8 @@ class Placement extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PlacementTeacher::className(), ['placement_id' => 'id'])
             ->andOnCondition([
-                PlacementTeacher::tableName() . '.[[deleted]]' => false,
+                PlacementTeacher::tableName() . '.[[cancelled]]' => false,
+                PlacementTeacher::tableName() . '.[[dismissed]]' => false,
                 PlacementTeacher::tableName() . '.[[altered]]' => false
             ]);
     }
@@ -191,7 +247,8 @@ class Placement extends \yii\db\ActiveRecord
             ->andWhere([
                 "{$placement_tablename}.[[id]]" => $placement_id,
                 "{$placement_tablename}.[[deleted]]" => false,
-                "{$placement_teacher_tablename}.[[deleted]]" => false,
+                "{$placement_teacher_tablename}.[[cancelled]]" => false,
+                "{$placement_teacher_tablename}.[[dismissed]]" => false,
                 "{$placement_teacher_tablename}.[[altered]]" => false,
             ])
             ;
