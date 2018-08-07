@@ -30,15 +30,20 @@ class TransportFundsController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    // [
+                    //     'actions' => ['index', 'view'],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
+                    // [
+                    //     'actions' => ['create', 'update'],
+                    //     'allow' => true,
+                    //     'roles' => ['admin', 'user', 'transport_user'],
+                    // ],
                     [
-                        'actions' => ['index', 'view'],
+                        'actions' => ['index', 'view', 'create', 'update'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['create', 'update'],
-                        'allow' => true,
-                        'roles' => ['admin', 'user', 'transport_user'],
+                        'roles' => ['admin', 'transport_user'],
                     ],
                     [
                         'actions' => ['delete'],
