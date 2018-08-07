@@ -110,94 +110,108 @@ AppAsset::register($this);
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Εφαρμογής</li>',
                         [
                             'label' => 'Ειδικότητες',
-                            'url' => ['/specialisation/index']
+                            'url' => ['/specialisation/index'],
+                            'visible' => Yii::$app->user->can('user')
                         ],
                         [
                             'label' => 'Υπηρεσίες',
-                            'url' => ['/service']
+                            'url' => ['/service'],
+                            'visible' => Yii::$app->user->can('user')
                         ],
                         [
                             'label' => 'Θέσεις',
-                            'url' => ['/position']
+                            'url' => ['/position'],
+                            'visible' => Yii::$app->user->can('user')
                         ],
                         [
                             'label' => 'Καταστάσεις υπαλλήλων',
-                            'url' => ['/employee-status']
+                            'url' => ['/employee-status'],
+                            'visible' => Yii::$app->user->can('user')
                         ],
-                        '<li class="divider"></li>',
 
+                        '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-sunglasses"></i> Αδειών</li>',
-
-                        [    'label' => 'Είδη αδειών',
-                            'url' => ['/leave-type']
+                        [    
+                            'label' => 'Είδη αδειών',
+                            'url' => ['/leave-type'],
+                            'visible' => Yii::$app->user->can('leave_user')
                         ],
 
                         '<li class="divider"></li>',
-
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i> Μετακινήσεων</li>',
-
                         [
                             'label' => 'Αποστάσεις',
-                            'url' => ['/transport-distance']
+                            'url' => ['/transport-distance'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Είδη μετακινήσεων',
-                            'url' => ['/transport-type']
+                            'url' => ['/transport-type'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Μέσα μετακίνησης',
-                            'url' => ['/transport-mode']
+                            'url' => ['/transport-mode'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Αποφάσεις ανάληψης υποχρέωσης',
-                            'url' => ['/transport-funds']
+                            'url' => ['/transport-funds'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Καταστάσεις μετακινήσεων',
-                            'url' => ['/transport-status']
+                            'url' => ['/transport-status'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                     ],
                 ],
 
                 [
                     'label' => 'Εργαζόμενοι',
-                    'visible' => !Yii::$app->user->isGuest,
+                    'visible' => Yii::$app->user->can('user') || Yii::$app->user->can('leave_user') || Yii::$app->user->can('transport_user'),
                     'items' => [
 
                         [
                             'label' => 'Όλοι οι εργαζόμενοι',
-                            'url' => ['/employee/index']
+                            'url' => ['/employee/index'],
+                            'visible' => Yii::$app->user->can('user')
                         ],
 
                         '<li class="divider"></li>',
-
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-sunglasses"></i></li>',
                         [
                             'label' => 'Άδειες',
-                            'url' => ['/leave']
+                            'url' => ['/leave'],
+                            'visible' => Yii::$app->user->can('leave_user')
                         ],
                         [
                             'label' => 'Αρχεία εκτύπωσης αδειών',
                             'url' => ['/leave-print'],
+                            'visible' => Yii::$app->user->can('leave_user')
                         ],
                         [
                             'label' => 'Αποφάσεις μεταφοράς υπολοίπων αδειών',
                             'url' => ['/leave-balance'],
+                            'visible' => Yii::$app->user->can('leave_user')
                         ],
 
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
                         [
                             'label' => 'Μετακινήσεις',
-                            'url' => ['/transport']
+                            'url' => ['/transport'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Αρχεία εκτύπωσης μετακινήσεων',
                             'url' => ['/transport-print'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                         [
                             'label' => 'Υπόλοιπα Κ.Α.Ε. μετακινήσεων',
                             'url' => ['/transport/kae'],
+                            'visible' => Yii::$app->user->can('transport_user')
                         ],
                     ],
                 ],
