@@ -7,6 +7,7 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 use yii\bootstrap\ButtonDropdown;
 use app\components\FilterActionColumn;
+use app\modules\SubstituteTeacher\models\Specialisation;
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 
@@ -93,6 +94,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     'pluginOptions' => ['allowClear' => true],
                 ]),
                 'format' => 'html'
+            ],
+            [
+                'attribute' => 'specialisation_id',
+                'label' => Yii::t('substituteteacher', 'Specialisation'),
+                'value' => function ($m) {
+                    $all_labels = $m->registry->specialisation_labels;
+                    return empty($all_labels) ? null : implode('<br/>', $all_labels);
+                },
+                'format' => 'html',
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'specialisation_id',
+                    'data' => Specialisation::selectables(),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
             ],
             'year',
             [

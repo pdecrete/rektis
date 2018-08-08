@@ -10,13 +10,15 @@ use yii\data\ActiveDataProvider;
  */
 class TeacherSearch extends Teacher
 {
+    public $specialisation_id;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children'], 'integer'],
+            [['id', 'registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children', 'specialisation_id'], 'integer'],
             [['disability_percentage'], 'integer', 'min' => 0, 'max' => 100],
             [['three_children', 'many_children'], 'boolean']
         ];
@@ -56,6 +58,12 @@ class TeacherSearch extends Teacher
             return $dataProvider;
         }
 
+        if (!empty($this->specialisation_id)) {
+            $query = $query->joinWith([
+                'registry.teacherRegistrySpecialisations'
+            ]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -66,7 +74,8 @@ class TeacherSearch extends Teacher
             'disabled_children' => $this->disabled_children,
             'disability_percentage' => $this->disability_percentage,
             'three_children' => $this->three_children, 
-            'many_children' => $this->many_children
+            'many_children' => $this->many_children,
+            TeacherRegistrySpecialisation::tableName() . '.specialisation_id' => $this->specialisation_id
         ]);
 
         return $dataProvider;
