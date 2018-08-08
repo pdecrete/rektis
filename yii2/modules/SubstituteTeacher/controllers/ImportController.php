@@ -264,7 +264,7 @@ class ImportController extends Controller
 
         try {
             // decide import data sequencing 
-            $ebp_spec = Specialisation::findOne(['code' => 'ΕΒΠ']);
+            $ebp_spec = Specialisation::findOne(['code' => \Yii::$app->getModule('SubstituteTeacher')->params['ebp-specialisation-code']]);
             if (empty($ebp_spec)) {
                 throw new \Exception(Yii::t('substituteteacher', 'Cannot locate necessary specialisation id.'));
             }

@@ -9,6 +9,7 @@ return [
         'applications-key' => 'your-secret-key',
         'crypt-key-file' => "/path/to/your/key.file",
         // "codes" of specialisations this module *handles*; used to filter specialisations
+        'ebp-specialisation-code' => 'ΔΕ1', // this specialisation need special handling, thus set it to locate it in the app
         'applicable-specialisation-codes' => [
             'ΠΕ 2126', // ΘΕΡΑΠΕΥΤΩΝ ΛΟΓΟΥ 
             'ΠΕ 2200', // ΕΠΑΓΓΕΜΑΤΙΚΩΝ ΣΥΜΒΟΥΛΩΝ 

@@ -20,7 +20,7 @@ class TeacherSpecialisationFixture extends ActiveFixture
     // {
     //     $pe2300_model = Specialisation::findOne(['code' => 'ΠΕ 2300']);
     //     $pe2500_model = Specialisation::findOne(['code' => 'ΠΕ 2500']);
-    //     $ebp_model = Specialisation::findOne(['code' => 'ΕΒΠ']);
+    //     $ebp_model = Specialisation::findOne(['code' => 'ΔΕ1']);
     //     if (empty($pe2300_model) || empty($pe2500_model) || empty($ebp_model)) {
     //         throw new \Exception('One of the required specialisations was not found.');
     //     }
