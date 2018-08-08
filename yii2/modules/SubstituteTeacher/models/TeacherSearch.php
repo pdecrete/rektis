@@ -67,7 +67,7 @@ class TeacherSearch extends Teacher
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'registry_id' => $this->registry_id,
+            self::tableName() . '.registry_id' => $this->registry_id,
             'year' => $this->year,
             'public_experience' => $this->public_experience, 
             'smeae_keddy_experience' => $this->smeae_keddy_experience,

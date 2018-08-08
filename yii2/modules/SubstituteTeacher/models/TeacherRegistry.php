@@ -102,6 +102,9 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
             [['identity_number', 'passport_number'], 'string', 'max' => 30],
+            [['identity_number'], 'default', 'value' => function ($model, $attribute) {
+                return $this->passport_number;
+            }], // if no identity card is provided, use the passport if available
             [['identity_number'], 'filter', 'filter' => function ($value) {
                 // convert all latin-like characters, leave the rest
                 return strtr($value, [
