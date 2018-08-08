@@ -107,7 +107,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             }], // if no identity card is provided, use the passport if available
             [['identity_number'], 'filter', 'filter' => function ($value) {
                 // convert all latin-like characters, leave the rest
-                return strtr($value, [
+                return strtr(mb_strtoupper($value), [
                     // 'ΓΔΘΛΞΠΣΦΨΩ'
                     ' ' => '',
                     '-' => '',
