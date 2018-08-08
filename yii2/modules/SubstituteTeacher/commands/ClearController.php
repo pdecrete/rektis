@@ -80,6 +80,38 @@ class ClearController extends Controller
     }
 
     /**
+     * Clear ALL teacher relates data (teacher, teacher registry, teacher boards, preferences, applications, placements)
+     */
+    public function actionCleanTeachers()
+    {
+        if (false === Console::confirm(Console::ansiFormat("Clear all teacher related data?", [Console::BG_RED]))) {
+            echo "Abort.\n";
+            exit();
+        }
+
+        $t_s = Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 0")->execute();
+
+        $t01 = Yii::$app->db->createCommand()->truncateTable('{{%stapplication}}')->execute();
+        $t02 = Yii::$app->db->createCommand()->truncateTable('{{%stapplication_position}}')->execute();
+        $t03 = Yii::$app->db->createCommand()->truncateTable('{{%stplacement}}')->execute();
+        $t04 = Yii::$app->db->createCommand()->truncateTable('{{%stplacement_position}}')->execute();
+        $t05 = Yii::$app->db->createCommand()->truncateTable('{{%stplacement_preference}}')->execute();
+        $t06 = Yii::$app->db->createCommand()->truncateTable('{{%stplacement_print}}')->execute();
+        $t07 = Yii::$app->db->createCommand()->truncateTable('{{%stplacement_teacher}}')->execute();
+        $t08 = Yii::$app->db->createCommand()->truncateTable('{{%stteacher}}')->execute();
+        $t09 = Yii::$app->db->createCommand()->truncateTable('{{%stteacher_board}}')->execute();
+        $t10 = Yii::$app->db->createCommand()->truncateTable('{{%stteacher_registry}}')->execute();
+        $t11 = Yii::$app->db->createCommand()->truncateTable('{{%stteacher_registry_specialisation}}')->execute();
+        $t12 = Yii::$app->db->createCommand()->truncateTable('{{%stteacher_status_audit}}')->execute();
+
+        $t_e = Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS = 1")->execute();
+
+        echo "Done. Please check resluts.", PHP_EOL;
+
+        return Controller::EXIT_CODE_NORMAL;
+    }
+
+    /**
      * Clear application data that has been marked as deleted or is orphaned.
      *
      */
