@@ -615,6 +615,8 @@ class ImportController extends Controller
 
             $data_row = $worksheet->rangeToArray("A{$row_index}:{$highestColumn}{$row_index}");
             $data = array_combine($mapped_fields, $data_row[0]);
+            // normalize key field 
+            $data[$key_field] = str_pad($data[$key_field], 9, '0', STR_PAD_LEFT);
 
             // Check updated teacher for existance; teacher must be fetched either way
             $teacherModel = $teacherYearModel = null;
@@ -643,6 +645,21 @@ class ImportController extends Controller
             array_walk($data, function (&$v, $k) use ($supported_fields_types) {
                 if (array_key_exists($k, $supported_fields_types)) {
                     switch ($supported_fields_types[$k]) {
+                        case 'string':
+                            $v = (string)$v;
+                            break;
+                        case 'year-to-date': 
+                            $backup_v = $v;
+                            $v = trim($v);
+                            if (!empty($v)) {
+                                $v = strtotime("{$v}/01/01");
+                            }
+                            if (empty($v)) {
+                                $v = $backup_v;
+                            } else {
+                                $v = date('Y-m-d', $v);
+                            }
+                            break;
                         case 'date':
                             // date: if not empty, try to get standard representation Y-m-d
                             $backup_v = $v;
@@ -755,6 +772,7 @@ class ImportController extends Controller
             'iban',
             'email',
             'birthdate',
+            'birthyear', // this will produce a birthdate aith fixed 01/01 day and month
             'birthplace',
             'aei',
             'tei',
@@ -774,7 +792,10 @@ class ImportController extends Controller
         ];
         // for field that need some manipulation 
         $supported_fields_types = [
-            'birthdate' => 'date'
+            'birthdate' => 'date',
+            'birthyear' => 'year-to-date',
+            'mobile_phone' => 'string',
+            'home_phone' => 'string',
         ];
         $baseModel = new TeacherRegistry();
         $baseTeacherModel = new Teacher();
@@ -887,7 +908,12 @@ class ImportController extends Controller
             $cellIterator->setIterateOnlyExistingCells(false);
             $data = [];
             foreach ($cellIterator as $cell) {
-                $data[$this->_column_data_idx['placement-preference'][$cell->getColumn()]] = $cell->getFormattedValue();
+                $cell_column = $cell->getColumn();
+                if (isset($this->_column_data_idx['placement-preference'][$cell_column])) {
+                    $data[$this->_column_data_idx['placement-preference'][$cell->getColumn()]] = $cell->getFormattedValue();
+                } else {
+                    break;
+                }
             }
 
             if (!array_key_exists($data['vat_number'], $vat_numbers)) {
@@ -1389,7 +1415,7 @@ class ImportController extends Controller
                     $data_key = $attribute_map[$cell_column];
                     $$data_key = BaseImportModel::getCalculatedValue($cell);
                     if ($data_key == 'vat_number') {
-                        $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
+                        $vat_numbers[] = str_pad(BaseImportModel::getCalculatedValue($cell), 9, '0', STR_PAD_LEFT);
                     } elseif ($data_key == 'placement_preferences') {
                         // no need to check ordering because it is created by the import process...
                         // check validity of selections though

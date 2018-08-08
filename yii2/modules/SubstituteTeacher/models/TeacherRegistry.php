@@ -96,7 +96,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['comments', 'ama', 'efka_facility', 'municipality'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
             [['surname', 'firstname', 'fathername', 'mothername', 'city', 'tax_service', 'bank', 'birthplace'], 'string', 'max' => 100],
-            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
+            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 40],
             [['home_address'], 'string', 'max' => 255],
             [['postal_code'], 'string', 'max' => 10],
             [['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
