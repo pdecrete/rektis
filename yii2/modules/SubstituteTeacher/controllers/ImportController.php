@@ -364,7 +364,7 @@ class ImportController extends Controller
 
                 if (!$registry_teacher->save()) {
                     throw new \Exception(
-                        "An error occured while saving teacher with VAT number {$teacherrowArray[$idnum_column]}" .
+                        "An error occured while saving teacher with VAT number {$teacherrowArray[$idnum_column]}: " .
                         array_reduce(array_values($registry_teacher->getErrors()), function ($c, $v) {
                             return $c . implode(' ', $v) . ' ';
                         }, '')

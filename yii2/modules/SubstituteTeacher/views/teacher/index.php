@@ -81,7 +81,9 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'registry_id',
                 'label' => Yii::t('substituteteacher', 'Teacher'),
-                'value' => 'registry.name',
+                'value' => function ($model) {
+                    return Html::a(Html::icon('user'), ['teacher-registry/view', 'id' => $model->registry_id], ['class' => 'btn btn-xs btn-default', 'title' => Yii::t('substituteteacher', 'View registry entry')]) . ' ' . $model->registry->name;
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'registry_id',
@@ -90,6 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
                 ]),
+                'format' => 'html'
             ],
             'year',
             [

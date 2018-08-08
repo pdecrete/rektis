@@ -469,6 +469,7 @@ return [
     'Validate' => 'Έλεγχος',
     'Validate data' => 'Έλεγχος εγκυρότητας',
     'Validate import data?' => 'Να γίνει έλεγχος εγκυρότητας των στοιχείων προς εισαγωγή;',
+    'View registry entry' => 'Προβολή μητρώου',
     'View teacher' => 'Προβολή αναπληρωτή',
     'When selecting all school types, no other school type selection must be made in the same prefecture.' => 'Με την επιλογή όλων των τύπων σχολείων δεν επιτρέπεται να γίνει άλλη επιλογή στην ίδια περιφερειακή ενότητα.',
     'Whole Teacher Hours' => 'Ώρες πλήρους ωραρίου αναπληρωτή',
