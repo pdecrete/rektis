@@ -648,29 +648,22 @@ class ImportController extends Controller
                         case 'string':
                             $v = (string)$v;
                             break;
-                        case 'year-to-date': 
-                            $backup_v = $v;
-                            $v = trim($v);
-                            if (!empty($v)) {
-                                $v = strtotime("{$v}/01/01");
-                            }
-                            if (empty($v)) {
-                                $v = $backup_v;
-                            } else {
-                                $v = date('Y-m-d', $v);
-                            }
-                            break;
                         case 'date':
                             // date: if not empty, try to get standard representation Y-m-d
+                            // check if it has a year only, and produce 01-01-YEAR date
                             $backup_v = $v;
                             $v = trim($v);
                             if (!empty($v)) {
-                                $v = strtotime($v);
+                                $year = intval($v);
+                                if ($year > 1950 && $year < date("Y")) {
+                                    $v = "{$year}-01-01";
+                                }
+                                $v = new \DateTime($v);
                             }
                             if (empty($v)) {
                                 $v = $backup_v;
                             } else {
-                                $v = date('Y-m-d', $v);
+                                $v = $v->format('Y-m-d');;
                             }
                             break;
                         default:
@@ -678,7 +671,7 @@ class ImportController extends Controller
                     }
                 }
             });
-            
+
             // possibly move this to model; set safe attributes for specific batch update scenario and use setAttributes(..., true)
             $yearly_data_base = array_intersect_key($data, array_flip($yearly_mapped_fields));
             $teacher_data = array_diff($data, $yearly_data_base);
@@ -772,7 +765,6 @@ class ImportController extends Controller
             'iban',
             'email',
             'birthdate',
-            'birthyear', // this will produce a birthdate aith fixed 01/01 day and month
             'birthplace',
             'aei',
             'tei',
@@ -793,7 +785,6 @@ class ImportController extends Controller
         // for field that need some manipulation 
         $supported_fields_types = [
             'birthdate' => 'date',
-            'birthyear' => 'year-to-date',
             'mobile_phone' => 'string',
             'home_phone' => 'string',
         ];
@@ -951,10 +942,14 @@ class ImportController extends Controller
         if (empty($errors)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                // find teacher ids
+                // find teacher ids; filter by year and specialisation
                 $year_teacher_info = Teacher::find()
-                    ->select(['id', 'registry_id'])
-                    ->andWhere(['year' => $year])
+                    ->joinWith('registry.teacherRegistrySpecialisations')
+                    ->select([Teacher::tableName() . '.id', Teacher::tableName() . '.registry_id'])
+                    ->andWhere([
+                        'year' => $year,
+                        TeacherRegistrySpecialisation::tableName() . '.specialisation_id' => $specialisation_id
+                    ])
                     ->asArray()
                     ->all();
                 $year_teacher_ids = [];
