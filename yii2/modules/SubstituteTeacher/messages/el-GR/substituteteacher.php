@@ -78,6 +78,7 @@ return [
     'Batch insert teachers in Registry' => 'Μαζική εισαγωγή αναπληρωτών στο Μητρώο',
     'Birthdate' => 'Ημερομηνία γέννησης',
     'Birthplace' => 'Τόπος γέννησης',
+    'Birth year' => 'Έτος γέννησης',
     'Board Type' => 'Τύπος πίνακα διορισμών',
     'Board type is not valid.' => 'Ο τύπος πίνακα διορισμών δεν είναι έγκυρος.',
     'Braille' => 'Braille',

@@ -171,7 +171,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     'teacherRegistry.email',
                     'teacherRegistry.identity_number',
                     'teacherRegistry.birthplace',
-                    'teacherRegistry.birthdate',
+                    [
+                        'attribute' => 'teacherRegistry.birthdate',
+                        'label' => Yii::t('substituteteacher', 'Birth year'),
+                        'format' => ['date', 'php:Y']
+                    ], 
 
                     [
                         'header' => Yii::t('substituteteacher', 'Placements'),
