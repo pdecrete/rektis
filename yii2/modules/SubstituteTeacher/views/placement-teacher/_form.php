@@ -44,7 +44,7 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
     //// $cityDesc = empty($model->city) ? '' : City::findOne($model->city)->description;
  
     echo $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
-        'initValueText' => 'zz', //// $cityDesc, // set the initial display text
+        'initValueText' => 'zz', // TODO 
         'options' => [
             'placeholder' => Yii::t('substituteteacher', 'Search for teacher...')
         ],
@@ -52,7 +52,9 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
             'allowClear' => true,
             'minimumInputLength' => 3,
             'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                'errorLoading' => new JsExpression("function () { return 'Αναμονή για αποτελέσματα...'; }"),
+                'searching' => new JsExpression("function () { return 'Αναζήτηση...'; }"),
+                'noResults' => new JsExpression("function () { return 'Κανένα αποτέλεσμα.'; }"),
             ],
             'ajax' => [
                 'url' => $url,
