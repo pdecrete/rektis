@@ -193,7 +193,7 @@ class TeacherController extends Controller
                 }
             });
             Model::loadMultiple($modelsBoards, $post);
-// dd($modelsBoards);
+
             if (isset($post['PlacementPreference'])) {
                 $post['PlacementPreference'] = array_values($post['PlacementPreference']);
             }
@@ -209,6 +209,7 @@ class TeacherController extends Controller
 
             // validate all models
             $valid = $model->validate();
+            $changed = $model->getDirtyAttributes();
             $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
@@ -251,6 +252,7 @@ class TeacherController extends Controller
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η ενημέρωση των στοιχείων.');
+                        $model->audit('Ενημέρωση στοιχείων αναπληρωτή', $changed);
                         return $this->redirect(['view', 'id' => $model->id]);
                     }
                 } catch (Exception $e) {

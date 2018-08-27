@@ -2,8 +2,10 @@
 
 namespace app\modules\SubstituteTeacher\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\SubstituteTeacher\models\TeacherStatusAudit;
 
 /**
  * TeacherStatusAuditSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\TeacherStatusAudit`.
@@ -17,7 +19,7 @@ class TeacherStatusAuditSearch extends TeacherStatusAudit
     {
         return [
             [['id', 'teacher_id', 'status'], 'integer'],
-            [['status_ts'], 'safe'],
+            [['audit_ts', 'audit', 'data'], 'safe'],
         ];
     }
 
@@ -60,8 +62,11 @@ class TeacherStatusAuditSearch extends TeacherStatusAudit
             'id' => $this->id,
             'teacher_id' => $this->teacher_id,
             'status' => $this->status,
-            'status_ts' => $this->status_ts,
+            'audit_ts' => $this->audit_ts,
         ]);
+
+        $query->andFilterWhere(['like', 'audit', $this->audit])
+            ->andFilterWhere(['like', 'data', $this->data]);
 
         return $dataProvider;
     }

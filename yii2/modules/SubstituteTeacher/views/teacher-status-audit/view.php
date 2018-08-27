@@ -31,7 +31,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'teacher_id',
             'status',
-            'status_ts',
+            'audit_ts',
+            'audit',
+            'data:ntext',
         ],
     ]) ?>
 

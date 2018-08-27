@@ -61,6 +61,7 @@ class Teacher extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children', 'disability_percentage', 'many_children', 'three_children'], 'filter', 'filter' => 'intval'],
             [['disability_percentage', 'disabled_children', 'three_children', 'many_children'], 'default', 'value' => 0],
             [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children'], 'integer', 'min' => 0],
             ['disability_percentage', 'integer', 'min' => 0, 'max' => 100],
@@ -204,6 +205,14 @@ class Teacher extends \yii\db\ActiveRecord
                 break;
         }
         return $status_label;
+    }
+
+    /**
+     * @see TeacherStatusAudit::audit 
+     */
+    public function audit($audit_message, $audit_relevant_data = [])
+    {
+        return TeacherStatusAudit::audit($this->id, $this->status, $audit_message, $audit_relevant_data);
     }
 
     public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)
