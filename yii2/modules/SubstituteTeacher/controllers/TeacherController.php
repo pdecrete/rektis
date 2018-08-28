@@ -104,6 +104,10 @@ class TeacherController extends Controller
 
             // validate all models
             $valid = $model->validate();
+            $audit_info = [
+                'registry_id' => $model->registry_id, 
+                'year' => $model->year
+            ];
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
             $valid = PlacementPreference::checkRules($modelsPlacementPreferences) && $valid;
@@ -112,6 +116,8 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        $audit_info['TeacherBoardSaved'] = 0;
+
                         $id = $model->id;
                         array_walk($modelsPlacementPreferences, function ($m) use ($id) {
                             $m->setScenario(PlacementPreference::SCENARIO_MASS_UPDATE);
@@ -125,11 +131,13 @@ class TeacherController extends Controller
                                 $transaction->rollBack();
                                 break;
                             }
+                            $audit_info['TeacherBoardSaved']++;
                         }
                     }
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', 'Ολοκληρώθηκε με επιτυχία η εισαγωγή των στοιχείων.');
+                        $model->audit('Καταχώρηση στοιχείων αναπληρωτή', $audit_info);
                         return $this->redirect(['view', 'id' => $model->id]);
                     }
                 } catch (Exception $e) {
@@ -219,6 +227,8 @@ class TeacherController extends Controller
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // already validated
+                        $changed['TeacherBoardDeleted'] = 0;
+                        $changed['TeacherBoardSaved'] = 0;
                         foreach ($modelsBoards as $modelBoard) {
                             // those with empty values are considered not existant in the board
                             if (empty($modelBoard->board_type)
@@ -226,6 +236,7 @@ class TeacherController extends Controller
                                 && empty($modelBoard->order)) {
                                 // remove if already existed or else ignore and skip it
                                 if (!empty($modelBoard->id) && $modelBoard->id > 0) {
+                                    $changed['TeacherBoardDeleted']++;
                                     $modelBoard->delete();
                                 }
                                 continue;
@@ -235,17 +246,21 @@ class TeacherController extends Controller
                                 $transaction->rollBack();
                                 break;
                             }
+                            $changed['TeacherBoardSaved']++;
                         }
 
                         if ($flag) {
+                            $changed['PlacementPreferenceDeleted'] = 0;
+                            $changed['PlacementPreferenceSaved'] = 0;
                             if (! empty($deletedIDs)) {
-                                PlacementPreference::deleteAll(['id' => $deletedIDs]);
+                                $changed['PlacementPreferenceDeleted'] = PlacementPreference::deleteAll(['id' => $deletedIDs]);
                             }
                             foreach ($modelsPlacementPreferences as $modelPlacementPreference) {
                                 if (! ($flag = $modelPlacementPreference->save(false))) {
                                     $transaction->rollBack();
                                     break;
                                 }
+                                $changed['PlacementPreferenceSaved']++;
                             }
                         }
                     }

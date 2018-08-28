@@ -212,7 +212,7 @@ class Teacher extends \yii\db\ActiveRecord
      */
     public function audit($audit_message, $audit_relevant_data = [])
     {
-        return TeacherStatusAudit::audit($this->id, $this->status, $audit_message, $audit_relevant_data);
+        return TeacherStatusAudit::audit($this->id, empty($this->status) ? self::TEACHER_STATUS_PENDING : $this->status, $audit_message, $audit_relevant_data);
     }
 
     public static function defaultSelectables($index_property = 'id', $label_property = 'name', $group_property = null)

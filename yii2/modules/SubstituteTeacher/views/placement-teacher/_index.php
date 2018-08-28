@@ -30,7 +30,8 @@ use app\components\FilterActionColumn;
             [
                 'attribute' => 'teacher_board_id',
                 'value' => function ($model) {
-                    return $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
+                    return Html::a(Html::icon('user'), ['teacher/view', 'id' => $model->teacherBoard->teacher_id], ['class' => 'btn btn-xs btn-default', 'title' => Yii::t('substituteteacher', 'View teacher entry')]) 
+                        . ' ' . $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
                 },
                 'filter' => false,
                 // 'filter' => Select2::widget([

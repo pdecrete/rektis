@@ -19,7 +19,7 @@ class TeacherStatusAuditSearch extends TeacherStatusAudit
     {
         return [
             [['id', 'teacher_id', 'status'], 'integer'],
-            [['audit_ts', 'audit', 'data'], 'safe'],
+            [['audit_ts', 'audit', 'data', 'actor'], 'safe'],
         ];
     }
 
@@ -47,6 +47,11 @@ class TeacherStatusAuditSearch extends TeacherStatusAudit
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> [
+                'defaultOrder' => [
+                    'audit_ts' => SORT_DESC
+                ]
+            ]
         ]);
 
         $this->load($params);
@@ -66,6 +71,7 @@ class TeacherStatusAuditSearch extends TeacherStatusAudit
         ]);
 
         $query->andFilterWhere(['like', 'audit', $this->audit])
+            ->andFilterWhere(['like', 'actor', $this->actor])
             ->andFilterWhere(['like', 'data', $this->data]);
 
         return $dataProvider;

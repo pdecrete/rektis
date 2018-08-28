@@ -20,6 +20,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'audit')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'actor')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'data')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">

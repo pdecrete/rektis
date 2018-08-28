@@ -17,6 +17,7 @@ use yii\base\InvalidArgumentException;
  * @property string $audit_ts
  * @property string $audit
  * @property string $data
+ * @property string $actor
  * @property array $data_parsed php assoc array of data
  *
  * @property Teacher $teacher
@@ -54,6 +55,7 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
+            'actor' => Yii::t('substituteteacher', 'Audit actor'),
             'teacher_id' => Yii::t('substituteteacher', 'Teacher ID'),
             'status' => Yii::t('substituteteacher', 'Status'),
             'audit_ts' => Yii::t('substituteteacher', 'Audit Ts'),
@@ -98,6 +100,26 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
         } else {
             throw new UserException("Error auditing user event"); // TODO log this 
         }
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($insert) { // set on creation 
+            $user = \Yii::$app->has('user', true) ? Yii::$app->get('user') : null;
+            if (empty($user)) {
+                $this->actor = 'UNKNOWN';
+            } else {
+                $this->actor = "user ";
+                if ($identity = $user->getIdentity(false)) {
+                    $this->actor .= $identity->getId() . " " . $identity->username;
+                }
+            }
+        }
+        return true;
     }
 
     public function afterFind()

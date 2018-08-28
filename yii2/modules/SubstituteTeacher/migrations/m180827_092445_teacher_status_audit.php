@@ -11,6 +11,7 @@ class m180827_092445_teacher_status_audit extends Migration
     {
         $this->allowInvalidDates();
 
+        $this->addColumn('{{%stteacher_status_audit}}', 'actor', $this->string(80)->notNull()->defaultValue(''));
         $this->addColumn('{{%stteacher_status_audit}}', 'audit', $this->string(80)->notNull()->defaultValue(''));
         $this->addColumn('{{%stteacher_status_audit}}', 'data', $this->text()->null()->defaultValue(null)->comment('Json field with context information'));
 
@@ -21,6 +22,7 @@ class m180827_092445_teacher_status_audit extends Migration
     {
         $this->allowInvalidDates();
 
+        $this->dropColumn('{{%stteacher_status_audit}}', 'actor');
         $this->dropColumn('{{%stteacher_status_audit}}', 'audit');
         $this->dropColumn('{{%stteacher_status_audit}}', 'data');
 

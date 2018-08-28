@@ -47,6 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'status',
             'audit_ts',
+            'actor',
             'audit',
             // 'data:ntext',
             [

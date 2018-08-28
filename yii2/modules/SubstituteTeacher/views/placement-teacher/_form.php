@@ -41,10 +41,10 @@ $firstModelPlacementPosition = reset($modelsPlacementPositions);
     <?php if ($model->isNewRecord): ?>
     <?php
     $url = Url::to(['teacher-board/choose']);
-    //// $cityDesc = empty($model->city) ? '' : City::findOne($model->city)->description;
+    $initial_text = empty($model->teacher_board_id) ? '' : $model->teacherBoard->teacher->name;
  
     echo $form->field($model, 'teacher_board_id')->widget(Select2::classname(), [
-        'initValueText' => 'zz', // TODO 
+        'initValueText' => $initial_text,
         'options' => [
             'placeholder' => Yii::t('substituteteacher', 'Search for teacher...')
         ],
