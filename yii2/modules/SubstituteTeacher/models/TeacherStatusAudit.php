@@ -6,6 +6,7 @@ use Yii;
 use yii\helpers\Json;
 use yii\db\Expression;
 use yii\base\UserException;
+use yii\base\InvalidArgumentException;
 
 /**
  * This is the model class for table "{{%stteacher_status_audit}}".
@@ -16,11 +17,14 @@ use yii\base\UserException;
  * @property string $audit_ts
  * @property string $audit
  * @property string $data
+ * @property array $data_parsed php assoc array of data
  *
  * @property Teacher $teacher
  */
 class TeacherStatusAudit extends \yii\db\ActiveRecord
 {
+    public $data_parsed;
+
     /**
      * @inheritdoc
      */
@@ -93,6 +97,21 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
             return $audit;
         } else {
             throw new UserException("Error auditing user event"); // TODO log this 
+        }
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        if (empty($this->data)) {
+            $this->data_parsed = null;
+        } else {
+            try {
+                $this->data_parsed = Json::decode($this->data);
+            } catch (InvalidArgumentException $ex) {
+                $this->data_parsed = ['UNABLE TO PARSE' => $this->data];
+            }
         }
     }
 
