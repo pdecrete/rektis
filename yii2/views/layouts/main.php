@@ -399,6 +399,55 @@ AppAsset::register($this);
                         ],
                     ],
                 ],
+                [
+                    'label' => 'Διαθέσεις',
+                    'visible' => !Yii::$app->user->isGuest,
+                    'items' => [
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-user"></i></li>',
+                        [
+                            'label' => 'Εγκρίσεις Διαθέσεων',
+                            'url' => ['/disposal/disposal'],
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
+                        [
+                            'label' => 'Στατιστικά Διαθέσεων',
+                            'url' => ['/disposal/default/']
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
+                        [
+                            'label' => 'Λόγοι για Διάθεση Εκπαιδευτικών',
+                            'url' => ['/disposal/disposal-reason']
+                        ],
+                        [
+                            'label' => 'Καθήκοντα Εκπαιδευτικών σε Διάθεση',
+                            'url' => ['/disposal/disposal-workobj']
+                        ],
+                        [
+                            'label' => 'Εκπαιδευτικοί',
+                            'url' => ['/teacher']
+                        ],
+                        [
+                            'label' => 'Καταστάσεις Εγκρίσεων',
+                            'url' => ['/disposal/disposal-state']
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',
+                        [
+                            'label' => 'Βοήθεια εφαρμογής διαθέσεων',
+                            'url' => ['/disposal/default/help?helpId=1#disposalapp_help']
+                        ],
+                        [
+                            'label' => 'Διαδικασία έγκρισης/απόφασης διάθεσης',
+                            'url' => ['/disposal/default/help?helpId=2#disposal_help']
+                        ],
+                        [
+                            'label' => 'Νομοθεσία διαθέσεων εκπαιδευτικών',
+                            'url' => ['/disposal/default/help?helpId=3#legislation']
+                        ]
+                    ],
+                ],
                 Yii::$app->user->isGuest ? [
                     'label' => 'Σχετικά',
                     'url' => ['/site/about']

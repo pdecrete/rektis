@@ -359,4 +359,14 @@ return [
     '{boxstate}' => '{boxstate}',
     '{days} days, from {start_date} to {end_date}' => '{days} ημέρες, από {start_date} έως {end_date}',
     '{kae} ({name} - {date}) - {service_n}' => '{kae} ({name} - {date}) - {service_n}',
+    'Create Teacher' => 'Δημιουργία Εκπαιδευτικού',
+    'Teachers' => 'Εκπαιδευτικοί',
+    'Select school...' => 'Επιλέξτε Σχολείο...',
+    'School' => 'Σχολείο',
+    'Update Teacher Details' => 'Ενημέρωση Στοιχείων Εκπαιδευτικού',
+    'Update Details' => 'Ενημέρωση Στοιχείων',
+    'The teacher was created successfully.' => 'Ο εκπαιδευτικός δημιουργήθηκε επιτυχώς.',
+    'The teacher details were updated successfully.' => 'Τα στοιχεία του εκπαιδευτικού ενημερώθηκαν επιτυχώς.',
+    'Error saving teacher details in the database.' => 'Σφάλμα κατά την αποθήκευση των στοιχείων εκπαιδευτικού στη βάση δεδομένων.',
+    'Select specialisation...' => 'Επιλέξτε ειδικότητα...'
 ];

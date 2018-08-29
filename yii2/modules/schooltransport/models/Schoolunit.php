@@ -37,6 +37,10 @@ class Schoolunit extends \yii\db\ActiveRecord
             [['directorate_id'], 'exist', 'skipOnError' => true, 'targetClass' => Directorate::className(), 'targetAttribute' => ['directorate_id' => 'directorate_id']],
         ];
     }
+    
+    public function getSchoolStage(){
+        return Directorate::find()->where(['directorate_id' => $this->directorate_id])->one()['directorate_stage'];
+    }
 
     /**
      * @inheritdoc
