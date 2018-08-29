@@ -17,6 +17,7 @@ use yii\db\Expression;
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
 use app\modules\SubstituteTeacher\models\PlacementPrint;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
  * PlacementTeacherController implements the CRUD actions for PlacementTeacher model.
@@ -109,6 +110,11 @@ class PlacementTeacherController extends Controller
                 Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
             } else {
                 $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως τροποποιημένης', [
+                    'PlacementTeacher' => $model->getAttributes(['altered', 'altered_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as altered.'));
             }
         }
@@ -130,7 +136,13 @@ class PlacementTeacherController extends Controller
         $model = $this->findModel($id);
         $teacher_board = $model->teacherBoard;
 
-        if ($model->delete() === false) {
+        $deleted = false;
+        try {
+            $deleted = $model->delete(); // TODO handle yii\db\IntegrityException
+        } catch (\Exception $ex) {
+            $deleted = false;
+        }
+        if ($deleted === false) {
             $transaction->rollBack();
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as deleted.'));
         } else {
@@ -142,6 +154,7 @@ class PlacementTeacherController extends Controller
             } else {
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as deleted.'));
+                $teacher_board->teacher->audit('Διαγραφή τοποθέτησης αναπληρωτή', $model->getAttributes());
             }
         }
 
@@ -175,6 +188,11 @@ class PlacementTeacherController extends Controller
                 Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
             } else {
                 $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως απολυμένου αναπληρωτή', [
+                    'PlacementTeacher' => $model->getAttributes(['dismissed', 'dismissed_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as dismissed.'));
             }
         }
@@ -209,6 +227,11 @@ class PlacementTeacherController extends Controller
                 Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
             } else {
                 $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως ανακλημένης', [
+                    'PlacementTeacher' => $model->getAttributes(['cancelled', 'cancelled_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as cancelled.'));
             }
         }
@@ -244,6 +267,10 @@ class PlacementTeacherController extends Controller
             Model::loadMultiple($modelsPlacementPositions, Yii::$app->request->post());
 
             $valid = $model->validate() && count($modelsPlacementPositions) > 0;
+            $audit_info = [
+                'teacher_board_id' => $model->teacher_board_id, 
+                'placement_id' => $model->placement_id
+            ];
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -255,6 +282,7 @@ class PlacementTeacherController extends Controller
                         $teacher_board = $model->teacherBoard;
                         $teacher_board->status = Teacher::TEACHER_STATUS_APPOINTED;
                         if ($flag = $teacher_board->save()) {
+                            $audit_info['TeacherBoard'] = $teacher_board->getAttributes(['id', 'status']);
                             // save placement positions
                             $id = $model->id;
                             array_walk($modelsPlacementPositions, function ($m) use ($id) {
@@ -262,11 +290,13 @@ class PlacementTeacherController extends Controller
                             });
 
                             if ($flag = Model::validateMultiple($modelsPlacementPositions)) {
+                                $audit_info['PlacementPositionSaved'] = 0;
                                 foreach ($modelsPlacementPositions as $modelPlacementPosition) {
                                     if (! ($flag = $modelPlacementPosition->save())) {
                                         $transaction->rollBack();
                                         break;
                                     }
+                                    $audit_info['PlacementPositionSaved']++;
                                 }
                             }
                         }
@@ -274,6 +304,7 @@ class PlacementTeacherController extends Controller
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Teacher placement created successfully.'));
+                        $model->teacherBoard->teacher->audit('Καταχώρηση τοποθέτησης αναπληρωτή', $audit_info);
                         return $this->redirect(['placement/view', 'id' => $model->placement_id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));
@@ -322,25 +353,30 @@ class PlacementTeacherController extends Controller
             });
 
             $valid = $model->validate();
+            $changed = $model->getDirtyAttributes();
             $valid = Model::validateMultiple($modelsPlacementPositions) && $valid;
 
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // validated beforehand
+                        $changed['PlacementPositionDeleted'] = 0;
+                        $changed['PlacementPositionSaved'] = 0;
                         if (! empty($deletedIDs)) {
-                            PlacementPosition::deleteAll(['id' => $deletedIDs]);
+                            $changed['PlacementPositionDeleted'] = PlacementPosition::deleteAll(['id' => $deletedIDs]);
                         }
                         foreach ($modelsPlacementPositions as $modelPlacementPosition) {
                             if (! ($flag = $modelPlacementPosition->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
+                            $changed['PlacementPositionSaved']++;
                         }
                     }
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement updated successfully.'));
+                        $model->teacherBoard->teacher->audit('Ενημέρωση τοποθέτησης αναπληρωτή', $changed);
                         return $this->redirect(['view', 'id' => $model->id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));

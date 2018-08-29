@@ -152,6 +152,7 @@ class TeacherBoardController extends Controller
         $model = new TeacherBoard();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->teacher->audit('Νέα καταχώρηση πίνακα διορισμού', $model->getAttributes(null, ['id', 'teacher_id']));
             return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
         } else {
             return $this->render('create', [
@@ -170,7 +171,12 @@ class TeacherBoardController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $load = $model->load(Yii::$app->request->post());
+        $valid = $model->validate();
+        $changed = $model->getDirtyAttributes();
+
+        if ($load && $valid && $model->save()) {
+            $model->teacher->audit('Ενημέρωση στοιχείων πίνακα διορισμού', $changed);
             return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
         } else {
             return $this->render('update', [
@@ -187,7 +193,9 @@ class TeacherBoardController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->teacher->audit('Διαγραφή στοιχείων πίνακα διορισμού', $model->getAttributes(null, ['teacher_id']));
+        $model->delete();
 
         return $this->redirect(($index_url = Url::previous('teacherboardindex')) ? $index_url : ['index']);
     }
@@ -202,6 +210,7 @@ class TeacherBoardController extends Controller
         $model = $this->findModel($id);
         $model->status = $status;
         if ($model->save()) {
+            $model->teacher->audit('Ενημέρωση κατάστασης στον πίνακα διορισμού', $model->getAttributes(['status']));
             return true;
         } else {
             return false;

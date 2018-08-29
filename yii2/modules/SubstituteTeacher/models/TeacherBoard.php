@@ -59,6 +59,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
             ['teacher_id', 'validateUniqueWithSpecialisation'],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'id']],
+            [['teacher_id', 'specialisation_id', 'status', 'order', 'board_type'], 'filter', 'filter' => 'intval'],
         ];
     }
 
