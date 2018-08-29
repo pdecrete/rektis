@@ -16,7 +16,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'status')->textInput() ?>
 
-    <?= $form->field($model, 'status_ts')->textInput() ?>
+    <?= $form->field($model, 'audit_ts')->textInput() ?>
+
+    <?= $form->field($model, 'audit')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'actor')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'data')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('substituteteacher', 'Create') : Yii::t('substituteteacher', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

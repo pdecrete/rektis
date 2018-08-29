@@ -17,7 +17,7 @@ class PrefectureSearch extends Prefecture
     {
         return [
             [['id'], 'integer'],
-            [['region', 'prefecture'], 'safe'],
+            [['region', 'prefecture', 'symbol'], 'safe'],
         ];
     }
 
@@ -58,6 +58,7 @@ class PrefectureSearch extends Prefecture
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'symbol' => $this->symbol
         ]);
 
         $query->andFilterWhere(['like', 'region', $this->region])
