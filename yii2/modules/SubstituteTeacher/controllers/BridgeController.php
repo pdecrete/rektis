@@ -22,6 +22,7 @@ use yii\helpers\Json;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Application;
 use app\modules\SubstituteTeacher\models\ApplicationPosition;
+use app\modules\SubstituteTeacher\models\TeacherStatusAudit;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -273,6 +274,8 @@ class BridgeController extends \yii\web\Controller
                             }
                             if (false === $teacher_board->save()) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher status (denied).'));
+                            } else {
+                                $teacher_board->teacher->audit('Λήψη αίτησης αναπληρωτή', $application->getAttributes(['id', 'call_id', 'agreed_terms_ts', 'state', 'state_ts']));
                             }
                         });
 
@@ -510,6 +513,10 @@ class BridgeController extends \yii\web\Controller
                         \Yii::error([$status_load, $response_data_load], __METHOD__);
                     } else {
                         \Yii::info([$status_load, $response_data_load], __METHOD__);
+                        // audit all teachers called 
+                        array_walk($teacher_ids, function ($id, $key) use ($call_id) {
+                            $save = TeacherStatusAudit::audit($id, 0, 'Αποστολή αναπληρωτή στο σύστημα αιτήσεων', ['call_id' => $call_id]);
+                        });
                     }
                 }
             }

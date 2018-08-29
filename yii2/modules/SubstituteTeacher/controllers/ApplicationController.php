@@ -86,6 +86,8 @@ class ApplicationController extends Controller
         $model->deleted = true;
         if (!$model->save(false, ['deleted'])) {
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Application could not be marked as deleted.'));
+        } else {
+            $model->teacherBoard->teacher->audit('Διαγραφή αίτησης αναπληρωτή', $model->getAttributes(null, ['reference', 'created_at', 'updated_at']));
         }
 
         return $this->redirect(['index']);
