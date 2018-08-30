@@ -22,6 +22,7 @@ use yii\helpers\Json;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Application;
 use app\modules\SubstituteTeacher\models\ApplicationPosition;
+use app\modules\SubstituteTeacher\models\TeacherStatusAudit;
 
 class BridgeController extends \yii\web\Controller
 {
@@ -273,6 +274,8 @@ class BridgeController extends \yii\web\Controller
                             }
                             if (false === $teacher_board->save()) {
                                 throw new \Exception(Yii::t('substituteteacher', 'Could not save teacher status (denied).'));
+                            } else {
+                                $teacher_board->teacher->audit('Λήψη αίτησης αναπληρωτή', $application->getAttributes(['id', 'call_id', 'agreed_terms_ts', 'state', 'state_ts']));
                             }
                         });
 
@@ -308,6 +311,8 @@ class BridgeController extends \yii\web\Controller
     }
 
     /**
+     * Returns a list of teachers, as requested by their ids, and order by those ids.
+     * 
      * @throws NotFoundHttpException if the fetch data cannot be found
      */
     public function actionFetch($what)
@@ -318,9 +323,14 @@ class BridgeController extends \yii\web\Controller
                 $dataProvider = new ArrayDataProvider([
                     'allModels' => Teacher::find()
                         ->where(['id' => $ids])
+                        ->orderBy(new Expression('CASE id ' . implode(' ', array_map(function ($id) {
+                            static $order = 1;
+                            $order++;
+                            return "WHEN {$id} THEN {$order}";
+                        }, $ids)) . ' END'))
                         ->all(),
-                    'pagination' => false,
-                ]);
+                        'pagination' => false,
+                    ]);
                 \Yii::info('Fetch teachers', __METHOD__);
                 return $this->renderAjax('_teacher_list', compact('dataProvider'));
                 break;
@@ -398,7 +408,7 @@ class BridgeController extends \yii\web\Controller
                 }
                 $school_types = array_merge([0], array_keys(array_filter($call_positions_school_types["{$call_teacher_specialisation->specialisation_id}"])));
 
-                // if call does not provide number of teachers to call, calculate with defined factor 
+                // if call does not provide number of teachers to call, calculate with defined factor
                 if (($call_wanted = intval($call_teacher_specialisation->teachers_call)) == 0) {
                     $call_wanted = intval($call_teacher_specialisation->teachers * (1 + $this->module->params['extra-call-teachers-percent']));
                 }
@@ -510,6 +520,10 @@ class BridgeController extends \yii\web\Controller
                         \Yii::error([$status_load, $response_data_load], __METHOD__);
                     } else {
                         \Yii::info([$status_load, $response_data_load], __METHOD__);
+                        // audit all teachers called
+                        array_walk($teacher_ids, function ($id, $key) use ($call_id) {
+                            $save = TeacherStatusAudit::audit($id, 0, 'Αποστολή αναπληρωτή στο σύστημα αιτήσεων', ['call_id' => $call_id]);
+                        });
                     }
                 }
             }
