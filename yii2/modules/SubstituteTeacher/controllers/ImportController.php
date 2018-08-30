@@ -932,7 +932,7 @@ class ImportController extends Controller
                 'year' => $year
             ]);
             if (empty($teacher)) {
-                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'y' => $year]);
+                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} ({vat}) entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'vat' => $data['vat_number'], 'y' => $year]);
                 if (count($errors) >= $stop_at_errorcount) {
                     break;
                 }
@@ -980,7 +980,6 @@ class ImportController extends Controller
             $never_mind = array_walk($errors, function ($v, $k) {
                 \Yii::$app->session->addFlash('danger', $v);
             });
-            \Yii::$app->session->addFlash('danger', 'ccccccc');
         }
 
         return empty($errors);

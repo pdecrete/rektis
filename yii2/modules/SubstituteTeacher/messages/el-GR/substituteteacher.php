@@ -114,7 +114,7 @@ return [
     'Contract end date' => 'Λήξη σύμβασης',
     'Contract start date' => 'Έναρξη σύμβασης',
     'Could not locate teacher board related to teacher specialisation.' => 'Δεν εντοπίστηκε πίνακας διορισμού που να σχετίζεται με την ειδικότητα του αναπληρωτή',
-    'Could not locate teacher {id} entry in year {y}.' => 'Δεν εντοπίστηκε ο αναπληρωτής {id} στη χρονιά {y}.',
+    'Could not locate teacher {id} ({vat}) entry in year {y}.' => 'Δεν εντοπίστηκε ο αναπληρωτής {id} ({vat}) στη χρονιά {y}.',
     'Could not save teacher application position.' => 'Δεν αποθηκεύτηκε το κενό',
     'Could not save teacher application.' => 'Δεν αποθηκεύτηκε η αίτηση',
     'Could not save teacher status (denied).' => 'Δεν αποθηκεύτηκε η κατάσταση του αναπληρωτή (άρνηση)',
