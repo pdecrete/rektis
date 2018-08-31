@@ -15,7 +15,7 @@ use app\modules\disposal\models\Disposal;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->title = DisposalModule::t('modules/disposal/app', 'Disposals Approvals');
+$this->title = DisposalModule::t('modules/disposal/app', 'Disposals for Approval');
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
 ?>
@@ -23,8 +23,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+	<?=Html::beginForm(['archiveform'], 'post');?>
     <p class="text-right">
+    	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Disposals\' Approval'), ['disposal-approval/create'], ['class' => 'btn btn-success', 'data-method' => 'POST']) ?>
         <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Teacher Disposal'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 <?php Pjax::begin(); ?>    
@@ -32,7 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {return ['value' => $model['disposal_id']];}
+            ],
             ['attribute' => 'teacher_surname',
              'label' => DisposalModule::t('modules/disposal/app', 'Surname'),
             ],
@@ -99,4 +102,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'headerOptions' => ['class'=> 'text-center']],
         ],
     ]); ?>
-<?php Pjax::end(); ?></div>
+<?php Pjax::end(); ?>
+<?= Html::endForm();?>
+</div>

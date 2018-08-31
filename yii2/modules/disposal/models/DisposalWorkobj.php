@@ -43,8 +43,8 @@ class DisposalWorkobj extends \yii\db\ActiveRecord
     {
         return [
             'disposalworkobj_id' => Yii::t('app', 'Disposalworkobj ID'),
-            'disposalworkobj_name' => Yii::t('app', 'Αντικείμενο Εργασίας Διάθεσης'),
-            'disposalworkobj_description' => Yii::t('app', 'Αντικείμενο Εργασίας Διάθεσης'),
+            'disposalworkobj_name' => Yii::t('app', 'Λεκτικό Αναγνωριστικό Καθήκοντος'),
+            'disposalworkobj_description' => Yii::t('app', 'Καθήκον Διάθεσης'),
         ];
     }
 

@@ -2,7 +2,9 @@
 
 namespace app\modules\disposal\controllers;
 
+use Exception;
 use Yii;
+use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalWorkobj;
 use app\modules\disposal\models\DisposalWorkobjSearch;
 use yii\web\Controller;
@@ -62,12 +64,24 @@ class DisposalWorkobjController extends Controller
      * @return mixed
      */
     public function actionCreate()
-    {
-        $model = new DisposalWorkobj();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->disposalworkobj_id]);
-        } else {
+    { 
+        try {
+            $model = new DisposalWorkobj();            
+            if ($model->load(Yii::$app->request->post())) {
+                if(!$model->save())
+                    throw new Exception();
+                
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
+                return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('create', [
+                    'model' => $model,
+                ]);
+            }
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('create', [
                 'model' => $model,
             ]);
@@ -82,11 +96,23 @@ class DisposalWorkobjController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->disposalworkobj_id]);
-        } else {
+        try {
+            $model = $this->findModel($id);
+            if ($model->load(Yii::$app->request->post())) {
+                if(!$model->save())
+                    throw new Exception();
+                                
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal duty were saved successfully."));
+                return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -101,9 +127,18 @@ class DisposalWorkobjController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        try {
+            if(!$this->findModel($id)->delete())
+                throw new Exception();
+            
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposal duty was deleted successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The deletion of the disposal duty failed."));
+            return $this->redirect(['index']);
+        }
+        
     }
 
     /**

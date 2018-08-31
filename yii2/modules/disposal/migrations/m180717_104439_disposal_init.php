@@ -117,10 +117,10 @@ class m180717_104439_disposal_init extends Migration
                               `disposal_hours` TINYINT NOT NULL COMMENT 'Ώρες Διάθεσης',
                               `disposal_action` VARCHAR(200) NOT NULL COMMENT 'Πράξη Διάθεσης',
                               `disposal_created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',                              
-                              `disposal_updated_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',
+                              `disposal_updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας',
                               `deleted` BOOLEAN NOT NULL DEFAULT 0,
-                              `created_by` INTEGER,
-                              `updated_by` INTEGER,
+                              `created_by` INTEGER NOT NULL,
+                              `updated_by` INTEGER NOT NULL,
                               `teacher_id` INTEGER NOT NULL,
                               `school_id` INTEGER NOT NULL,
                                PRIMARY KEY (`ledger_id`),
@@ -151,7 +151,12 @@ class m180717_104439_disposal_init extends Migration
                              `approval_regionaldirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο ΠΔΕ',
                              `approval_localdirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διεύθυνσης Σχολείου',
                              `approval_notes` VARCHAR(400) NOT NULL COMMENT 'Σημειώσεις',
-                             `approvaltype_id` INTEGER NOT NULL,
+                             `approval_file` VARCHAR(300) NOT NULL COMMENT 'Αρχείο Έγκρισης',
+                             `approval_signedfile` VARCHAR(300) NOT NULL COMMENT 'Ψηφιακά Υπογεγραμμένο Αρχείο Έγκρισης',
+                             `approval_created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας', 
+                             `approval_updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας', 
+                             `approval_created_by` INTEGER NOT NULL,
+                             `approval_updated_by` INTEGER NOT NULL,
                               PRIMARY KEY (`approval_id`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_approval'] . ". *** \n");

@@ -6,13 +6,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalWorkobj */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Disposal Workobj',
-]) . $model->disposalworkobj_id;
+$this->title = DisposalModule::t('modules/disposal/app', 'Update Disposal Duty');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Disposal Workobjs'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->disposalworkobj_id, 'url' => ['view', 'id' => $model->disposalworkobj_id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals\' Duties'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-workobj-update">
 

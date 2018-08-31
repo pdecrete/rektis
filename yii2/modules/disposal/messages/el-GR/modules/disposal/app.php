@@ -85,5 +85,16 @@ return [
     'Teachers' => 'Εκπαιδευτικοί',
     'Disposal Approval States' => 'Καταστάσεις Έγκρισης Διάθεσης',
     'View Disposal Reason' => 'Προβολή Λόγου Διάθεσης',
-    'Create Disposal Reason' => 'Δημιουργία Λόγου Διάθεσης'
+    'Create Disposal Reason' => 'Δημιουργία Λόγου Διάθεσης',
+    'The details of the disposal duty were saved successfully.' => 'Τα στοιχεία των καθηκόντων διάθεσης αποθηκεύτηκαν επιτυχώς',
+    'The disposal duty was deleted successfully.' => 'Το καθήκον διάθεσης διαγράφηκε επιτυχώς.',
+    'The deletion of the disposal duty failed.' => 'Η διαγραφή του καθήκοντος διάθεσης απέτυχε.',
+    'Disposals\' Duties' => 'Καθήκοντα Διαθέσεων',
+    'Create Disposal Duty' => 'Δημιουργία Καθήκοντος Διάθεσης',
+    'Update Disposal Duty' => 'Ενημέρωση Καθήκοντος Διάθεσης',
+    'View Disposal Duty' => 'Προβολή Καθήκοντος Διάθεσης',
+    'Create Disposals\' Approval' => 'Δημιουργία Έγκρισης Διαθέσεων',
+    'The teacher disposal was deleted successfully.' => 'Η διάθεση εκπαιδευτικού διαγράφηκε επιτυχώς.',
+    'Please select at least one disposal.' => 'Παρακαλώ επιλέξτε τουλάχιστον μία διάθεση.',
+    'Disposals for Approval' => 'Διαθέσεις προς Έγκριση'
 ];

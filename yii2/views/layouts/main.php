@@ -406,6 +406,14 @@ AppAsset::register($this);
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-user"></i></li>',
                         [
                             'label' => 'Εγκρίσεις Διαθέσεων',
+                            'url' => ['/disposal/disposal-approval'],
+                        ],
+                        [
+                            'label' => 'Διαθέσεις προς Έγκριση',
+                            'url' => ['/disposal/disposal'],
+                        ],
+                        [
+                            'label' => 'Διεκπεραιωμένες Διαθέσεις',
                             'url' => ['/disposal/disposal'],
                         ],
                         '<li class="divider"></li>',

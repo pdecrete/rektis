@@ -247,11 +247,20 @@ class DisposalController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        try {
+            if(!$this->findModel($id)->delete())
+                throw new Exception();
+            
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was deleted successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal deletion failed."));
+            return $this->redirect(['index']);
+        }
     }
 
+    
     /**
      * Finds the Disposal model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
