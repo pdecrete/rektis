@@ -12,17 +12,25 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="body-content">
-    	<div class="row">
-    		<div class="col-lg-4">
-            <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals');?></h3>
-			<p><?= DisposalModule::t('modules/disposal/app', 'View/create/edit/delete disposals');?></p>
-			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
-        </div>
+	<div class="row">
 		<div class="col-lg-4">
             <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals for Approval');?></h3>
 			<p><?= DisposalModule::t('modules/disposal/app', 'View/create/edit/delete disposals');?></p>
 			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), Url::to(['/disposal/disposal']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
+		<div class="col-lg-4">
+            <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals');?></h3>
+			<p><?= DisposalModule::t('modules/disposal/app', 'View/create/edit/delete disposals');?></p>
+			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>
+		<div class="col-lg-4">
+            <h3><?= DisposalModule::t('modules/disposal/app', 'Processed Disposals');?></h3>
+			<p><?= DisposalModule::t('modules/disposal/app', 'View/create/edit/delete disposals');?></p>
+			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), Url::to(['/disposal/disposal', 'archived' => 1]), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+        </div>                
+  	</div>
+  	<hr />
+    <div class="row">
 		<div class="col-lg-4">
             <h3><?= DisposalModule::t('modules/disposal/app', 'Statistics');?></h3>
 			<p><?= DisposalModule::t('modules/disposal/app', 'View statistics of the carried out school transportations based on the parameters selected.');?></p>

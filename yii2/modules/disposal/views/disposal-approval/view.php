@@ -28,16 +28,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'approval_id',
             'approval_regionaldirectprotocol',
             'approval_localdirectprotocol',
             'approval_notes',
             'approval_file',
             'approval_signedfile',
-            'approval_created_at',
-            'approval_updated_at',
-            'approval_created_by',
-            'approval_updated_by',
+            'created_at',
+            'updated_at',
+            'created_by',
+            'updated_by',
         ],
     ]) ?>
 

@@ -18,8 +18,8 @@ class DisposalApprovalSearch extends DisposalApproval
     public function rules()
     {
         return [
-            [['approval_id', 'approval_created_by', 'approval_updated_by'], 'integer'],
-            [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_notes', 'approval_file', 'approval_signedfile', 'approval_created_at', 'approval_updated_at'], 'safe'],
+            [['approval_id', 'created_by', 'updated_by'], 'integer'],
+            [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_notes', 'approval_file', 'approval_signedfile', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class DisposalApprovalSearch extends DisposalApproval
      */
     public function search($params)
     {
-        $query = DisposalApproval::find();
+        $query = DisposalApproval::find()->where(['deleted' => 0]);
 
         // add conditions that should always apply here
 
@@ -60,10 +60,10 @@ class DisposalApprovalSearch extends DisposalApproval
         // grid filtering conditions
         $query->andFilterWhere([
             'approval_id' => $this->approval_id,
-            'approval_created_at' => $this->approval_created_at,
-            'approval_updated_at' => $this->approval_updated_at,
-            'approval_created_by' => $this->approval_created_by,
-            'approval_updated_by' => $this->approval_updated_by,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'created_by' => $this->created_by,
+            'updated_by' => $this->updated_by,
         ]);
 
         $query->andFilterWhere(['like', 'approval_regionaldirectprotocol', $this->approval_regionaldirectprotocol])

@@ -44,14 +44,19 @@ class DisposalController extends Controller
      * Lists all Disposal models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($archived = 0)
     {
+        if (!is_numeric($archived) || ($archived != 0 && $archived != 1)) {
+            $archived = 0;
+        }
+        
         $searchModel = new DisposalSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'archived' => $archived
         ]);
     }
 
@@ -60,10 +65,11 @@ class DisposalController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id, $archived = 0)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'archived' => $archived
         ]);
     }
 
@@ -88,6 +94,12 @@ class DisposalController extends Controller
             if ($model->load(Yii::$app->request->post()) 
                 && $teacher_model->load(Yii::$app->request->post())) {
                 
+                if($model->school_id == $teacher_model->school_id)
+                    throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
+                
+                if($model->disposal_enddate <= $model->disposal_startdate)
+                    throw new Exception("The start date of the disposal must be earlier its end date.");
+
                 if($model->disposal_enddate == "")
                         $model->disposal_endofteachingyear_flag = 1;
                 
@@ -160,9 +172,13 @@ class DisposalController extends Controller
      */
     public function actionUpdate($id)
     {
-        try {
-            $transaction = Yii::$app->db->beginTransaction();
+        try {            
             $model = $this->findModel($id);
+            
+            if($model->deleted == 1 || $model->archived == 1){
+                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The disposal is not allowed to be updated."));
+                return $this->redirect(['index']);
+            }                
             
             $teacher_model = Teacher::findOne(['teacher_id' => $model->teacher_id]);
             $schools = Schoolunit::find()->all();
@@ -175,8 +191,14 @@ class DisposalController extends Controller
             if ($model->load(Yii::$app->request->post())
                 && $teacher_model->load(Yii::$app->request->post())) {
                              
-                //echo $model->disposal_endofteachingyear_flag; die();
-                    
+                $transaction = Yii::$app->db->beginTransaction();
+
+                if($model->school_id == $teacher_model->school_id)
+                    throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
+                
+                if($model->disposal_enddate <= $model->disposal_startdate)
+                    throw new Exception("The start date of the disposal must be earlier its end date.");
+                
                 if($model->disposal_enddate = "")
                     $model->disposal_endofteachingyear_flag = 1;
                 
@@ -248,7 +270,9 @@ class DisposalController extends Controller
     public function actionDelete($id)
     {
         try {
-            if(!$this->findModel($id)->delete())
+            $model = $this->findModel($id);
+            $model->deleted = 1;
+            if(!$model->save())
                 throw new Exception();
             
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was deleted successfully."));

@@ -18,9 +18,10 @@ use yii\db\Expression;
  * @property string $disposal_enddate
  * @property integer $disposal_hours
  * @property string $disposal_action
- * @property string $disposal_created_at
- * @property string $disposal_updated_at
+ * @property string $created_at
+ * @property string $updated_at
  * @property integer $deleted
+ * @property integer $archived 
  * @property integer $created_by
  * @property integer $updated_by
  * @property integer $teacher_id
@@ -46,15 +47,23 @@ class Disposal extends \yii\db\ActiveRecord
         return [
             [
                 'class' => BlameableBehavior::className(),
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_by', 'updated_by'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_by',
+                ],
+                'value' => Yii::$app->user->identity->getId()
             ],
             [
                 'class' => TimestampBehavior::className(),
-                'createdAtAttribute' => 'disposal_created_at',
-                'updatedAtAttribute' => 'disposal_updated_at',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
                 'value' => new Expression('NOW()'),
             ],
         ];
     }
+    
     
     /**
      * @inheritdoc
@@ -71,8 +80,8 @@ class Disposal extends \yii\db\ActiveRecord
     {
         return [
             [['disposal_startdate', 'disposal_hours', 'disposal_action', 'teacher_id', 'school_id', 'disposalreason_id'], 'required'],
-            [['disposal_startdate', 'disposal_enddate', 'disposal_created_at', 'disposal_updated_at'], 'safe'],
-            [['disposal_hours', 'deleted', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'integer'],
+            [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
+            [['disposal_hours', 'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'integer'],
             [['disposal_action'], 'string', 'max' => 200],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
@@ -97,6 +106,7 @@ class Disposal extends \yii\db\ActiveRecord
             'disposal_created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
             'disposal_updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),
             'deleted' => Yii::t('app', 'Deleted'),
+            'archived' => Yii::t('app', 'Archived'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'teacher_id' => Yii::t('app', 'Teacher ID'),

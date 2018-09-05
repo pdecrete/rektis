@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\modules\disposal\models\Disposal;
+use app\modules\disposal\models\DisposalLedger;
 use app\modules\schooltransport\models\Schoolunit;
 use Yii;
 
@@ -65,7 +67,7 @@ class Teacher extends \yii\db\ActiveRecord
      */
     public function getDisposalDisposals()
     {
-        return $this->hasMany(DisposalDisposal::className(), ['teacher_id' => 'teacher_id']);
+        return $this->hasMany(Disposal::className(), ['teacher_id' => 'teacher_id']);
     }
 
     /**

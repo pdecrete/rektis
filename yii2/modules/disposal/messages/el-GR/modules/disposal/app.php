@@ -76,7 +76,7 @@ return [
     'Teachers\' Disposals' => 'Διαθέσεις Εκπαιδευτικών',
     'Disposals Approvals' => 'Εγκρίσεις Διαθέσεων',
     'Update Teacher Disposal' => 'Ενημέρωση Διάθεσης Εκπαιδευτικού',
-    'View Teacher\'s Disposal' => 'Προβολής Διάθεσης Εκπαιδευτικού',
+    'View Teacher\'s Disposal' => 'Προβολή Διάθεσης Εκπαιδευτικού',
     'Select disposal hours...' => 'Επιλέξτε ώρες διάθεσης...',
     'Select disposal school...' => 'Επιλέξτε σχολείο διάθεσης...',
     'For ...' => 'Για ...',
@@ -96,5 +96,10 @@ return [
     'Create Disposals\' Approval' => 'Δημιουργία Έγκρισης Διαθέσεων',
     'The teacher disposal was deleted successfully.' => 'Η διάθεση εκπαιδευτικού διαγράφηκε επιτυχώς.',
     'Please select at least one disposal.' => 'Παρακαλώ επιλέξτε τουλάχιστον μία διάθεση.',
-    'Disposals for Approval' => 'Διαθέσεις προς Έγκριση'
+    'Disposals for Approval' => 'Διαθέσεις προς Έγκριση',
+    'Create Disposals\' Approval' => 'Δημιουργία Έγκρισης Διαθέσεων',
+    'Processed Disposals' => 'Διεκπεραιωμένες Διαθέσεις',
+    'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.' => 'Η έγκριση των διαθέσεων διαγράφηκε επιτυχώς και οι διαθέσεις που περιλαμβάνονταν σε αυτή επιστράφησαν στην ενότητα "Διαθέσεις προς έγκριση".',
+    'The school of the disposal must be different to the school of the organic position of the teacher' => 'Το σχολείο διάθεσης πρέπει να είναι διαφορετικό από το σχολείο οργανικής θέσης του εκπαιδευτικού.',
+    'The approval of the disposals was created successfully.' => 'Η έγκριση των διαθέσεων δημιουργήθηκε επιτυχώς.'
 ];

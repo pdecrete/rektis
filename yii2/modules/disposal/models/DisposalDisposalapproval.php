@@ -31,7 +31,7 @@ class DisposalDisposalapproval extends \yii\db\ActiveRecord
         return [
             [['disposal_id', 'approval_id'], 'required'],
             [['disposal_id', 'approval_id'], 'integer'],
-            [['disposal_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalDisposal::className(), 'targetAttribute' => ['disposal_id' => 'disposal_id']],
+            [['disposal_id'], 'exist', 'skipOnError' => true, 'targetClass' => Disposal::className(), 'targetAttribute' => ['disposal_id' => 'disposal_id']],
             [['approval_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalApproval::className(), 'targetAttribute' => ['approval_id' => 'approval_id']],
         ];
     }

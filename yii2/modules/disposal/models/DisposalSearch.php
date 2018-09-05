@@ -46,7 +46,7 @@ class DisposalSearch extends Disposal
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $archived = 0)
     {
         $prefix = Yii::$app->db->tablePrefix;
         $dspls = $prefix . 'disposal_disposal';
@@ -58,20 +58,22 @@ class DisposalSearch extends Disposal
         $query = (new \yii\db\Query())
                     ->select([$dspls. ".*", $tchers . ".*", $specs . ".*, `dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
                     ->from([$dspls, $tchers, $specs, $d_schls, $o_schls])
-                    ->where($dspls . ".teacher_id=" . $tchers . ".teacher_id" .                            
-                            " AND " . $tchers . ".specialisation_id=" . $specs . ".id" . 
-                            " AND " . $dspls . ".school_id=dsp_sch.school_id" .
-                            " AND " . $tchers . ".school_id=orgn_sch.school_id"
-                            );
+                    ->where($dspls . ".deleted=0 " .
+                        " AND " . $dspls . ".archived=" . $archived .
+                        " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
+                        " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
+                        " AND " . $dspls . ".school_id=dsp_sch.school_id" .
+                        " AND " . $tchers . ".school_id=orgn_sch.school_id"
+                        );
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
-                                         'disposal_updated_at', 'disposal_school', 'organic_school', 
+                                         'updated_at', 'disposal_school', 'organic_school', 
                                          'disposal_startdate', 'disposal_enddate', 'disposal_hours'],
-                        'defaultOrder' => ['disposal_updated_at' => SORT_DESC]
+                        'defaultOrder' => ['updated_at' => SORT_DESC]
                       ]
         ]);
 

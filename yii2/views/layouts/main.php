@@ -405,16 +405,16 @@ AppAsset::register($this);
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-user"></i></li>',
                         [
-                            'label' => 'Εγκρίσεις Διαθέσεων',
-                            'url' => ['/disposal/disposal-approval'],
-                        ],
-                        [
                             'label' => 'Διαθέσεις προς Έγκριση',
                             'url' => ['/disposal/disposal'],
                         ],
                         [
                             'label' => 'Διεκπεραιωμένες Διαθέσεις',
-                            'url' => ['/disposal/disposal'],
+                            'url' => ['/disposal/disposal?archived=1'],
+                        ],
+                        [
+                            'label' => 'Εγκρίσεις Διαθέσεων',
+                            'url' => ['/disposal/disposal-approval'],
                         ],
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
@@ -425,7 +425,7 @@ AppAsset::register($this);
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
                         [
-                            'label' => 'Λόγοι για Διάθεση Εκπαιδευτικών',
+                            'label' => 'Λόγοι Διάθεσης Εκπαιδευτικών',
                             'url' => ['/disposal/disposal-reason']
                         ],
                         [
