@@ -8,6 +8,7 @@ use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\base\Exception;
 use yii\filters\VerbFilter;
 use app\modules\disposal\DisposalModule;
@@ -40,12 +41,29 @@ class DisposalController extends Controller
         ];
     }
 
+    
+    public function actionAjax()
+    {
+        if(Yii::$app->request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            $data = Yii::$app->request->post('regNumber');
+            $teacher = Teacher::findOne(['teacher_registrynumber' => intval($data)]);
+            $data = $teacher;
+            //echo "<pre>"; print_r($teacher); echo "</pre>"; die();
+        }else{
+            $data = "ajaxerror";
+        }
+        
+        // return Json
+        return $data;
+    }
+    
     /**
      * Lists all Disposal models.
      * @return mixed
      */
     public function actionIndex($archived = 0)
-    {
+    {   
         if (!is_numeric($archived) || ($archived != 0 && $archived != 1)) {
             $archived = 0;
         }
