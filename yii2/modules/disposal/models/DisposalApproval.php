@@ -13,6 +13,7 @@ use yii\db\Expression;
  *
  * @property integer $approval_id
  * @property string $approval_regionaldirectprotocol
+ * @property date $approval_regionaldirectprotocoldate
  * @property string $approval_localdirectprotocol
  * @property string $approval_notes
  * @property string $approval_file
@@ -66,8 +67,8 @@ class DisposalApproval extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_notes', 'approval_file', 'approval_signedfile'], 'required'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_notes', 'approval_file', 'approval_signedfile'], 'required'],
+            [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate'], 'safe'],
             [['deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol', 'approval_localdirectprotocol'], 'string', 'max' => 100],
             [['approval_notes'], 'string', 'max' => 400],
@@ -83,6 +84,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
         return [
             'approval_id' => Yii::t('app', 'Approval ID'),
             'approval_regionaldirectprotocol' => Yii::t('app', 'Πρωτόκολλο ΠΔΕ'),
+            'approval_regionaldirectprotocoldate' => Yii::t('app', 'Ημερομηνία Πρωτοκόλλου ΠΔΕ'),
             'approval_localdirectprotocol' => Yii::t('app', 'Πρωτόκολλο Διεύθυνσης Σχολείου'),
             'approval_notes' => Yii::t('app', 'Σημειώσεις'),
             'approval_file' => Yii::t('app', 'Αρχείο Έγκρισης'),

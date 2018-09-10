@@ -20,6 +20,7 @@ use app\modules\disposal\models\DisposalLedger;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use app\modules\disposal\models\DisposalReason;
 use app\modules\disposal\models\DisposalWorkobj;
+use yii\helpers\Json;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -44,18 +45,16 @@ class DisposalController extends Controller
     
     public function actionAjax()
     {
+        $data = null;
         if(Yii::$app->request->isAjax){
             Yii::$app->response->format = Response::FORMAT_JSON;
             $data = Yii::$app->request->post('regNumber');
             $teacher = Teacher::findOne(['teacher_registrynumber' => intval($data)]);
             $data = $teacher;
             //echo "<pre>"; print_r($teacher); echo "</pre>"; die();
-        }else{
-            $data = "ajaxerror";
         }
         
-        // return Json
-        return $data;
+        return Json::encode($data);
     }
     
     /**
@@ -105,15 +104,18 @@ class DisposalController extends Controller
             $specialisations = Specialisation::find()->all();
             $disposal_reasons = DisposalReason::find()->all();
             $disposal_workobjs = DisposalWorkobj::find()->all();
-            $model = new Disposal();
-            
+            $model = new Disposal();           
+                       
             $disposal_hours = Disposal::getHourOptions();
             
             if ($model->load(Yii::$app->request->post()) 
                 && $teacher_model->load(Yii::$app->request->post())) {
-                
+                                    
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
+                
+                if($model->getSchool()->one()->directorate_id != $teacher_model->getSchool()->one()->directorate_id)
+                    throw new Exception("The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.");
                 
                 if($model->disposal_enddate <= $model->disposal_startdate)
                     throw new Exception("The start date of the disposal must be earlier its end date.");
@@ -134,10 +136,15 @@ class DisposalController extends Controller
                         $model->disposal_enddate = date("Y-m-d", $timestamp);
                 }
                 
-                if(!$teacher_model->save()) {                    
-                    throw new Exception("Error in saving the teacher details in the database.");
+
+                $existing_teacher_model = Teacher::findOne(['teacher_registrynumber' => $teacher_model->teacher_registrynumber]);
+                if(is_null($existing_teacher_model)) {
+                    if(!$teacher_model->save()) {
+                        throw new Exception("Error in saving the teacher details in the database.");
+                    }
                 }
-                $model->teacher_id = $teacher_model->teacher_id;
+
+                $model->teacher_id = $existing_teacher_model->teacher_id;
                 
                 if(!$model->save()){
                     //echo "<pre>"; print_r($model->errors); echo "<pre>"; die();

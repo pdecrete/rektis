@@ -19,7 +19,7 @@ class DisposalApprovalSearch extends DisposalApproval
     {
         return [
             [['approval_id', 'created_by', 'updated_by'], 'integer'],
-            [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_notes', 'approval_file', 'approval_signedfile', 'created_at', 'updated_at'], 'safe'],
+            [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_localdirectprotocol', 'approval_notes', 'approval_file', 'approval_signedfile', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 

@@ -33,23 +33,21 @@ $this->registerJs($script, View::POS_READY);
 
 $ajaxscript_searchTeacherById = 'function searchTeacherById(argument){
                                     var regNumber = document.getElementById("teacher_regnumber_frmid").value;
-                                    var surname = document.getElementById("teacher_surname_frmid");
-                                    var name = document.getElementById("teacher_name_frmid");
                                     $.ajax({ 
                                             url: argument, 
                                             type: "post", 
                                             data: {"regNumber":regNumber},
-                                            success: function(data){
-                                                        txt_surname = JSON.stringify(data["teacher_surname"]);
-                                                        txt_name = JSON.stringify(data["teacher_name"]);                                                      
-                                                        surname.value = txt_surname;
-                                                        name.value = txt_name;
+                                            success: function(data){//alert(data);
+                                                        data = JSON.parse(data);
+                                                        $("#teacher_surname_frmid").val(data.teacher_surname).trigger("change");                                                        
+                                                        $("#teacher_name_frmid").val(data.teacher_name).trigger("change");
+                                                        $("#teacher_specialization_frmid").val(data.specialisation_id).trigger("change");
+                                                        $("#teacher_school_frmid").val(data.school_id).trigger("change");
                                                      },
-                                            error: function(){alert("Error");}
+                                            error: function(){;}
 
                         	               })
-
-}';
+                                }';
 
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
 
@@ -63,7 +61,7 @@ $url = Url::to('/disposal/disposal/ajax');
 		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_name')->textInput(['id' => 'teacher_name_frmid']) ?></div>
 		<div class="col-lg-3"><?= $form->field($teacher_model, 'specialisation_id')->widget(Select2::classname(), [
                                                 'data' => ArrayHelper::map($specialisations, 'id', 'code'),
-                                                'options' => ['placeholder' => Yii::t('app', 'Select specialisation...')],
+		                                        'options' => ['id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
         </div>		
 	</div>
@@ -71,7 +69,7 @@ $url = Url::to('/disposal/disposal/ajax');
 		<div class="col-lg-3">
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
-                                'options' => ['placeholder' => Yii::t('app', 'Select school...')],
+		                        'options' => ['id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
                             ])->label('Σχολείο Υπηρέτησης'); ?>
         </div>
 		<div class="col-lg-3">

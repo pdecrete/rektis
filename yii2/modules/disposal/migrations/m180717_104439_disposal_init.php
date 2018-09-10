@@ -150,6 +150,7 @@ class m180717_104439_disposal_init extends Migration
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_approval'] .
                           " (`approval_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `approval_regionaldirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο ΠΔΕ',
+                             `approval_regionaldirectprotocoldate` DATE NOT NULL COMMENT 'Ημερομηνία Πρωτοκόλλου ΠΔΕ',
                              `approval_localdirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διεύθυνσης Σχολείου',
                              `approval_notes` VARCHAR(400) NOT NULL COMMENT 'Σημειώσεις',
                              `approval_file` VARCHAR(300) NOT NULL COMMENT 'Αρχείο Έγκρισης',

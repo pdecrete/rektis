@@ -4,6 +4,7 @@ namespace app\modules\disposal\controllers;
 
 use Exception;
 use Yii;
+use PhpOffice\PhpWord\TemplateProcessor;
 use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalApproval;
 use app\modules\disposal\models\DisposalApprovalSearch;
@@ -13,7 +14,6 @@ use yii\base\Model;
 use yii\filters\VerbFilter;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalDisposalapproval;
-use app\models\Teacher;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -98,7 +98,18 @@ class DisposalApprovalController extends Controller
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $school_models[$index] = $disposals_models[$index]->getSchool()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
-        }        
+        }
+        
+        $directorate_id = $school_models[0]['directorate_id'];
+        foreach ($school_models as $school_model) {
+            if ($school_model['directorate_id'] != $directorate_id) {
+                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Please select disposals of only one directorate."));
+                return $this->redirect(['disposal/index']);
+            }
+        }
+
+
+        
         $transaction = Yii::$app->db->beginTransaction();
         
         try {            
@@ -111,19 +122,42 @@ class DisposalApprovalController extends Controller
                 if(!$model->save()) {
                     throw new Exception("Failed to save the approval in the database");
                 }
-                
+                //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
+                $disposals_counter = 0;
                 foreach ($disposalapproval_models as $disposalapproval_model) {
+                    if($disposalapproval_model->disposal_id == 0)
+                        continue;
+                    $disposals_counter++;
                     $disposal_model = Disposal::findOne($disposalapproval_model->disposal_id);
                     if(!$disposal_model)
-                        throw new Exception("Failed to assign disposals to the approval");
+                        throw new Exception("Failed to assign disposals to the approval1");
                     $disposal_model->archived = 1;
                     if(!$disposal_model->save())
-                        throw new Exception("Failed to assign disposals to the approval");
+                        throw new Exception("Failed to assign disposals to the approval2");
                     $disposalapproval_model->approval_id = $model->approval_id;
                     if(!$disposalapproval_model->save())
-                        throw new Exception("Failed to assign disposals to the approval");
+                        throw new Exception("Failed to assign disposals to the approval3");
                 }
-
+                if($disposals_counter == 0)
+                    throw new Exception("Please select at least one disposal.");
+                
+                $template_path = yii::$app->params['disposal_templatepath'] . "DISPOSALS_APPROVAL_GENERAL_TEMPLATE.docx";
+                                
+                if (!file_exists(Yii::getAlias($template_path))) {
+                    return null;
+                }
+                
+                $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));                
+                $templateProcessor->setValue('regionaldirect_protocoldate', $model->approval_regionaldirectprotocoldate);
+                $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
+                $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
+                $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
+                $templateProcessor->setValue('phonenumber', $this->module->params['disposal_telephone']);
+                $templateProcessor->setValue('fax', $this->module->params['schooltransport_fax']);
+                $templateProcessor->setValue('email', Yii::$app->params['email']);
+                $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
+                $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
+                    
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
                 return $this->redirect(['disposal-approval/index']);
@@ -143,7 +177,7 @@ class DisposalApprovalController extends Controller
         }
         catch (Exception $exc) {
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', $exc->getMessage());
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('create', [
                 'model' => $model,
                 'disposals_models' => $disposals_models,
