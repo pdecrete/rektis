@@ -21,6 +21,9 @@ use yii\widgets\ActiveForm;
 		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>		
 	</div>
 	<div class="row">
+    	<div class="col-lg-12"><?= $form->field($model, 'approval_localdirectdecisionsubject')->textInput(['maxlength' => true]) ?></div>
+    </div>
+	<div class="row">
     	<div class="col-lg-12"><?= $form->field($model, 'approval_notes')->textInput(['maxlength' => true]) ?></div>
     </div>
     <div class="row">
@@ -51,7 +54,8 @@ use yii\widgets\ActiveForm;
 	<div class="row">
 		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>
 	</div>
-    <div class="form-group">
+    <div class="form-group pull-right">
+    	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

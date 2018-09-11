@@ -14,6 +14,8 @@ use yii\base\Model;
 use yii\filters\VerbFilter;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalDisposalapproval;
+use app\modules\schooltransport\models\Schoolunit;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -100,10 +102,12 @@ class DisposalApprovalController extends Controller
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
         }
         
-        $directorate_id = $school_models[0]['directorate_id'];
-        foreach ($school_models as $school_model) {
-            if ($school_model['directorate_id'] != $directorate_id) {
-                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Please select disposals of only one directorate."));
+        $directorate_id = Schoolunit::findOne(['school_id' => $teacher_models[0]['school_id']])['directorate_id'];
+        $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
+        foreach ($teacher_models as $teacher_model) {
+            $teachers_school = Schoolunit::findOne(['school_id' => $teacher_model['school_id']]);    
+            if ($teachers_school['directorate_id'] != $directorate_id) {
+                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Please select teachers of only one directorate."));
                 return $this->redirect(['disposal/index']);
             }
         }
@@ -115,12 +119,11 @@ class DisposalApprovalController extends Controller
         try {            
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
                 
-                
-                //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
-               $model->approval_file = '---';
-               $model->approval_signedfile = '---';
+                $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
+                $model->approval_signedfile = '-'; //TODO allow null (has been changed in migration)
                 if(!$model->save()) {
-                    throw new Exception("Failed to save the approval in the database");
+                    throw new Exception("Failed to save the approval in the database.");
                 }
                 //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
                 $disposals_counter = 0;
@@ -141,22 +144,42 @@ class DisposalApprovalController extends Controller
                 if($disposals_counter == 0)
                     throw new Exception("Please select at least one disposal.");
                 
-                $template_path = yii::$app->params['disposal_templatepath'] . "DISPOSALS_APPROVAL_GENERAL_TEMPLATE.docx";
                                 
-                if (!file_exists(Yii::getAlias($template_path))) {
-                    return null;
+                $filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $filename . ".docx";
+                $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $filename . '_' . $model->approval_id . ".docx";
+                
+                if (!file_exists($template_path)) {
+                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
                 }
+                $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
+                $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
                 
                 $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));                
-                $templateProcessor->setValue('regionaldirect_protocoldate', $model->approval_regionaldirectprotocoldate);
+                $templateProcessor->setValue('regionaldirect_protocoldate', date_format(date_create($model->approval_regionaldirectprotocoldate), 'd-m-Y'));
                 $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
                 $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
                 $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
                 $templateProcessor->setValue('phonenumber', $this->module->params['disposal_telephone']);
-                $templateProcessor->setValue('fax', $this->module->params['schooltransport_fax']);
+                $templateProcessor->setValue('fax', $this->module->params['disposal_fax']);
                 $templateProcessor->setValue('email', Yii::$app->params['email']);
                 $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
                 $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
+                $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
+                $templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
+                $templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
+                
+                $teacher_disposals = '';
+                //echo "<pre>"; print_r($teacher_models); echo "<pre>"; die();
+                for($i = 0; $i < count($teacher_models); $i++) {
+                    $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
+                    $teacher_disposals .= $specialization_models[$i]['code'] . ": διατίθεται "; 
+                    $teacher_disposals .= "\n"
+                }
+                $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
+                
+                $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);
+                $templateProcessor->saveAs($fullpath_fileName);
                     
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
@@ -235,6 +258,7 @@ class DisposalApprovalController extends Controller
             }
             
             $transaction->commit();
+            unlink(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file);
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.'));
             return $this->redirect(['index']);
         }
@@ -245,6 +269,28 @@ class DisposalApprovalController extends Controller
         }        
     }
 
+    
+    
+    public function actionDownload($id) {
+        try {
+            $approval_model = DisposalApproval::findOne(['approval_id' => $id]);
+
+            $file = Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file;
+            
+            if (!is_readable($file)) {
+                throw new Exception("The decision file cannot be found.");
+            }
+            
+            return Yii::$app->response->SendFile($file);
+            
+            return $this->redirect(['/disposal/disposal-approval/index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            return $this->redirect(['/disposal/disposal-approval/index']);
+        }
+    }
+    
     /**
      * Finds the DisposalApproval model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

@@ -102,7 +102,9 @@ return [
     'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.' => 'Η έγκριση των διαθέσεων διαγράφηκε επιτυχώς και οι διαθέσεις που περιλαμβάνονταν σε αυτή επιστράφησαν στην ενότητα "Διαθέσεις προς έγκριση".',
     'The school of the disposal must be different to the school of the organic position of the teacher' => 'Το σχολείο διάθεσης πρέπει να είναι διαφορετικό από το σχολείο οργανικής θέσης του εκπαιδευτικού.',
     'The approval of the disposals was created successfully.' => 'Η έγκριση των διαθέσεων δημιουργήθηκε επιτυχώς.',
-    'Please select disposals of only one directorate.' => 'Παρακαλώ επιλέξτε διαθέσεις μόνο μίας Διεύθυνσεις.',
+    'Please select teachers of only one directorate.' => 'Παρακαλώ επιλέξτε εκπαιδευτικούς μόνο μίας Διεύθυνσης.',
     'The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.' => 'Η διεύθυνση της οργανικής θέσης του εκπαιδευτικού πρέπει να είναι ίδια με τη διεύθυνση του σχολείου διάθεσης.',
-    'Error in saving the teacher details in the database.' => 'Σφάλμα κατά την αποθήκευση των στοιχείων του εκπαιδευτικού στη βάση δεδομένων.'
+    'Error in saving the teacher details in the database.' => 'Σφάλμα κατά την αποθήκευση των στοιχείων του εκπαιδευτικού στη βάση δεδομένων.',
+    'Download Decision' => 'Κατέβασμα Απόφασης',
+    'The creation of the approval failed, because the template file for the approval does not exist.' => 'Η δημιουργία της έγκρισης απέτυχε επειδή δεν υπάρχει το πρότυπο αρχείο για τη δημιουργία της.'
 ];

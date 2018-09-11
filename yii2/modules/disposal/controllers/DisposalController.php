@@ -114,8 +114,9 @@ class DisposalController extends Controller
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
                 
-                if($model->getSchool()->one()->directorate_id != $teacher_model->getSchool()->one()->directorate_id)
-                    throw new Exception("The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.");
+                //TODO
+                //if($model->getSchool()->one()->directorate_id != $teacher_model->getSchool()->one()->directorate_id)
+                //    throw new Exception("The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.");
                 
                 if($model->disposal_enddate <= $model->disposal_startdate)
                     throw new Exception("The start date of the disposal must be earlier its end date.");
@@ -142,9 +143,10 @@ class DisposalController extends Controller
                     if(!$teacher_model->save()) {
                         throw new Exception("Error in saving the teacher details in the database.");
                     }
+                    $model->teacher_id = $teacher_model->teacher_id;
                 }
-
-                $model->teacher_id = $existing_teacher_model->teacher_id;
+                else
+                    $model->teacher_id = $existing_teacher_model->teacher_id;
                 
                 if(!$model->save()){
                     //echo "<pre>"; print_r($model->errors); echo "<pre>"; die();
