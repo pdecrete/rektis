@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
         'teacher_models' => $teacher_models,
         'school_models' => $school_models,
         'specialization_models' => $specialization_models,
-        'disposal_ids' => $disposal_ids,
+        'create' => 0,
         'selection' => 1
     ]) ?>
 

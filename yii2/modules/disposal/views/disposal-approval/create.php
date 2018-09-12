@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'school_models' => $school_models,
         'specialization_models' => $specialization_models,
         'disposal_ids' => $disposal_ids,
+        'create' => 1,
         'selection' => 1
     ]) ?>
 

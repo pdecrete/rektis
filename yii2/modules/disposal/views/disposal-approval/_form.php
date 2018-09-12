@@ -51,9 +51,11 @@ use yii\widgets\ActiveForm;
     		</table>
     	</div>
 	</div>
-	<div class="row">
-		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>
-	</div>
+	<?php if($create): ?>
+    	<div class="row">
+    		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>
+    	</div>
+	<?php endif;?>
     <div class="form-group pull-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

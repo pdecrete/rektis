@@ -23,7 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'disposal_hours' => $disposal_hours,
         'specialisations' => $specialisations,
         'disposal_reasons' => $disposal_reasons,
-        'disposal_workobjs' => $disposal_workobjs
+        'disposal_workobjs' => $disposal_workobjs,
+        'disabled' => false
     ]) ?>
 
 </div>

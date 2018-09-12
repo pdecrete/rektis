@@ -43,7 +43,7 @@ class DisposalController extends Controller
     }
 
     
-    public function actionAjax()
+    public function actionGetteacherAjax()
     {
         $data = null;
         if(Yii::$app->request->isAjax){

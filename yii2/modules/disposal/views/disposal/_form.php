@@ -37,31 +37,47 @@ $ajaxscript_searchTeacherById = 'function searchTeacherById(argument){
                                             url: argument, 
                                             type: "post", 
                                             data: {"regNumber":regNumber},
-                                            success: function(data){//alert(data);
+                                            success: function(data){
                                                         data = JSON.parse(data);
-                                                        $("#teacher_surname_frmid").val(data.teacher_surname).trigger("change");                                                        
-                                                        $("#teacher_name_frmid").val(data.teacher_name).trigger("change");
-                                                        $("#teacher_specialization_frmid").val(data.specialisation_id).trigger("change");
-                                                        $("#teacher_school_frmid").val(data.school_id).trigger("change");
+                                                        if(data == null) {
+                                                            $("#teacher_surname_frmid").prop("disabled", false);
+                                                            $("#teacher_name_frmid").prop("disabled", false);
+                                                            $("#teacher_specialization_frmid").prop("disabled", false);
+                                                            $("#teacher_school_frmid").prop("disabled", false);
+                                                            $("#teacher_surname_frmid").val("").trigger("change");
+                                                            $("#teacher_name_frmid").val("").trigger("change");
+                                                            $("#teacher_specialization_frmid").val("").trigger("change");
+                                                            $("#teacher_school_frmid").val("").trigger("change");
+                                                        }
+                                                        else {
+                                                            $("#teacher_surname_frmid").val(data.teacher_surname).trigger("change");                                                            
+                                                            $("#teacher_name_frmid").val(data.teacher_name).trigger("change");
+                                                            $("#teacher_specialization_frmid").val(data.specialisation_id).trigger("change");
+                                                            $("#teacher_school_frmid").val(data.school_id).trigger("change");
+                                                            $("#teacher_surname_frmid").prop("disabled", true);
+                                                            $("#teacher_name_frmid").prop("disabled", true);
+                                                            $("#teacher_specialization_frmid").prop("disabled", true);
+                                                            //$("#teacher_school_frmid").prop("disabled", true);
+                                                        }
                                                      },
-                                            error: function(){;}
+                                            error: function(){alert("Hallo");}
 
                         	               })
                                 }';
 
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
 
-$url = Url::to('/disposal/disposal/ajax');
+$url = Url::to('/disposal/disposal/getteacher-ajax');
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">
 	<div class="row">
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_registrynumber')->textInput(['id' => 'teacher_regnumber_frmid', 'onchange' => 'searchTeacherById("' . $url .'");']) ?></div>
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_surname')->textInput(['id' => 'teacher_surname_frmid']) ?></div>
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_name')->textInput(['id' => 'teacher_name_frmid']) ?></div>
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_registrynumber')->textInput(['disabled' => $disabled, 'id' => 'teacher_regnumber_frmid', 'oninput' => 'searchTeacherById("' . $url .'");']) ?></div>
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_surname')->textInput(['disabled' => $disabled, 'id' => 'teacher_surname_frmid']) ?></div>
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_name')->textInput(['disabled' => $disabled, 'id' => 'teacher_name_frmid']) ?></div>
 		<div class="col-lg-3"><?= $form->field($teacher_model, 'specialisation_id')->widget(Select2::classname(), [
                                                 'data' => ArrayHelper::map($specialisations, 'id', 'code'),
-		                                        'options' => ['id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
+		                                        'options' => ['disabled' => $disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
         </div>		
 	</div>
@@ -69,7 +85,7 @@ $url = Url::to('/disposal/disposal/ajax');
 		<div class="col-lg-3">
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
-		                        'options' => ['id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
+			                    'options' => ['id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
                             ])->label('Σχολείο Υπηρέτησης'); ?>
         </div>
 		<div class="col-lg-3">
