@@ -53,7 +53,7 @@ class DisposalReason extends \yii\db\ActiveRecord
      */
     public function getDisposalDisposals()
     {
-        return $this->hasMany(DisposalDisposal::className(), ['disposalreason_id' => 'disposalreason_id']);
+        return $this->hasMany(Disposal::className(), ['disposalreason_id' => 'disposalreason_id']);
     }
 
     /**

@@ -83,9 +83,34 @@ class DisposalController extends Controller
      * @return mixed
      */
     public function actionView($id, $archived = 0)
-    {
+    {        
+        $model = $this->findModel($id);
+        $teacher = $model->getTeacher()->one();
+        $specialisation = Specialisation::findOne(['id' => $teacher['specialisation_id']]);
+        $organicpost = Schoolunit::findOne(['school_id' => $teacher['school_id']]);
+        $disposal_school = $model->getSchool()->one();
+        $disposal_reason = $model->getDisposalreason()->one();
+        $disposal_workobj = $model->getDisposalworkobj()->one();
+        $array_model = $model->toArray();
+        
+        if($array_model['disposal_hours'] == Disposal::FULL_DISPOSAL)
+            $array_model['disposal_hours'] = 'Ολική Διάθεση';
+        else 
+            $array_model['disposal_hours'] .= ' ώρες';
+        $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
+        $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
+        $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
+        $array_model['school_id'] = $disposal_school['school_name'];
+        $array_model['Organic Post'] = $organicpost->school_name;
+        $array_model['disposalreason_id'] = $disposal_reason['disposalreason_description'];
+        $array_model['disposalworkobj_id'] = $disposal_workobj['disposalworkobj_description'];
+
+        
+        
+        //echo "<pre>"; print_r($array_model); echo "</pre>"; die();
+        
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $array_model,
             'archived' => $archived
         ]);
     }
@@ -311,6 +336,18 @@ class DisposalController extends Controller
         }
     }
 
+    
+    public function actionImportdisposals() {
+        try {
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal deletion failed."));
+            return $this->redirect(['index']);
+        }
+    }
+    
     
     /**
      * Finds the Disposal model based on its primary key value.

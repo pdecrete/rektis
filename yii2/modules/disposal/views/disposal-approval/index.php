@@ -17,7 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <p class="text-right">
+    	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['disposal/index'], ['class' => 'btn btn-primary']) ?>
+    </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

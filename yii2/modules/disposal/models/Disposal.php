@@ -4,6 +4,7 @@ namespace app\modules\disposal\models;
 
 use app\models\Teacher;
 use app\models\User;
+use app\modules\disposal\DisposalModule;
 use app\modules\schooltransport\models\Schoolunit;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -100,21 +101,21 @@ class Disposal extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'disposal_id' => Yii::t('app', 'Disposal ID'),
-            'disposal_startdate' => Yii::t('app', 'Έναρξη Διάθεσης'),
-            'disposal_enddate' => Yii::t('app', 'Λήξη Διάθεσης'),
-            'disposal_hours' => Yii::t('app', 'Ώρες Διάθεσης'),
-            'disposal_action' => Yii::t('app', 'Πράξη Διάθεσης'),
-            'disposal_created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
-            'disposal_updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),
-            'deleted' => Yii::t('app', 'Deleted'),
-            'archived' => Yii::t('app', 'Archived'),
-            'created_by' => Yii::t('app', 'Created By'),
-            'updated_by' => Yii::t('app', 'Updated By'),
-            'teacher_id' => Yii::t('app', 'Teacher ID'),
-            'school_id' => Yii::t('app', 'School ID'),
-            'disposalreason_id' => Yii::t('app', 'Disposalreason ID'),
-            'disposalworkobj_id' => Yii::t('app', 'Disposalworkobj ID'),
+            'disposal_id' => DisposalModule::t('modules/disposal/app', 'Disposal ID'),
+            'disposal_startdate' => DisposalModule::t('modules/disposal/app', 'Έναρξη Διάθεσης'),
+            'disposal_enddate' => DisposalModule::t('modules/disposal/app', 'Λήξη Διάθεσης'),
+            'disposal_hours' => DisposalModule::t('modules/disposal/app', 'Ώρες Διάθεσης'),
+            'disposal_action' => DisposalModule::t('modules/disposal/app', 'Πράξη Διάθεσης'),
+            'disposal_created_at' => DisposalModule::t('modules/disposal/app', 'Ημ/νία Δημιουργίας'),
+            'disposal_updated_at' => DisposalModule::t('modules/disposal/app', 'Ημ/νία Επεξεργασίας'),
+            'deleted' => DisposalModule::t('modules/disposal/app', 'Deleted'),
+            'archived' => DisposalModule::t('modules/disposal/app', 'Archived'),
+            'created_by' => DisposalModule::t('modules/disposal/app', 'Created By'),
+            'updated_by' => DisposalModule::t('modules/disposal/app', 'Updated By'),
+            'teacher_id' => DisposalModule::t('modules/disposal/app', 'Teacher'),
+            'school_id' => DisposalModule::t('modules/disposal/app', 'Disposal School'),
+            'disposalreason_id' => DisposalModule::t('modules/disposal/app', 'Disposal Reason'),
+            'disposalworkobj_id' => DisposalModule::t('modules/disposal/app', 'Disposal Working Object'),
         ];
     }
 
@@ -155,7 +156,7 @@ class Disposal extends \yii\db\ActiveRecord
      */
     public function getDisposalreason()
     {
-        return $this->hasOne(Disposalreason::className(), ['disposalreason_id' => 'disposalreason_id']);
+        return $this->hasOne(DisposalReason::className(), ['disposalreason_id' => 'disposalreason_id']);
     }
     
     /**
@@ -163,7 +164,7 @@ class Disposal extends \yii\db\ActiveRecord
      */
     public function getDisposalworkobj()
     {
-        return $this->hasOne(Disposalworkobj::className(), ['disposalworkobj_id' => 'disposalworkobj_id']);
+        return $this->hasOne(DisposalWorkobj::className(), ['disposalworkobj_id' => 'disposalworkobj_id']);
     }    
     
     /**
@@ -187,7 +188,7 @@ class Disposal extends \yii\db\ActiveRecord
      */
     public static function getHourOptions()
     {
-        $disposal_hours[-1] = array("hours" => -1, "hours_name" => "Ολική Διάθεση");
+        $disposal_hours[Disposal::FULL_DISPOSAL] = array("hours" => Disposal::FULL_DISPOSAL, "hours_name" => "Ολική Διάθεση");
         for ($i = 1; $i <= 24; $i++)
             $disposal_hours[$i] = array("hours" => $i, "hours_name" => $i);
         return $disposal_hours;

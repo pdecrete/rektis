@@ -4,7 +4,6 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
 use app\modules\disposal\DisposalModule;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
@@ -34,6 +33,9 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'code',
                 'label' => DisposalModule::t('modules/disposal/app', 'Specialisation'),
+            ],
+            [   'attribute' => 'directorate_shortname',
+                'label' => DisposalModule::t('modules/disposal/app', 'Organic Post Directorate'),
             ],
             [   'attribute' => 'organic_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Organic Post'),
@@ -68,7 +70,8 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'attribute' => 'disposal_hours',
                     'data' => ArrayHelper::map(Disposal::getHourOptions(), 'hours', 'hours_name'),
                     'options' => ['placeholder' => '   '],
-                    'pluginOptions' => ['allowClear' => true, 'width' => '80']])
+                    'pluginOptions' => ['allowClear' => true, 'width' => '80']
+                    ])
             ],
             ['class' => 'yii\grid\ActionColumn',
                 'header' => DisposalModule::t('modules/disposal/app', 'Actions'),
@@ -98,6 +101,7 @@ $columns = [[   'attribute' => 'teacher_surname',
 	<?=Html::beginForm(['archiveform'], 'post');?>
 	<?php if(!$archived):?>
         <p class="text-right">
+        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Disposals\' Approval'), ['disposal-approval/create'], ['class' => 'btn btn-success', 'data-method' => 'POST']) ?>
             <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Teacher Disposal'), ['create'], ['class' => 'btn btn-success']) ?>
         </p>
@@ -106,13 +110,12 @@ $columns = [[   'attribute' => 'teacher_surname',
     		<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['index'], ['class' => 'btn btn-primary']) ?>
     	</p>
     <?php endif;?>
-<?php Pjax::begin(); ?>    
+  
 	<?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => $columns,
             
     ]); ?>
-<?php Pjax::end(); ?>
 <?= Html::endForm();?>
 </div>

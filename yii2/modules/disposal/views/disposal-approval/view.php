@@ -1,13 +1,14 @@
 <?php
 
+use app\modules\disposal\DisposalModule;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 
-$this->title = $model->approval_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Disposal Approvals'), 'url' => ['index']];
+$this->title = DisposalModule::t('modules/disposal/app', 'View Approval');
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-approval-view">

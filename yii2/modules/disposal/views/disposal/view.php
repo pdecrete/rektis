@@ -18,9 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 	<?php if(!$archived):?>
-        <p>
-            <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->disposal_id], ['class' => 'btn btn-primary']) ?>
-            <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->disposal_id], [
+        <p class="text-right">
+            <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model['disposal_id']], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model['disposal_id']], [
                 'class' => 'btn btn-danger',
                 'data' => [
                     'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
@@ -33,12 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'disposal_id',
-            'disposal_startdate',
-            'disposal_enddate',
-            'disposal_hours',
-            'teacher_id',
-            'school_id',
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Teacher'), 'value'=>$model['teacher_id']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Organic Post'), 'value'=>$model['Organic Post']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal School'), 'value'=>$model['school_id']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Duration'), 'value'=>$model['disposal_startdate'] . ' - ' . $model['disposal_enddate']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Hours'), 'value'=>$model['disposal_hours']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Reason'), 'value'=>$model['disposalreason_id']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Duty'), 'value'=>$model['disposalworkobj_id']],            
         ],
     ]) ?>
 

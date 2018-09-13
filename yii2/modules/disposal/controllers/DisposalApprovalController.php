@@ -18,6 +18,7 @@ use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\Directorate;
 use app\models\Teacher;
 use app\models\Specialisation;
+use yii\helpers\ArrayHelper;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -144,48 +145,8 @@ class DisposalApprovalController extends Controller
                 if($disposals_counter == 0)
                     throw new Exception("Please select at least one disposal.");
                 
-                                
-                $filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
-                $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $filename . ".docx";
-                $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $filename . '_' . $model->approval_id . ".docx";
-                
-                if (!file_exists($template_path)) {
+                if($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null)
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
-                }
-                $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
-                $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
-                
-                $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));                
-                $templateProcessor->setValue('regionaldirect_protocoldate', date_format(date_create($model->approval_regionaldirectprotocoldate), 'd-m-Y'));
-                $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
-                $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
-                $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
-                $templateProcessor->setValue('phonenumber', $this->module->params['disposal_telephone']);
-                $templateProcessor->setValue('fax', $this->module->params['disposal_fax']);
-                $templateProcessor->setValue('email', Yii::$app->params['email']);
-                $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
-                $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
-                $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
-                $templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
-                $templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
-                
-                $teacher_disposals = "";
-                for($i = 0; $i < count($teacher_models); $i++) {
-                    $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
-                    $teacher_disposals .= $specialization_models[$i]['code'] . ": διατίθεται ";
-                    $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? $teacher_disposals = " με ολική διάθεση ":
-                                            " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα στο \"" . $school_models[$i]['school_name'] . "\"";
-                    $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
-                    $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
-                    if ($disposals_models[$i]['disposalworkobj_id'] != null) 
-                        $teacher_disposals .= " παρέχοντας " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
-                    $teacher_disposals .= ".\n\n";
-                }
-                
-                $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
-                
-                $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);
-                $templateProcessor->saveAs($fullpath_fileName);
                     
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
@@ -241,41 +202,38 @@ class DisposalApprovalController extends Controller
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
         }
+        $directorate_id = Schoolunit::findOne(['school_id' => $teacher_models[0]['school_id']])['directorate_id'];
+        $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
 
         $transaction = Yii::$app->db->beginTransaction();
         
         try {
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                
+                $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 if(!$model->save()) 
-                    throw new Exception("Failed to save the approval in the database.");
+                    throw new Exception("Failed to save the changes of the approval.");
+                
+                $old_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
+                $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
                 
                 $disposals_counter = 0;
-                foreach ($disposalapproval_models as $disposalapproval_model) {
-                    $disposal_model = Disposal::findOne($disposalapproval_model->disposal_id);
-                    
-                    if($disposalapproval_model->disposal_id == 0) {
-                        $disposal_model->archived = 0;
-                        if(!$disposal_model->save())
+                foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
+                    if(!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
+                        $disposals_counter++;
+                        if(!$old_disposalapproval_model->delete())
                             throw new Exception("Failed to save the changes of the approval.");
-                        if(!$disposal_model->delete())
+                        $restore_disposal_model = Disposal::findOne(['disposal_id' => $old_disposalapproval_model->disposal_id]);
+                        $restore_disposal_model->archived = 0;
+                        if(!$restore_disposal_model->save())
                             throw new Exception("Failed to save the changes of the approval.");
-                        continue;
                     }
-                    
-                    $disposals_counter++;
-                    if(!$disposal_model)
-                        throw new Exception("Failed to assign disposals to the approval.");
-                    $disposal_model->archived = 1;
-                    if(!$disposal_model->save())
-                        throw new Exception("Failed to assign disposals to the approval.");
-                    $disposalapproval_model->approval_id = $model->approval_id;
-                    if(!$disposalapproval_model->save())
-                        throw new Exception("Failed to assign disposals to the approval.");
                 }
-                if($disposals_counter == 0)
+                if($disposals_counter == count($old_disposalapproval_models))
                     throw new Exception("Please select at least one disposal.");
-                
+
+                if($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null)
+                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
+                    
                 $transaction->commit();
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
                 return $this->redirect(['disposal-approval/index']);
@@ -303,6 +261,52 @@ class DisposalApprovalController extends Controller
                 'specialization_models' => $specialization_models,
             ]);
         }       
+    }
+    
+    
+    private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) {
+        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
+        $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
+        
+        if (!file_exists($template_path)){            
+            return null;
+        }
+
+        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
+        $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
+        
+        $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
+        $templateProcessor->setValue('regionaldirect_protocoldate', date_format(date_create($model->approval_regionaldirectprotocoldate), 'd-m-Y'));
+        $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
+        $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
+        $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
+        $templateProcessor->setValue('phonenumber', $this->module->params['disposal_telephone']);
+        $templateProcessor->setValue('fax', $this->module->params['disposal_fax']);
+        $templateProcessor->setValue('email', Yii::$app->params['email']);
+        $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
+        $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
+        $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
+        $templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
+        $templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
+        
+        $teacher_disposals = "";
+        for($i = 0; $i < count($teacher_models); $i++) {
+            $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
+            $teacher_disposals .= $specialization_models[$i]['code'] . ": διατίθεται ";
+            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? $teacher_disposals = " με ολική διάθεση ":
+            " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα στο \"" . $school_models[$i]['school_name'] . "\"";
+            $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
+            $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
+            if ($disposals_models[$i]['disposalworkobj_id'] != null)
+                $teacher_disposals .= " παρέχοντας " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
+                $teacher_disposals .= ".\n\n";
+        }
+        
+        $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
+        
+        $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);
+        $templateProcessor->saveAs($fullpath_fileName);
+        return true;
     }
 
     /**
