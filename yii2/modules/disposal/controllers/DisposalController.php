@@ -67,13 +67,16 @@ class DisposalController extends Controller
             $archived = 0;
         }
         
+        $disposal_reasons = DisposalReason::find()->all();
+        
         $searchModel = new DisposalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'archived' => $archived
+            'archived' => $archived,
+            'disposal_reasons' => $disposal_reasons
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use app\modules\disposal\DisposalModule;
+use app\modules\disposal\models\Disposal;
 use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -16,12 +18,13 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
+    	<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
+		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
     	<div class="col-lg-4"><?= $form->field($model, 'approval_localdirectprotocol')->textInput(['maxlength' => true]) ?></div>
-    	<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>
-		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>		
 	</div>
 	<div class="row">
-    	<div class="col-lg-12"><?= $form->field($model, 'approval_localdirectdecisionsubject')->textInput(['maxlength' => true]) ?></div>
+    	<div class="col-lg-8"><?= $form->field($model, 'approval_localdirectdecisionsubject')->textInput(['maxlength' => true]) ?></div>
+    	<div class="col-lg-4"><?= $form->field($model, 'approval_action')->textInput(); ?></div>						        	
     </div>
 	<div class="row">
     	<div class="col-lg-12"><?= $form->field($model, 'approval_notes')->textInput(['maxlength' => true]) ?></div>
@@ -43,7 +46,7 @@ use yii\widgets\ActiveForm;
 						<td><?php echo $teacher_models[$index]['teacher_surname'] . ' ' . $teacher_models[$index]['teacher_name']; ?></td>
 						<td><?php echo $specialization_models[$index]['code']; ?></td>
 						<td><?php echo $school_models[$index]['school_name']; ?></td>
-						<td><?php echo $disposal_model['disposal_hours']; ?></td>
+						<td><?php echo ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) ? DisposalModule::t('modules/disposal/app', 'Full time Disposal') : $disposal_model['disposal_hours']; ?></td>
 						<td><?php echo \Yii::$app->formatter->asDate($disposal_model['disposal_startdate']); ?></td>
 						<td><?php echo \Yii::$app->formatter->asDate($disposal_model['disposal_enddate']); ?></td>
 					</tr>        

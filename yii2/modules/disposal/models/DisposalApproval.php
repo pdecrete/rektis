@@ -16,6 +16,7 @@ use yii\db\Expression;
  * @property date $approval_regionaldirectprotocoldate
  * @property string $approval_localdirectprotocol
  * @property string $approval_localdirectdecisionsubject
+ * @property string $approval_action 
  * @property string $approval_notes
  * @property string $approval_file
  * @property string $approval_signedfile
@@ -69,11 +70,12 @@ class DisposalApproval extends \yii\db\ActiveRecord
     {
         return [
             [['approval_regionaldirectprotocol', 'approval_localdirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_notes', 'approval_file', 
-              'approval_signedfile', 'approval_localdirectdecisionsubject'], 'required'],
+              'approval_signedfile', 'approval_localdirectdecisionsubject','approval_action', ], 'required'],
             [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate'], 'safe'],
             [['deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol', 'approval_localdirectprotocol'], 'string', 'max' => 100],
             [['approval_notes', 'approval_localdirectdecisionsubject'], 'string', 'max' => 500],
+            [['approval_action'], 'string', 'max' => 200],
             [['approval_file', 'approval_signedfile'], 'string', 'max' => 300],
         ];
     }
@@ -89,6 +91,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
             'approval_regionaldirectprotocoldate' => Yii::t('app', 'Ημερομηνία Πρωτοκόλλου ΠΔΕ'),
             'approval_localdirectprotocol' => Yii::t('app', 'Πρωτόκολλο Διεύθυνσης Σχολείου'),
             'approval_localdirectdecisionsubject' => Yii::t('app', 'Θέμα Απόφασης Διεύθυνσης Σχολείου'),
+            'approval_action' => Yii::t('app', 'Πράξη Διάθεσης'),
             'approval_notes' => Yii::t('app', 'Σημειώσεις'),
             'approval_file' => Yii::t('app', 'Αρχείο Έγκρισης'),
             'approval_signedfile' => Yii::t('app', 'Ψηφιακά Υπογεγραμμένο Αρχείο Έγκρισης'),

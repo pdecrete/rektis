@@ -61,9 +61,29 @@ class DisposalApprovalController extends Controller
      * @return mixed
      */
     public function actionView($id)
-    {
+    {          
+        $model = $this->findModel($id);
+        $disposal_models = $model->getDisposals()->all();
+        //echo "<pre>"; print_r($disposal_models); echo "</pre>"; die();
+        $teacher_models = array();
+        $disposal_schools = array();
+        $organic_schools = array();
+        $specializations = array();
+        foreach ($disposal_models as $index => $disposal_model) {
+            $teacher_models[$index] = Teacher::findOne(['teacher_id' => $disposal_model['teacher_id']]);
+            $disposal_schools[$index] = Schoolunit::findOne(['school_id' => $disposal_model['school_id']]);
+            $organic_schools[$index] = Schoolunit::findOne(['school_id' => $teacher_models[$index]['school_id']]);
+            $specializations[$index] = Specialisation::findOne(['id' => $teacher_models[$index]['specialisation_id']]);
+        }
+
+        $model->approval_file = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
         return $this->render('view', [
-            'model' => $this->findModel($id)
+            'model' => $model,
+            'disposal_models' => $disposal_models,
+            'teacher_models' => $teacher_models,
+            'disposal_schools' => $disposal_schools,
+            'organic_schools' => $organic_schools,
+            'specializations' => $specializations
         ]);
     }
 
@@ -265,6 +285,8 @@ class DisposalApprovalController extends Controller
     
     
     private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) {
+        //echo "<pre>"; print_r($teacher_models); echo "<pre>"; die();
+        //echo "<pre>"; print_r($disposals_models); echo "<pre>"; die();
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
         
@@ -288,20 +310,25 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
         $templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
         $templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
+        $templateProcessor->setValue('local_directorate_action', $model->approval_action);
+        $pyspe = !strpos(mb_strtolower($directorate_model['directorate_name'], 'UTF-8'), 'πρωτοβ') ? "ΠΥΣΠΕ " : "ΠΥΣΔΕ ";
+        $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
+        $templateProcessor->setValue('local_pyspe', $pyspe);
         
         $teacher_disposals = "";
         for($i = 0; $i < count($teacher_models); $i++) {
             $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
             $teacher_disposals .= $specialization_models[$i]['code'] . ": διατίθεται ";
-            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? $teacher_disposals = " με ολική διάθεση ":
-            " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα στο \"" . $school_models[$i]['school_name'] . "\"";
+            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? " με ολική διάθεση ":
+            " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα";
+            $teacher_disposals .= " στο \"" . $school_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
             if ($disposals_models[$i]['disposalworkobj_id'] != null)
-                $teacher_disposals .= " παρέχοντας " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
-                $teacher_disposals .= ".\n\n";
+                $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
+            $teacher_disposals .= ".</w:t><w:br/><w:t>";
+            
         }
-        
         $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
         
         $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);

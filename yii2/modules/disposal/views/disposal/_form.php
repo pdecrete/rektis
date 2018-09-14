@@ -89,9 +89,6 @@ $url = Url::to('/disposal/disposal/getteacher-ajax');
                             ])->label('Σχολείο Υπηρέτησης'); ?>
         </div>
 		<div class="col-lg-3">
-			<?= $form->field($model, 'disposal_action')->textInput(); ?>
-		</div>						        	
-		<div class="col-lg-3">
 			<?= $form->field($model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
 			                    'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal school...')],

@@ -65,7 +65,7 @@ return [
     'Name' => 'Όνομα',
     'RegNum' => 'Α.Μ.',
     'Specialisation' => 'Ειδικότητα',
-    'Organic Post' => 'Οργανική θέση',
+    'Organic Post' => 'Οργανική',
     'Disposal School' => 'Σχολείο Διάθεσης',
     'From' => 'Από',
     'To' => 'Μέχρι',
@@ -111,8 +111,11 @@ return [
     'Download Decision' => 'Κατέβασμα Απόφασης',
     'The creation of the approval failed, because the template file for the approval does not exist.' => 'Η δημιουργία της έγκρισης απέτυχε επειδή δεν υπάρχει το πρότυπο αρχείο για τη δημιουργία της.',
     'Update Disposals\' Approval' => 'Ενημέρωση Έγκρισης',
-    'Organic Post Directorate' => 'Διεύθυνση Οργανικής',
+    'Organic Post Directorate' => 'Δ/νση Οργανικής',
     'View Approval' => 'Προβολή Έγκρισης',
     'Teacher' => 'Εκπαιδευτικός',
-    'Disposal Duration' => 'Διάρκεια Διάθεσης'
+    'Disposal Duration' => 'Διάρκεια Διάθεσης',
+    'Donwload file' => '"Κατέβασμα" αρχείου',
+    'Disposals' => 'Διαθέσεις',
+    'Full time Disposal' => 'Ολική Διάθεση'
 ];
