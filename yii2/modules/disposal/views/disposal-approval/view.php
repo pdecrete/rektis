@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'approval_regionaldirectprotocol',
-            'approval_localdirectprotocol',
+            //'approval_localdirectprotocol',
             'approval_notes',
             ['label' => 'Αρχείο Έγκρισης', 'format' => 'html', 'value' => Html::a(DisposalModule::t('modules/disposal/app', 'Donwload file'), ['disposal-approval/download', 'id' =>$model['approval_id']])],
             'approval_signedfile',
@@ -51,7 +51,8 @@ $this->params['breadcrumbs'][] = $this->title;
         		<th>Σχολείο Οργανικής</th>
         		<th>Σχολείο Διάθεσης</th>
         		<th>Ώρες</th>
-        		<th>Διάρκεια</th>
+        		<th>Από</th>
+        		<th>Έως</th>
         		</tr>
     		</thead>
             <?php foreach ($disposal_models as $index => $disposal_model): ?>
@@ -61,7 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
             		<td><?php echo $disposal_schools[$index]['school_name']; ?></td>
             		<td><?php echo $organic_schools[$index]['school_name']; ?></td>
             		<td><?php echo ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) ? DisposalModule::t('modules/disposal/app', 'Full time Disposal') : $disposal_model['disposal_hours']; ?></td>
-            		<td><?php echo date_format(date_create($disposal_model['disposal_startdate']), 'd/m/Y') . ' - ' . date_format(date_create($disposal_model['disposal_enddate']), 'd/m/Y');; ?></td>
+            		<td><?php echo date_format(date_create($disposal_model['disposal_startdate']), 'd/m/Y'); ?></td>
+            		<td><?php echo date_format(date_create($disposal_model['disposal_enddate']), 'd/m/Y');; ?></td>
             	</tr>            	
             <?php endforeach;?>
         </table>

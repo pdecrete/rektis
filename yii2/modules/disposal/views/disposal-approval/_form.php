@@ -18,14 +18,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
-    	<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
-		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
-    	<div class="col-lg-4"><?= $form->field($model, 'approval_localdirectprotocol')->textInput(['maxlength' => true]) ?></div>
+    	<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
+		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
 	</div>
-	<div class="row">
-    	<div class="col-lg-8"><?= $form->field($model, 'approval_localdirectdecisionsubject')->textInput(['maxlength' => true]) ?></div>
-    	<div class="col-lg-4"><?= $form->field($model, 'approval_action')->textInput(); ?></div>						        	
-    </div>
 	<div class="row">
     	<div class="col-lg-12"><?= $form->field($model, 'approval_notes')->textInput(['maxlength' => true]) ?></div>
     </div>

@@ -31,10 +31,36 @@ $script = "$(document).on('click', '#chkbox_endteachyear', function enabledisabl
 $this->registerJs($script, View::POS_READY);
 */
 
-$ajaxscript_searchTeacherById = 'function searchTeacherById(argument){
+$ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
+                                    var localdirdecision_protocol = document.getElementById("localdirdecision_protocol_frmid").value;
+                                    $.ajax({ 
+                                            url: url, 
+                                            type: "post", 
+                                            data: {"localdirdecision_protocol":localdirdecision_protocol},
+                                            success: function(data){
+                                                        data = JSON.parse(data);
+                                                        if(data == null) {
+                                                            $("#localdirdecision_action_frmid").prop("disabled", false);
+                                                            $("#localdirdecision_subject_frmid").prop("disabled", false);
+                                                            $("#localdirdecision_action_frmid").val("").trigger("change");
+                                                            $("#localdirdecision_subject_frmid").val("").trigger("change");
+                                                        }
+                                                        else {
+                                                            $("#localdirdecision_subject_frmid").val(data.localdirdecision_subject).trigger("change");                                                            
+                                                            $("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
+                                                            $("#localdirdecision_action_frmid").prop("disabled", true);
+                                                            $("#localdirdecision_subject_frmid").prop("disabled", true);
+                                                        }
+                                                     },
+                                            error: function(){alert("Hallo");}
+
+                        	               })
+                                }
+
+                                 function searchTeacherById(url){
                                     var regNumber = document.getElementById("teacher_regnumber_frmid").value;
                                     $.ajax({ 
-                                            url: argument, 
+                                            url: url, 
                                             type: "post", 
                                             data: {"regNumber":regNumber},
                                             success: function(data){
@@ -67,17 +93,24 @@ $ajaxscript_searchTeacherById = 'function searchTeacherById(argument){
 
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
 
-$url = Url::to('/disposal/disposal/getteacher-ajax');
+$urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
+$urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">
 	<div class="row">
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_registrynumber')->textInput(['disabled' => $disabled, 'id' => 'teacher_regnumber_frmid', 'oninput' => 'searchTeacherById("' . $url .'");']) ?></div>
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_surname')->textInput(['disabled' => $disabled, 'id' => 'teacher_surname_frmid']) ?></div>
-		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_name')->textInput(['disabled' => $disabled, 'id' => 'teacher_name_frmid']) ?></div>
+		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_protocol')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_protocol_frmid', 'oninput' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");']) ?></div>
+		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_action')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_action_frmid']) ?></div>
+		<div class="col-lg-6"><?= $form->field($localdirdecision_model, 'localdirdecision_subject')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_subject_frmid']) ?></div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_registrynumber')->textInput(['disabled' => $teacher_disabled, 'id' => 'teacher_regnumber_frmid', 'oninput' => 'searchTeacherById("' . $urlTeacherCheck .'");']) ?></div>
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_surname')->textInput(['disabled' => $teacher_disabled, 'id' => 'teacher_surname_frmid']) ?></div>
+		<div class="col-lg-3"><?= $form->field($teacher_model, 'teacher_name')->textInput(['disabled' => $teacher_disabled, 'id' => 'teacher_name_frmid']) ?></div>
 		<div class="col-lg-3"><?= $form->field($teacher_model, 'specialisation_id')->widget(Select2::classname(), [
                                                 'data' => ArrayHelper::map($specialisations, 'id', 'code'),
-		                                        'options' => ['disabled' => $disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
+		                                        'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
         </div>		
 	</div>
@@ -120,7 +153,7 @@ $url = Url::to('/disposal/disposal/getteacher-ajax');
 			                     'data' => ArrayHelper::map($disposal_workobjs, 'disposalworkobj_id', 'disposalworkobj_description'),
 			                     'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
 			                     'pluginOptions' => ['allowClear' => true]
-                            ])->label('Αντικείμενο Εργασίας Διάθεσης'); ?>
+                            ])->label('Καθήκον Διάθεσης'); ?>
 		</div>			
 	</div>
 

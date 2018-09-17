@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'approval_regionaldirectprotocol',
-            'approval_localdirectprotocol',
+            //'approval_localdirectprotocol',
             'approval_notes',
             'created_at',
             'updated_at',

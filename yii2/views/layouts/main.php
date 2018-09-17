@@ -416,6 +416,10 @@ AppAsset::register($this);
                             'label' => 'Εγκρίσεις Διαθέσεων',
                             'url' => ['/disposal/disposal-approval'],
                         ],
+                        [
+                            'label' => 'Εισηγήσεις Διευθύνσεων',
+                            'url' => ['/disposal/disposal-localdirdecision'],
+                        ],
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
                         [

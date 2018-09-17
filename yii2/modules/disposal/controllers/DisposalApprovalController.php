@@ -308,9 +308,9 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
         $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
-        $templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
-        $templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
-        $templateProcessor->setValue('local_directorate_action', $model->approval_action);
+                    //$templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
+                    //$templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
+                    //$templateProcessor->setValue('local_directorate_action', $model->approval_action);
         $pyspe = !strpos(mb_strtolower($directorate_model['directorate_name'], 'UTF-8'), 'πρωτοβ') ? "ΠΥΣΠΕ " : "ΠΥΣΔΕ ";
         $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
         $templateProcessor->setValue('local_pyspe', $pyspe);

@@ -28,13 +28,15 @@ use yii\db\Expression;
  * @property integer $school_id
  * @property integer $disposalreason_id 
  * @property integer $disposalworkobj_id  
+ * @property integer $localdirdecision_id
  *
  * @property User $createdBy
  * @property User $updatedBy
  * @property Teacher $teacher
  * @property Schoolunit $school
  * @property DisposalDisposalreason $disposalreason 
- * @property DisposalDisposalworkobj $disposalworkobj 
+ * @property DisposalDisposalworkobj $disposalworkobj
+ * @property DisposalLocaldirdecision $localdirdecision 
  * @property DisposalDisposalapproval[] $disposalDisposalapprovals
  * @property DisposalApproval[] $approvals
  */
@@ -83,13 +85,14 @@ class Disposal extends \yii\db\ActiveRecord
         return [
             [['disposal_startdate', 'disposal_hours', 'teacher_id', 'school_id', 'disposalreason_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
-            [['disposal_hours', 'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'integer'],
+            [['disposal_hours', 'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'teacher_id']],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['school_id' => 'school_id']],
             [['disposalreason_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalReason::className(), 'targetAttribute' => ['disposalreason_id' => 'disposalreason_id']],
             [['disposalworkobj_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalWorkobj::className(), 'targetAttribute' => ['disposalworkobj_id' => 'disposalworkobj_id']], 
+            [['localdirdecision_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalLocaldirdecision::className(), 'targetAttribute' => ['localdirdecision_id' => 'localdirdecision_id']],
         ];
     }
 
@@ -113,6 +116,7 @@ class Disposal extends \yii\db\ActiveRecord
             'school_id' => DisposalModule::t('modules/disposal/app', 'Disposal School'),
             'disposalreason_id' => DisposalModule::t('modules/disposal/app', 'Disposal Reason'),
             'disposalworkobj_id' => DisposalModule::t('modules/disposal/app', 'Disposal Working Object'),
+            'localdirdecision_id' => DisposalModule::t('modules/disposal/app', 'Local Directorate'),
         ];
     }
 
@@ -163,6 +167,14 @@ class Disposal extends \yii\db\ActiveRecord
     {
         return $this->hasOne(DisposalWorkobj::className(), ['disposalworkobj_id' => 'disposalworkobj_id']);
     }    
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocaldirdecision()
+    {
+        return $this->hasOne(DisposalLocaldirdecision::className(), ['localdirdecision_id' => 'localdirdecision_id']);
+    }
     
     /**
      * @return \yii\db\ActiveQuery

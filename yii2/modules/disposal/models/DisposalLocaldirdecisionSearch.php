@@ -5,12 +5,12 @@ namespace app\modules\disposal\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\disposal\models\DisposalApproval;
+use app\modules\disposal\models\DisposalLocaldirdecision;
 
 /**
- * DisposalApprovalSearch represents the model behind the search form about `app\modules\disposal\models\DisposalApproval`.
+ * DisposalLocaldirdecisionSearch represents the model behind the search form about `app\modules\disposal\models\DisposalLocaldirdecision`.
  */
-class DisposalApprovalSearch extends DisposalApproval
+class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class DisposalApprovalSearch extends DisposalApproval
     public function rules()
     {
         return [
-            [['approval_id', 'created_by', 'updated_by'], 'integer'],
-            [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_notes', 'approval_file', 'approval_signedfile', 'created_at', 'updated_at'], 'safe'],
+            [['localdirdecision_id', 'created_by', 'updated_by', 'deleted', 'archived'], 'integer'],
+            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class DisposalApprovalSearch extends DisposalApproval
      */
     public function search($params)
     {
-        $query = DisposalApproval::find()->where(['deleted' => 0]);
+        $query = DisposalLocaldirdecision::find();
 
         // add conditions that should always apply here
 
@@ -59,18 +59,18 @@ class DisposalApprovalSearch extends DisposalApproval
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'approval_id' => $this->approval_id,
+            'localdirdecision_id' => $this->localdirdecision_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
+            'deleted' => $this->deleted,
+            'archived' => $this->archived,
         ]);
 
-        $query->andFilterWhere(['like', 'approval_regionaldirectprotocol', $this->approval_regionaldirectprotocol])
-            //->andFilterWhere(['like', 'approval_localdirectprotocol', $this->approval_localdirectprotocol])
-            ->andFilterWhere(['like', 'approval_notes', $this->approval_notes])
-            ->andFilterWhere(['like', 'approval_file', $this->approval_file])
-            ->andFilterWhere(['like', 'approval_signedfile', $this->approval_signedfile]);
+        $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol])
+            ->andFilterWhere(['like', 'localdirdecision_subject', $this->localdirdecision_subject])
+            ->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action]);
 
         return $dataProvider;
     }

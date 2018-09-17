@@ -15,13 +15,13 @@ class m180717_104439_disposal_init extends Migration
         
         $dbDisposalTables = [
             'table_teacher' => $this->db->tablePrefix . 'teacher',
-            'table_disposal' => $this->db->tablePrefix . 'disposal_disposal',
-            'table_ledger' => $this->db->tablePrefix . 'disposal_ledger',
-            //'table_approvaltype' => $this->db->tablePrefix . 'disposal_approvaltype',
             'table_disposalreason' => $this->db->tablePrefix . 'disposal_disposalreason',
             'table_disposalworkobj' => $this->db->tablePrefix . 'disposal_disposalworkobj',
+            'table_localdirdecision' => $this->db->tablePrefix . 'disposal_localdirdecision',
+            'table_disposal' => $this->db->tablePrefix . 'disposal_disposal',
+            'table_ledger' => $this->db->tablePrefix . 'disposal_ledger',
             'table_approval' => $this->db->tablePrefix . 'disposal_approval',
-            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',                        
+            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',            
         ];
         $table_schoolunit = $this->db->tablePrefix . 'schoolunit';
         $table_specialisation = $this->db->tablePrefix . 'specialisation';
@@ -80,6 +80,26 @@ class m180717_104439_disposal_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('supplementary_teaching', 'Ενισχυτική διδασκαλία')")->execute();
         
         
+        /* CREATE TABLE admapp_disposal_localdirdecision */
+        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_localdirdecision'] .
+                          " (`localdirdecision_id` INTEGER NOT NULL AUTO_INCREMENT, 
+                             `localdirdecision_protocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διεύθυνσης Σχολείου',
+                             `localdirdecision_subject` VARCHAR(500) NOT NULL COMMENT 'Θέμα Απόφασης Διεύθυνσης Σχολείου',
+                             `localdirdecision_action` VARCHAR(200) NOT NULL COMMENT 'Πράξη Απόφασης Διεύθυνσης Σχολείου',
+                             `created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',
+                             `updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας',
+                             `created_by` INTEGER,
+                             `updated_by` INTEGER,
+                             `deleted` BOOLEAN NOT NULL DEFAULT 0,
+                             `archived` BOOLEAN NOT NULL DEFAULT 0,
+                              PRIMARY KEY (`localdirdecision_id`),
+                              FOREIGN KEY (`created_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                              FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                            ) " . $tableOptions;
+        Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_localdirdecision'] . ". *** \n");
+        Console::stdout("SQL Command: " . $create_command . "\n");
+        Yii::$app->db->createCommand($create_command)->execute();
+        
         /* CREATE TABLE admapp_disposal_disposal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_disposal'] .
                           " (`disposal_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -96,13 +116,15 @@ class m180717_104439_disposal_init extends Migration
                              `school_id` INTEGER NOT NULL,
                              `disposalreason_id` INTEGER NOT NULL,
                              `disposalworkobj_id` INTEGER,
+                             `localdirdecision_id` INTEGER NOT NULL,
                               PRIMARY KEY (`disposal_id`),
                               FOREIGN KEY (`created_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`teacher_id`) REFERENCES " . $dbDisposalTables['table_teacher'] . " (`teacher_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`school_id`) REFERENCES " . $table_schoolunit . " (`school_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`disposalreason_id`) REFERENCES " . $dbDisposalTables['table_disposalreason'] . " (`disposalreason_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              FOREIGN KEY (`disposalworkobj_id`) REFERENCES " . $dbDisposalTables['table_disposalworkobj'] . " (`disposalworkobj_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                              FOREIGN KEY (`disposalworkobj_id`) REFERENCES " . $dbDisposalTables['table_disposalworkobj'] . " (`disposalworkobj_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                              FOREIGN KEY (`localdirdecision_id`) REFERENCES " . $dbDisposalTables['table_localdirdecision'] . " (`localdirdecision_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_disposal'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -150,9 +172,7 @@ class m180717_104439_disposal_init extends Migration
                           " (`approval_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `approval_regionaldirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο ΠΔΕ',
                              `approval_regionaldirectprotocoldate` DATE NOT NULL COMMENT 'Ημερομηνία Πρωτοκόλλου ΠΔΕ',
-                             `approval_localdirectprotocol` VARCHAR(100) NOT NULL COMMENT 'Πρωτόκολλο Διεύθυνσης Σχολείου',
-                             `approval_localdirectdecisionsubject` VARCHAR(500) NOT NULL COMMENT 'Θέμα Απόφασης Διεύθυνσης Σχολείου',
-                             `approval_action` VARCHAR(200) NOT NULL COMMENT 'Πράξη Απόφασης Διεύθυνσης Σχολείου',
+
                              `approval_notes` VARCHAR(500) NOT NULL COMMENT 'Σημειώσεις',
                              `approval_file` VARCHAR(300) NOT NULL COMMENT 'Αρχείο Έγκρισης',
                              `approval_signedfile` VARCHAR(300) COMMENT 'Ψηφιακά Υπογεγραμμένο Αρχείο Έγκρισης',
@@ -162,7 +182,9 @@ class m180717_104439_disposal_init extends Migration
                              `updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας', 
                              `created_by` INTEGER NOT NULL,
                              `updated_by` INTEGER NOT NULL,
-                              PRIMARY KEY (`approval_id`)
+                              PRIMARY KEY (`approval_id`),
+                              FOREIGN KEY (`created_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                              FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_approval'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -188,11 +210,11 @@ class m180717_104439_disposal_init extends Migration
             'table_teacher' => $this->db->tablePrefix . 'teacher',
             'table_disposalreason' => $this->db->tablePrefix . 'disposal_disposalreason',
             'table_disposalworkobj' => $this->db->tablePrefix . 'disposal_disposalworkobj',
+            'table_localdirdecision' => $this->db->tablePrefix . 'disposal_localdirdecision',
             'table_disposal' => $this->db->tablePrefix . 'disposal_disposal',
             'table_ledger' => $this->db->tablePrefix . 'disposal_ledger',
-            //'table_approvaltype' => $this->db->tablePrefix . 'disposal_approvaltype',
             'table_approval' => $this->db->tablePrefix . 'disposal_approval',
-            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',
+            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',            
         ];
         
         $dbDisposalTables = array_reverse($dbDisposalTables);

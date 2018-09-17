@@ -19,12 +19,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'teacher_model' => $teacher_model,
+        'localdirdecision_model' => $localdirdecision_model,
         'schools' => $schools,
         'disposal_hours' => $disposal_hours,
         'specialisations' => $specialisations,
         'disposal_reasons' => $disposal_reasons,
         'disposal_workobjs' => $disposal_workobjs,
-        'disabled' => false
+        'teacher_disabled' => false,
+        'ldrdec_disabled' => false
     ]) ?>
 
 </div>

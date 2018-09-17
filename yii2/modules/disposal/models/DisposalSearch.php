@@ -26,7 +26,7 @@ class DisposalSearch extends Disposal
     public function rules()
     {
         return [
-            [['disposal_id', 'teacher_id', 'school_id'], 'integer'],
+            [['disposal_id', 'teacher_id', 'school_id', 'localdirdecision_id'], 'integer'],
             [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'disposal_school', 'code', 'directorate_shortname', 'disposalreason_description'], 'string'],
             [['disposal_startdate', 'disposal_enddate', 'disposal_hours'], 'safe'],
         ];

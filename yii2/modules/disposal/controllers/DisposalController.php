@@ -21,6 +21,7 @@ use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use app\modules\disposal\models\DisposalReason;
 use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
+use app\modules\disposal\models\DisposalLocaldirdecision;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -42,6 +43,19 @@ class DisposalController extends Controller
         ];
     }
 
+    
+    public function actionGetlocaldirdecisionAjax()
+    {
+        $data = null;
+        if(Yii::$app->request->isAjax){
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            $data = Yii::$app->request->post('localdirdecision_protocol');
+            $localdir_decision = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $data]);
+            $data = $localdir_decision;
+        }
+        
+        return Json::encode($data);
+    }
     
     public function actionGetteacherAjax()
     {
@@ -128,6 +142,7 @@ class DisposalController extends Controller
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $teacher_model = new Teacher();
+            $localdirdecision_model = new DisposalLocaldirdecision();
             $schools = Schoolunit::find()->all();
             $specialisations = Specialisation::find()->all();
             $disposal_reasons = DisposalReason::find()->all();
@@ -136,8 +151,7 @@ class DisposalController extends Controller
                        
             $disposal_hours = Disposal::getHourOptions();
             
-            if ($model->load(Yii::$app->request->post()) 
-                && $teacher_model->load(Yii::$app->request->post())) {
+            if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
                                     
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
@@ -176,6 +190,16 @@ class DisposalController extends Controller
                 else
                     $model->teacher_id = $existing_teacher_model->teacher_id;
                 
+                $existing_localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol]);
+                if(is_null($existing_localdirdecision_model)) {
+                    if(!$localdirdecision_model->save()) {
+                        throw new Exception("Error in saving the teacher details in the database.");
+                    }
+                    $model->localdirdecision_id = $localdirdecision_model->localdirdecision_id;
+                }
+                else
+                    $model->localdirdecision_id = $existing_localdirdecision_model->localdirdecision_id;
+                
                 if(!$model->save()){
                     //echo "<pre>"; print_r($model->errors); echo "<pre>"; die();
                     throw new Exception("Error in saving the disposal details in the database.");
@@ -196,6 +220,7 @@ class DisposalController extends Controller
                 return $this->render('create', [
                     'model' => $model,
                     'teacher_model' => $teacher_model,
+                    'localdirdecision_model' => $localdirdecision_model,
                     'schools' => $schools,
                     'disposal_hours' => $disposal_hours,
                     'specialisations' => $specialisations,
@@ -210,6 +235,7 @@ class DisposalController extends Controller
             return $this->render('create', [
                 'model' => $model,
                 'teacher_model' => $teacher_model,
+                'localdirdecision_model' => $localdirdecision_model,
                 'schools' => $schools,
                 'disposal_hours' => $disposal_hours,
                 'specialisations' => $specialisations,
@@ -234,7 +260,7 @@ class DisposalController extends Controller
                 Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The disposal is not allowed to be updated."));
                 return $this->redirect(['index']);
             }                
-            
+            $localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_id' => $model->localdirdecision_id]);
             $teacher_model = Teacher::findOne(['teacher_id' => $model->teacher_id]);
             $schools = Schoolunit::find()->all();
             $specialisations = Specialisation::find()->all();
@@ -243,8 +269,7 @@ class DisposalController extends Controller
             
             $disposal_hours = Disposal::getHourOptions();
                 
-            if ($model->load(Yii::$app->request->post())
-                && $teacher_model->load(Yii::$app->request->post())) {
+            if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post())) { // && $localdirdecision_model->load(Yii::$app->request->post())) {
                              
                 $transaction = Yii::$app->db->beginTransaction();
 
@@ -274,7 +299,7 @@ class DisposalController extends Controller
                     throw new Exception("Error in saving the teacher details in the database.");
                 }
                 $model->teacher_id = $teacher_model->teacher_id;
-                
+                                
                 if(!$model->save()){
                     throw new Exception("Error in saving the disposal details in the database.");
                 }
@@ -293,6 +318,7 @@ class DisposalController extends Controller
                 return $this->render('update', [
                     'model' => $model,
                     'teacher_model' => $teacher_model,
+                    'localdirdecision_model' => $localdirdecision_model,
                     'schools' => $schools,
                     'disposal_hours' => $disposal_hours,
                     'specialisations' => $specialisations,
@@ -307,6 +333,7 @@ class DisposalController extends Controller
             return $this->render('update', [
                 'model' => $model,
                 'teacher_model' => $teacher_model,
+                'localdirdecision_model' => $localdirdecision_model,
                 'schools' => $schools,
                 'disposal_hours' => $disposal_hours,
                 'specialisations' => $specialisations,
