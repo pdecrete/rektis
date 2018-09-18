@@ -2,7 +2,9 @@
 
 namespace app\modules\disposal\controllers;
 
+use Exception;
 use Yii;
+use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\disposal\models\DisposalLocaldirdecisionSearch;
 use yii\web\Controller;
@@ -101,9 +103,16 @@ class DisposalLocaldirdecisionController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        try {
+            if(!$this->findModel($id)->delete())
+                throw new Exception("The suggestion of the directorate cannot be deleted.");
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion of the directorate was deleted successfully."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            return $this->redirect(['index']);
+        }
     }
 
     /**

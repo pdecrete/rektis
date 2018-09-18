@@ -421,12 +421,6 @@ AppAsset::register($this);
                             'url' => ['/disposal/disposal-localdirdecision'],
                         ],
                         '<li class="divider"></li>',
-                        '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
-                        [
-                            'label' => 'Στατιστικά Διαθέσεων',
-                            'url' => ['/disposal/default/']
-                        ],
-                        '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-cog"></i> Παράμετροι</li>',
                         [
                             'label' => 'Λόγοι Διάθεσης Εκπαιδευτικών',
@@ -444,6 +438,12 @@ AppAsset::register($this);
                             'label' => 'Καταστάσεις Εγκρίσεων',
                             'url' => ['/disposal/disposal-state']
                         ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
+                        [
+                            'label' => 'Στατιστικά Διαθέσεων',
+                            'url' => ['/disposal/default/']
+                        ],                        
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',
                         [

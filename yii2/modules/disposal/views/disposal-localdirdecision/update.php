@@ -1,16 +1,15 @@
 <?php
 
+use app\modules\disposal\DisposalModule;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalLocaldirdecision */
 
-$this->title = Yii::t('app/modules/disposal/', 'Update {modelClass}: ', [
-    'modelClass' => 'Disposal Localdirdecision',
-]) . $model->localdirdecision_id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app/modules/disposal/', 'Disposal Localdirdecisions'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->localdirdecision_id, 'url' => ['view', 'id' => $model->localdirdecision_id]];
-$this->params['breadcrumbs'][] = Yii::t('app/modules/disposal/', 'Update');
+$this->title = DisposalModule::t('modules/disposal/app', 'Update Local Directorate Suggestion');
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Local Directorate Suggestions'), 'url' => ['/disposal/disposal-localdirdecision']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-localdirdecision-update">
 

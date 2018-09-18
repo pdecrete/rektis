@@ -2,6 +2,7 @@
 
 namespace app\modules\disposal\models;
 
+use Exception;
 use Yii;
 use yii\web\User;
 
@@ -69,12 +70,35 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
         ];
     }
 
+    /*
+    public function assignedDisposalsConsistency() {
+        $disposal_models = Disposal::find()->where(['localdirdecision_id' => $this->localdirdecision_id])->all();
+        if(countcount($disposal_models) == 0)
+            return true;
+        
+        $directorate_id = $disposal_models[0]->getSchool()['directorate_id'];
+        foreach ($disposal_models as $disposal_model) {
+            if($directorate_id != $disposal_model->getSchool()['directorate_id'])
+                return false;
+        }
+            
+        return true;
+    }
+    
+    public function getDirectorate() {
+        if(!$this->assignedDisposalsConsistency())
+            throw new Exception("Incosistent directorate assignments to disposals");
+        $disposal_models = Disposal::find()->where(['localdirdecision_id' => $this->localdirdecision_id])->all();
+        return $disposal_models[0]->getSchool()['directorate_id'];
+    }
+    */
+    
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDisposalDisposals()
+    public function getDisposals()
     {
-        return $this->hasMany(DisposalDisposal::className(), ['localdirdecision_id' => 'localdirdecision_id']);
+        return $this->hasMany(Disposal::className(), ['localdirdecision_id' => 'localdirdecision_id']);
     }
 
     /**
@@ -92,6 +116,7 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
+    
 
     /**
      * @inheritdoc

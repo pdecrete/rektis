@@ -117,5 +117,12 @@ return [
     'Disposal Duration' => 'Διάρκεια Διάθεσης',
     'Donwload file' => '"Κατέβασμα" αρχείου',
     'Disposals' => 'Διαθέσεις',
-    'Full time Disposal' => 'Ολική Διάθεση'
+    'Full time Disposal' => 'Ολική Διάθεση',
+    'The suggestion of the directorate was deleted successfully.' => 'Η εισήγηση της Δ/νσης διαγράφηκε επιτυχώς.',
+    'The suggestion of the directorate cannot be deleted.' => 'Η εισήγηση της Δ/νσης δεν μπορεί να διαγραφεί.',
+    'Local Directorate Suggestions' => 'Εισηγήσεις τοπικών Διευθύνσεων',
+    'Create Local Directorate Suggestion' => 'Δημιουργία Εισήγησης Τοπικής Διεύθυνσης',
+    'Update Local Directorate Suggestion' => 'Ενημέρωση Εισήγησης Τοπικής Διεύθυνσης',
+    'View Local Directorate Suggestion' => 'Προβολή Εισήγησης Τοπικής Διεύθυνσης',
+    'Error in downloading file.' => 'Σφάλμα κατά τη μεταφόρτωση του αρχείου.'
 ];

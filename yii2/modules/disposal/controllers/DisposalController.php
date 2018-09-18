@@ -205,6 +205,7 @@ class DisposalController extends Controller
                     throw new Exception("Error in saving the disposal details in the database.");
                 }
                 
+                
                 /* This should be placed in the code part that finalizes the approval of the disposal by PDE 
                 $ledger_model = new DisposalLedger();
                 $ledger_model->setAttributes($model->attributes);
