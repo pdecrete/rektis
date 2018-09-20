@@ -124,5 +124,6 @@ return [
     'Create Local Directorate Suggestion' => 'Δημιουργία Εισήγησης Τοπικής Διεύθυνσης',
     'Update Local Directorate Suggestion' => 'Ενημέρωση Εισήγησης Τοπικής Διεύθυνσης',
     'View Local Directorate Suggestion' => 'Προβολή Εισήγησης Τοπικής Διεύθυνσης',
-    'Error in downloading file.' => 'Σφάλμα κατά τη μεταφόρτωση του αρχείου.'
+    'Error in downloading file.' => 'Σφάλμα κατά τη μεταφόρτωση του αρχείου.',
+    'All disposals must belong to the same local Directorate Decision.' => 'Όλες οι διαθέσεις πρέπει να ανήκουν στην ίδια Απόφαση τοπικής Διεύθυνσης.'
 ];

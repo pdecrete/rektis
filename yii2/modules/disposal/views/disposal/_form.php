@@ -14,22 +14,6 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 //echo "<pre>"; print_r($disposal_hours); echo "</pre>"; die();
 
-/*
-$script = "$(document).on('click', '#chkbox_endteachyear', function enabledisableDisposalendDatepicker(){
-                var disposalend_datepicker = document.getElementById('disposalend_datepicker');
-
-                $('#disposalend_datepicker').kvDatepicker('clearDates');alert('hallo');
-                disposalend_datepicker.disabled = false;
-                if(disposalend_datepicker.disabled){
-                    disposalend_datepicker.disabled = false;
-                }
-                else {
-                    disposalend_datepicker.disabled = true;
-                }
-                
-           })";
-$this->registerJs($script, View::POS_READY);
-*/
 
 $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                     var localdirdecision_protocol = document.getElementById("localdirdecision_protocol_frmid").value;
@@ -93,6 +77,24 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
 
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
 
+/*
+$script = '$(document).on("click", "#chkbox_endteachyear", function enabledisableDisposalendDatepicker() {
+                //var disposalend_datepicker = document.getElementById("disposalend_datepicker");
+                var disposalend_datepicker = $("#disposalend_datepicker").prop("disabled", true);
+                alert($("#disposalend_datepicker").kvDatepicker().attr("disabled"));
+                if(disposalend_datepicker.disabled){
+                    $("#disposalend_datepicker").kvDatepicker().prop("disabled", false);
+                    alert("Done false...");
+                }
+                else {
+                    $("#disposalend_datepicker").prop("disabled", true);
+                    $("#disposalend_datepicker").val("").trigger("change");
+                    alert("Done true...");
+                }    
+           })';
+$this->registerJs($script, View::POS_END);
+*/
+
 $urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
 $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
 ?>
@@ -112,7 +114,7 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
                                                 'data' => ArrayHelper::map($specialisations, 'id', 'code'),
 		                                        'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
-        </div>		
+	</div>		
 	</div>
 	<div class="row">
 		<div class="col-lg-3">
@@ -155,7 +157,7 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 			                     'pluginOptions' => ['allowClear' => true]
                             ])->label('Καθήκον Διάθεσης'); ?>
 		</div>			
-	</div>
+	</div>	
 
 
     <div class="form-group pull-right">

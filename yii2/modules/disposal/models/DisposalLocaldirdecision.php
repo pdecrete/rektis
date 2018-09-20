@@ -58,8 +58,8 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     {
         return [
             'localdirdecision_id' => Yii::t('app', 'Localdirdecision ID'),
-            'localdirdecision_protocol' => Yii::t('app', 'Πρωτόκολλο Δ/νσης Σχολείου'),
-            'localdirdecision_subject' => Yii::t('app', 'Θέμα Απόφασης Δ/νσης Σχολείου'),
+            'localdirdecision_protocol' => Yii::t('app', 'Πρωτόκολλο ΔΔΕ/ΔΠΕ'),
+            'localdirdecision_subject' => Yii::t('app', 'Θέμα Απόφασης ΔΔΕ/ΔΠΕ'),
             'localdirdecision_action' => Yii::t('app', 'Πράξη Απόφασης'),
             'created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
             'updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),

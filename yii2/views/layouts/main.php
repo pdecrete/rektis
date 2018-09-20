@@ -435,13 +435,13 @@ AppAsset::register($this);
                             'url' => ['/teacher']
                         ],
                         [
-                            'label' => 'Καταστάσεις Εγκρίσεων',
+                            'label' => 'Καταστάσεις Εγκρίσεων (Υπό Κατασκευή)',
                             'url' => ['/disposal/disposal-state']
                         ],
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
                         [
-                            'label' => 'Στατιστικά Διαθέσεων',
+                            'label' => 'Στατιστικά Διαθέσεων (Υπό Κατασκευή)',
                             'url' => ['/disposal/default/']
                         ],                        
                         '<li class="divider"></li>',

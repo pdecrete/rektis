@@ -140,6 +140,9 @@ class DisposalApprovalController extends Controller
         try {            
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
                 
+                if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) 
+                    throw new Exception("All disposals must belong to the same local Directorate Decision.");
+
                 $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
                 $model->approval_signedfile = '-'; //TODO allow null (has been changed in migration)
@@ -229,6 +232,10 @@ class DisposalApprovalController extends Controller
         
         try {
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
+                
+                if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models))
+                    throw new Exception("All disposals must belong to the same local Directorate Decision.");
+                
                 $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 if(!$model->save()) 
                     throw new Exception("Failed to save the changes of the approval.");
@@ -392,6 +399,27 @@ class DisposalApprovalController extends Controller
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['/disposal/disposal-approval/index']);
         }
+    }
+    
+    
+    /**
+     * Checks whether all the disposalapproval models belong to the same local Directorate Decision
+     * @param DisposalDisposalapproval $disposalapproval_models
+     * @return boolean
+     */
+    public function checkLocaldirdecisionUniqueness($disposalapproval_models) {        
+        if(count($disposalapproval_models) == 0)
+            return false;             
+        
+        $localdirdecision_id = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])['localdirdecision_id'];
+        
+        foreach ($disposalapproval_models as $disposalapproval_model){
+            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']])['localdirdecision_id'];
+            if(!$tmp_disposal_model && $localdirdecision_id != Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']])['localdirdecision_id'])
+                return false;
+        }
+
+        return true;
     }
     
     /**
