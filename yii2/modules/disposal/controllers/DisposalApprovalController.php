@@ -19,6 +19,7 @@ use app\modules\schooltransport\models\Directorate;
 use app\models\Teacher;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
+use app\modules\disposal\models\DisposalLocaldirdecision;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -293,13 +294,15 @@ class DisposalApprovalController extends Controller
     
     private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) {
         //echo "<pre>"; print_r($teacher_models); echo "<pre>"; die();
-        //echo "<pre>"; print_r($disposals_models); echo "<pre>"; die();
+        //echo "<pre>"; echo ($disposals_models[0]['localdirdecision_id']); echo "<pre>"; die();
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
         
         if (!file_exists($template_path)){            
             return null;
         }
+        $localdirdecision_model = DisposalLocaldirdecision::find()->where(['localdirdecision_id' =>  $disposals_models[0]['localdirdecision_id']])->one();
+        //echo "<pre>"; print_r($localdirdecision_model); echo "<pre>"; die();
 
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
@@ -315,9 +318,9 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
         $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
-                    //$templateProcessor->setValue('local_directorate_protocol', $model->approval_localdirectprotocol);
-                    //$templateProcessor->setValue('local_directorate_decisionsubject', $model->approval_localdirectdecisionsubject);
-                    //$templateProcessor->setValue('local_directorate_action', $model->approval_action);
+        $templateProcessor->setValue('local_directorate_protocol', $localdirdecision_model->localdirdecision_protocol);
+        $templateProcessor->setValue('local_directorate_decisionsubject', $localdirdecision_model->localdirdecision_subject);
+        $templateProcessor->setValue('local_directorate_action', $localdirdecision_model->localdirdecision_action);
         $pyspe = !strpos(mb_strtolower($directorate_model['directorate_name'], 'UTF-8'), 'πρωτοβ') ? "ΠΥΣΠΕ " : "ΠΥΣΔΕ ";
         $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
         $templateProcessor->setValue('local_pyspe', $pyspe);

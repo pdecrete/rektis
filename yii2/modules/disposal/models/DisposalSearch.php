@@ -19,6 +19,7 @@ class DisposalSearch extends Disposal
     public $disposal_school;
     public $directorate_shortname;
     public $disposalreason_description;
+    public $localdirdecision_protocol;
     
     /**
      * @inheritdoc
@@ -27,7 +28,7 @@ class DisposalSearch extends Disposal
     {
         return [
             [['disposal_id', 'teacher_id', 'school_id', 'localdirdecision_id'], 'integer'],
-            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'disposal_school', 'code', 'directorate_shortname', 'disposalreason_description'], 'string'],
+            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'disposal_school', 'code', 'directorate_shortname', 'disposalreason_description', 'localdirdecision_protocol'], 'string'],
             [['disposal_startdate', 'disposal_enddate', 'disposal_hours'], 'safe'],
         ];
     }
@@ -58,29 +59,32 @@ class DisposalSearch extends Disposal
         $o_schls = $prefix . 'schoolunit orgn_sch';
         $dir_o_schl = $prefix . 'directorate';
         $reasons = $prefix . 'disposal_disposalreason';
+        $localdir_decisions = $prefix . 'disposal_localdirdecision';
                 
         $query = (new \yii\db\Query())
-                    ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
-                    ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons])
+                    ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
+                    ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions])
                     ->where($dspls . ".deleted=0 " .
                         " AND " . $dspls . ".archived=" . $archived .
                         " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
                         " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
+                        " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" . 
                         " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
                         " AND " . $dspls . ".school_id=dsp_sch.school_id" .
                         " AND " . $tchers . ".school_id=orgn_sch.school_id" .
                         " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
                         );
-        
+        //echo $query->createCommand()->rawSql; die();
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
-                                         'updated_at', 'disposal_school', 'organic_school', 
-                                         'disposal_startdate', 'disposal_enddate', 'directorate_shortname', 'disposal_hours', 'disposalreason_description'],
-                        'defaultOrder' => ['updated_at' => SORT_DESC]
-                      ]
+                                          $dspls . '.updated_at', 'disposal_school', 'organic_school', 'disposal_startdate', 'disposal_enddate', 
+                                         'directorate_shortname', 'disposal_hours', 'disposalreason_description', 'localdirdecision_protocol'],
+                                         'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
+                      ],
+            'pagination' => false,
         ]);
 
         $this->load($params);
@@ -108,6 +112,7 @@ class DisposalSearch extends Disposal
         $query->andFilterWhere(['like', 'orgn_sch.school_name', $this->organic_school]);
         $query->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);
         $query->andFilterWhere(['like', 'disposalreason_description', $this->disposalreason_description]);
+        $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol]);
         
         return $dataProvider;
     }

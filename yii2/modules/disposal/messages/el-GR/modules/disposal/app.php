@@ -112,6 +112,7 @@ return [
     'The creation of the approval failed, because the template file for the approval does not exist.' => 'Η δημιουργία της έγκρισης απέτυχε επειδή δεν υπάρχει το πρότυπο αρχείο για τη δημιουργία της.',
     'Update Disposals\' Approval' => 'Ενημέρωση Έγκρισης',
     'Organic Post Directorate' => 'Δ/νση Οργανικής',
+    'Directorate' => 'Διεύθυνση',
     'View Approval' => 'Προβολή Έγκρισης',
     'Teacher' => 'Εκπαιδευτικός',
     'Disposal Duration' => 'Διάρκεια Διάθεσης',
@@ -125,5 +126,8 @@ return [
     'Update Local Directorate Suggestion' => 'Ενημέρωση Εισήγησης Τοπικής Διεύθυνσης',
     'View Local Directorate Suggestion' => 'Προβολή Εισήγησης Τοπικής Διεύθυνσης',
     'Error in downloading file.' => 'Σφάλμα κατά τη μεταφόρτωση του αρχείου.',
-    'All disposals must belong to the same local Directorate Decision.' => 'Όλες οι διαθέσεις πρέπει να ανήκουν στην ίδια Απόφαση τοπικής Διεύθυνσης.'
+    'All disposals must belong to the same local Directorate Decision.' => 'Όλες οι διαθέσεις πρέπει να ανήκουν στην ίδια Απόφαση τοπικής Διεύθυνσης.',
+    'Directorate Protocol' => 'Πρωτόκολλο',
+    'Disposal' => 'Διάθεση',
+    'Reason' => 'Λόγος'
 ];

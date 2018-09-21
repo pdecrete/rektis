@@ -22,6 +22,7 @@ use app\modules\disposal\models\DisposalReason;
 use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -82,7 +83,10 @@ class DisposalController extends Controller
         }
         
         $disposal_reasons = DisposalReason::find()->all();
-        
+        $specialisations = Specialisation::find()->select('code')->all();
+        $directorates = Directorate::find()->select('directorate_shortname')->all();
+        $decisions_protocols = DisposalLocaldirdecision::find()->select('localdirdecision_protocol')->all();
+                
         $searchModel = new DisposalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived);
 
@@ -90,7 +94,10 @@ class DisposalController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'archived' => $archived,
-            'disposal_reasons' => $disposal_reasons
+            'disposal_reasons' => $disposal_reasons,
+            'specialisations' => $specialisations,
+            'directorates' => $directorates,
+            'decisions_protocols' => $decisions_protocols
         ]);
     }
 
@@ -396,3 +403,4 @@ class DisposalController extends Controller
         }
     }
 }
+ 
