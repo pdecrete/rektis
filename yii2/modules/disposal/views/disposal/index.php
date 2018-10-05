@@ -3,6 +3,7 @@
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 use yii\grid\GridView;
 use app\modules\disposal\DisposalModule;
 use kartik\datecontrol\DateControl;
@@ -24,6 +25,7 @@ $checkboxColumn = [[ 'class' => 'yii\grid\CheckboxColumn',
                   ]];
 $columns = [[   'attribute' => 'teacher_surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Surname'),
+                'options' => ['width' => '65']
             ],
             [   'attribute' => 'teacher_name',
                 'label' => DisposalModule::t('modules/disposal/app', 'Name'),
@@ -34,7 +36,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'attribute' => 'code',
                     'data' => ArrayHelper::map($specialisations, 'code', 'code'),
                     'options' => ['placeholder' => '   '],
-                    'pluginOptions' => ['allowClear' => true, 'width' => '70']
+                    'pluginOptions' => ['allowClear' => true, 'width' => '60']
                 ])
             ],
             [   'attribute' => 'directorate_shortname',
@@ -43,7 +45,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'attribute' => 'directorate_shortname',
                     'data' => ArrayHelper::map($directorates, 'directorate_shortname', 'directorate_shortname'),
                     'options' => ['placeholder' => '   '],
-                    'pluginOptions' => ['allowClear' => true, 'width' => '70']
+                    'pluginOptions' => ['allowClear' => true, 'width' => '65']
                 ])
             ],
             [   'attribute' => 'localdirdecision_protocol',
@@ -57,9 +59,11 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'organic_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Organic Post'),
+                'options' => ['width' => '65']
             ],
             [   'attribute' => 'disposal_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Disposal'),
+                'options' => ['width' => '65']
             ],
             [   'attribute' => 'disposalreason_description',
                 'label' => DisposalModule::t('modules/disposal/app', 'Reason'),
@@ -72,9 +76,11 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_startdate',
                 'label' => DisposalModule::t('modules/disposal/app', 'From'),
-                'format' => ['date', 'php:d/m/Y'],
+                
+                'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_startdate',
+                    'ajaxConversion'=>false,
                     'type' => DateControl::FORMAT_DATE,
                     'widgetOptions' => ['layout' => '{remove}{input}'],
                 ]),
@@ -82,9 +88,10 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_enddate',
                 'label' => DisposalModule::t('modules/disposal/app', 'To'),
-                'format' => ['date', 'php:d/m/Y'],
+                'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_enddate',
+                    'ajaxConversion'=>false,
                     'type' => DateControl::FORMAT_DATE,
                     'widgetOptions' => ['layout' => '{remove}{input}'],
                 ]),
@@ -101,7 +108,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     ])
             ],
             ['class' => 'yii\grid\ActionColumn',
-                'header' => DisposalModule::t('modules/disposal/app', 'Actions'),
+                //'header' => DisposalModule::t('modules/disposal/app', 'Actions'),
                 'contentOptions' => ['class' => 'text-nowrap'],
                 'template' => $actions,
                 'urlCreator' => function ($action, $model) use ($archived) {
@@ -128,6 +135,7 @@ $columns = [[   'attribute' => 'teacher_surname',
 	<?=Html::beginForm(['archiveform'], 'post');?>
 	<?php if(!$archived):?>
         <p class="text-right">
+        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import Disposals from Excel'), ['importdisposals'], ['class' => 'btn btn-primary']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Disposals\' Approval'), ['disposal-approval/create'], ['class' => 'btn btn-success', 'data-method' => 'POST']) ?>
             <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Teacher Disposal'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -137,12 +145,13 @@ $columns = [[   'attribute' => 'teacher_surname',
     		<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['index'], ['class' => 'btn btn-primary']) ?>
     	</p>
     <?php endif;?>
-  
+
 	<?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => $columns,
             
     ]); ?>
+    
 <?= Html::endForm();?>
 </div>

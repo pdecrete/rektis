@@ -66,7 +66,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_notes', 'approval_file', 'approval_signedfile'], 'required'],
+            [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_file', 'approval_signedfile'], 'required'],
             [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate'], 'safe'],
             [['deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol'], 'string', 'max' => 100],

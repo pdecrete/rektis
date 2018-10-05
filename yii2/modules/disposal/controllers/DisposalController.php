@@ -23,6 +23,8 @@ use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
+use app\modules\disposal\models\DisposalImport;
+use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -376,16 +378,126 @@ class DisposalController extends Controller
 
     
     public function actionImportdisposals() {
+        $cells = ['DIRECTORATE' => 'C3', 'PROTOCOL' => 'C4', 'ACTION' => 'C5', 'SUBJECT' => 'C6'];
+        $disposals_columns = [  'AM' => 2, 'SURNAME' => 3, 'NAME' => 4, 'SPECIALISATION' => 5, 'ORGANIC_SCHOOL' => 6, 'DISPOSAL_SCHOOL' => 7, 
+                                'HOURS' => 8, 'START_DATE' => 9, 'END_DATE' => 10, 'DISPOSAL_REASON' => 11, 'DISPOSAL_DUTY' => 12];
+        $base_disposalsdata_row = 9;
         try {
-            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
-            return $this->redirect(['index']);
+            $transaction = Yii::$app->db->beginTransaction();
+            $import_model = new DisposalImport();
+            
+            if ($import_model->load(Yii::$app->request->post())) {
+                $import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
+                //$filename = $import_model->excelfile_disposals->tempName . '/' . $import_model->excelfile_disposals;
+                //echo $import_model->excelfile_disposals; die();
+                //echo $filename; die();
+                if(!$import_model->upload()) {
+                    echo "<pre>"; print_r($import_model->errors); echo "</pre>"; die(); 
+                    throw new Exception("(@upload)");
+                }
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->excelfile_disposals);
+                if(!$spreadsheet) {
+                    echo "<pre>"; print_r($spreadsheet->errors); echo "</pre>"; die();
+                    throw new Exception("(@import)");
+                }
+                
+                $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
+                //if($disposals_worksheet->getCellByColumnAndRow(2, 3) == null) echo "It is null"; die();
+                
+                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();
+                $protocol = $disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
+                $action = $disposals_worksheet->getCell($cells['ACTION'])->getValue();
+                $subject = $disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
+                $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
+                                
+                $localdir_dec = new DisposalLocaldirdecision();
+                $localdir_dec->localdirdecision_protocol = $protocol;
+                $localdir_dec->localdirdecision_action = $action;
+                $localdir_dec->localdirdecision_subject = $subject;
+                $localdir_dec->deleted = 0;
+                $localdir_dec->archived = 0;
+                
+                if(!$localdir_dec->save()) {
+                    //echo "<pre>"; print_r($localdir_dec->errors); echo "</pre>"; die();
+                    throw new Exception("(@localdir_save)");
+                }
+                
+                //$disposals = "";
+                $is_empty_row = false;
+                foreach ($rowiterator as $row) {
+                    if($is_empty_row)
+                        break;
+                    $currentrow_index = $row->getRowIndex();
+                    
+                    $currentteacher_am = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['AM'], $currentrow_index)->getValue();
+
+                    $teacher_model = Teacher::findOne(['teacher_registrynumber' => $currentteacher_am]);
+                    
+                    if(!$teacher_model) {
+                        $teacher_model = new Teacher();
+                        $teacher_model->teacher_registrynumber = $currentteacher_am;
+                        $teacher_model->teacher_surname = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SURNAME'], $currentrow_index)->getValue();
+                        $teacher_model->teacher_name = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['NAME'], $currentrow_index)->getValue();
+                        $teacher_model->school_id = Schoolunit::findOne(['school_name' => $disposals_worksheet->getCellByColumnAndRow($disposals_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue()])['school_id'];
+                        echo Schoolunit::find()->where(['school_name' => $disposals_worksheet->getCellByColumnAndRow($disposals_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue()])->createCommand()->rawSql; die();
+                        
+                        /* Find the specialisation_id of the teacher */
+                        //echo $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(); die();
+                        $specialisation = mb_substr($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(), 0, 7, 'UTF-8');                        
+                        $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, 5, 'UTF-8');
+                        if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
+                            $specialisation = mb_substr($specialisation, 0, 5);
+                            $specialisation_with_blank = mb_substr($specialisation_with_blank, 0, 6);
+                        }
+                        $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
+                        //echo Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->createCommand()->rawSql; die();
+                        
+                        $teacher_model->specialisation_id = $specialisation_id;
+                        echo "<pre>"; print_r($teacher_model); echo "</pre>"; die();
+                        if(!$teacher_model->save()) {
+                            echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                            throw new Exception("(@teacher_save)");
+                        }
+                        //echo $specialisation; die();
+                    }
+                    
+                    $disposalCellIterator = $row->getCellIterator($disposals_columns['AM'], $disposals_columns['DISPOSAL_DUTY']);
+                    
+                    $disposal = new Disposal();
+                    $disposal->disposal_startdate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getValue();
+                    $disposal->disposal_enddate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getValue();
+                    $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
+                    $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_id' => $disposals_worksheet->getCellByColumnAndRow($disposals_columns['REASON'], $currentrow_index)->getValue()])['disposalreason_id'];
+                    $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_description' => $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DUTY'], $currentrow_index)->getValue()])['disposalworkobj_id'];
+                    $disposal->teacher_id = $teacher_model->teacher_id;
+                    $disposal->school_id = Schoolunit::findOne(['school_name' => $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue()]);
+                    $disposal->deleted = 0;
+                    $disposal->archived = 0;
+                    $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
+
+                    if(!$disposal->save()) {
+                        //echo "<pre>"; print_r($disposal->errors); echo "</pre>"; die();
+                        throw new Exception("(@disposal_save)");
+                    }                    
+                }                
+                
+                $transaction->commit();
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
+                return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('importdisposals', [
+                    'import_model' => $import_model,
+                ]);
+            }
         }
         catch (Exception $exc) {
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal deletion failed."));
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Error in importing disposals. " . $exc->getMessage()));
             return $this->redirect(['index']);
         }
     }
-    
+        
     
     /**
      * Finds the Disposal model based on its primary key value.

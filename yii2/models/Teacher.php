@@ -16,6 +16,7 @@ use Yii;
  * @property string $teacher_registrynumber
  * @property integer $specialisation_id
  * @property integer $school_id
+ * @property integer $deleted 
  *
  * @property DisposalDisposal[] $disposalDisposals
  * @property DisposalLedger[] $disposalLedgers
@@ -39,7 +40,7 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'specialisation_id', 'school_id'], 'required'],
-            [['specialisation_id', 'school_id', 'teacher_registrynumber'], 'integer'],
+            [['specialisation_id', 'school_id', 'teacher_registrynumber', 'deleted'], 'integer'],
             [['teacher_surname', 'teacher_name'], 'string', 'max' => 100],
             [['teacher_registrynumber'], 'unique'],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
@@ -59,6 +60,7 @@ class Teacher extends \yii\db\ActiveRecord
             'teacher_registrynumber' => Yii::t('app', 'Αριθμός Μητρώου'),
             'specialisation_id' => Yii::t('app', 'Ειδικότητα'),
             'school_id' => Yii::t('app', 'School ID'),
+            'deleted' => Yii::t('app', 'Deleted'),
         ];
     }
 

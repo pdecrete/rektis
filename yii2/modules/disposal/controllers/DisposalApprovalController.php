@@ -328,7 +328,7 @@ class DisposalApprovalController extends Controller
         $teacher_disposals = "";
         for($i = 0; $i < count($teacher_models); $i++) {
             $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
-            $teacher_disposals .= $specialization_models[$i]['code'] . ": διατίθεται ";
+            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται";
             $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? " με ολική διάθεση ":
             " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα";
             $teacher_disposals .= " στο \"" . $school_models[$i]['school_name'] . "\"";
@@ -369,9 +369,12 @@ class DisposalApprovalController extends Controller
                 if(!$disposal_model->save())
                     throw new Exception("The deletion of the disposals\' approval failed.");
             }
-            
+                       
             $transaction->commit();
-            unlink(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file);
+            /* delete old file: */
+            if (file_exists(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file)) {
+                unlink(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file);
+            }
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.'));
             return $this->redirect(['index']);
         }

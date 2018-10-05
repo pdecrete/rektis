@@ -146,9 +146,23 @@ class TeacherController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        try {
+            $teacher_model = $this->findModel($id);
+            if($teacher_model)
+                $teacher_model->deleted = 1;
+            else 
+                throw new Exception("Error: trying to delete an non-existing teacher.");
+            
+            if(!$teacher_model->save())
+                throw new Exception("Failed to delete the teacher.");
+            
+            Yii::$app->session->addFlash('success', Yii::t('app', "The teacher was deleted successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
+            return $this->redirect(['index']);
+        }
     }
 
     /**

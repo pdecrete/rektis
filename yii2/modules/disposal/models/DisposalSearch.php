@@ -97,13 +97,11 @@ class DisposalSearch extends Disposal
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'disposal_startdate' => $this->disposal_startdate,
-            'disposal_enddate' => $this->disposal_enddate,
             'disposal_hours' => $this->disposal_hours,
             'teacher_id' => $this->teacher_id,
             'school_id' => $this->school_id
         ]);
-        
+             
         $query->andFilterWhere(['like', 'teacher_name', $this->teacher_name]);
         $query->andFilterWhere(['like', 'teacher_surname', $this->teacher_surname]);
         $query->andFilterWhere(['like', 'teacher_registrynumber', $this->teacher_registrynumber]);
@@ -113,7 +111,9 @@ class DisposalSearch extends Disposal
         $query->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);
         $query->andFilterWhere(['like', 'disposalreason_description', $this->disposalreason_description]);
         $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol]);
-        
+        $query->andFilterWhere(['>=', 'disposal_startdate', $this->disposal_startdate]);
+        $query->andFilterWhere(['<=', 'disposal_enddate', $this->disposal_enddate]);
+        //echo $query->createCommand()->rawSql; die();
         return $dataProvider;
     }
 }

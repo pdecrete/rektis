@@ -58,13 +58,12 @@ return [
     'Error in creating pdf file.' => 'Σφάλμα κατά τη δημιουργία του pdf αρχείου.',
     'PRIMARY' => 'Πρωτοβάθμια',
     'SECONDARY' => 'Δευτεροβάθμια',
-    'Specialisation' => 'Ειδικότητα',
     'Create Teacher Disposal' => 'Δημιουργία Διάθεσης Εκπαιδευτικού',
     'The teacher disposal was saved successfully.' => 'Η διάθεση εκπαιδευτικού αποθηκεύτηκε επιτυχώς.',
     'Surname' => 'Επίθετο',
     'Name' => 'Όνομα',
     'RegNum' => 'Α.Μ.',
-    'Specialisation' => 'Ειδικότητα',
+    'Specialisation' => 'Ειδ/τα',
     'Organic Post' => 'Οργανική',
     'Disposal School' => 'Σχολείο Διάθεσης',
     'From' => 'Από',
@@ -112,7 +111,7 @@ return [
     'The creation of the approval failed, because the template file for the approval does not exist.' => 'Η δημιουργία της έγκρισης απέτυχε επειδή δεν υπάρχει το πρότυπο αρχείο για τη δημιουργία της.',
     'Update Disposals\' Approval' => 'Ενημέρωση Έγκρισης',
     'Organic Post Directorate' => 'Δ/νση Οργανικής',
-    'Directorate' => 'Διεύθυνση',
+    'Directorate' => 'Δ/νση',
     'View Approval' => 'Προβολή Έγκρισης',
     'Teacher' => 'Εκπαιδευτικός',
     'Disposal Duration' => 'Διάρκεια Διάθεσης',
@@ -129,5 +128,7 @@ return [
     'All disposals must belong to the same local Directorate Decision.' => 'Όλες οι διαθέσεις πρέπει να ανήκουν στην ίδια Απόφαση τοπικής Διεύθυνσης.',
     'Directorate Protocol' => 'Πρωτόκολλο',
     'Disposal' => 'Διάθεση',
-    'Reason' => 'Λόγος'
+    'Reason' => 'Λόγος',
+    'Import Disposals from Excel' => 'Εισαγωγή Διαθέσεων από Excel',
+    'Import Disposals' => 'Εισαγωγή Διαθέσεων'
 ];
