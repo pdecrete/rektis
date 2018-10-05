@@ -111,16 +111,17 @@ class SchtransportTransportController extends Controller
         $tblmeeting = Yii::$app->db->tablePrefix . 'schtransport_meeting';
         $schools = [];
         if ($sep == 1) {
-            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
+            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->andWhere(['school_state' => 1])->all();
         } elseif ($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
             $schools = (new \yii\db\Query())
                             ->select($tblprefix . 'schoolunit.*,')
                             ->from([$tblprefix . 'schoolunit', $tblprefix . 'directorate'])
                             ->where($tblprefix . 'schoolunit.directorate_id' . '=' . $tblprefix . 'directorate.directorate_id')
                             ->andWhere($tblprefix . 'directorate.directorate_stage'  . '=' .  '\'SECONDARY\'')
+                            ->andWhere(['school_state' => 1])
                             ->all();
         } else {
-            $schools = Schoolunit::find()->all();
+            $schools = Schoolunit::find()->where(['school_state' => 1])->all();
         }
 
         $meeting_model = new SchtransportMeeting();
@@ -253,9 +254,9 @@ class SchtransportTransportController extends Controller
                 SchtransportProgramcategory::getAlias($programcateg->programcategory_programparent) == "EUROPEAN_SCHOOL") ? 1: 0;
 
         if ($sep == 1) {
-            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->all();
+            $schools = Schoolunit::find()->where(['like', 'school_name', 'ΕΥΡΩΠΑ'])->andWhere(['school_state' => 1])->all();
         } else {
-            $schools = Schoolunit::find()->all();
+            $schools = Schoolunit::find()->where(['school_state' => 1])->all();
         }
 
         $meeting_model = SchtransportMeeting::findOne(['meeting_id' => $model->meeting_id]);

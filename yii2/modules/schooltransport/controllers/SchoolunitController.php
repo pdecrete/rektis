@@ -234,7 +234,7 @@ class SchoolunitController extends Controller
                     }
 
                     if (!$school_model->save()) {
-                        //throw new \Exception("Local directorates school error.");
+                        throw new \Exception("Local directorates school error.");
                     }
                 }
             }

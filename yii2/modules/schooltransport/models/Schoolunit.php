@@ -31,10 +31,10 @@ class Schoolunit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['school_name', 'school_state','directorate_id'], 'required'],
+            [['school_name', 'school_state', 'directorate_id'], 'required'],
             [['directorate_id', 'school_state'], 'integer'],
             [['school_name'], 'string', 'max' => 200],
-            [['school_name', 'school_state', 'directorate_id'], 'unique', 'targetAttribute' => ['school_name', 'school_state', 'directorate_id'], 'message' => 'The combination of Σχολείο, Λειτουργική Κατάσταση and Διεύθυνση Εκπαίδευσης Σχολείου has already been taken.'],
+            //[['school_name', 'school_state', 'directorate_id'], 'unique', 'targetAttribute' => ['school_name', 'school_state', 'directorate_id'], 'message' => 'The combination of Σχολείο, Λειτουργική Κατάσταση and Διεύθυνση Εκπαίδευσης Σχολείου has already been taken.'],
             [['directorate_id'], 'exist', 'skipOnError' => true, 'targetClass' => Directorate::className(), 'targetAttribute' => ['directorate_id' => 'directorate_id']],
         ];
     }
