@@ -1,6 +1,8 @@
 <?php
 
 use app\modules\disposal\DisposalModule;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -12,8 +14,14 @@ use yii\widgets\ActiveForm;
 <div class="disposal-localdirdecision-form">
 	<?php $form = ActiveForm::begin(); ?>
 	<div class="row">
-		<div class="col-lg-6"><?= $form->field($model, 'localdirdecision_protocol')->textInput(['maxlength' => true]) ?></div>
-		<div class="col-lg-6"><?= $form->field($model, 'localdirdecision_action')->textInput(['maxlength' => true]) ?></div>
+		<div class="col-lg-4"><?= $form->field($model, 'localdirdecision_protocol')->textInput(['maxlength' => true]) ?></div>
+		<div class="col-lg-4"><?= $form->field($model, 'localdirdecision_action')->textInput(['maxlength' => true]) ?></div>
+		<div class="col-lg-4">
+			<?= $form->field($model, 'directorate_id')->widget(Select2::classname(), [
+	                     'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_shortname'),
+	                     'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],
+                    ])->label('Διεύθυνση Εκπαίδευσης'); ?>
+		</div>
 	</div>
 	<div class="row">
 		<div class="col-lg-12"><?= $form->field($model, 'localdirdecision_subject')->textInput(['maxlength' => true]) ?></div>

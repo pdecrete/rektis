@@ -5,6 +5,7 @@ namespace app\modules\disposal\models;
 use Exception;
 use Yii;
 use yii\web\User;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * This is the model class for table "{{%disposal_localdirdecision}}".
@@ -40,9 +41,9 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action'], 'required'],
+            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'directorate_id'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
-            [['created_by', 'updated_by', 'deleted', 'archived'], 'integer'],
+            [['created_by', 'updated_by', 'deleted', 'archived', 'directorate_id'], 'integer'],
             [['localdirdecision_protocol'], 'string', 'max' => 100],
             [['localdirdecision_subject'], 'string', 'max' => 500],
             [['localdirdecision_action'], 'string', 'max' => 200],
@@ -67,6 +68,7 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
             'updated_by' => Yii::t('app', 'Updated By'),
             'deleted' => Yii::t('app', 'Deleted'),
             'archived' => Yii::t('app', 'Archived'),
+            'directorate_id' => Yii::t('app', 'Διεύθυνση Εκπαίδευσης Έκδοσης Απόφασης'),
         ];
     }
 
@@ -115,6 +117,14 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocalDirectorate()
+    {
+        return $this->hasOne(Directorate::className(), ['directorate_id' => 'directorate_id']);
     }
     
 

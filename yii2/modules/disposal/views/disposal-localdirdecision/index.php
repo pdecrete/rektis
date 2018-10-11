@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
+            'directorate_shortname',
             'localdirdecision_protocol',
             'localdirdecision_subject',
             'localdirdecision_action',

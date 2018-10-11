@@ -130,5 +130,7 @@ return [
     'Disposal' => 'Διάθεση',
     'Reason' => 'Λόγος',
     'Import Disposals from Excel' => 'Εισαγωγή Διαθέσεων από Excel',
-    'Import Disposals' => 'Εισαγωγή Διαθέσεων'
+    'Import Disposals' => 'Εισαγωγή Διαθέσεων',
+    'Disposals Excel File' => 'Αρχείο Excel Διαθέσεων',
+    'Select Directorate ...' => 'Επιλέξτε Διεύθυνση ...'
 ];

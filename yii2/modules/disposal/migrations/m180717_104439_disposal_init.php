@@ -36,11 +36,10 @@ class m180717_104439_disposal_init extends Migration
                              `teacher_registrynumber` VARCHAR(50) NOT NULL COMMENT 'Αριθμός Μητρώου',
                              `specialisation_id` INTEGER NOT NULL,
                              `school_id` INTEGER NOT NULL,
-                             `deleted` BOOLEAN NOT NULL DEFAULT 0,
                               PRIMARY KEY (`teacher_id`),
                               FOREIGN KEY (`specialisation_id`) REFERENCES " . $table_specialisation . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`school_id`) REFERENCES " . $table_schoolunit . " (`school_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              UNIQUE KEY (`teacher_registrynumber`, `deleted`)
+                              UNIQUE KEY (`teacher_registrynumber`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_teacher'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
@@ -93,9 +92,11 @@ class m180717_104439_disposal_init extends Migration
                              `updated_by` INTEGER,
                              `deleted` BOOLEAN NOT NULL DEFAULT 0,
                              `archived` BOOLEAN NOT NULL DEFAULT 0,
+                                        `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Έκδοσης Απόφασης',
                               PRIMARY KEY (`localdirdecision_id`),
                               FOREIGN KEY (`created_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                              FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                                        FOREIGN KEY (`directorate_id`) REFERENCES " . $this->db->tablePrefix . 'directorate' . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_localdirdecision'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");

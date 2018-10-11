@@ -12,6 +12,7 @@ use app\modules\disposal\models\DisposalLocaldirdecision;
  */
 class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
 {
+    public $directorate;
     /**
      * @inheritdoc
      */
@@ -19,7 +20,7 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
     {
         return [
             [['localdirdecision_id', 'created_by', 'updated_by', 'deleted', 'archived'], 'integer'],
-            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'created_at', 'updated_at'], 'safe'],
+            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'directorate', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -41,7 +42,14 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
      */
     public function search($params)
     {
-        $query = DisposalLocaldirdecision::find();
+        $prefix = Yii::$app->db->tablePrefix;
+        $dir_o_schl = $prefix . 'directorate';
+        $localdir_decisions = $prefix . 'disposal_localdirdecision';
+        
+        $query = (new \yii\db\Query())
+        ->select([$localdir_decisions . ".*", $dir_o_schl . ".*"])
+        ->from([$localdir_decisions, $dir_o_schl])
+        ->where($localdir_decisions . ".directorate_id=" . $dir_o_schl . ".directorate_id");
 
         // add conditions that should always apply here
 
@@ -70,7 +78,8 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
 
         $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol])
             ->andFilterWhere(['like', 'localdirdecision_subject', $this->localdirdecision_subject])
-            ->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action]);
+            ->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action])
+            ->andFilterWhere(['like', 'directorate_shortname', $this->directorate]);
 
         return $dataProvider;
     }

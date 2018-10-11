@@ -10,6 +10,7 @@ use app\modules\disposal\models\DisposalLocaldirdecisionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * DisposalLocaldirdecisionController implements the CRUD actions for DisposalLocaldirdecision model.
@@ -66,12 +67,14 @@ class DisposalLocaldirdecisionController extends Controller
     public function actionCreate()
     {
         $model = new DisposalLocaldirdecision();
+        $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->localdirdecision_id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'directorates' => $directorates
             ]);
         }
     }
@@ -85,12 +88,14 @@ class DisposalLocaldirdecisionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->localdirdecision_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'directorates' => $directorates
             ]);
         }
     }

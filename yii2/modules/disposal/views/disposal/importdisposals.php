@@ -13,9 +13,9 @@ $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => [$url]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="disposal-import">
+<div class="disposal-import col-lg-6">
 	<?php $form = ActiveForm::begin(['options'=>['enctype'=>'multipart/form-data']]); ?>
-		<?= $form->field($import_model, 'excelfile_disposals')->fileInput()->label(DisposalModule::t('modules/disposal/app', 'Excel File')) ?>
+		<?= $form->field($import_model, 'excelfile_disposals')->fileInput()->label(DisposalModule::t('modules/disposal/app', 'Disposals Excel File')) ?>
 	    <div class="form-group  text-right">
         	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
             <?= Html::submitButton(DisposalModule::t('modules/disposal/app', 'Import Disposals'), ['class' => 'btn btn-primary']) ?>
