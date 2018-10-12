@@ -49,11 +49,14 @@ class DisposalController extends Controller
     
     public function actionGetlocaldirdecisionAjax()
     {
+        $protocol = null;
+        $directorate = null;
         $data = null;
         if(Yii::$app->request->isAjax){
             Yii::$app->response->format = Response::FORMAT_JSON;
-            $data = Yii::$app->request->post('localdirdecision_protocol');
-            $localdir_decision = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $data]);
+            $protocol = Yii::$app->request->post('localdirdecision_protocol');
+            $directorate = Yii::$app->request->post('localdirdecision_directorate');//->andWhere(['localdirdecision_directorate' => $directorate])
+            $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->one();
             $data = $localdir_decision;
         }
         
@@ -156,6 +159,7 @@ class DisposalController extends Controller
             $specialisations = Specialisation::find()->all();
             $disposal_reasons = DisposalReason::find()->all();
             $disposal_workobjs = DisposalWorkobj::find()->all();
+            $directorates = Directorate::find()->orderBy('directorate_name')->all();
             $model = new Disposal();           
                        
             $disposal_hours = Disposal::getHourOptions();
@@ -235,7 +239,8 @@ class DisposalController extends Controller
                     'disposal_hours' => $disposal_hours,
                     'specialisations' => $specialisations,
                     'disposal_reasons' => $disposal_reasons,
-                    'disposal_workobjs' => $disposal_workobjs
+                    'disposal_workobjs' => $disposal_workobjs,
+                    'directorates' => $directorates
                 ]);
             }
         }
@@ -250,7 +255,9 @@ class DisposalController extends Controller
                 'disposal_hours' => $disposal_hours,
                 'specialisations' => $specialisations,
                 'disposal_reasons' => $disposal_reasons,
-                'disposal_workobjs' => $disposal_workobjs
+                'disposal_workobjs' => $disposal_workobjs,
+                'directorates' => $directorates
+                
             ]);
         }
     }
@@ -276,6 +283,7 @@ class DisposalController extends Controller
             $specialisations = Specialisation::find()->all();
             $disposal_reasons = DisposalReason::find()->all();
             $disposal_workobjs = DisposalWorkobj::find()->all();
+            $directorates = Directorate::find()->orderBy('directorate_name')->all();
             
             $disposal_hours = Disposal::getHourOptions();
                 
@@ -333,7 +341,8 @@ class DisposalController extends Controller
                     'disposal_hours' => $disposal_hours,
                     'specialisations' => $specialisations,
                     'disposal_reasons' => $disposal_reasons,
-                    'disposal_workobjs' => $disposal_workobjs
+                    'disposal_workobjs' => $disposal_workobjs,
+                    'directorates' => $directorates
                 ]);
             }
         }
@@ -348,7 +357,8 @@ class DisposalController extends Controller
                 'disposal_hours' => $disposal_hours,
                 'specialisations' => $specialisations,
                 'disposal_reasons' => $disposal_reasons,
-                'disposal_workobjs' => $disposal_workobjs
+                'disposal_workobjs' => $disposal_workobjs,
+                'directorates' => $directorates
             ]);
         }
     }
@@ -398,7 +408,7 @@ class DisposalController extends Controller
                 
                 $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
                
-                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();
+                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();                
                 $protocol = $disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
                 $action = $disposals_worksheet->getCell($cells['ACTION'])->getValue();
                 $subject = $disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
@@ -408,6 +418,7 @@ class DisposalController extends Controller
                 $localdir_dec->localdirdecision_protocol = (string)$protocol;
                 $localdir_dec->localdirdecision_action = (string)$action;
                 $localdir_dec->localdirdecision_subject = (string)$subject;
+                $localdir_dec->directorate_id = self::getDirectorateId($directorate);                
                 $localdir_dec->deleted = 0;
                 $localdir_dec->archived = 0;
                 if(!$localdir_dec->save()) {
@@ -440,7 +451,6 @@ class DisposalController extends Controller
                         $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                         $teacher_model->specialisation_id = $specialisation_id;
                         if(!$teacher_model->save(true)) {
-                            echo "<pre>1"; print_r($teacher_model->errors); echo "</pre>"; die();
                             throw new Exception("(@teacher_save)");
                         }
                     }
@@ -494,6 +504,8 @@ class DisposalController extends Controller
     
     
     /**
+     * THIS IS A FUNCTION TIGHTLY COUPLED TO THE EXCEL FILES FILLED IN BY LOCAL DIRECOTORATES FOR IMPORTING DISPOSALS
+     * 
      * Returns the unique disposal reason name as it is stored in the database based on the $disposal_reason string given in the Excel files for the disposals 
      * 
      * @param string $disposal_reason
@@ -514,21 +526,56 @@ class DisposalController extends Controller
 
     
     /**
+     * THIS IS A FUNCTION TIGHTLY COUPLED TO THE EXCEL FILES FILLED IN BY LOCAL DIRECOTORATES FOR IMPORTING DISPOSALS
+     * 
      * Returns the unique disposal duty name as it is stored in the database based on the $disposal_duty string given in the Excel files for the disposals
      *
-     * @param string $disposal_reason
+     * @param string $disposal_duty
      * @throws Exception
      * @return string
      */
     private static function getDisposalDutyUniqueName($disposal_duty) {
         if($disposal_duty == 'ΠΑΡΟΧΗ ΔΙΟΙΚΗΤΙΚΟΥ ΕΡΓΟΥ')
             return 'administrative_work';
-            else if($disposal_duty == 'ΓΡΑΜΜΑΤΕΙΑΚΗ ΥΠΟΣΤΗΡΙΞΗ')
+        else if($disposal_duty == 'ΓΡΑΜΜΑΤΕΙΑΚΗ ΥΠΟΣΤΗΡΙΞΗ')
             return 'secretary_work';
-            else if($disposal_duty == 'ΕΝΙΣΧΥΤΙΚΗ ΔΙΔΑΣΚΑΛΙΑ')
+        else if($disposal_duty == 'ΕΝΙΣΧΥΤΙΚΗ ΔΙΔΑΣΚΑΛΙΑ')
             return 'supplementary_teaching';
         else throw new Exception("Unknown disposal duty");
     }
+    
+    
+    /**
+     * THIS IS A FUNCTION TIGHTLY COUPLED TO THE EXCEL FILES FILLED IN BY LOCAL DIRECOTORATES FOR IMPORTING DISPOSALS
+     *
+     * Returns the id of the directorate as retrieved by mm.sch.gr and stored in the local database based on the directorate short name passed as argument.
+     *
+     * @param string $local_directorate
+     * @throws Exception
+     * @return integer
+     */
+    private static function getDirectorateId($local_directorate) {        
+        $local_directorate = strtoupper($local_directorate);
+
+        if($local_directorate == "ΔΔΕ ΗΡΑΚΛΕΙΟΥ")
+            return 15;
+        else if($local_directorate == "ΔΔΕ ΧΑΝΙΩΝ")
+            return 25;
+        else if($local_directorate == "ΔΔΕ ΡΕΘΥΜΝΟΥ")
+            return 100;
+        else if($local_directorate == "ΔΔΕ ΛΑΣΙΘΙΟΥ")
+            return 95;
+        else if($local_directorate == "ΔΠΕ ΗΡΑΚΛΕΙΟΥ")
+            return 41;
+        else if($local_directorate == "ΔΠΕ ΧΑΝΙΩΝ")
+            return 60;
+        else if($local_directorate == "ΔΠΕ ΡΕΘΥΜΝΟΥ")
+            return 75;
+        else if($local_directorate == "ΔΠΕ ΛΑΣΙΘΙΟΥ")
+            return 72;
+        else
+            throw new \Exception("Uknown directorate given.");
+    }    
     
     
     /**

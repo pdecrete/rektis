@@ -11,6 +11,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\schooltransport\models\Directorate;
+use app\modules\disposal\models\Disposal;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 
 /**
  * DisposalLocaldirdecisionController implements the CRUD actions for DisposalLocaldirdecision model.
@@ -68,15 +70,29 @@ class DisposalLocaldirdecisionController extends Controller
     {
         $model = new DisposalLocaldirdecision();
         $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->localdirdecision_id]);
-        } else {
+        
+        try {
+            if ($model->load(Yii::$app->request->post())) {
+                if(!$model->save())
+                    throw new Exception("The creation of the decision suggestion failed.");
+            }
+            else {
+                return $this->render('create', [
+                    'model' => $model,
+                    'directorates' => $directorates
+                ]);
+            }
+         
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion was created successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('create', [
                 'model' => $model,
                 'directorates' => $directorates
             ]);
-        }
+        }        
     }
 
     /**
@@ -89,15 +105,32 @@ class DisposalLocaldirdecisionController extends Controller
     {
         $model = $this->findModel($id);
         $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->localdirdecision_id]);
-        } else {
+        
+        try {
+            if ($model->load(Yii::$app->request->post())) {
+                $assigned_disposals = Disposal::findAll(['localdirdecision_id' => $model->localdirdecision_id]);
+                if(count($assigned_disposals) >= 1 && $assigned_disposals[0]->getTeacherDirectorate()->directorate_id != $model->directorate_id)
+                    throw new Exception("The Directorate cannot change because the already assigned disposals to the Suggestion refer to schools of teachers of different Directorate.");
+                if(!$model->save())
+                    throw new Exception("The update of the suggestion of the directorate failed.");
+            }
+            else {
+                return $this->render('update', [
+                    'model' => $model,
+                    'directorates' => $directorates
+                ]);
+            }
+            
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion of the directorate was updated successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('update', [
                 'model' => $model,
                 'directorates' => $directorates
             ]);
-        }
+        }   
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use app\modules\disposal\DisposalModule;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
@@ -25,7 +26,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'directorate_shortname',
+            ['attribute' => 'directorate_shortname',
+             'label' => DisposalModule::t('modules/disposal/app', 'Directorate'),
+            ],            
             'localdirdecision_protocol',
             'localdirdecision_subject',
             'localdirdecision_action',
@@ -37,6 +40,20 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'archived',
 
             ['class' => 'yii\grid\ActionColumn',
+             'urlCreator' => function ($action, $model) {
+                if ($action === 'delete') {
+                    $url = Url::to(['/disposal/disposal-localdirdecision/delete', 'id' =>$model['localdirdecision_id']]);
+                    return $url;
+                }
+                if ($action === 'update') {
+                    $url = Url::to(['/disposal/disposal-localdirdecision/update', 'id' =>$model['localdirdecision_id']]);
+                    return $url;
+                }
+                if ($action === 'view') {
+                    $url = Url::to(['/disposal/disposal-localdirdecision/view', 'id' =>$model['localdirdecision_id']]);
+                    return $url;
+                }
+             },
              'contentOptions' => ['class' => 'text-nowrap'],
             ],
         ],

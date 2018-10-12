@@ -15,7 +15,7 @@ use yii\filters\VerbFilter;
  * DisposalReasonController implements the CRUD actions for DisposalReason model.
  */
 class DisposalReasonController extends Controller
-{
+{   
     /**
      * @inheritdoc
      */

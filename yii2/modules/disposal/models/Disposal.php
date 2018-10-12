@@ -10,6 +10,7 @@ use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use app\modules\schooltransport\models\Directorate;
 
 /**
  * This is the model class for table "{{%disposal_disposal}}".
@@ -118,6 +119,32 @@ class Disposal extends \yii\db\ActiveRecord
             'disposalworkobj_id' => DisposalModule::t('modules/disposal/app', 'Disposal Working Object'),
             'localdirdecision_id' => DisposalModule::t('modules/disposal/app', 'Local Directorate'),
         ];
+    }
+    
+    public function isForHealthReasons()
+    {
+        return ($this->disposalreason_id == DisposalReason::findOne(['disposalreason_name' => DisposalReason::HEALTH_REASONS])['disposalreason_id']);
+    }
+    
+    /**
+     * Returns the Directorate of the disposal school.
+     * 
+     * @return \app\modules\schooltransport\models\Directorate|array|NULL
+     */
+    public function getDirectorate()
+    {
+        return Directorate::find()->where(['directorate_id' => $this->getSchool()->one()['directorate_id']])->one();
+    }
+
+    /**
+     * Returns the Directorate of the disposal's teacher.
+     *
+     * @return \app\modules\schooltransport\models\Directorate|array|NULL
+     */
+    public function getTeacherDirectorate()
+    {
+        $teacher_school_id = Schoolunit::findOne(['school_id' => $this->getTeacher()->one()['school_id']]);
+        return Directorate::find()->where(['directorate_id' => $teacher_school_id])->one();
     }
 
     /**

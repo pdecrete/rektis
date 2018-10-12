@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
         'specialisations' => $specialisations,
         'disposal_reasons' => $disposal_reasons,
         'disposal_workobjs' => $disposal_workobjs,
+        'directorates' => $directorates,
         'teacher_disabled' => true,
         'ldrdec_disabled' => true
     ]) ?>

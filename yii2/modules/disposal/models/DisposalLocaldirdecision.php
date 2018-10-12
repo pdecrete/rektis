@@ -20,6 +20,7 @@ use app\modules\schooltransport\models\Directorate;
  * @property integer $updated_by
  * @property integer $deleted
  * @property integer $archived
+ * @property integer $directorate_id 
  *
  * @property DisposalDisposal[] $disposalDisposals
  * @property User $createdBy
@@ -59,9 +60,9 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     {
         return [
             'localdirdecision_id' => Yii::t('app', 'Localdirdecision ID'),
-            'localdirdecision_protocol' => Yii::t('app', 'Πρωτόκολλο ΔΔΕ/ΔΠΕ'),
-            'localdirdecision_subject' => Yii::t('app', 'Θέμα Απόφασης ΔΔΕ/ΔΠΕ'),
-            'localdirdecision_action' => Yii::t('app', 'Πράξη Απόφασης'),
+            'localdirdecision_protocol' => Yii::t('app', 'Πρωτόκολλο/Ημερομηνία ΔΔΕ/ΔΠΕ'),
+            'localdirdecision_subject' => Yii::t('app', 'Θέμα Εισήγησης ΔΔΕ/ΔΠΕ'),
+            'localdirdecision_action' => Yii::t('app', 'Πράξη/Ημερομηνία Εισήγησης'),
             'created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
             'updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),
             'created_by' => Yii::t('app', 'Created By'),
@@ -93,8 +94,8 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
         $disposal_models = Disposal::find()->where(['localdirdecision_id' => $this->localdirdecision_id])->all();
         return $disposal_models[0]->getSchool()['directorate_id'];
     }
-    */
-    
+    */    
+        
     /**
      * @return \yii\db\ActiveQuery
      */

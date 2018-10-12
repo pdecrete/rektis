@@ -132,5 +132,9 @@ return [
     'Import Disposals from Excel' => 'Εισαγωγή Διαθέσεων από Excel',
     'Import Disposals' => 'Εισαγωγή Διαθέσεων',
     'Disposals Excel File' => 'Αρχείο Excel Διαθέσεων',
-    'Select Directorate ...' => 'Επιλέξτε Διεύθυνση ...'
+    'Select Directorate ...' => 'Επιλέξτε Διεύθυνση ...',
+    'The suggestion of the directorate was updated successfully.' => 'Η εισήγηση της διεύθυνσης ενημερώθηκε επιτυχώς.',
+    'The update of the suggestion of the directorate failed.' => 'Η ενημέρωση της εισήγησης της διεύθυνσης απέτυχε.',
+    'The disposals were imported successfully.' => 'Οι διαθέσεις εισήχθησαν επιτυχώς',
+    'The Directorate cannot change because the already assigned disposals to the Suggestion refer to schools of teachers of different Directorate.' => 'Η Διεύθυνση δεν μπορεί να αλλάξει, διότι οι ήδη συσχετισμένες διαθέσεις με την εισήγηση, αφορούν σχολεία εκπαιδευτικών διαφορετικής Διεύθυνσης.'
 ];

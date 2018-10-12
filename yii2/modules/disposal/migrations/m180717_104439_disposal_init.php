@@ -92,11 +92,12 @@ class m180717_104439_disposal_init extends Migration
                              `updated_by` INTEGER,
                              `deleted` BOOLEAN NOT NULL DEFAULT 0,
                              `archived` BOOLEAN NOT NULL DEFAULT 0,
-                                        `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Έκδοσης Απόφασης',
+                             `directorate_id` INTEGER NOT NULL COMMENT 'Διεύθυνση Εκπαίδευσης Έκδοσης Απόφασης',
                               PRIMARY KEY (`localdirdecision_id`),
                               FOREIGN KEY (`created_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
                               FOREIGN KEY (`updated_by`) REFERENCES " . $table_user . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                                        FOREIGN KEY (`directorate_id`) REFERENCES " . $this->db->tablePrefix . 'directorate' . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
+                              FOREIGN KEY (`directorate_id`) REFERENCES " . $this->db->tablePrefix . 'directorate' . "(`directorate_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
+                              UNIQUE KEY (`localdirdecision_protocol`, `directorate_id`)
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_localdirdecision'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");

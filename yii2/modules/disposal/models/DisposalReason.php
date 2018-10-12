@@ -15,6 +15,11 @@ use Yii;
  */
 class DisposalReason extends \yii\db\ActiveRecord
 {
+    const SUPPLEMENTING_WORKINGHOURS = 'supplementing_workinghours';
+    const COVER_TIMEOFF = 'cover_timeoff';
+    const HEALTH_REASONS = 'health_reasons';
+    const SERVICE_REASONS = 'service_reasons';
+    
     /**
      * @inheritdoc
      */

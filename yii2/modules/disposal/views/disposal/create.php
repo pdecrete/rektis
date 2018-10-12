@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'specialisations' => $specialisations,
         'disposal_reasons' => $disposal_reasons,
         'disposal_workobjs' => $disposal_workobjs,
+        'directorates' => $directorates,
         'teacher_disabled' => false,
         'ldrdec_disabled' => false
     ]) ?>

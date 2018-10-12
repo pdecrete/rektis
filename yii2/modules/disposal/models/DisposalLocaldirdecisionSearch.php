@@ -12,7 +12,7 @@ use app\modules\disposal\models\DisposalLocaldirdecision;
  */
 class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
 {
-    public $directorate;
+    public $directorate_shortname;
     /**
      * @inheritdoc
      */
@@ -20,7 +20,7 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
     {
         return [
             [['localdirdecision_id', 'created_by', 'updated_by', 'deleted', 'archived'], 'integer'],
-            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'directorate', 'created_at', 'updated_at'], 'safe'],
+            [['localdirdecision_protocol', 'localdirdecision_subject', 'localdirdecision_action', 'directorate_shortname', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -79,7 +79,7 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
         $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol])
             ->andFilterWhere(['like', 'localdirdecision_subject', $this->localdirdecision_subject])
             ->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action])
-            ->andFilterWhere(['like', 'directorate_shortname', $this->directorate]);
+            ->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);
 
         return $dataProvider;
     }

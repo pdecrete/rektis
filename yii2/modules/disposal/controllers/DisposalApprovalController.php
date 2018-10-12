@@ -115,9 +115,12 @@ class DisposalApprovalController extends Controller
         $teacher_models = array();
         $school_models = array();
         $specialization_models = array();
+        $use_template_with_health_reasons = false;
         //echo "<pre>"; print_r($disposal_ids);   echo "</pre>"; die();
         foreach ($disposal_ids as $index=>$disposal_id){
-            $disposals_models[$index] = Disposal::find()->where(['disposal_id' => $disposal_id])->one();
+            $disposals_models[$index] = Disposal::find()->where(['disposal_id' => $disposal_id])->one();            
+            if(!$use_template_with_health_reasons && $disposals_models[$index]->isForHealthReasons())
+                $use_template_with_health_reasons = true;
             $disposalapproval_models[$index] = new DisposalDisposalapproval();
             $disposalapproval_models[$index]->disposal_id = $disposal_id;
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
@@ -144,7 +147,7 @@ class DisposalApprovalController extends Controller
                 if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) 
                     throw new Exception("All disposals must belong to the same local Directorate Decision.");
 
-                $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
                 $model->approval_signedfile = '-'; //TODO allow null (has been changed in migration)
                 if(!$model->save()) {
@@ -222,6 +225,8 @@ class DisposalApprovalController extends Controller
         //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
         foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
             $disposals_models[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
+            if(!$use_template_with_health_reasons && $disposals_models[$index]->isForHealthReasons())
+                $use_template_with_health_reasons = true;
             $school_models[$index] = $disposals_models[$index]->getSchool()->one();
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
@@ -237,7 +242,7 @@ class DisposalApprovalController extends Controller
                 if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models))
                     throw new Exception("All disposals must belong to the same local Directorate Decision.");
                 
-                $template_filename = "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 if(!$model->save()) 
                     throw new Exception("Failed to save the changes of the approval.");
                 

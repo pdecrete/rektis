@@ -17,10 +17,12 @@ use yii\helpers\Url;
 
 $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                     var localdirdecision_protocol = document.getElementById("localdirdecision_protocol_frmid").value;
+                                    var localdirdecision_directorate = document.getElementById("localdirdecision_directorate_frmid").value;
+
                                     $.ajax({ 
                                             url: url, 
                                             type: "post", 
-                                            data: {"localdirdecision_protocol":localdirdecision_protocol},
+                                            data: {"localdirdecision_protocol":localdirdecision_protocol, "localdirdecision_directorate":localdirdecision_directorate},
                                             success: function(data){
                                                         data = JSON.parse(data);
                                                         if(data == null) {
@@ -101,9 +103,17 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">
 	<div class="row">
+		<div class="col-lg-6">
+			<?= $form->field($localdirdecision_model, 'directorate_id')->widget(Select2::classname(), [
+	                     'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_name'), 
+			             'options' => ['disabled' => $ldrdec_disabled, 'onchange' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");', 'id' => 'localdirdecision_directorate_frmid', 'placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],			             
+                    ])->label('Διεύθυνση Εκπαίδευσης'); ?>
+		</div>	
 		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_protocol')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_protocol_frmid', 'oninput' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");']) ?></div>
-		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_action')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_action_frmid']) ?></div>
-		<div class="col-lg-6"><?= $form->field($localdirdecision_model, 'localdirdecision_subject')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_subject_frmid']) ?></div>
+		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_action')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_action_frmid']) ?></div>		
+	</div>
+	<div class="row">
+		<div class="col-lg-12"><?= $form->field($localdirdecision_model, 'localdirdecision_subject')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_subject_frmid']) ?></div>
 	</div>
 	<hr />
 	<div class="row">
