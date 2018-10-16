@@ -29,10 +29,13 @@ class m180717_104439_disposal_init extends Migration
         $i = 1;
 
         /* CREATE TABLE admapp_disposal_teacher */
-        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_teacher'] .
+        /*$create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_teacher'] .
                           " (`teacher_id` INTEGER NOT NULL AUTO_INCREMENT,
                              `teacher_surname` VARCHAR(100) NOT NULL COMMENT 'Επίθετο',
                              `teacher_name` VARCHAR(100) NOT NULL COMMENT 'Όνομα',
+                             `teacher_fathername` VARCHAR(100) NOT NULL COMMENT 'Πατρώνυμο',
+                             `teacher_mothername` VARCHAR(100) NOT NULL COMMENT 'Μητρώνυμο',
+                             `teacher_gender` BOOLEAN NOT NULL COMMENT 'Φύλο',
                              `teacher_registrynumber` VARCHAR(50) NOT NULL COMMENT 'Αριθμός Μητρώου',
                              `specialisation_id` INTEGER NOT NULL,
                              `school_id` INTEGER NOT NULL,
@@ -44,7 +47,7 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_teacher'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+        */
         
         /* CREATE TABLE admapp_disposal_disposalreason */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_disposalreason'] .
@@ -209,7 +212,7 @@ class m180717_104439_disposal_init extends Migration
     public function safeDown()
     {
         $dbDisposalTables = [
-            'table_teacher' => $this->db->tablePrefix . 'teacher',
+            //'table_teacher' => $this->db->tablePrefix . 'teacher',
             'table_disposalreason' => $this->db->tablePrefix . 'disposal_disposalreason',
             'table_disposalworkobj' => $this->db->tablePrefix . 'disposal_disposalworkobj',
             'table_localdirdecision' => $this->db->tablePrefix . 'disposal_localdirdecision',

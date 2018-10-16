@@ -6,8 +6,7 @@ use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 
-$this->title = DisposalModule::t('modules/disposal/app', 'Help');
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['index']];
+$this->title = DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

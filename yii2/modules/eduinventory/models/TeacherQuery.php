@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\modules\eduinventory\models;
 
 /**
  * This is the ActiveQuery class for [[Teacher]].

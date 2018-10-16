@@ -1,8 +1,7 @@
 <?php
 
-namespace app\modules\disposal\models;
+namespace app\models;
 
-use app\modules\disposal\DisposalModule;
 use Yii;
 use yii\base\Model;
 
@@ -11,19 +10,19 @@ use yii\base\Model;
  * @property string $excelfile_disposals
  * 
  */
-class DisposalImport extends Model
+class FileImport extends Model
 {   
-    public $excelfile_disposals;
+    public $importfile;
     
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules($extensions = 'xls, xlsx', $maxSize = '10000000')
     {
-        return [[['excelfile_disposals'], 'required'],
-            [['excelfile_disposals'], 'safe'],
-            [['excelfile_disposals'], 'file', 'extensions'=>'xls, xlsx'],
-            [['excelfile_disposals'], 'file', 'maxSize'=>'10000000']
+        return [[['importfile'], 'required'],
+            [['importfile'], 'safe'],
+            [['importfile'], 'file', 'extensions' => $extensions],
+            [['importfile'], 'file', 'maxSize' => $maxSize]
         ];
     }
     
@@ -33,7 +32,7 @@ class DisposalImport extends Model
     
     public function attributeLabels()
     {
-        return ['excelfile_disposals' => DisposalModule::t('modules/disposal/app', 'Αρχείο')];
+        return ['$importfile' => Yii::t('app', 'Αρχείο')];
     }
     
     /**
@@ -41,12 +40,14 @@ class DisposalImport extends Model
      */
     public function upload()
     {        
+        //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
+        $this->importfile = \yii\web\UploadedFile::getInstance($this, 'importfile');
         if ($this->validate()) {
             $path = Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']);
             if (!is_writeable($path)) {
                 return false;
             }
-            if (empty($this->excelfile_disposals->saveAs($path . $this->excelfile_disposals))) {
+            if (empty($this->importfile->saveAs($path . $this->importfile))) {
                 return false;
             }
             

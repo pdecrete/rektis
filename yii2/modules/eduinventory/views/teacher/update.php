@@ -1,13 +1,14 @@
 <?php
 
+use app\modules\eduinventory\EducationInventoryModule;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Teacher */
 
 $this->title = Yii::t('app', 'Update Teacher Details');
+$this->params['breadcrumbs'][] = ['label' => EducationInventoryModule::t('modules/eduinventory/app', 'Educational Data'), 'url' => ['/eduinventory']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Teachers'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => ($model->teacher_surname . ' ' . $model->teacher_name)];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update Details');
 ?>
 <div class="teacher-update">

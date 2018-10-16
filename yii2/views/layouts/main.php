@@ -432,7 +432,7 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Εκπαιδευτικοί',
-                            'url' => ['/teacher']
+                            'url' => ['/eduinventory/teacher']
                         ],
                         [
                             'label' => 'Καταστάσεις Εγκρίσεων (Υπό Κατασκευή)',

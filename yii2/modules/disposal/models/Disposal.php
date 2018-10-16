@@ -2,7 +2,7 @@
 
 namespace app\modules\disposal\models;
 
-use app\models\Teacher;
+use app\modules\eduinventory\models\Teacher;
 use app\models\User;
 use app\modules\disposal\DisposalModule;
 use app\modules\schooltransport\models\Schoolunit;

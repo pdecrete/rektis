@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\eduinventory\EducationInventoryModule;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -7,6 +8,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Teacher */
 
 $this->title = $model->teacher_surname . ' ' . $model->teacher_name;
+$this->params['breadcrumbs'][] = ['label' => EducationInventoryModule::t('modules/eduinventory/app', 'Educational Data'), 'url' => ['/eduinventory']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Teachers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 

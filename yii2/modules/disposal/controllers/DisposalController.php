@@ -12,8 +12,9 @@ use yii\web\Response;
 use yii\base\Exception;
 use yii\filters\VerbFilter;
 use app\modules\disposal\DisposalModule;
+use app\models\FileImport;
 use app\models\Specialisation;
-use app\models\Teacher;
+use app\modules\eduinventory\models\Teacher;
 use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\Statistic;
 use app\modules\disposal\models\DisposalLedger;
@@ -23,7 +24,6 @@ use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
-use app\modules\disposal\models\DisposalImport;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 
 /**
@@ -394,14 +394,14 @@ class DisposalController extends Controller
         $base_disposalsdata_row = 9;
         try {
             $transaction = Yii::$app->db->beginTransaction();
-            $import_model = new DisposalImport();
+            $import_model = new FileImport();
             
             if ($import_model->load(Yii::$app->request->post())) {
-                $import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
+                //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
                 if(!$import_model->upload()) {
                     throw new Exception("(@upload)");
                 }
-                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->excelfile_disposals);
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
                 if(!$spreadsheet) {
                     throw new Exception("(@import)");
                 }
@@ -409,20 +409,26 @@ class DisposalController extends Controller
                 $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
                
                 $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();                
-                $protocol = $disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
-                $action = $disposals_worksheet->getCell($cells['ACTION'])->getValue();
-                $subject = $disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
+                $protocol = (string)$disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
+                $action = (string)$disposals_worksheet->getCell($cells['ACTION'])->getValue();
+                $subject = (string)$disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
                 $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
+                $localdir_id = self::getDirectorateId($directorate);
 
-                $localdir_dec = new DisposalLocaldirdecision();
-                $localdir_dec->localdirdecision_protocol = (string)$protocol;
-                $localdir_dec->localdirdecision_action = (string)$action;
-                $localdir_dec->localdirdecision_subject = (string)$subject;
-                $localdir_dec->directorate_id = self::getDirectorateId($directorate);                
-                $localdir_dec->deleted = 0;
-                $localdir_dec->archived = 0;
-                if(!$localdir_dec->save()) {
-                    throw new Exception("(@localdir_save)");
+                $localdir_dec = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $localdir_id])->one();                
+                if($localdir_dec)
+                    Yii::$app->session->addFlash('info', DisposalModule::t('modules/disposal/app', "The local directorate decision already exists and not change was applied to it."));
+                else {
+                    $localdir_dec = new DisposalLocaldirdecision();
+                    $localdir_dec->localdirdecision_protocol = $protocol;
+                    $localdir_dec->localdirdecision_action = $action;
+                    $localdir_dec->localdirdecision_subject = $subject;
+                    $localdir_dec->directorate_id = $localdir_id;                
+                    $localdir_dec->deleted = 0;
+                    $localdir_dec->archived = 0;
+                    if(!$localdir_dec->save()) {
+                        throw new Exception("(@localdir_save)");
+                    }
                 }
                 
                 foreach ($rowiterator as $row) {

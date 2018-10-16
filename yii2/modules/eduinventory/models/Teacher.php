@@ -1,7 +1,8 @@
 <?php
 
-namespace app\models;
+namespace app\modules\eduinventory\models;
 
+use app\models\Specialisation;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalLedger;
 use app\modules\schooltransport\models\Schoolunit;
