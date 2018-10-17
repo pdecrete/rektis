@@ -96,12 +96,37 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['comments', 'ama', 'efka_facility', 'municipality'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
             [['surname', 'firstname', 'fathername', 'mothername', 'city', 'tax_service', 'bank', 'birthplace'], 'string', 'max' => 100],
-            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
+            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 40],
             [['home_address'], 'string', 'max' => 255],
             [['postal_code'], 'string', 'max' => 10],
             //[['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
             [['identity_number', 'passport_number'], 'string', 'max' => 30],
+            [['identity_number'], 'default', 'value' => function ($model, $attribute) {
+                return $this->passport_number;
+            }], // if no identity card is provided, use the passport if available
+            [['identity_number'], 'filter', 'filter' => function ($value) {
+                // convert all latin-like characters, leave the rest
+                return strtr(mb_strtoupper($value), [
+                    // 'ΓΔΘΛΞΠΣΦΨΩ'
+                    ' ' => '',
+                    '-' => '',
+                    'Α' => 'A',
+                    'Β' => 'B',
+                    'Ε' => 'E',
+                    'Ζ' => 'Z', 
+                    'Η' => 'H',
+                    'Ι' => 'I',
+                    'Κ' => 'K',
+                    'Μ' => 'M',
+                    'Ν' => 'N',
+                    'Ο' => 'O',
+                    'Ρ' => 'P', 
+                    'Τ' => 'T',
+                    'Υ' => 'Y',
+                    'Χ' => 'X'
+                ]);
+            }],
             [['identity_number'], 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['identity-number-pattern']],
             [['iban'], 'string', 'max' => 34],
             [['email'], 'email'],

@@ -10,6 +10,7 @@ use app\modules\SubstituteTeacher\models\TeacherBoard;
 use yii\helpers\VarDumper;
 use yii\widgets\ListView;
 use yii\data\ArrayDataProvider;
+use app\modules\SubstituteTeacher\models\Operation;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\TeacherBoardSearch */
@@ -170,10 +171,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     'teacherRegistry.email',
                     'teacherRegistry.identity_number',
                     'teacherRegistry.birthplace',
-                    'teacherRegistry.birthdate',
+                    [
+                        'attribute' => 'teacherRegistry.birthdate',
+                        'label' => Yii::t('substituteteacher', 'Birth year'),
+                        'format' => ['date', 'php:Y']
+                    ], 
 
                     [
-                        'header' => 'tst',
+                        'header' => Yii::t('substituteteacher', 'Placements'),
                         'value' => function ($model) {
                             if (empty($model->placementTeachers)) {
                                 return null;
@@ -183,9 +188,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     ],
                     [
+                        'attribute' => 'operation_id_search',
                         'label' => Yii::t('substituteteacher', 'Operation'),
+                        'filter' => Operation::defaultSelectables(),
                         'value' => function ($model) {
-//                            $model->position->operation->label
                             if (empty($model->placementTeachers)) {
                                 return null;
                             } else {

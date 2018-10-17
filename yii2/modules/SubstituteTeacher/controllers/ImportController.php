@@ -265,7 +265,7 @@ class ImportController extends Controller
 
         try {
             // decide import data sequencing 
-            $ebp_spec = Specialisation::findOne(['code' => 'ΕΒΠ']);
+            $ebp_spec = Specialisation::findOne(['code' => \Yii::$app->getModule('SubstituteTeacher')->params['ebp-specialisation-code']]);
             if (empty($ebp_spec)) {
                 throw new \Exception(Yii::t('substituteteacher', 'Cannot locate necessary specialisation id.'));
             }
@@ -365,7 +365,7 @@ class ImportController extends Controller
 
                 if (!$registry_teacher->save()) {
                     throw new \Exception(
-                        "An error occured while saving teacher with VAT number {$teacherrowArray[$idnum_column]}" .
+                        "An error occured while saving teacher with VAT number {$teacherrowArray[$idnum_column]}: " .
                         array_reduce(array_values($registry_teacher->getErrors()), function ($c, $v) {
                             return $c . implode(' ', $v) . ' ';
                         }, '')
@@ -616,6 +616,8 @@ class ImportController extends Controller
 
             $data_row = $worksheet->rangeToArray("A{$row_index}:{$highestColumn}{$row_index}");
             $data = array_combine($mapped_fields, $data_row[0]);
+            // normalize key field 
+            $data[$key_field] = str_pad($data[$key_field], 9, '0', STR_PAD_LEFT);
 
             // Check updated teacher for existance; teacher must be fetched either way
             $teacherModel = $teacherYearModel = null;
@@ -644,17 +646,25 @@ class ImportController extends Controller
             array_walk($data, function (&$v, $k) use ($supported_fields_types) {
                 if (array_key_exists($k, $supported_fields_types)) {
                     switch ($supported_fields_types[$k]) {
+                        case 'string':
+                            $v = (string)$v;
+                            break;
                         case 'date':
                             // date: if not empty, try to get standard representation Y-m-d
+                            // check if it has a year only, and produce 01-01-YEAR date
                             $backup_v = $v;
                             $v = trim($v);
                             if (!empty($v)) {
-                                $v = strtotime($v);
+                                $year = intval($v);
+                                if ($year > 1950 && $year < date("Y")) {
+                                    $v = "{$year}-01-01";
+                                }
+                                $v = new \DateTime($v);
                             }
                             if (empty($v)) {
                                 $v = $backup_v;
                             } else {
-                                $v = date('Y-m-d', $v);
+                                $v = $v->format('Y-m-d');;
                             }
                             break;
                         default:
@@ -662,7 +672,7 @@ class ImportController extends Controller
                     }
                 }
             });
-            
+
             // possibly move this to model; set safe attributes for specific batch update scenario and use setAttributes(..., true)
             $yearly_data_base = array_intersect_key($data, array_flip($yearly_mapped_fields));
             $teacher_data = array_diff($data, $yearly_data_base);
@@ -775,7 +785,9 @@ class ImportController extends Controller
         ];
         // for field that need some manipulation 
         $supported_fields_types = [
-            'birthdate' => 'date'
+            'birthdate' => 'date',
+            'mobile_phone' => 'string',
+            'home_phone' => 'string',
         ];
         $baseModel = new TeacherRegistry();
         $baseTeacherModel = new Teacher();
@@ -888,7 +900,12 @@ class ImportController extends Controller
             $cellIterator->setIterateOnlyExistingCells(false);
             $data = [];
             foreach ($cellIterator as $cell) {
-                $data[$this->_column_data_idx['placement-preference'][$cell->getColumn()]] = $cell->getFormattedValue();
+                $cell_column = $cell->getColumn();
+                if (isset($this->_column_data_idx['placement-preference'][$cell_column])) {
+                    $data[$this->_column_data_idx['placement-preference'][$cell->getColumn()]] = $cell->getFormattedValue();
+                } else {
+                    break;
+                }
             }
 
             if (!array_key_exists($data['vat_number'], $vat_numbers)) {
@@ -916,7 +933,7 @@ class ImportController extends Controller
                 'year' => $year
             ]);
             if (empty($teacher)) {
-                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'y' => $year]);
+                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} ({vat}) entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'vat' => $data['vat_number'], 'y' => $year]);
                 if (count($errors) >= $stop_at_errorcount) {
                     break;
                 }
@@ -926,10 +943,14 @@ class ImportController extends Controller
         if (empty($errors)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                // find teacher ids
+                // find teacher ids; filter by year and specialisation
                 $year_teacher_info = Teacher::find()
-                    ->select(['id', 'registry_id'])
-                    ->andWhere(['year' => $year])
+                    ->joinWith('registry.teacherRegistrySpecialisations')
+                    ->select([Teacher::tableName() . '.id', Teacher::tableName() . '.registry_id'])
+                    ->andWhere([
+                        'year' => $year,
+                        TeacherRegistrySpecialisation::tableName() . '.specialisation_id' => $specialisation_id
+                    ])
                     ->asArray()
                     ->all();
                 $year_teacher_ids = [];
@@ -960,7 +981,6 @@ class ImportController extends Controller
             $never_mind = array_walk($errors, function ($v, $k) {
                 \Yii::$app->session->addFlash('danger', $v);
             });
-            \Yii::$app->session->addFlash('danger', 'ccccccc');
         }
 
         return empty($errors);
@@ -1390,7 +1410,7 @@ class ImportController extends Controller
                     $data_key = $attribute_map[$cell_column];
                     $$data_key = BaseImportModel::getCalculatedValue($cell);
                     if ($data_key == 'vat_number') {
-                        $vat_numbers[] = BaseImportModel::getCalculatedValue($cell);
+                        $vat_numbers[] = str_pad(BaseImportModel::getCalculatedValue($cell), 9, '0', STR_PAD_LEFT);
                     } elseif ($data_key == 'placement_preferences') {
                         // no need to check ordering because it is created by the import process...
                         // check validity of selections though

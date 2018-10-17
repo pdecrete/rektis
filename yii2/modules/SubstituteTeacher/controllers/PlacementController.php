@@ -122,9 +122,10 @@ class PlacementController extends Controller
                 // get information for placement
                 $model->teacher_board_id = $teacher_board->id;
                 $model->placement_id = $placement_id;
-                $model->deleted = false;
+                $model->dismissed = false;
                 $model->altered = false;
-
+                $model->cancelled = false;
+    
                 if (!$model->save()) {
                     $transaction->rollBack();
                     Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There was an error creating the teacher placement.'));
@@ -134,6 +135,7 @@ class PlacementController extends Controller
                 } else {
                     $model->refresh();
                     $saved_positions = true;
+                    $saved_positions_info = [];
                     foreach ($call_positions as $call_position) {
                         $placement_position_model = new PlacementPosition;
                         $placement_position_model->placement_teacher_id = $model->id;
@@ -148,6 +150,9 @@ class PlacementController extends Controller
                                 return $c . implode(' ', $v) . ' ';
                             }, ''));
                             break;
+                        } else {
+                            $placement_position_model->refresh();
+                            $saved_positions_info[] = $placement_position_model->getAttributes();
                         }
                     }
 
@@ -160,6 +165,14 @@ class PlacementController extends Controller
                         } else {
                             $transaction->commit();
                             Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement completed successfully.'));
+                            $teacher_board->teacher->audit('Τοποθέτηση αναπληρωτή από αίτηση', [
+                                'application' => $application_id,
+                                'placement' => $placement_id,
+                                'call_position_id' => $call_position_id,
+                                'call_position_ids' => $call_position_ids,
+                                'PlacementTeacher' => $model->getAttributes(),
+                                'PlacementPosition' => $saved_positions_info
+                            ]);
                         }
                     }
                 }

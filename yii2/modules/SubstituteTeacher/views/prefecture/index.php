@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'region',
             'prefecture',
+            'symbol',
             [
                 'class' => FilterActionColumn::className(),
                 'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,

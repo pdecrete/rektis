@@ -45,7 +45,8 @@ class SchoolunitSearch extends Schoolunit
         $query = (new \yii\db\Query())
                     ->select($tblprefix . 'schoolunit.*,' . $tblprefix . 'directorate.*')
                     ->from($tblprefix . 'schoolunit,' . $tblprefix . 'directorate')
-                    ->where($tblprefix . 'schoolunit.directorate_id =' . $tblprefix . 'directorate.directorate_id');
+                    ->where($tblprefix . 'schoolunit.school_state=1') /*Show only the ACTIVE schools*/
+                    ->andWhere($tblprefix . 'schoolunit.directorate_id =' . $tblprefix . 'directorate.directorate_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

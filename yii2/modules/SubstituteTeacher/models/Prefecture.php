@@ -39,6 +39,7 @@ class Prefecture extends \yii\db\ActiveRecord
             [['prefecture'], 'required'],
             [['region', 'prefecture'], 'string', 'max' => 150],
             [['prefecture'], 'unique'],
+            [['symbol'], 'unique']
         ];
     }
 
@@ -52,6 +53,7 @@ class Prefecture extends \yii\db\ActiveRecord
             'region' => Yii::t('substituteteacher', 'Region'),
             'prefecture' => Yii::t('substituteteacher', 'Prefecture'),
             'label' => Yii::t('substituteteacher', 'Prefecture label'),
+            'symbol' => Yii::t('substituteteacher', 'Prefecture 1-letter symbol'),
         ];
     }
 

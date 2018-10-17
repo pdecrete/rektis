@@ -54,7 +54,6 @@ class PlacementTeacher extends \yii\db\ActiveRecord
             [['dismissed_ada', 'cancelled_ada'], 'string', 'max' => 200],
             [['dismissed_ada', 'cancelled_ada'], 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['ada-validate-pattern']],
             [['altered', 'dismissed', 'cancelled'], 'boolean'],
-            [['altered', 'dismissed', 'cancelled'], 'filter', 'filter' => 'intval'],
             [['teacher_board_id'], 'required'],
             ['teacher_board_id', 'validateTeacherStatus', 'except' => self::SCENARIO_UPDATE],
             [['comments'], 'default', 'value' => ''],
@@ -62,6 +61,7 @@ class PlacementTeacher extends \yii\db\ActiveRecord
             [['placement_id'], 'exist', 'skipOnError' => true, 'targetClass' => Placement::className(), 'targetAttribute' => ['placement_id' => 'id']],
             [['teacher_board_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherBoard::className(), 'targetAttribute' => ['teacher_board_id' => 'id']],
             [['contract_start_date', 'contract_end_date', 'service_start_date', 'service_end_date'], 'date', 'format' => 'php:Y-m-d'],
+            [['altered', 'dismissed', 'cancelled', 'placement_id', 'teacher_board_id'], 'filter', 'filter' => 'intval'],
         ];
     }
 

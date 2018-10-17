@@ -7,6 +7,7 @@ use app\modules\SubstituteTeacher\models\Teacher;
 use kartik\select2\Select2;
 use yii\bootstrap\ButtonDropdown;
 use app\components\FilterActionColumn;
+use app\modules\SubstituteTeacher\models\Specialisation;
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
 
@@ -81,11 +82,31 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'registry_id',
                 'label' => Yii::t('substituteteacher', 'Teacher'),
-                'value' => 'registry.name',
+                'value' => function ($model) {
+                    return Html::a(Html::icon('user'), ['teacher-registry/view', 'id' => $model->registry_id], ['class' => 'btn btn-xs btn-default', 'title' => Yii::t('substituteteacher', 'View registry entry')]) . ' ' . $model->registry->name;
+                },
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'registry_id',
                     'data' => TeacherRegistry::selectables('id', 'name'),
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                    'options' => ['placeholder' => '...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ]),
+                'format' => 'html'
+            ],
+            [
+                'attribute' => 'specialisation_id',
+                'label' => Yii::t('substituteteacher', 'Specialisation'),
+                'value' => function ($m) {
+                    $all_labels = $m->registry->specialisation_labels;
+                    return empty($all_labels) ? null : implode('<br/>', $all_labels);
+                },
+                'format' => 'html',
+                'filter' => Select2::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'specialisation_id',
+                    'data' => Specialisation::selectables(),
                     'theme' => Select2::THEME_BOOTSTRAP,
                     'options' => ['placeholder' => '...'],
                     'pluginOptions' => ['allowClear' => true],
