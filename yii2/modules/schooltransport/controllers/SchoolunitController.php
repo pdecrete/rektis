@@ -195,9 +195,11 @@ class SchoolunitController extends Controller
                     $school_model->school_id = $school->mm_id;
                     $school_model->school_name = $school->name;
                     $school_model->school_state = $school->state_id;
+                    $school_model->school_mineducode = $school->registry_no;
                 } else {
                     $school_model->school_name = $school->name;
                     $school_model->school_state = $school->state_id;
+                    $school_model->school_mineducode = $school->registry_no;
                 }
 
                 if (!$school_model->save()) {
@@ -228,9 +230,11 @@ class SchoolunitController extends Controller
                         $school_model->school_id = $school->mm_id;
                         $school_model->school_name = $school->name;
                         $school_model->school_state = $school->state_id;
+                        $school_model->school_mineducode = $school->registry_no;
                     } else {
                         $school_model->school_name = $school->name;
                         $school_model->school_state = $school->state_id;
+                        $school_model->school_mineducode = $school->registry_no;
                     }
 
                     if (!$school_model->save()) {
