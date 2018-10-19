@@ -164,11 +164,12 @@ class TeacherController extends Controller
     
     public function actionImport() {
         /*From param file:
-         *  'teachersimport_excelfile_columns' => [  'AM' => 1, 'GENDER' => '3', 'SURNAME' => 4, 'NAME' => 5, 'FATHERNAME' => 6, 'MOTHERNAME' => 7, 'SPECIALISATION' => 14, 'ORGANIC_SCHOOL' => 14]  
+         *  'teachersimport_excelfile_columns' => [  'AM' => 1, 'GENDER' => '3', 'SURNAME' => 4, 'NAME' => 5, 'FATHERNAME' => 6, 'MOTHERNAME' => 7, 'SPECIALISATION' => 14, 'ORGANIC_SCHOOL' => 35]  
          */
+        
         $teachers_columns = Yii::$app->controller->module->params['teachersimport_excelfile_columns'];
         
-        $base_disposalsdata_row = 9;
+        $base_disposalsdata_row = 2;
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $import_model = new FileImport();
@@ -183,7 +184,8 @@ class TeacherController extends Controller
                     throw new Exception("(@import)");
                 }
                 
-                $teachers_worksheet = $spreadsheet->getSheet(0);                
+                $teachers_worksheet = $spreadsheet->getSheet(0);
+                $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
                     
                 foreach ($rowiterator as $row) {
                     $currentrow_index = $row->getRowIndex();
@@ -213,6 +215,9 @@ class TeacherController extends Controller
                         if(!$teacher_model->save(true)) {
                             throw new Exception("(@teacher_save)");
                         }
+                    }
+                    else {
+                        
                     }
                 }
         

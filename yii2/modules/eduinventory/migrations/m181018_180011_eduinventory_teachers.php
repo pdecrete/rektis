@@ -3,7 +3,7 @@
 use yii\db\Migration;
 use yii\helpers\Console;
 
-class m181016_080011_eduinventory_teachers extends Migration
+class m181018_180011_eduinventory_teachers extends Migration
 {
     public function safeUp()
     {

@@ -2,13 +2,9 @@
 
 return [
     'params' => [
-        'disposal_telephone' => '2810-',
-        'disposal_templatepath' => '@vendor/admapp/resources/disposals/',
-        'disposal_exportfolder' => '@vendor/admapp/exports/disposals/',
-        'disposal_uploadfolder' => '@vendor/admapp/uploads/disposals/',
-        'disposal_importfolder' => '@vendor/admapp/uploads/disposals/imports/',
-        'disposal_fax' => '2810-',
-        'teachyear_enddate_primary' => '21-6',
-        'teachyear_enddate_secondary' => '30-6',
+        'eduinventory_uploadfolder' => '@vendor/admapp/uploads/eduinventory/',
+        'eduinventory_importfolder' => '@vendor/admapp/uploads/eduinventory/imports/',
+        
+        'teachersimport_excelfile_columns' => [  'AM' => 1, 'GENDER' => '3', 'SURNAME' => 4, 'NAME' => 5, 'FATHERNAME' => 6, 'MOTHERNAME' => 7, 'SPECIALISATION' => 14, 'ORGANIC_SCHOOL' => 14],
     ]
 ];
