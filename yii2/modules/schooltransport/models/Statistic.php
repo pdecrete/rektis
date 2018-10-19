@@ -287,7 +287,7 @@ class Statistic extends Model
      *
      * @param string $andWhereCondition
      */
-    protected function countTransports(string $andWhereCondition)
+    protected function countTransports($andWhereCondition)
     {
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'schtransport_transport';

@@ -17,6 +17,7 @@ use yii\db\Expression;
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
 use app\modules\SubstituteTeacher\models\PlacementPrint;
+use app\modules\SubstituteTeacher\models\TeacherBoard;
 
 /**
  * PlacementTeacherController implements the CRUD actions for PlacementTeacher model.
@@ -34,14 +35,15 @@ class PlacementTeacherController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'alter' => ['POST'],
-                    'download-document' => ['POST'],
+                    'dismiss' => ['POST'],
+                    'cancel' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'download-summary', 'download-contract'],
+                        'actions' => ['index', 'view', 'create', 'update', 'alter', 'dismiss', 'cancel'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -95,7 +97,7 @@ class PlacementTeacherController extends Controller
         $model = $this->findModel($id);
         $teacher_board = $model->teacherBoard;
         $model->altered = true;
-        $model->altered_at = new  Expression('CURRENT_TIMESTAMP()');
+        $model->altered_at = new Expression('CURRENT_TIMESTAMP()');
 
         if (!$model->save(false, ['altered', 'altered_at'])) {
             $transaction->rollBack();
@@ -108,6 +110,11 @@ class PlacementTeacherController extends Controller
                 Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
             } else {
                 $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως τροποποιημένης', [
+                    'PlacementTeacher' => $model->getAttributes(['altered', 'altered_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as altered.'));
             }
         }
@@ -116,9 +123,9 @@ class PlacementTeacherController extends Controller
     }
 
     /**
-     * Deletes an existing PlacementTeacher model.
+     * Permanenlty deletes an existing PlacementTeacher model.
      * Also marks the teacher board as TEACHER_STATUS_ELIGIBLE.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * 
      * @param integer $id
      * @return mixed
      */
@@ -128,10 +135,14 @@ class PlacementTeacherController extends Controller
 
         $model = $this->findModel($id);
         $teacher_board = $model->teacherBoard;
-        $model->deleted = true;
-        $model->deleted_at = new  Expression('CURRENT_TIMESTAMP()');
 
-        if (!$model->save(false, ['deleted', 'deleted_at'])) {
+        $deleted = false;
+        try {
+            $deleted = $model->delete(); // TODO handle yii\db\IntegrityException
+        } catch (\Exception $ex) {
+            $deleted = false;
+        }
+        if ($deleted === false) {
             $transaction->rollBack();
             Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as deleted.'));
         } else {
@@ -143,6 +154,85 @@ class PlacementTeacherController extends Controller
             } else {
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as deleted.'));
+                $teacher_board->teacher->audit('Διαγραφή τοποθέτησης αναπληρωτή', $model->getAttributes());
+            }
+        }
+
+        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+    }
+
+    /**
+     * Marks the teacher as dismisssed and updates the existing PlacementTeacher model.
+     * Also marks the teacher board as TEACHER_STATUS_DISMISSES.
+     * 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDismiss($id)
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+
+        $model = $this->findModel($id);
+        $teacher_board = $model->teacherBoard;
+        $model->dismissed = true;
+        $model->dismissed_at = new  Expression('CURRENT_TIMESTAMP()');
+
+        if (!$model->save(false, ['dismissed', 'dismissed_at'])) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as dismissed.'));
+        } else {
+            // mark teacher as eligible again
+            $teacher_board->status = Teacher::TEACHER_STATUS_DISMISSED;
+            if (!$teacher_board->save(false, ['status'])) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+            } else {
+                $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως απολυμένου αναπληρωτή', [
+                    'PlacementTeacher' => $model->getAttributes(['dismissed', 'dismissed_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
+                Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as dismissed.'));
+            }
+        }
+
+        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+    }
+
+    /**
+     * Marks the teacher as cancelled and updates the existing PlacementTeacher model.
+     * Also marks the teacher board as TEACHER_STATUS_CANCELLED.
+     * 
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionCancel($id)
+    {
+        $transaction = \Yii::$app->db->beginTransaction();
+
+        $model = $this->findModel($id);
+        $teacher_board = $model->teacherBoard;
+        $model->cancelled = true;
+        $model->cancelled_at = new  Expression('CURRENT_TIMESTAMP()');
+
+        if (!$model->save(false, ['cancelled', 'cancelled_at'])) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Placement could not be marked as cancelled.'));
+        } else {
+            // mark teacher as eligible again
+            $teacher_board->status = Teacher::TEACHER_STATUS_CANCELLED;
+            if (!$teacher_board->save(false, ['status'])) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'Teacher status could not be updated.'));
+            } else {
+                $transaction->commit();
+                $model->refresh();
+                $teacher_board->teacher->audit('Σήμανση τοποθέτησης ως ανακλημένης', [
+                    'PlacementTeacher' => $model->getAttributes(['cancelled', 'cancelled_at']),
+                    'TeacherBoard' => $teacher_board->getAttributes(['id', 'status'])
+                ]);
+                Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement has been marked as cancelled.'));
             }
         }
 
@@ -164,8 +254,9 @@ class PlacementTeacherController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             // this enables the placement_id to change too but that's ok
-            $model->deleted = false;
+            $model->dismissed = false;
             $model->altered = false;
+            $model->cancelled = false;
 
             $post = \Yii::$app->request->post();
 
@@ -176,6 +267,10 @@ class PlacementTeacherController extends Controller
             Model::loadMultiple($modelsPlacementPositions, Yii::$app->request->post());
 
             $valid = $model->validate() && count($modelsPlacementPositions) > 0;
+            $audit_info = [
+                'teacher_board_id' => $model->teacher_board_id, 
+                'placement_id' => $model->placement_id
+            ];
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -187,6 +282,7 @@ class PlacementTeacherController extends Controller
                         $teacher_board = $model->teacherBoard;
                         $teacher_board->status = Teacher::TEACHER_STATUS_APPOINTED;
                         if ($flag = $teacher_board->save()) {
+                            $audit_info['TeacherBoard'] = $teacher_board->getAttributes(['id', 'status']);
                             // save placement positions
                             $id = $model->id;
                             array_walk($modelsPlacementPositions, function ($m) use ($id) {
@@ -194,11 +290,13 @@ class PlacementTeacherController extends Controller
                             });
 
                             if ($flag = Model::validateMultiple($modelsPlacementPositions)) {
+                                $audit_info['PlacementPositionSaved'] = 0;
                                 foreach ($modelsPlacementPositions as $modelPlacementPosition) {
                                     if (! ($flag = $modelPlacementPosition->save())) {
                                         $transaction->rollBack();
                                         break;
                                     }
+                                    $audit_info['PlacementPositionSaved']++;
                                 }
                             }
                         }
@@ -206,6 +304,7 @@ class PlacementTeacherController extends Controller
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Teacher placement created successfully.'));
+                        $model->teacherBoard->teacher->audit('Καταχώρηση τοποθέτησης αναπληρωτή', $audit_info);
                         return $this->redirect(['placement/view', 'id' => $model->placement_id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));
@@ -228,7 +327,6 @@ class PlacementTeacherController extends Controller
     }
 
     /**
-     * Updates an existing Placement model. The teacher board should not be altered.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -255,26 +353,31 @@ class PlacementTeacherController extends Controller
             });
 
             $valid = $model->validate();
+            $changed = $model->getDirtyAttributes();
             $valid = Model::validateMultiple($modelsPlacementPositions) && $valid;
 
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if ($flag = $model->save(false)) { // validated beforehand
+                        $changed['PlacementPositionDeleted'] = 0;
+                        $changed['PlacementPositionSaved'] = 0;
                         if (! empty($deletedIDs)) {
-                            PlacementPosition::deleteAll(['id' => $deletedIDs]);
+                            $changed['PlacementPositionDeleted'] = PlacementPosition::deleteAll(['id' => $deletedIDs]);
                         }
                         foreach ($modelsPlacementPositions as $modelPlacementPosition) {
                             if (! ($flag = $modelPlacementPosition->save(false))) {
                                 $transaction->rollBack();
                                 break;
                             }
+                            $changed['PlacementPositionSaved']++;
                         }
                     }
                     if ($flag) {
                         $transaction->commit();
                         Yii::$app->session->setFlash('success', Yii::t('substituteteacher', 'Placement updated successfully.'));
-                        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
+                        $model->teacherBoard->teacher->audit('Ενημέρωση τοποθέτησης αναπληρωτή', $changed);
+                        return $this->redirect(['view', 'id' => $model->id]);
                     } else {
                         Yii::$app->session->setFlash('danger', Html::errorSummary($modelsPlacementPositions));
                     }
@@ -292,45 +395,6 @@ class PlacementTeacherController extends Controller
             'model' => $model,
             'modelsPlacementPositions' => $modelsPlacementPositions ? $modelsPlacementPositions : [ new PlacementPosition]
         ]);
-    }
-
-    public function actionDownloadSummary($id)
-    {
-        return $this->downloadDocument($id, 'summary');
-    }
-
-    public function actionDownloadContract($id)
-    {
-        return $this->downloadDocument($id, 'contract');
-    }
-
-    protected function downloadDocument($id, $type)
-    {
-        $model = $this->findModel($id);
-        if ($model->deleted || $model->altered) {
-            throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested placement is either deleted or altered.'));
-        }
-
-        if (($prints = $model->prints) != null) {
-            $applicable_prints = array_filter($prints, function ($m) use ($type) {
-                return $m->type === $type;
-            });
-            if (count($applicable_prints) == 1) {
-                $print = reset($applicable_prints);
-                $download_filename = PlacementPrint::getFilenameAbspath($print->filename, 'export');
-                if (is_file($download_filename) && is_readable($download_filename)) {
-                    Yii::$app->response->sendFile($download_filename);
-                    Yii::$app->end();
-                } else {
-                    Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'The placement document does not exist or it is not readable.'));
-                }
-            } else {
-                Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'There are {d} printed placement documents.', ['d' => count($applicable_prints)]));
-            }
-        } else {
-            Yii::$app->session->setFlash('danger', Yii::t('substituteteacher', 'No placement documents have been printed.'));
-        }
-        return $this->redirect(['placement/view', 'id' => $model->placement_id]);
     }
 
     /**

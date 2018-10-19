@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PrefectureSearch */
@@ -27,8 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'region',
             'prefecture',
+            'symbol',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
                 'template' => '{update} {delete}'
             ],
         ],

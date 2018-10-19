@@ -3,6 +3,10 @@
 namespace app\modules\SubstituteTeacher\models;
 
 use Yii;
+use yii\helpers\Json;
+use yii\db\Expression;
+use yii\base\UserException;
+use yii\base\InvalidArgumentException;
 
 /**
  * This is the model class for table "{{%stteacher_status_audit}}".
@@ -10,12 +14,18 @@ use Yii;
  * @property integer $id
  * @property integer $teacher_id
  * @property integer $status
- * @property string $status_ts
+ * @property string $audit_ts
+ * @property string $audit
+ * @property string $data
+ * @property string $actor
+ * @property array $data_parsed php assoc array of data
  *
  * @property Teacher $teacher
  */
 class TeacherStatusAudit extends \yii\db\ActiveRecord
 {
+    public $data_parsed;
+
     /**
      * @inheritdoc
      */
@@ -31,7 +41,9 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
     {
         return [
             [['teacher_id', 'status'], 'integer'],
-            [['status_ts'], 'safe'],
+            [['audit_ts'], 'safe'],
+            [['data'], 'string'],
+            [['audit'], 'string', 'max' => 80],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'id']],
         ];
     }
@@ -43,9 +55,12 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('substituteteacher', 'ID'),
+            'actor' => Yii::t('substituteteacher', 'Audit actor'),
             'teacher_id' => Yii::t('substituteteacher', 'Teacher ID'),
             'status' => Yii::t('substituteteacher', 'Status'),
-            'status_ts' => Yii::t('substituteteacher', 'Status Ts'),
+            'audit_ts' => Yii::t('substituteteacher', 'Audit Ts'),
+            'audit' => Yii::t('substituteteacher', 'Audit'),
+            'data' => Yii::t('substituteteacher', 'Data'),
         ];
     }
 
@@ -55,6 +70,71 @@ class TeacherStatusAudit extends \yii\db\ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::className(), ['id' => 'teacher_id']);
+    }
+
+    /** 
+     * Record teacher status change or audit everything...
+     * 
+     * @param int $teacher_id 
+     * @param int $status current teacher status  
+     * @param int $audit message a short explanatory text message 
+     * @param int $audit_relevant_data an array containing relevant information
+     * 
+     * @return TeacherStatusAudit On succes the generated audit entry is returned 
+     * @throws yii\base\UserException
+     */
+    public static function audit($teacher_id, $status, $audit_message, $audit_relevant_data) 
+    {
+        $audit = new TeacherStatusAudit();
+        $audit->teacher_id = $teacher_id;
+        $audit->status = $status;
+        $audit->audit = $audit_message;
+        if (empty($audit_relevant_data)) {
+            $audit->data = null;
+        } else {
+            $audit->data = Json::encode($audit_relevant_data);
+        }
+        $audit->audit_ts = new Expression('NOW()');
+        if ($audit->save()) {
+            return $audit;
+        } else {
+            throw new UserException("Error auditing user event"); // TODO log this 
+        }
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($insert) { // set on creation 
+            $user = \Yii::$app->has('user', true) ? Yii::$app->get('user') : null;
+            if (empty($user)) {
+                $this->actor = 'UNKNOWN';
+            } else {
+                $this->actor = "user ";
+                if ($identity = $user->getIdentity(false)) {
+                    $this->actor .= $identity->getId() . " " . $identity->username;
+                }
+            }
+        }
+        return true;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        if (empty($this->data)) {
+            $this->data_parsed = null;
+        } else {
+            try {
+                $this->data_parsed = Json::decode($this->data);
+            } catch (InvalidArgumentException $ex) {
+                $this->data_parsed = ['UNABLE TO PARSE' => $this->data];
+            }
+        }
     }
 
     /**

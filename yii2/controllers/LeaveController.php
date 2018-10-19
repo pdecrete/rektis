@@ -35,14 +35,14 @@ class LeaveController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
+                    // [
+                    //     'actions' => ['index', 'view', 'download'],
+                    //     'allow' => true,
+                    //     'roles' => ['@'],
+                    // ],
                     [
-                        'actions' => ['index', 'view', 'download'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['admin', 'user', 'leave_user'],
+                        'roles' => ['admin', 'leave_user'],
                     ],
                 ],
             ],

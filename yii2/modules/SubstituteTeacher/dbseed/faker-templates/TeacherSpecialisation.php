@@ -16,7 +16,7 @@ $pe2500id = \Yii::$app->cache->getOrSet('pe2500id', function () {
 });
 
 $ebpid = \Yii::$app->cache->getOrSet('ebpid', function () {
-    $ebpid_model = Specialisation::findOne(['code' => 'ΕΒΠ']);
+    $ebpid_model = Specialisation::findOne(['code' => 'ΔΕ1']);
     return $ebpid_model->id;
 });
 

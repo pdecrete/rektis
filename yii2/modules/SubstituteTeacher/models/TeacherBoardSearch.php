@@ -12,6 +12,7 @@ use yii\data\ActiveDataProvider;
 class TeacherBoardSearch extends TeacherBoard
 {
     public $year; // to filter teachers by year
+    public $operation_id_search;
 
     /**
      * @inheritdoc
@@ -19,7 +20,7 @@ class TeacherBoardSearch extends TeacherBoard
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year', 'status'], 'integer'],
+            [['id', 'teacher_id', 'specialisation_id', 'board_type', 'order', 'year', 'status', 'operation_id_search'], 'integer'],
             [['points'], 'number'],
         ];
     }
@@ -34,6 +35,16 @@ class TeacherBoardSearch extends TeacherBoard
     }
 
     /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'operation_id_search' => Yii::t('substituteteacher', 'Operation'),
+        ]);
+    }
+
+    /**
      * Creates data provider instance with search query applied
      *
      * @param array $params
@@ -43,10 +54,22 @@ class TeacherBoardSearch extends TeacherBoard
     public function search($params)
     {
         $query = TeacherBoard::find()
+            ->with('teacherRegistry')
             ->joinWith('teacher');
 
+        $this->load($params);
         // add conditions that should always apply here
 
+        if (!empty($this->operation_id_search)) {
+            // TODO perhaps convert this to an exists subquery
+            $query = $query->joinWith([
+                'teacher', 
+                'placementTeachers',
+                'placementTeachers.placementPositions',
+                'placementTeachers.placementPositions.position',
+                'placementTeachers.placementPositions.position.operation',
+            ]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -56,8 +79,6 @@ class TeacherBoardSearch extends TeacherBoard
             'asc' => ['{{%stteacher}}.year' => SORT_ASC],
             'desc' => ['{{%stteacher}}.year' => SORT_DESC],
         ];
-
-        $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -69,12 +90,13 @@ class TeacherBoardSearch extends TeacherBoard
         $query->andFilterWhere([
             'id' => $this->id,
             'teacher_id' => $this->teacher_id,
-            'specialisation_id' => $this->specialisation_id,
+            '{{%stteacher_board}}.specialisation_id' => $this->specialisation_id,
             'board_type' => $this->board_type,
             'points' => $this->points,
             'order' => $this->order,
             '{{%stteacher_board}}.status' => $this->status,
             '{{%stteacher}}.year' => $this->year,
+            '{{%stoperation}}.id' => $this->operation_id_search,
         ]);
 
         return $dataProvider;

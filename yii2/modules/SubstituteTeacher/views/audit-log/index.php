@@ -3,6 +3,7 @@
 use yii\bootstrap\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\AuditLog;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\AuditLogSearch */
@@ -49,7 +50,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             // 'message:ntext',
             [
-                'class' => 'yii\grid\ActionColumn',
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+                'contentOptions' => [
+                    'class' => 'text-center',
+                ],
                 'template' => '{view}'
             ],
         ],

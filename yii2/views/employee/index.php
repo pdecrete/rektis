@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EmployeeSearch */
@@ -64,57 +65,63 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($data) {
                     return yii\helpers\Html::a($data['name'], ['employee/view', 'id' => $data['id']]);
                 }
-                    ],
-                    [
-                        'attribute' => 'surname',
-                        'label' => Yii::t('app', 'Surname'),
-                        'format' => 'raw',
-                        'value' => function($data) {
-                            return yii\helpers\Html::a($data['surname'], ['employee/view', 'id' => $data['id']]);
-                        }
-                            ],
-                            // 'fathersname',
-                            // 'mothersname',
-                            // 'email:email',
-                            // 'telephone',
-                            // 'address',
-                            // 'identity_number',
-                            // 'social_security_number',
-                            [
-                                'attribute' => 'specialisation',
-                                'label' => Yii::t('app', 'Specialisation'),
-                                'value' => 'specialisation0.code',
-                                'contentOptions' => ['style' => 'width: 5%']
-                            ],
-                            // 'appointment_fek',
-                            // 'appointment_date',
-                            [
-                                'attribute' => 'service_organic',
-                                'label' => Yii::t('app', 'Service Organic'),
-                                'value' => 'serviceOrganic.name'
-                            ],
-                            [
-                                'attribute' => 'service_serve',
-                                'label' => Yii::t('app', 'Service Serve'),
-                                'value' => 'serviceServe.name'
-                            ],
-                            // 'service_serve',
-                            // 'position',
-                            // 'rank',
-                            // 'rank_date',
-                            // 'pay_scale',
-                            // 'pay_scale_date',
-                            // 'service_adoption',
-                            // 'service_adoption_date',
-                            // 'master_degree',
-                            // 'doctorate_degree',
-                            // 'work_experience',
-                            // 'comments:ntext',
-                            // 'create_ts',
-                            // 'update_ts',
-                            ['class' => 'yii\grid\ActionColumn'],
-                        ],
-                    ]);
-                    ?>
-
+            ],
+            [
+                'attribute' => 'surname',
+                'label' => Yii::t('app', 'Surname'),
+                'format' => 'raw',
+                'value' => function($data) {
+                    return yii\helpers\Html::a($data['surname'], ['employee/view', 'id' => $data['id']]);
+                }
+            ],
+            // 'fathersname',
+            // 'mothersname',
+            // 'email:email',
+            // 'telephone',
+            // 'address',
+            // 'identity_number',
+            // 'social_security_number',
+            [
+                'attribute' => 'specialisation',
+                'label' => Yii::t('app', 'Specialisation'),
+                'value' => 'specialisation0.code',
+                'contentOptions' => ['style' => 'width: 5%']
+            ],
+            // 'appointment_fek',
+            // 'appointment_date',
+            [
+                'attribute' => 'service_organic',
+                'label' => Yii::t('app', 'Service Organic'),
+                'value' => 'serviceOrganic.name'
+            ],
+            [
+                'attribute' => 'service_serve',
+                'label' => Yii::t('app', 'Service Serve'),
+                'value' => 'serviceServe.name'
+            ],
+            // 'service_serve',
+            // 'position',
+            // 'rank',
+            // 'rank_date',
+            // 'pay_scale',
+            // 'pay_scale_date',
+            // 'service_adoption',
+            // 'service_adoption_date',
+            // 'master_degree',
+            // 'doctorate_degree',
+            // 'work_experience',
+            // 'comments:ntext',
+            // 'create_ts',
+            // 'update_ts',
+            [
+                'class' => FilterActionColumn::className(),
+                'filter' => FilterActionColumn::LINK_INDEX_CONFIRM,
+                'filterConfirmMessage' => 'Επαναφορά ταξινόμησης και φίλτρων αναζήτησης;',
+                'contentOptions' => [
+                    'class' => 'text-center text-nowrap'
+                ],
+            ],
+        ],
+    ]);
+    ?>
 </div>

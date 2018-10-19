@@ -16,6 +16,7 @@ class TeacherRegistryQuery extends \yii\db\ActiveQuery
      */
     public function all($db = null)
     {
+        $this->with(['specialisations']);
         return parent::all($db);
     }
 

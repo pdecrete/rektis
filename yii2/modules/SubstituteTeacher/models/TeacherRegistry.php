@@ -45,7 +45,9 @@ use yii\db\Expression;
  * @property string $efka_facility
  * @property string $municipality
  * @property string $created_at
- * @property string $updated_at
+ * @property string $updated_at 
+ * @property string $passport_number
+
  *
  * @property Teacher[] $teachers
  * @property Specialisation[] $specialisations
@@ -94,15 +96,41 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             [['comments', 'ama', 'efka_facility', 'municipality'], 'string'],
             [['gender', 'marital_status'], 'string', 'max' => 1],
             [['surname', 'firstname', 'fathername', 'mothername', 'city', 'tax_service', 'bank', 'birthplace'], 'string', 'max' => 100],
-            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 20],
+            [['mobile_phone', 'home_phone', 'work_phone'], 'string', 'max' => 40],
             [['home_address'], 'string', 'max' => 255],
             [['postal_code'], 'string', 'max' => 10],
             [['social_security_number'], 'match', 'pattern' => '/^[0-9]{11}$/'],
             [['tax_identification_number'], 'match', 'pattern' => '/^[0-9]{9}$/'],
-            [['identity_number'], 'string', 'max' => 30],
+            [['identity_number', 'passport_number'], 'string', 'max' => 30],
+            [['identity_number'], 'default', 'value' => function ($model, $attribute) {
+                return $this->passport_number;
+            }], // if no identity card is provided, use the passport if available
+            [['identity_number'], 'filter', 'filter' => function ($value) {
+                // convert all latin-like characters, leave the rest
+                return strtr(mb_strtoupper($value), [
+                    // 'ΓΔΘΛΞΠΣΦΨΩ'
+                    ' ' => '',
+                    '-' => '',
+                    'Α' => 'A',
+                    'Β' => 'B',
+                    'Ε' => 'E',
+                    'Ζ' => 'Z', 
+                    'Η' => 'H',
+                    'Ι' => 'I',
+                    'Κ' => 'K',
+                    'Μ' => 'M',
+                    'Ν' => 'N',
+                    'Ο' => 'O',
+                    'Ρ' => 'P', 
+                    'Τ' => 'T',
+                    'Υ' => 'Y',
+                    'Χ' => 'X'
+                ]);
+            }],
+            [['identity_number'], 'match', 'pattern' => \Yii::$app->getModule('SubstituteTeacher')->params['identity-number-pattern']],
             [['iban'], 'string', 'max' => 34],
             [['email'], 'email'],
-            [['identity_number'], 'unique'],
+            [['identity_number', 'passport_number'], 'unique'],
             [['social_security_number'], 'unique'],
             [['tax_identification_number'], 'unique'],
             [['gender'], 'in', 'range' => [self::GENDER_FEMALE, self::GENDER_MALE, self::GENDER_OTHER]],
@@ -113,9 +141,10 @@ class TeacherRegistry extends \yii\db\ActiveRecord
                 ]
             ],
             [
-                [ 'specialisation_ids', 'firstname', 'surname', 'fathername', 'mothername', 'gender', 'protected_children',
-                  'birthdate', 'birthplace', 'mobile_phone', 'home_address', 'city', 'postal_code',
-                  'tax_identification_number', 'tax_service', 'identity_number' ],
+                [ 'specialisation_ids', //'birthdate', 'gender', 'mothername', 'city', 'tax_service',
+                  //'birthplace', 'mobile_phone', 'home_address', 'postal_code',
+                  'firstname', 'surname', 'fathername', 'protected_children',                  
+                  'tax_identification_number', 'identity_number' ],
                 // [ 'marital_status', 'social_security_number',  'bank', 'iban', 'email' ],
                 'required'
             ],
@@ -181,6 +210,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
             'municipality' => Yii::t('substituteteacher', 'Registration Municipality'),
             'created_at' => Yii::t('substituteteacher', 'Created At'),
             'updated_at' => Yii::t('substituteteacher', 'Updated At'),
+            'passport_number' => Yii::t('substituteteacher', 'Passport Number'),
         ];
     }
 

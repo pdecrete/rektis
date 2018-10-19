@@ -162,7 +162,7 @@ class SchoolunitController extends Controller
                 "pagesize" => 500,
                 "page" => 1,
                 "edu_admin" => null,
-                "state" => 'ΕΝΕΡΓΗ'
+                //"state" => 'ΕΝΕΡΓΗ'
             ];
 
             $curl = curl_init();
@@ -186,7 +186,7 @@ class SchoolunitController extends Controller
                 throw new \Exception(curl_error($curl));
             }
 
-            $school_names = $data->data;
+            $school_names = $data->data;            
             foreach ($school_names as $school) {
                 $school_model = Schoolunit::findOne(['school_id' => $school->mm_id]);
                 if (is_null($school_model)) {
@@ -194,12 +194,16 @@ class SchoolunitController extends Controller
                     $school_model->directorate_id = 53;
                     $school_model->school_id = $school->mm_id;
                     $school_model->school_name = $school->name;
+                    $school_model->school_state = $school->state_id;
+                    $school_model->school_mineducode = $school->registry_no;
                 } else {
                     $school_model->school_name = $school->name;
+                    $school_model->school_state = $school->state_id;
+                    $school_model->school_mineducode = $school->registry_no;
                 }
 
                 if (!$school_model->save()) {
-                    throw new \Exception("PDE schools error.");
+                    //throw new \Exception("PDE schools error.");
                 }
             }
 
@@ -225,8 +229,12 @@ class SchoolunitController extends Controller
                         $school_model->directorate_id = $edu_admin[0];
                         $school_model->school_id = $school->mm_id;
                         $school_model->school_name = $school->name;
+                        $school_model->school_state = $school->state_id;
+                        $school_model->school_mineducode = $school->registry_no;
                     } else {
                         $school_model->school_name = $school->name;
+                        $school_model->school_state = $school->state_id;
+                        $school_model->school_mineducode = $school->registry_no;
                     }
 
                     if (!$school_model->save()) {

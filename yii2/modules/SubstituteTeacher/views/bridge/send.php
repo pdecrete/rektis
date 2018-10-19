@@ -46,9 +46,18 @@ use yii\web\View;
             <th class="col-sm-4">Ζητούμενες προσλήψεις αναπληρωτών</th>
             <td>
                 <?= implode('<br/>', array_map(function ($m) {
-            return "{$m->teachers}, {$m->specialisation->label}";
-        }, $call_model->callTeacherSpecialisations))
-                    ?>
+                    return "{$m->teachers}, {$m->specialisation->label}";
+                }, $call_model->callTeacherSpecialisations))
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <th class="col-sm-4">Ζητούμενες κλήσεις αναπληρωτών</th>
+            <td>
+                <?= implode('<br/>', array_map(function ($m) {
+                    return "{$m->teachers_call}, {$m->specialisation->label}";
+                }, $call_model->callTeacherSpecialisations))
+                ?>
             </td>
         </tr>
         <tr>
@@ -118,10 +127,10 @@ use yii\web\View;
             <td>
                 <?php echo $tc['specialisation']; ?>: αναζητήθηκαν</td>
             <td>
-                <?= $tc['extra_wanted'] ?>
+                <?= $tc['call_wanted'] ?>
             </td>
         </tr>
-        <tr class="<?= intval($tc['available']) < intval($tc['extra_wanted']) ? 'danger' : 'success' ?>">
+        <tr class="<?= intval($tc['available']) < intval($tc['call_wanted']) ? 'danger' : 'success' ?>">
             <td>
                 <?php echo $tc['specialisation']; ?>: εντοπίστηκαν</td>
             <td>

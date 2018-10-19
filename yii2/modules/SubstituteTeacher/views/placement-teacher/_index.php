@@ -1,12 +1,13 @@
 <?php
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 use yii\data\ArrayDataProvider;
+use app\components\FilterActionColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\SubstituteTeacher\models\PlacementSearch */
@@ -17,6 +18,11 @@ use yii\data\ArrayDataProvider;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'rowOptions' => function ($model, $key, $index, $grid) {
+            if (boolval($model->altered) || boolval($model->cancelled) || boolval($model->dismissed))  {
+                return ['class' => 'danger'];
+            }
+        },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -24,21 +30,24 @@ use yii\data\ArrayDataProvider;
             [
                 'attribute' => 'teacher_board_id',
                 'value' => function ($model) {
-                    return $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
+                    return Html::a(Html::icon('user'), ['teacher/view', 'id' => $model->teacherBoard->teacher_id], ['class' => 'btn btn-xs btn-default', 'title' => Yii::t('substituteteacher', 'View teacher entry')]) 
+                        . ' ' . $model->teacherBoard->teacher->name. ', ' . $model->teacherBoard->label;
                 },
-                'filter' => Select2::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'teacher_board_id',
-                    'data' => TeacherBoard::selectablesWithTeacherInfo(),
-                    'theme' => Select2::THEME_BOOTSTRAP,
-                    'options' => ['placeholder' => '...'],
-                    'pluginOptions' => ['allowClear' => true],
-                ]),
+                'filter' => false,
+                // 'filter' => Select2::widget([
+                //     'model' => $searchModel,
+                //     'attribute' => 'teacher_board_id',
+                //     'data' => TeacherBoard::selectablesWithTeacherInfo(),
+                //     'theme' => Select2::THEME_BOOTSTRAP,
+                //     'options' => ['placeholder' => '...'],
+                //     'pluginOptions' => ['allowClear' => true],
+                // ]),
                 'format' => 'html'
             ],
             'comments:ntext',
+            'cancelled:boolean',
             'altered:boolean',
-            'deleted:boolean',
+            'dismissed:boolean',
             // 'created_at',
             // 'updated_at',
 
@@ -54,14 +63,27 @@ use yii\data\ArrayDataProvider;
                 'format' => 'html'
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update} {delete} {alter} {download-summary} {download-contract}',
+                'class' => FilterActionColumn::className(),
+                'filter' => Html::a(Html::icon('repeat'), ['placement/view', 'id' => $placement_model_id], ['class' => 'btn text-warning']),
+                'template' => '{view} {update} {delete}<br>{cancel} {alter} {dismiss} {download-summary} {download-contract}',
                 'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
                     $params = is_array($key) ? $key : ['id' => (string) $key];
                     $params[0] = 'placement-teacher/' . $action;
                     return Url::toRoute($params);
                 },
                 'buttons' => [
+                    'cancel' => function ($url, $model, $key) {
+                        return Html::a(
+                                '<span class="glyphicon glyphicon-remove-circle"></span>',
+                                $url,
+                                [
+                                    'title' => Yii::t('substituteteacher', 'Mark this placement as cancelled'),
+                                    'data-method' => 'post',
+                                    'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as cancelled? You must also update the placement to set the cancel decision number.'),
+                                    'class' => 'text-danger'
+                                ]
+                        );
+                    },
                     'alter' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-erase"></span>',
@@ -74,10 +96,21 @@ use yii\data\ArrayDataProvider;
                                 ]
                         );
                     },
+                    'dismiss' => function ($url, $model, $key) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-ban-circle text-danger"></span>',
+                            $url,
+                            [
+                                'title' => Yii::t('substituteteacher', 'Mark teacher as dismissed.'),
+                                'data-method' => 'post',
+                                'data-confirm' => Yii::t('substituteteacher', 'Are you sure you want to mark this placement as dismissed? You must also update the placement to set the dismiss decision number.')
+                            ]
+                        );
+                    },
                     'download-summary' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download"></span>',
-                                $url,
+                                ['placement/download-summary', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download summary document'),
                                     'data-method' => 'post',
@@ -89,7 +122,7 @@ use yii\data\ArrayDataProvider;
                     'download-contract' => function ($url, $model, $key) {
                         return Html::a(
                                 '<span class="glyphicon glyphicon-download-alt"></span>',
-                                $url,
+                                ['placement/download-contact', 'id' => $model->id],
                                 [
                                     'title' => Yii::t('substituteteacher', 'Download contract document'),
                                     'data-method' => 'post',
@@ -100,11 +133,14 @@ use yii\data\ArrayDataProvider;
                     },
                 ],
                 'visibleButtons' => [
-                    'delete' => function ($model, $key, $index) {
-                        return $model->deleted != true;
+                    'cancel' => function ($model, $key, $index) {
+                        return $model->cancelled != true;
                     },
                     'alter' => function ($model, $key, $index) {
                         return $model->altered != true;
+                    },
+                    'dismiss' => function ($model, $key, $index) {
+                        return $model->altered != true && $model->dismissed != true;
                     },
                     'download-summary' => function ($model, $key, $index) {
                         return !empty($model->summaryPrints);
@@ -114,8 +150,7 @@ use yii\data\ArrayDataProvider;
                     },
                 ],
                 'contentOptions' => [
-                    'class' => 'text-center',
-                    'style' => 'white-space: nowrap'
+                    'class' => 'text-center text-nowrap'
                 ]
             ],
         ],

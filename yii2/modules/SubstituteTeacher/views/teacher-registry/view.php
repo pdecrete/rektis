@@ -5,6 +5,8 @@ use yii\widgets\DetailView;
 use yii\grid\GridView;
 use app\modules\SubstituteTeacher\models\Teacher;
 use yii\data\ArrayDataProvider;
+use yii\grid\ActionColumn;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\SubstituteTeacher\models\TeacherRegistry */
@@ -120,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'columns' => [
                         ['class' => 'yii\grid\SerialColumn'],
 
-                        'id',
+                        // 'id',
                         'year',
                         [
                             'attribute' => 'status',
@@ -152,6 +154,32 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                             'format' => 'html'
                         ],
+
+                        [
+                            'class' => ActionColumn::className(),
+                            'template' => '{view}',
+                            'urlCreator' => function ($action, $model, $key, $index, $actionColumn) {
+                                $params = ['id' => (string) $model->id];
+                                $params[0] = 'teacher/' . $action;
+                                return Url::toRoute($params);
+                            },
+                            'buttons' => [
+                                'view' => function ($url, $model, $key) {
+                                    return Html::a(
+                                            '<span class="glyphicon glyphicon-eye-open"></span>',
+                                            $url,
+                                            [
+                                                'title' => Yii::t('substituteteacher', 'View teacher'),
+                                                'class' => 'btn btn-sm btn-info'
+                                            ]
+                                    );
+                                },
+                            ],
+                            'contentOptions' => [
+                                'class' => 'text-center text-nowrap'
+                            ]
+                        ],
+
                     ],
                 ]); ?>
             </div>

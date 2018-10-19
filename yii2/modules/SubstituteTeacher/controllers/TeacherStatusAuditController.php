@@ -8,6 +8,8 @@ use app\modules\SubstituteTeacher\models\TeacherStatusAuditSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 
 /**
  * TeacherStatusAuditController implements the CRUD actions for TeacherStatusAudit model.
@@ -26,6 +28,20 @@ class TeacherStatusAuditController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['admin', 'spedu_user'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['admin'],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -38,21 +54,11 @@ class TeacherStatusAuditController extends Controller
         $searchModel = new TeacherStatusAuditSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        Url::remember('', 'teacherstatusauditindex');
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single TeacherStatusAudit model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
         ]);
     }
 
@@ -66,7 +72,8 @@ class TeacherStatusAuditController extends Controller
         $model = new TeacherStatusAudit();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $url = Url::previous('teacherstatusauditindex');
+            return $this->redirect($url ? $url : ['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -85,7 +92,8 @@ class TeacherStatusAuditController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $url = Url::previous('teacherstatusauditindex');
+            return $this->redirect($url ? $url : ['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -103,7 +111,8 @@ class TeacherStatusAuditController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        $url = Url::previous('teacherstatusauditindex');
+        return $this->redirect($url ? $url : ['index']);
     }
 
     /**
