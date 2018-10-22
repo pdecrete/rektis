@@ -17,7 +17,7 @@ class FileImport extends Model
     /**
      * @inheritdoc
      */
-    public function rules($extensions = 'xls, xlsx', $maxSize = '10000000')
+    public function rules($extensions = 'xls, xlsx', $maxSize = '20000000')
     {
         return [[['importfile'], 'required'],
             [['importfile'], 'safe'],
@@ -38,12 +38,12 @@ class FileImport extends Model
     /**
      * Uploads the disposals Excel file to the server.
      */
-    public function upload()
-    {        
+    public function upload($importfolder)
+    {   //echo $importfolder; die();
         //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
         $this->importfile = \yii\web\UploadedFile::getInstance($this, 'importfile');
-        if ($this->validate()) {
-            $path = Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']);
+        if ($this->validate()) { 
+            $path = Yii::getAlias($importfolder);
             if (!is_writeable($path)) {
                 return false;
             }

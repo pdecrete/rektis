@@ -17,6 +17,9 @@ use Yii;
  * @property string $teacher_registrynumber
  * @property integer $specialisation_id
  * @property integer $school_id
+ * @property integer $teacher_gender
+ * @property string $teacher_fathername
+ * @property string $teacher_mothername
  *
  * @property DisposalDisposal[] $disposalDisposals
  * @property DisposalLedger[] $disposalLedgers
@@ -25,6 +28,8 @@ use Yii;
  */
 class Teacher extends \yii\db\ActiveRecord
 {
+    const FEMALE = 1;
+    const MALE = 0;
     /**
      * @inheritdoc
      */
@@ -40,8 +45,8 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'specialisation_id', 'school_id'], 'required'],
-            [['specialisation_id', 'school_id', 'teacher_registrynumber'], 'integer'],
-            [['teacher_surname', 'teacher_name'], 'string', 'max' => 100],
+            [['specialisation_id', 'school_id', 'teacher_registrynumber', 'teacher_gender'], 'integer'],
+            [['teacher_surname', 'teacher_name', 'teacher_fathername', 'teacher_mothername'], 'string', 'max' => 100],
             [['teacher_registrynumber'], 'unique'],
             [['specialisation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Specialisation::className(), 'targetAttribute' => ['specialisation_id' => 'id']],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['school_id' => 'school_id']],
@@ -60,6 +65,9 @@ class Teacher extends \yii\db\ActiveRecord
             'teacher_registrynumber' => Yii::t('app', 'Αριθμός Μητρώου'),
             'specialisation_id' => Yii::t('app', 'Ειδικότητα'),
             'school_id' => Yii::t('app', 'School ID'),
+            'teacher_gender' => Yii::t('app', 'Φύλο'),
+            'teacher_fathername' => Yii::t('app', 'Πατρώνυμο'),
+            'teacher_mothername' => Yii::t('app', 'Μητρώνυμο'),
         ];
     }
 

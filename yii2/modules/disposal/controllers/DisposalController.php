@@ -398,7 +398,7 @@ class DisposalController extends Controller
             
             if ($import_model->load(Yii::$app->request->post())) {
                 //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
-                if(!$import_model->upload()) {
+                if(!$import_model->upload($this->module->params['disposal_importfolder'])) {
                     throw new Exception("(@upload)");
                 }
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
@@ -427,6 +427,7 @@ class DisposalController extends Controller
                     $localdir_dec->deleted = 0;
                     $localdir_dec->archived = 0;
                     if(!$localdir_dec->save()) {
+                        echo "<pre>"; print_r($localdir_dec); echo "</pre>"; die();
                         throw new Exception("(@localdir_save)");
                     }
                 }
@@ -456,7 +457,7 @@ class DisposalController extends Controller
                         }
                         $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                         $teacher_model->specialisation_id = $specialisation_id;
-                        if(!$teacher_model->save(true)) {
+                        if(!$teacher_model->save()) {
                             throw new Exception("(@teacher_save)");
                         }
                     }
