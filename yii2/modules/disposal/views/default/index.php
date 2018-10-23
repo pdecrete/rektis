@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-lg-4">
             <h3><?= DisposalModule::t('modules/disposal/app', 'Teachers');?></h3>
             <p><?= DisposalModule::t('modules/disposal/app', 'View school units as retrieved from myschool');?></p>
-			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Teachers'), Url::to(['/teacher/']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Teachers'), Url::to(['/eduinventory/teacher/']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
         </div>
   	</div>
   	<hr />

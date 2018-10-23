@@ -9,6 +9,7 @@ use app\modules\disposal\models\DisposalWorkobj;
 use app\modules\disposal\models\DisposalWorkobjSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -28,6 +29,12 @@ class DisposalWorkobjController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['create', 'update', 'delete'], 'allow' => true, 'roles' => ['disposal_director']],
+                ]
+            ]
         ];
     }
 

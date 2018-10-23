@@ -9,10 +9,10 @@ use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\disposal\models\DisposalLocaldirdecisionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\schooltransport\models\Directorate;
 use app\modules\disposal\models\Disposal;
-use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 
 /**
  * DisposalLocaldirdecisionController implements the CRUD actions for DisposalLocaldirdecision model.
@@ -31,6 +31,12 @@ class DisposalLocaldirdecisionController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['create', 'update', 'delete'], 'allow' => true, 'roles' => ['disposal_editor']],
+                ]
+            ]
         ];
     }
 

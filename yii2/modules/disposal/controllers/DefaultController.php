@@ -2,6 +2,7 @@
 
 namespace app\modules\disposal\controllers;
 
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use app\modules\Pages\models\Page;
 use app\modules\disposal\DisposalModule;
@@ -12,6 +13,21 @@ use Yii;
  */
 class DefaultController extends Controller
 {
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'help', 'legislation'], 'allow' => true, 'roles' => ['disposal_viewer']]
+                ]
+            ]
+        ];
+    }
+    
+    
     /**
      * Renders the index view for the module
      * @return string

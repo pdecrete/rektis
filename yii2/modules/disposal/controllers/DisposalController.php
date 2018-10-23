@@ -17,14 +17,11 @@ use app\models\Specialisation;
 use app\modules\eduinventory\models\Teacher;
 use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\Statistic;
-use app\modules\disposal\models\DisposalLedger;
-use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use app\modules\disposal\models\DisposalReason;
 use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
-use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -173,28 +170,9 @@ class DisposalController extends Controller
                 //if($model->getSchool()->one()->directorate_id != $teacher_model->getSchool()->one()->directorate_id)
                 //    throw new Exception("The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.");
                 
-                if($model->disposal_enddate <= $model->disposal_startdate)
-                    throw new Exception("The start date of the disposal must be earlier its end date.");
-
-                if($model->disposal_enddate == "")
-                        $model->disposal_endofteachingyear_flag = 1;
-                
-                if($model->disposal_endofteachingyear_flag == 1) {
-                    $school_model = Schoolunit::findOne(['school_id' => $model->school_id]);
-                    if($school_model->getSchoolStage() == 'PRIMARY'){
-                        $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
-                                     (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
-                        $model->disposal_enddate = date("Y-m-d", $timestamp);
-                    }
-                    else if($school_model->getSchoolStage() == 'SECONDARY')
-                        $timestamp = strtotime($this->module->params['teachyear_enddate_secondary'] . '-' .
-                                     (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
-                        $model->disposal_enddate = date("Y-m-d", $timestamp);
-                }
-                
-
                 $existing_teacher_model = Teacher::findOne(['teacher_registrynumber' => $teacher_model->teacher_registrynumber]);
                 if(is_null($existing_teacher_model)) {
+                    $existing_teacher_model = $teacher_model;
                     if(!$teacher_model->save()) {
                         throw new Exception("Error in saving the teacher details in the database.");
                     }
@@ -202,6 +180,27 @@ class DisposalController extends Controller
                 }
                 else
                     $model->teacher_id = $existing_teacher_model->teacher_id;
+                
+                if($model->disposal_enddate == "")
+                    $model->disposal_endofteachingyear_flag = 1;
+                    
+                if($model->disposal_endofteachingyear_flag == 1) {
+                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);
+                    if($school_model->getSchoolStage() == 'PRIMARY'){
+                        $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
+                            (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
+                        $model->disposal_enddate = date("Y-m-d", $timestamp);
+                    }
+                    else if($school_model->getSchoolStage() == 'SECONDARY') {
+                        $timestamp = strtotime($this->module->params['teachyear_enddate_secondary'] . '-' .
+                            (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
+                        $model->disposal_enddate = date("Y-m-d", $timestamp);
+                    }
+                }
+                
+                if($model->disposal_enddate <= $model->disposal_startdate)
+                    throw new Exception("The start date of the disposal must be earlier its end date.");
+                    
                 
                 $existing_localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol]);
                 if(is_null($existing_localdirdecision_model)) {
@@ -294,24 +293,25 @@ class DisposalController extends Controller
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
                 
-                if($model->disposal_enddate <= $model->disposal_startdate)
-                    throw new Exception("The start date of the disposal must be earlier its end date.");
-                
-                if($model->disposal_enddate = "")
+                if($model->disposal_enddate == "")
                     $model->disposal_endofteachingyear_flag = 1;
-                
+                    
                 if($model->disposal_endofteachingyear_flag == 1) {
-                    $school_model = Schoolunit::findOne(['school_id' => $model->school_id]);                        
+                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);
                     if($school_model->getSchoolStage() == 'PRIMARY'){
-                        $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' . 
-                                        (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
+                        $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
+                            (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
                         $model->disposal_enddate = date("Y-m-d", $timestamp);
                     }
-                    else if($school_model->getSchoolStage() == 'SECONDARY')
+                    else if($school_model->getSchoolStage() == 'SECONDARY') {
                         $timestamp = strtotime($this->module->params['teachyear_enddate_secondary'] . '-' .
-                                        (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
+                            (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
                         $model->disposal_enddate = date("Y-m-d", $timestamp);
+                    }
                 }
+                
+                if($model->disposal_enddate <= $model->disposal_startdate)
+                    throw new Exception("The start date of the disposal must be earlier its end date.");
                     
                 if(!$teacher_model->save()) {
                     throw new Exception("Error in saving the teacher details in the database.");
@@ -427,7 +427,6 @@ class DisposalController extends Controller
                     $localdir_dec->deleted = 0;
                     $localdir_dec->archived = 0;
                     if(!$localdir_dec->save()) {
-                        echo "<pre>"; print_r($localdir_dec); echo "</pre>"; die();
                         throw new Exception("(@localdir_save)");
                     }
                 }

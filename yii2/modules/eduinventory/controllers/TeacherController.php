@@ -6,6 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\eduinventory\models\Teacher;
 use app\modules\eduinventory\models\TeacherSearch;
@@ -31,6 +32,13 @@ class TeacherController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['eduinventory_viewer']],
+                    ['actions' => ['create', 'update'], 'allow' => true, 'roles' => ['eduinventory_editor']],
+                    ['actions' => ['import'], 'allow' => true, 'roles' => ['eduinventory_director']]
+                ]
+            ]
         ];
     }
 
@@ -165,7 +173,7 @@ class TeacherController extends Controller
     public function actionImport() {
         /*
          *  From param file:
-         *  'teachersimport_excelfile_columns' => [  'AM' => 1, 'GENDER' => '3', 'SURNAME' => 4, 'NAME' => 5, 'FATHERNAME' => 6, 'MOTHERNAME' => 7, 'SPECIALISATION' => 14, 'ORGANIC_SCHOOL' => 35]  
+         *  'teachersimport_excelfile_columns' => [  'AM' => 1, 'AFM' => 2, 'GENDER' => '3', 'SURNAME' => 4, 'NAME' => 5, 'FATHERNAME' => 6, 'MOTHERNAME' => 7, 'SPECIALISATION' => 14, 'ORGANIC_SCHOOL' => 35]  
          */
         
         $teachers_columns = Yii::$app->controller->module->params['teachersimport_excelfile_columns'];
@@ -178,7 +186,7 @@ class TeacherController extends Controller
             if ($import_model->load(Yii::$app->request->post())) {
                 //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
                 if(!$import_model->upload($this->module->params['eduinventory_importfolder'])) {
-                    //echo "<pre>"; print_r($import_model); echo "<pre>"; die();
+                    echo "<pre>"; print_r($import_model); echo "<pre>"; die();
                     throw new Exception("(@upload)");
                 }
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['eduinventory_importfolder']) . $import_model->importfile);
@@ -192,15 +200,19 @@ class TeacherController extends Controller
                 foreach ($rowiterator as $row) { //echo "Hallo inside"; die();
                     $currentrow_index = $row->getRowIndex();
                     
-                    $currentteacher_am = trim($teachers_worksheet->getCellByColumnAndRow($teachers_columns['AM'], $currentrow_index)->getValue());
-                    if($currentteacher_am == "")
+                    $currentteacher_am = trim($teachers_worksheet->getCellByColumnAndRow($teachers_columns['AM'], $currentrow_index)->getFormattedValue());
+                    $currentteacher_afm = trim($teachers_worksheet->getCellByColumnAndRow($teachers_columns['AFM'], $currentrow_index)->getFormattedValue());
+                    if($currentteacher_am == "" && $currentteacher_afm == "") {
+                        echo "In line " . $currentteacher_am . " and " . $currentteacher_afm;
                         break;
+                    }
                         
-                    $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->one();
+                    $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->orWhere(['teacher_afm' => $currentteacher_afm])->one();
                     
                     if(!$teacher_model) { //echo "Hallo exist"; die();
                         $teacher_model = new Teacher();
-                        $teacher_model->teacher_registrynumber = intval($currentteacher_am);
+                        $teacher_model->teacher_registrynumber = (intval($currentteacher_am) == "") ? NULL : intval($currentteacher_am);
+                        $teacher_model->teacher_afm = (intval($currentteacher_afm) == "") ? NULL : intval($currentteacher_am);
                         $teacher_model->teacher_surname = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['SURNAME'], $currentrow_index)->getValue();
                         $teacher_model->teacher_name = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['NAME'], $currentrow_index)->getValue();
                         $gender = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['NAME'], $currentrow_index)->getValue();
@@ -209,20 +221,18 @@ class TeacherController extends Controller
                         else if(!strcasecmp($gender, 'A') || !strcasecmp($gender, 'Α'))
                             $teacher_model->teacher_gender = Teacher::MALE;
                         $teacher_model->teacher_fathername = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['FATHERNAME'], $currentrow_index)->getValue();
-                        $teacher_model->teacher_mothername = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['MOTHERNAME'], $currentrow_index)->getValue();
-                        $teacher_model->school_id = Schoolunit::findOne(['school_mineducode' => $teachers_worksheet->getCellByColumnAndRow($teachers_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue()]);
-                                                
-                        
+                        $teacher_model->teacher_mothername = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['MOTHERNAME'], $currentrow_index)->getValue();                        
+                        $teacher_model->school_id = Schoolunit::findOne(['school_mineducode' => intval($teachers_worksheet->getCellByColumnAndRow($teachers_columns['ORGANIC_SCHOOL'], $currentrow_index)->getFormattedValue())])['school_id'];
                         $specialisation = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['SPECIALISATION'], $currentrow_index)->getValue();
-                        $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, 5, 'UTF-8');
-                        if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
+                        $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, NULL, 'UTF-8');
+                        /*if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
                             $specialisation = mb_substr($specialisation, 0, 4);
                             $specialisation_with_blank = mb_substr($specialisation_with_blank, 0, 5);
-                        }
+                        }*/
                         $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                         $teacher_model->specialisation_id = $specialisation_id;
                         if(!$teacher_model->save()) {
-                            echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
+                            echo $specialisation . " " . $specialisation_with_blank . " "; echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
                             throw new Exception("(@teacher_save)");
                         }
                     }

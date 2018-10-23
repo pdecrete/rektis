@@ -25,13 +25,13 @@ class m181018_180011_eduinventory_teachers extends Migration
                              `teacher_fathername` VARCHAR(100) COMMENT 'Πατρώνυμο',
                              `teacher_mothername` VARCHAR(100) COMMENT 'Μητρώνυμο',
                              `teacher_gender` BOOLEAN COMMENT 'Φύλο',
-                             `teacher_registrynumber` VARCHAR(50) NOT NULL COMMENT 'Αριθμός Μητρώου',
+                             `teacher_registrynumber` VARCHAR(50) COMMENT 'Αριθμός Μητρώου',
+                             `teacher_afm` VARCHAR(50) COMMENT 'ΑΦΜ',
                              `specialisation_id` INTEGER NOT NULL,
                              `school_id` INTEGER NOT NULL,
                               PRIMARY KEY (`teacher_id`),
                               FOREIGN KEY (`specialisation_id`) REFERENCES " . $table_specialisation . " (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              FOREIGN KEY (`school_id`) REFERENCES " . $table_schoolunit . " (`school_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . ",
-                              UNIQUE KEY (`teacher_registrynumber`)
+                              FOREIGN KEY (`school_id`) REFERENCES " . $table_schoolunit . " (`school_id`) ON DELETE RESTRICT ON UPDATE RESTRICT " . "
                             ) " . $tableOptions;
         Console::stdout("\n*** Creating table " . $table_teacher . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");

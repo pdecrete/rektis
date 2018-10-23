@@ -11,12 +11,13 @@ use app\modules\disposal\models\DisposalApprovalSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Model;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalDisposalapproval;
 use app\modules\schooltransport\models\Schoolunit;
 use app\modules\schooltransport\models\Directorate;
-use app\models\Teacher;
+use app\modules\eduinventory\models\Teacher;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
 use app\modules\disposal\models\DisposalLocaldirdecision;
@@ -38,8 +39,15 @@ class DisposalApprovalController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['index', 'view', 'download'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['create', 'update', 'delete'], 'allow' => true, 'roles' => ['disposal_editor']],
+                ]
+            ]
         ];
     }
+
 
     /**
      * Lists all DisposalApproval models.
