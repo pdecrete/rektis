@@ -89,6 +89,8 @@ class DisposalLocaldirdecisionController extends Controller
                 ]);
             }
          
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'created Decision of Local Directorate with id: ', $model->localdirdecision_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion was created successfully."));
             return $this->redirect(['index']);
         }
@@ -127,6 +129,8 @@ class DisposalLocaldirdecisionController extends Controller
                 ]);
             }
             
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: ', $model->localdirdecision_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion of the directorate was updated successfully."));
             return $this->redirect(['index']);
         }
@@ -150,6 +154,8 @@ class DisposalLocaldirdecisionController extends Controller
         try {
             if(!$this->findModel($id)->delete())
                 throw new Exception("The suggestion of the directorate cannot be deleted.");
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'created Decision of Local Directorate with id: ', $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The suggestion of the directorate was deleted successfully."));
             return $this->redirect(['index']);
         }

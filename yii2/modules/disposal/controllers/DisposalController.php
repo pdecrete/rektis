@@ -130,10 +130,6 @@ class DisposalController extends Controller
         $array_model['Organic Post'] = $organicpost->school_name;
         $array_model['disposalreason_id'] = $disposal_reason['disposalreason_description'];
         $array_model['disposalworkobj_id'] = $disposal_workobj['disposalworkobj_description'];
-
-        
-        
-        //echo "<pre>"; print_r($array_model); echo "</pre>"; die();
         
         return $this->render('view', [
             'model' => $array_model,
@@ -162,31 +158,30 @@ class DisposalController extends Controller
             $disposal_hours = Disposal::getHourOptions();
             
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
-                                    
+                //echo "<pre>"; print_r($model); echo "</pre>"; die();
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
-                
-                //TODO
-                //if($model->getSchool()->one()->directorate_id != $teacher_model->getSchool()->one()->directorate_id)
-                //    throw new Exception("The directorate of the organic position of the teacher must be the same to the directorate of the disposal school.");
-                
+                                
                 $existing_teacher_model = Teacher::findOne(['teacher_registrynumber' => $teacher_model->teacher_registrynumber]);
+                
                 if(is_null($existing_teacher_model)) {
-                    $existing_teacher_model = $teacher_model;
                     if(!$teacher_model->save()) {
                         throw new Exception("Error in saving the teacher details in the database.");
                     }
+                    $existing_teacher_model->setAttributes($teacher_model->attributes);
                     $model->teacher_id = $teacher_model->teacher_id;
                 }
-                else
+                else {
                     $model->teacher_id = $existing_teacher_model->teacher_id;
+                    $teacher_model->setAttributes($existing_teacher_model->attributes);
+                }
                 
                 if($model->disposal_enddate == "")
                     $model->disposal_endofteachingyear_flag = 1;
                     
                 if($model->disposal_endofteachingyear_flag == 1) {
-                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);
-                    if($school_model->getSchoolStage() == 'PRIMARY'){
+                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);                    
+                    if($school_model->getSchoolStage() == 'PRIMARY'){                        
                         $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
                             (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
                         $model->disposal_enddate = date("Y-m-d", $timestamp);
@@ -215,17 +210,11 @@ class DisposalController extends Controller
                 if(!$model->save()){
                     //echo "<pre>"; print_r($model->errors); echo "<pre>"; die();
                     throw new Exception("Error in saving the disposal details in the database.");
-                }
-                
-                
-                /* This should be placed in the code part that finalizes the approval of the disposal by PDE 
-                $ledger_model = new DisposalLedger();
-                $ledger_model->setAttributes($model->attributes);
-                if(!$ledger_model->save()){
-                    throw new Exception("Error in completing transaction for disposal save.");
-                }*/
+                }                               
                 
                 $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'created Disposal with id: ', $model->disposal_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -275,7 +264,7 @@ class DisposalController extends Controller
             if($model->deleted == 1 || $model->archived == 1){
                 Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The disposal is not allowed to be updated."));
                 return $this->redirect(['index']);
-            }                
+            }
             $localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_id' => $model->localdirdecision_id]);
             $teacher_model = Teacher::findOne(['teacher_id' => $model->teacher_id]);
             $schools = Schoolunit::find()->all();
@@ -285,9 +274,8 @@ class DisposalController extends Controller
             $directorates = Directorate::find()->orderBy('directorate_name')->all();
             
             $disposal_hours = Disposal::getHourOptions();
-                
-            if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post())) { // && $localdirdecision_model->load(Yii::$app->request->post())) {
-                             
+            
+            if ($model->load(Yii::$app->request->post())){
                 $transaction = Yii::$app->db->beginTransaction();
 
                 if($model->school_id == $teacher_model->school_id)
@@ -329,10 +317,12 @@ class DisposalController extends Controller
                 }*/
                 
                 $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'updated Disposal with id: ', $model->disposal_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was saved successfully."));
                 return $this->redirect(['index']);
             }
-            else {
+            else {//echo "<pre>"; print_r($teacher_model->load(Yii::$app->request->post())); echo "</pre>"; die();
                 return $this->render('update', [
                     'model' => $model,
                     'teacher_model' => $teacher_model,
@@ -377,6 +367,8 @@ class DisposalController extends Controller
             if(!$model->save())
                 throw new Exception();
             
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: ', $model->disposal_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was deleted successfully."));
             return $this->redirect(['index']);
         }
@@ -386,6 +378,112 @@ class DisposalController extends Controller
         }
     }
 
+    /*public function actionImportdisposalsprepare() {
+        $cells = ['DIRECTORATE' => 'C3', 'PROTOCOL' => 'C4', 'ACTION' => 'C5', 'SUBJECT' => 'C6'];
+        $disposals_columns = [  'AM' => 2, 'SURNAME' => 3, 'NAME' => 4, 'SPECIALISATION' => 5, 'ORGANIC_SCHOOL' => 6, 'DISPOSAL_SCHOOL' => 7,
+            'HOURS' => 8, 'START_DATE' => 9, 'END_DATE' => 10, 'DISPOSAL_REASON' => 11, 'DISPOSAL_DUTY' => 12];
+        $base_disposalsdata_row = 9;
+        try {
+            $transaction = Yii::$app->db->beginTransaction();
+            $import_model = new FileImport();
+            
+            if ($import_model->load(Yii::$app->request->post())) {
+                //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
+                if(!$import_model->upload($this->module->params['disposal_importfolder'])) {
+                    throw new Exception("(@upload)");
+                }
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
+                if(!$spreadsheet) {
+                    throw new Exception("(@import)");
+                }
+                
+                $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
+                
+                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();
+                $protocol = (string)$disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
+                $action = (string)$disposals_worksheet->getCell($cells['ACTION'])->getValue();
+                $subject = (string)$disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
+                $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
+                $localdir_id = self::getDirectorateId($directorate);
+                
+                $localdir_dec = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $localdir_id])->one();
+                if($localdir_dec)
+                    Yii::$app->session->addFlash('info', DisposalModule::t('modules/disposal/app', "The local directorate decision already exists and not change was applied to it."));
+                    else {
+                        $localdir_dec = new DisposalLocaldirdecision();
+                        $localdir_dec->localdirdecision_protocol = $protocol;
+                        $localdir_dec->localdirdecision_action = $action;
+                        $localdir_dec->localdirdecision_subject = $subject;
+                        $localdir_dec->directorate_id = $localdir_id;
+                        $localdir_dec->deleted = 0;
+                        $localdir_dec->archived = 0;
+                        if(!$localdir_dec->save()) {
+                            throw new Exception("(@localdir_save)");
+                        }
+                    }
+                    
+                    foreach ($rowiterator as $row) {
+                        $currentrow_index = $row->getRowIndex();
+                        
+                        $currentteacher_am = trim($disposals_worksheet->getCellByColumnAndRow($disposals_columns['AM'], $currentrow_index)->getValue());
+                        if($currentteacher_am == "")
+                            break;
+                            
+                            $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->one();
+                            
+                            if(!$teacher_model) {
+                                $teacher_model = new Teacher();
+                                $teacher_model->teacher_registrynumber = intval($currentteacher_am);
+                                $teacher_model->teacher_surname = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SURNAME'], $currentrow_index)->getValue();
+                                $teacher_model->teacher_name = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['NAME'], $currentrow_index)->getValue();
+                                $teacher_model->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
+                                
+                                $specialisation = mb_substr($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(), 0, 7, 'UTF-8');
+                                $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, 5, 'UTF-8');
+                                if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
+                                    $specialisation = mb_substr($specialisation, 0, 4);
+                                    $specialisation_with_blank = mb_substr($specialisation_with_blank, 0, 5);
+                                }
+                                $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
+                                $teacher_model->specialisation_id = $specialisation_id;
+                                if(!$teacher_model->save()) {
+                                    throw new Exception("(@teacher_save)");
+                                }
+                            }
+                            
+                            $disposal = new Disposal();
+                            $disposal->disposal_startdate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
+                            $disposal->disposal_enddate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
+                            $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
+                            $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
+                            $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_description' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
+                            $disposal->teacher_id = $teacher_model->teacher_id;
+                            $disposal->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
+                            $disposal->deleted = 0;
+                            $disposal->archived = 0;
+                            $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
+                            
+                            if(!$disposal->save()) {
+                                throw new Exception("(@disposal_save)");
+                            }
+                    }
+                    
+                    $transaction->commit();
+                    Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
+                    return $this->redirect(['index']);
+            }
+            else {
+                return $this->render('importdisposals', [
+                    'import_model' => $import_model,
+                ]);
+            }
+        }
+        catch (Exception $exc) {
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Error in importing disposals. " . $exc->getMessage()));
+            return $this->redirect(['index']);
+        }
+    }*/
     
     public function actionImportdisposals() {
         $cells = ['DIRECTORATE' => 'C3', 'PROTOCOL' => 'C4', 'ACTION' => 'C5', 'SUBJECT' => 'C6'];
@@ -393,6 +491,7 @@ class DisposalController extends Controller
                                 'HOURS' => 8, 'START_DATE' => 9, 'END_DATE' => 10, 'DISPOSAL_REASON' => 11, 'DISPOSAL_DUTY' => 12];
         $base_disposalsdata_row = 9;
         try {
+            $directorate = '';
             $transaction = Yii::$app->db->beginTransaction();
             $import_model = new FileImport();
             
@@ -427,7 +526,7 @@ class DisposalController extends Controller
                     $localdir_dec->deleted = 0;
                     $localdir_dec->archived = 0;
                     if(!$localdir_dec->save()) {
-                        throw new Exception("(@localdir_save)");
+                        throw new Exception("Error in saving local directorate decision details. Please check if all of its elements in the Excel file are filled in and valid (i.e. protocol, action, subject)");
                     }
                 }
                 
@@ -457,7 +556,7 @@ class DisposalController extends Controller
                         $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                         $teacher_model->specialisation_id = $specialisation_id;
                         if(!$teacher_model->save()) {
-                            throw new Exception("(@teacher_save)");
+                            throw new Exception("Error in saving teacher details refered to the disposals. Please check if teacher details for all disposals in the Excel file are filled in and valid.");
                         }
                     }
                     
@@ -474,11 +573,13 @@ class DisposalController extends Controller
                     $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
 
                     if(!$disposal->save()) {
-                        throw new Exception("(@disposal_save)");
+                        throw new Exception("Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.");
                     }                    
                 }                
                 
                 $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'imported disposals of ' .$directorate . ' from Excel file', 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
                 return $this->redirect(['index']);
             }
@@ -490,7 +591,7 @@ class DisposalController extends Controller
         }
         catch (Exception $exc) {
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Error in importing disposals. " . $exc->getMessage()));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }
     }

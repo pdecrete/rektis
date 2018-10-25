@@ -9,6 +9,7 @@ use yii\web\View;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
+
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
 /* @var $form yii\widgets\ActiveForm */
@@ -69,7 +70,7 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                                             $("#teacher_surname_frmid").prop("disabled", true);
                                                             $("#teacher_name_frmid").prop("disabled", true);
                                                             $("#teacher_specialization_frmid").prop("disabled", true);
-                                                            //$("#teacher_school_frmid").prop("disabled", true);
+                                                            $("#teacher_school_frmid").prop("disabled", true);
                                                         }
                                                      },
                                             error: function(){alert("Hallo");}
@@ -77,7 +78,17 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                         	               })
                                 }';
 
+$setenddate = 'function setEndOfTeachingYearDate() {                    
+                    var enddatefrm = document.getElementById("disposalend_datepicker-disp");
+                    var enddateflag = document.getElementById("chkbox_endteachyear");
+                    enddatefrm.disabled = (enddateflag.checked == true);
+                    //enddatefrm.disabled = !(enddateflag.checked == true)
+                    if(enddatefrm.disabled == true)
+                        $("#disposalend_datepicker-disp").kvDatepicker("update", "")
+                }';
+
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
+$this->registerJs($setenddate, View::POS_HEAD);
 
 /*
 $script = '$(document).on("click", "#chkbox_endteachyear", function enabledisableDisposalendDatepicker() {
@@ -130,7 +141,7 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 		<div class="col-lg-3">
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
-			                    'options' => ['id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
+			                    'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
                             ])->label('Σχολείο Υπηρέτησης'); ?>
         </div>
 		<div class="col-lg-3">
@@ -152,7 +163,7 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 		</div>
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposal_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'options' => ['id' => 'disposalend_datepicker']]); ?>
-			<?= $form->field($model, 'disposal_endofteachingyear_flag')->checkbox(['label'=>'Λήξη στο τέλος του διδακτικού έτους', 'id' => 'chkbox_endteachyear']); ?>
+			<?= $form->field($model, 'disposal_endofteachingyear_flag')->checkbox(['label'=>'Λήξη στο τέλος του διδακτικού έτους', 'id' => 'chkbox_endteachyear', 'onclick' => 'setEndOfTeachingYearDate()']); ?>
 		</div>
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposalreason_id')->widget(Select2::classname(), [
@@ -174,7 +185,5 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
         <?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
-
-    <?php ActiveForm::end(); ?>
-
 </div>
+<?php ActiveForm::end(); ?>

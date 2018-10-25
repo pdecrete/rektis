@@ -184,6 +184,9 @@ class DisposalApprovalController extends Controller
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
                     
                 $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'created Approval with id: ', $model->approval_id, 'disposal');
+
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
                 return $this->redirect(['disposal-approval/index']);
             }
@@ -276,6 +279,9 @@ class DisposalApprovalController extends Controller
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
                     
                 $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'updated Approval with id: ', $id, 'disposal');
+
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
                 return $this->redirect(['disposal-approval/index']);
             }
@@ -388,6 +394,9 @@ class DisposalApprovalController extends Controller
             if (file_exists(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file)) {
                 unlink(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file);
             }
+
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'deleted Approval with id: ', $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.'));
             return $this->redirect(['index']);
         }

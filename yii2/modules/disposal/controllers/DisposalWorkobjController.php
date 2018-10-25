@@ -77,7 +77,9 @@ class DisposalWorkobjController extends Controller
             if ($model->load(Yii::$app->request->post())) {
                 if(!$model->save())
                     throw new Exception();
-                
+
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'created Disposal Duty with id: ', $model->disposalworkobj_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -108,7 +110,8 @@ class DisposalWorkobjController extends Controller
             if ($model->load(Yii::$app->request->post())) {
                 if(!$model->save())
                     throw new Exception();
-                                
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'updated Disposal Duty with id: ', $id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal duty were saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -137,8 +140,10 @@ class DisposalWorkobjController extends Controller
         try {
             if(!$this->findModel($id)->delete())
                 throw new Exception();
-            
+            DisposalModule::writeLog('deleted Disposal Duty with id: ', $id);
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposal duty was deleted successfully."));
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'deleted Disposal Duty with id: ', $id, 'disposal');
             return $this->redirect(['index']);
         }
         catch (Exception $exc) {

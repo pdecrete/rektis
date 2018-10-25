@@ -45,7 +45,7 @@ class Disposal extends \yii\db\ActiveRecord
 {
     const FULL_DISPOSAL = -1;
     
-    public $disposal_endofteachingyear_flag = 1;
+    public $disposal_endofteachingyear_flag = 0;
     
     public function behaviors()
     {
@@ -68,6 +68,7 @@ class Disposal extends \yii\db\ActiveRecord
             ],
         ];
     }
+    
     
     
     /**
