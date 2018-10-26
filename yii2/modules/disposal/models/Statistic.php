@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\disposal\models;
 
+use app\modules\eduinventory\components\EduinventoryHelper;
 use yii\base\Model;
 use app\modules\disposal\DisposalModule;
 
@@ -60,6 +61,45 @@ class Statistic extends Model
             'statistic_duty' => DisposalModule::t('modules/disposal/app', 'Καθήκοντα Διάθεσης'),
             'statistic_groupby' => DisposalModule::t('modules/disposal/app', 'Ομοδοποίηση'),
             'statistic_charttype' => DisposalModule::t('modules/disposal/app', 'Τύπος Γραφήματος'),
+        ];
+    }
+
+    
+    /**
+     * Returns the school years options based on the dates of the school transports saved in the database.
+     *
+     * @return string[]
+     */
+    public static function getSchoolYearOptions()
+    {
+        $school_years = [];
+        $min_startdate = Disposal::find()->where(['archived' => 1])->min('disposal_startdate');
+        if(is_null($min_startdate))
+            return null;
+        $max_startdate = Disposal::find()->where(['archived' => 1])->max('disposal_startdate');
+            
+        $min_year = EduinventoryHelper::getSchoolYearOf($min_startdate);
+        $max_year = EduinventoryHelper::getSchoolYearOf($max_startdate);
+        for ($i = $min_year; $i <= $max_year; $i++) {
+            $school_years[$i] = (string)$i . '-' . (string)($i+1);
+        }
+            
+        return $school_years;
+    }
+    
+    
+    /**
+     * Returns the chart type options supported by the statistics.
+     *
+     * @return NULL[]|string[]
+     */
+    public static function getChartTypeOptions()
+    {
+        return [Statistic::CHARTTYPE_BAR => DisposalModule::t('modules/disposal/app', "Vertical Bars"),
+            Statistic::CHARTTYPE_HORIZONTALBAR => DisposalModule::t('modules/disposal/app', "Horizontal Bars"),
+            Statistic::CHARTTYPE_DOUGHNUT => DisposalModule::t('modules/disposal/app', "Doughnut"),
+            Statistic::CHARTTYPE_PIE => DisposalModule::t('modules/disposal/app', "Pie"),
+            Statistic::CHARTTYPE_POLARAREA => DisposalModule::t('modules/schooltransport/app', "Polar Area")
         ];
     }
 }

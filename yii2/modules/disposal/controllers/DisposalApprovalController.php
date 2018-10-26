@@ -233,6 +233,7 @@ class DisposalApprovalController extends Controller
         $school_models = array();
         $teacher_models = array();
         $specialization_models = array();
+        $use_template_with_health_reasons = false;
         //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
         foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
             $disposals_models[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
@@ -381,14 +382,12 @@ class DisposalApprovalController extends Controller
                 throw new Exception("The deletion of the disposals\' approval failed.");
             
             $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
-
             foreach ($disposal_ids as $disposal_id) {
-                $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id])->one();
+                $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();
                 $disposal_model->archived = 0;
                 if(!$disposal_model->save())
                     throw new Exception("The deletion of the disposals\' approval failed.");
             }
-                       
             $transaction->commit();
             /* delete old file: */
             if (file_exists(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file)) {
