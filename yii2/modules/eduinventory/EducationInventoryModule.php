@@ -21,7 +21,6 @@ class EducationInventoryModule extends \yii\base\Module
     {
         parent::init();
         \Yii::configure($this, require __DIR__ . '/config/params.php');
-        \Yii::configure($this, require __DIR__ . '/config/educationdata.php');
         $this->registerTranslations();
         // custom initialization code goes here
     }

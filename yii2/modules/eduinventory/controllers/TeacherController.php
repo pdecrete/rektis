@@ -14,6 +14,7 @@ use app\modules\schooltransport\models\Schoolunit;
 use app\models\FileImport;
 use app\models\Specialisation;
 use app\modules\eduinventory\EducationInventoryModule;
+use app\modules\eduinventory\components\EduinventoryHelper;
 
 /**
  * TeacherController implements the CRUD actions for Teacher model.

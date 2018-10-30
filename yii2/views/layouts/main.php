@@ -446,7 +446,7 @@ AppAsset::register($this);
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
                         [
                             'label' => 'Στατιστικά Διαθέσεων',
-                            'url' => ['/disposal/statistic/']
+                            'url' => ['/disposal/disposal-statistic/']
                         ],                        
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-question-sign"></i> Βοήθεια</li>',

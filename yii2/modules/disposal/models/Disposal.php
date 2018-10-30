@@ -231,6 +231,8 @@ class Disposal extends \yii\db\ActiveRecord
         return $disposal_hours;
     }
 
+    
+    
     /**
      * @inheritdoc
      * @return DisposalQuery the active query used by this AR class.

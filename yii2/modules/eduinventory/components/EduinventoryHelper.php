@@ -3,6 +3,8 @@ namespace app\modules\eduinventory\components;
 
 use DateTime;
 use Yii;
+use yii\helpers\ArrayHelper;
+use app\models\Specialisation;
 
 class EduinventoryHelper
 {
@@ -26,21 +28,33 @@ class EduinventoryHelper
     
     /**
      * Returns an array with the prefectures options.
+     * The prefectures' options are retrieved from the params.php file 
      *
      * @return string[]
      */
-    public static function getPrefectureOptions()
-    {
-        return Yii::$app->controller->module->params['prefectures'];
+    public static function getPrefectures()
+    {        
+        return Yii::$app->getModule('eduinventory')->params['prefectures'];
     }
     
     /**
      * Returns the educational levels options.
+     * The educational levels' options are retrieved from the params.php file
      *
      * @return string[]
      */
-    public static function getEducationalLevelOptions()
+    public static function getEducationalLevels()
     {
-        return Yii::$app->controller->module->params['educationlevels'];
+        return Yii::$app->getModule('eduinventory')->params['education_levels'];
+    }
+    
+    /**
+     * Returns the teacher specializations in a mapping (specialization_id => specialization_code) form.
+     *
+     * @return string[]
+     */
+    public static function getSpecializations()
+    {        
+        return ArrayHelper::map(Specialisation::find()->all(), 'id', 'code');
     }
 }
