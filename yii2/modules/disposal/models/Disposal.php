@@ -230,8 +230,23 @@ class Disposal extends \yii\db\ActiveRecord
             $disposal_hours[$i] = array("hours" => $i, "hours_name" => $i);
         return $disposal_hours;
     }
-
     
+    /**
+     * @param integer $school_year
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getSchoolYearDisposals($school_year = -1)
+    {
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $t = $tblprefix . 'disposal_disposal';
+        $query = DisposalSearch::getAllDisposalsQuery(1);
+        
+        if ($school_year != -1) {
+            $query = $query->andWhere($t . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
+                $t . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31'");
+        }
+        return $query->all();
+    }
     
     /**
      * @inheritdoc

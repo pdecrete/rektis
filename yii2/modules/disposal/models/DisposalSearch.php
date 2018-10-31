@@ -42,15 +42,8 @@ class DisposalSearch extends Disposal
         return Model::scenarios();
     }
 
-    /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
-     * @return ActiveDataProvider
-     */
-    public function search($params, $archived = 0)
-    {
+    
+    public static function getAllDisposalsQuery($archived = 0) {
         $prefix = Yii::$app->db->tablePrefix;
         $dspls = $prefix . 'disposal_disposal';
         $tchers = $prefix . 'teacher';
@@ -59,23 +52,39 @@ class DisposalSearch extends Disposal
         $o_schls = $prefix . 'schoolunit orgn_sch';
         $dir_o_schl = $prefix . 'directorate';
         $reasons = $prefix . 'disposal_disposalreason';
+        $duties = $prefix . 'disposal_disposalworkobj';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
-                
+        
         $query = (new \yii\db\Query())
-                    ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
-                    ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions])
-                    ->where($dspls . ".deleted=0 " .
-                        " AND " . $dspls . ".archived=" . $archived .
-                        " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
-                        " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
-                        " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" . 
-                        " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
-                        " AND " . $dspls . ".school_id=dsp_sch.school_id" .
-                        " AND " . $tchers . ".school_id=orgn_sch.school_id" .
-                        " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
-                        );
-        //echo $query->createCommand()->rawSql; die();
-        // add conditions that should always apply here
+        ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*" , $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
+        ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $duties, $localdir_decisions])
+        ->where($dspls . ".deleted=0 " .
+            " AND " . $dspls . ".archived=" . $archived .
+            " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
+            " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
+            " AND " . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id" .
+            " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" .
+            " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
+            " AND " . $dspls . ".school_id=dsp_sch.school_id" .
+            " AND " . $tchers . ".school_id=orgn_sch.school_id" .
+            " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
+            );
+        
+        return $query;
+    }
+    
+    
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params, $archived = 0)
+    {                
+        $dspls = Yii::$app->db->tablePrefix . 'disposal_disposal';
+        $query = self::getAllDisposalsQuery($archived);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

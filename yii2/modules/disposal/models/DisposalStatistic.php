@@ -75,6 +75,8 @@ class DisposalStatistic extends Model
         $drs = $tblprefix . 'disposal_disposalreason';
         $dir = $tblprefix . 'directorate';
         $dr = $tblprefix . 'disposal_disposalworkobj';
+        $specs = $tblprefix . 'specialisation';
+        $schl = $tblprefix . 'schoolunit';
 
         
         $groupby_options = DisposalStatistic::getGroupByOptions();
@@ -86,7 +88,7 @@ class DisposalStatistic extends Model
             $school_years = DisposalStatistic::getSchoolYearOptions();
             foreach ($school_years as $school_year => $literal) {
                 $andWhereCondition = $dsp . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
-                    $dsp . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'";
+                    $dsp . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31'";
                     $data['LABELS'][$index] = $school_year;
                     $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
                     $index++;
@@ -101,38 +103,53 @@ class DisposalStatistic extends Model
             }
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_EDULEVEL) {
             $edulevels = EduinventoryHelper::getEducationalLevels();
-            foreach ($edulevels as $edulevel) {
-                $andWhereCondition = $dir . ".directorate_name LIKE '%" . $edulevel . "%'";
+            //echo "<pre>";print_r($edulevels);echo "<pre>";die();
+            foreach ($edulevels as $key=>$edulevel) {
+                $andWhereCondition = $dir . ".directorate_stage LIKE '%" . $key . "%'";
                 $data['LABELS'][$index] = $edulevel;
                 $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
                 $index++;
             }
+            $andWhereCondition = $dir . ".directorate_stage IS NULL";
+            $data['LABELS'][$index] = "Ανεξάρτητων Δομών";
+            $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
+            $index++;
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_SPECIALIZATION) {
             $specializations = EduinventoryHelper::getSpecializations();
             foreach ($specializations as $specialization_id => $specialization_code) {
-                $andWhereCondition = $pc . ".programcategory_programalias='" . $program_alias . "'";
-                $data['LABELS'][$index] = $program_title;
-                $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
-                $index++;
+                $andWhereCondition = $specs . ".id='" . $specialization_id . "'";                
+                $disposals_count = DisposalStatistic::countDisposals($andWhereCondition);
+                if($disposals_count != 0) {
+                    $data['LABELS'][$index] = $specialization_code;
+                    $data['DISPOSALS_COUNT'][$index] = $disposals_count;
+                    $index++;
+                }                
             }
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_DUTY) {
             $duties = DisposalStatistic::getDutyOptions();
             foreach ($duties as $duty_id => $duty_description) {
                 $andWhereCondition = $dr . ".disposalworkobj_id='" . $duty_id . "'";
-                $data['LABELS'][$index] = $program_title;
+                $data['LABELS'][$index] = $duty_description;
                 $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
                 $index++;
             }
         } else {//if($this->statistic_groupby == Statistic::GROUPBY_PREFECTURES){
             $prefectures = EduinventoryHelper::getPrefectures();
+            $disposals_count = 0;
             foreach ($prefectures as $prefecture) {
-                $andWhereCondition = $dir . ".directorate_name LIKE '%" . $prefecture . "%'";
+                $andWhereCondition = "(" . $dir . ".directorate_name LIKE '%" . $prefecture . "%' OR " . $schl . ".school_name LIKE '%" . $prefecture . "%')";
+                $disposals_count += DisposalStatistic::countDisposals($andWhereCondition);
                 $data['LABELS'][$index] = $prefecture;
                 $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
                 $index++;
             }
+            $more_disposals = DisposalStatistic::countDisposals("") - $disposals_count;
+            if($more_disposals > 0) {            
+                $data['LABELS'][$index] = "Άγνωστο";
+                $data['DISPOSALS_COUNT'][$index] = $more_disposals;
+                $index++;
+            }
         }
-        
         return $data;
     }
 
@@ -171,7 +188,7 @@ class DisposalStatistic extends Model
     }
     
     /**
-     * Returns the school years options based on the dates of the school transports saved in the database.
+     * Returns the school years options based on the dates of the disposals saved in the database.
      *
      * @return string[]
      */
@@ -301,7 +318,7 @@ class DisposalStatistic extends Model
         }
         $query = $query->andWhere($subquery);
         $query = $query->andWhere($andWhereCondition);
-        //return $query->createCommand()->rawSql; die();
+        //echo $query->createCommand()->rawSql;
         return $query->one()['DISPOSALS_COUNT'];
     }
     

@@ -54,15 +54,16 @@ class DisposalStatisticController extends Controller
         }
         
         $prefectures['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλοι οι νομοί');
-        $prefectures = array_merge($prefectures, EduinventoryHelper::getPrefectures());
+        $prefectures = $prefectures + EduinventoryHelper::getPrefectures();
         $education_levels['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλες οι βαθμίδες');
-        $education_levels = array_merge($education_levels, EduinventoryHelper::getEducationalLevels());
-        $duties['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλα τα καθήκοντα');
-        $duties = array_merge($duties, DisposalStatistic::getDutyOptions());
+        $education_levels = $education_levels + EduinventoryHelper::getEducationalLevels();
+        //echo "<pre>"; print_r($education_levels); echo "</pre>";die();
+        $duties['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλα τα καθήκοντα');        
+        $duties = $duties + DisposalStatistic::getDutyOptions();
         $reasons['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλοι οι λόγοι');
-        $reasons = array_merge($reasons, DisposalStatistic::getReasonOptions());
+        $reasons = $reasons + DisposalStatistic::getReasonOptions();
         $specializations['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλες οι ειδικότητες');
-        $specializations = array_merge($specializations, EduinventoryHelper::getSpecializations());
+        $specializations = $specializations + EduinventoryHelper::getSpecializations();
         $groupby_options = DisposalStatistic::getGroupByOptions();
         
         $chart_types = DisposalStatistic::getChartTypeOptions();
@@ -76,15 +77,15 @@ class DisposalStatisticController extends Controller
         $model->statistic_reason = 'ALL';
         $model->statistic_groupby = DisposalStatistic::GROUPBY_PERFECTURE;
         $model->statistic_charttype = DisposalStatistic::CHARTTYPE_BAR;
-        //echo "<pre>"; print_r($model); echo "<pre>"; die();
-        $result_data = $model->getStatistics();
-        //echo "<pre>"; print_r($result_data); echo "<pre>"; die();
-        
-/*         if (count($result_data['LABELS']) < 2) {
+        $result_data = $model->getStatistics();        
+        //$result_data['LABELS'] = '';
+        if (count($result_data['LABELS']) < 2) {
             $model->statistic_charttype = DisposalStatistic::CHARTTYPE_DOUGHNUT;
-        } */
+        }
 
         if ($model->load(Yii::$app->request->post())){        
+            //echo "<pre>"; print_r($model->getStatistics()); echo "</pre>"; die();
+            //$model->getStatistics(); die();
             return $this->render('index', ['model' => $model, 'school_years' => $school_years, 
                 'prefectures' => $prefectures, 'education_levels' => $education_levels, 'chart_types' => $chart_types,
                 'duties' => $duties, 'reasons' => $reasons, 'specializations' => $specializations,
@@ -136,8 +137,8 @@ class DisposalStatisticController extends Controller
                 throw new Exception("An invalid period value was given to export school transports data.");
             }
             
-            $transports = SchtransportTransport::getSchoolYearTransports($period);
-            //echo "<pre>"; print_r($transports); echo "<pre>";die();
+            $disposals = Disposal::getSchoolYearDisposals($period);
+            //echo "<pre>"; print_r($disposals); echo "<pre>";die();
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
             
@@ -148,35 +149,42 @@ class DisposalStatisticController extends Controller
             $column = 1;
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Α/Α', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολικό Έτος', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολείο', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Κατηγορία Προγράμματος', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Περιγραφή Κατηγορίας Προγράμματος', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Τίτλος Προγράμματος', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Κωδικός Προγράμματος', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Χώρα Προορισμού', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Πόλη Προορισμού', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ημερομηνία Αναχώρησης', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ημερομηνία Επιστροφής', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Βαθμίδα Εκπαίδευσης', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Διεύθυνση Εκπαίδευσης', DataType::TYPE_STRING);
-            foreach ($transports as $transport) {
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Επώνυμο', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Όνομα', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Πατρώνυμο', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Μητρώνυμο', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Αριθμός Μητρώου', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ειδικότητα', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Κλάδος', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Διεύθυνση', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολείο Οργανικής/Υπηρέτησης', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολείο Διάθεσης', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Διάθεσης', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Αιτία Διάθεσης', DataType::TYPE_STRING);
+            foreach ($disposals as $disposal) {
                 $row++;
                 $column = 1;
-                $startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat('Y-m-d', $transport['transport_startdate']));
-                $directorate = Directorate::findOne(['directorate_id' => $transport['directorate_id']]);
+                $startyear = EduinventoryHelper::getSchoolYearOf($disposal['disposal_startdate']);
+                $directorate = Directorate::findOne(['directorate_id' => $disposal['directorate_id']]);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $row-1, DataType::TYPE_NUMERIC);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, (string)$startyear . '-' . (string)($startyear+1), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['school_name'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['programcategory_programtitle'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['programcategory_programdescription'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['program_title'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['program_code'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['meeting_country'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['meeting_city'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, DisposalModule::t('modules/disposal/app', $directorate['directorate_stage']), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['teacher_surname'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['teacher_name'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['teacher_fathername'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['teacher_mothername'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['teacher_registrynumber'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['code'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['name'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['directorate_shortname'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['organic_school'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposal_school'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalreason_description'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalworkobj_description'], DataType::TYPE_STRING);
+                
+                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
+                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
+                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, DisposalModule::t('modules/disposal/app', $directorate['directorate_stage']), DataType::TYPE_STRING);
+                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
             header('Content-type: application/vnd.ms-excel');

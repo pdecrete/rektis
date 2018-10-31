@@ -34,23 +34,23 @@ $this->title = DisposalModule::t('modules/disposal/app', 'Statistics');
 $this->params['breadcrumbs'][] = $this->title;
 
 $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
-//echo "<pre>"; print_r($model); echo "</pre>";die();
+//echo "<pre>"; print_r($result_data); echo "<pre>"; die();
 ?>
 
 <div class="text-right">
         <div class="btn-group">
       		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-      			<?= DisposalModule::t('modules/disposal/app', 'Export transportations to Excel file.'); ?> <span class="caret"></span>
+      			<?= DisposalModule::t('modules/disposal/app', 'Export transportations to Excel file'); ?> <span class="caret"></span>
   			</button>
   			<ul class="dropdown-menu" role="menu">
-    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => $current_startyear]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => $current_startyear]);?>">
 					<?= DisposalModule::t('modules/disposal/app', 'Current school year'); ?></a>
 				</li>
-    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => ($current_startyear-1)]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => ($current_startyear-1)]);?>">
     				<?= DisposalModule::t('modules/disposal/app', 'Previous school year'); ?>
     				</a>
 				</li>
-    			<li><a href="<?= Url::to(['statistic/exportexcel', 'period' => -1]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => -1]);?>">
 					<?= DisposalModule::t('modules/disposal/app', 'All years'); ?>
 					</a>
 				</li>
@@ -213,7 +213,7 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 				<tr><th>&nbsp;</th><th class="text-center">Πλήθος Διαθέσεων</th></tr>
 			</thead>
 			<tbody>
-				<?php 
+				<?php
 				    $num_of_data = count($result_data['LABELS']);
 				    for ($i = 0; $i < $num_of_data; $i++){
 				        echo "<tr><td>" . $result_data['LABELS'][$i] . "</td><td class='text-center'>" . $result_data['DISPOSALS_COUNT'][$i] . "</td></tr>";
