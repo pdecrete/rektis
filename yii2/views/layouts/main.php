@@ -438,10 +438,6 @@ AppAsset::register($this);
                             'label' => 'Εκπαιδευτικοί',
                             'url' => ['/eduinventory/teacher']
                         ],
-                        [
-                            'label' => 'Καταστάσεις Εγκρίσεων (Υπό Κατασκευή)',
-                            'url' => ['/disposal/disposal-state']
-                        ],
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-stats"></i> Στατιστικά</li>',
                         [

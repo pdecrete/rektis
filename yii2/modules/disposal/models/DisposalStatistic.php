@@ -334,8 +334,8 @@ class DisposalStatistic extends Model
             DisposalStatistic::GROUPBY_EDULEVEL => DisposalModule::t('modules/disposal/app', "By education level"),
             DisposalStatistic::GROUPBY_PERFECTURE => DisposalModule::t('modules/disposal/app', "By perfecture"),
             DisposalStatistic::GROUPBY_SPECIALIZATION => DisposalModule::t('modules/disposal/app', "By specialization"),
-            DisposalStatistic::GROUPBY_DUTY => DisposalModule::t('modules/disposal/app', "By duty"),
-            DisposalStatistic::GROUPBY_REASON => DisposalModule::t('modules/disposal/app', "By reason")
+            DisposalStatistic::GROUPBY_DUTY => DisposalModule::t('modules/disposal/app', "By disposal duty"),
+            DisposalStatistic::GROUPBY_REASON => DisposalModule::t('modules/disposal/app', "By disposal reason")
         ];
     }
 }

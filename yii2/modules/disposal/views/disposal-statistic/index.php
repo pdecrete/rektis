@@ -2,6 +2,7 @@
 /* @var $this yii\web\View */
 use dosamigos\chartjs\ChartJs;
 use kartik\select2\Select2;
+use app\widgets\VoteWidget;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
@@ -9,6 +10,7 @@ use yii\widgets\ActiveForm;
 use app\modules\disposal\models\DisposalStatistic;
 use app\modules\disposal\DisposalModule;
 use app\modules\eduinventory\components\EduinventoryHelper;
+use yii\base\Widget;
 
 $script = "function chartjsToImage(){                
                 var canvas = document.getElementsByTagName('canvas');
@@ -29,13 +31,16 @@ $script = "function chartjsToImage(){
            }";
 $this->registerJs($script, View::POS_HEAD);
 
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'School Transportations'), 'url' => ['/disposal/default']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->title = DisposalModule::t('modules/disposal/app', 'Statistics');
 $this->params['breadcrumbs'][] = $this->title;
 
 $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 //echo "<pre>"; print_r($result_data); echo "<pre>"; die();
+
 ?>
+
+<?php echo VoteWidget::widget(); die();?>
 
 <div class="text-right">
         <div class="btn-group">
