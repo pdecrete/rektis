@@ -3,6 +3,7 @@
 namespace app\modules\disposal;
 
 use Yii;
+use app\models\HeadSignature;
 
 /**
  * disposal module definition class
@@ -19,6 +20,8 @@ class DisposalModule extends \yii\base\Module
         parent::init();
         \Yii::configure($this, require __DIR__ . '/config/params.php');
         $this->registerTranslations();
+        if(!isset(Yii::$app->session[DisposalModule::className() . "_whosigns"]))
+            Yii::$app->session->set(DisposalModule::className() . "_whosigns", HeadSignature::DIRECTOR_SIGN);
     }
     
     public function registerTranslations()

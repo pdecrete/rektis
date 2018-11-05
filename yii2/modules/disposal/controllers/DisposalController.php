@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\base\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\disposal\DisposalModule;
 use app\models\FileImport;
@@ -40,6 +41,12 @@ class DisposalController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [   'class' => AccessControl::className(),
+                'rules' =>  [
+                    ['actions' => ['getteacher-ajax', 'index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['create', 'update', 'delete', 'importdisposals'], 'allow' => true, 'roles' => ['disposal_editor']],
+                ]
+            ]
         ];
     }
 

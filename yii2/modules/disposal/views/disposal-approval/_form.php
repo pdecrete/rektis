@@ -5,17 +5,16 @@ use app\modules\disposal\models\Disposal;
 use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\widgets\HeadSignature\HeadSignatureWidget;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 /* @var $form yii\widgets\ActiveForm */
 
-//echo "<pre>"; print_r($disposal_ids); echo "</pre>"; die();
+
 
 ?>
-
 <div class="disposal-approval-form container-fluid">
-
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
     	<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
@@ -49,6 +48,8 @@ use yii\widgets\ActiveForm;
     		</table>
     	</div>
 	</div>
+	<?= HeadSignatureWidget::widget(['form' => $form]);?>
+	<br />
 	<?php if($create): ?>
     	<div class="row">
     		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>

@@ -8,7 +8,8 @@ use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
-
+use app\widgets\HeadSignature\HeadSignature;
+use yii\base\Widget;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
@@ -110,6 +111,7 @@ $this->registerJs($script, View::POS_END);
 
 $urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
 $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
+
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">
@@ -179,11 +181,10 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
                             ])->label('Καθήκον Διάθεσης'); ?>
 		</div>			
 	</div>	
-
-
     <div class="form-group pull-right">
         <?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-    </div>
+	</div>
+
 </div>
 <?php ActiveForm::end(); ?>
