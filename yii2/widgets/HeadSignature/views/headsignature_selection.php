@@ -4,60 +4,47 @@ use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\web\View;
 
-$ajaxscript_SetWhoSigns = 'function setWhoSigns(url){
+$ajaxscript_SetWhoSigns = 'function setWhoSigns(url, module){
                                     var who_signs_selection = document.getElementById("whosigns_frmid").value;
-                                    alert(who_signs_selection); return;
-    
+                                    var who_signs_changemessage = document.getElementById("whosigns_changemessage");                                    
                                     $.ajax({
                                             url: url,
                                             type: "post",
-                                            data: {"working_module":localdirdecision_protocol, "localdirdecision_directorate":localdirdecision_directorate},
-                                            success: function(data){
-                                                        data = JSON.parse(data);
+                                            data: {"working_module":module, "who_signs":who_signs_selection},
+                                            success: function(data){                 
+                                                        $("#whosigns_changemessage").html("<strong><font color=\"green\">Ο υπογράφων άλλαξε επιτυχώς.</font></strong>");                                       
+                                                        $("#whosigns_changemessage").fadeIn();
+                                                        who_signs_changemessage.className = "pull-right";
+                                                        $("#whosigns_changemessage").delay(3000).fadeOut("slow"); 
+                                                        data = JSON.parse(data); 
                                                         if(data == null) {
-                                                            $("#localdirdecision_action_frmid").prop("disabled", false);
-                                                            $("#localdirdecision_subject_frmid").prop("disabled", false);
-                                                            $("#localdirdecision_action_frmid").val("").trigger("change");
-                                                            $("#localdirdecision_subject_frmid").val("").trigger("change");
+                                                           
                                                         }
                                                         else {
-                                                            $("#localdirdecision_subject_frmid").val(data.localdirdecision_subject).trigger("change");
-                                                            $("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
-                                                            $("#localdirdecision_action_frmid").prop("disabled", true);
-                                                            $("#localdirdecision_subject_frmid").prop("disabled", true);
+                                                            
                                                         }
                                                      },
-                                            error: function(){alert("Hallo");}
-    
+                                            error: function(){
+                                                        $("#whosigns_changemessage").html("<strong><font color=\"red\">Σφάλμα στην αλλαγή του υπογράφοντος.</font></strong>");                                       
+                                                        $("#whosigns_changemessage").fadeIn();
+                                                        who_signs_changemessage.className = "pull-right";
+                                                        $("#whosigns_changemessage").delay(3000).fadeOut("slow"); 
+                                                     } 
                         	               })
                                 }';
 
 
 $this->registerJs($ajaxscript_SetWhoSigns, View::POS_HEAD);
-$url_setWhoSigns = Url::to('/disposal/disposal/getteacher-ajax');
-
-//echo "<pre>"; print_r($model); echo "</pre>"; die();
+$url_setWhoSigns = Url::to('/head-signature/signatureajax');
 ?>
 
 <div class="row">
 	<div class="col-lg-6"></div>
 	<div class="col-lg-6">
     	<?= $form->field($model, 'who_signs')->widget(Select2::classname(), [
-                            'data' => $head_signs,
-    	    'options' => ['id' => 'whosigns_frmid', 'placeholder' => Yii::t('app', 'Επιλέξτε Υπογράφων...'), 'onchange' => 'setWhoSigns("' . $url_setWhoSigns .'");'],
-                                ])->label('Υπογράφων:'); ?>
+                                                        'data' => $head_signs,
+                                                        'options' => ['id' => 'whosigns_frmid', 'placeholder' => Yii::t('app', 'Επιλέξτε Υπογράφων...'), 'onchange' => 'setWhoSigns("' . $url_setWhoSigns .'", "' . $module . '");'],
+                                                        ])->label('Υπογράφων:'); 
+    	?><span id="whosigns_changemessage" class="hidden pull-right"></span>
     </div>
-        <?php
-/*         echo Select2::widget([
-            'name' => 'state_10',
-            'data' => $head_signs,
-            'options' => [
-                'placeholder' => 'Επιλέξτε Υπογράφων ...',
-                'multiple' => false
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]); */
-    ?>
 </div>

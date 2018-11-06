@@ -21,6 +21,7 @@ use app\modules\eduinventory\models\Teacher;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
 use app\modules\disposal\models\DisposalLocaldirdecision;
+use app\models\HeadSignature;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -361,7 +362,9 @@ class DisposalApprovalController extends Controller
         }
         $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
         
-        $templateProcessor->setValue('director_name', Yii::$app->params['director_name']);
+        $whosigns = Yii::$app->session[Yii::$app->controller->module->id . "_whosigns"];
+        $templateProcessor->setValue('director_title', HeadSignature::getSigningTitle($whosigns));
+        $templateProcessor->setValue('director_name', HeadSignature::getSigningName($whosigns));        
         $templateProcessor->saveAs($fullpath_fileName);
         return true;
     }

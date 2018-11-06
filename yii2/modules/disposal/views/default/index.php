@@ -3,6 +3,7 @@
 use app\modules\disposal\DisposalModule;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
+use app\models\HeadSignature;
 
 /* @var $this yii\web\View */
 
@@ -35,6 +36,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h3><?= DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions');?></h3>
                 <p><?= DisposalModule::t('modules/disposal/app', 'Manage decisions of local Directorates');?></p>
     			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions'), Url::to(['/disposal/disposal-localdirdecision']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            </div>
+            <div class="col-lg-4">          
+                <h3><?= DisposalModule::t('modules/disposal/app', 'Current Signature Adjustment');?></h3>
+                <p><?= DisposalModule::t('modules/disposal/app', 'Your current adjustment for document signature is:') . '<h4><span class="label label-info">' . HeadSignature::getSigningName(Yii::$app->session[Yii::$app->controller->module->id . "_whosigns"]) . '</span></h4>';?></p>
             </div>
       	</div>
   	</div>

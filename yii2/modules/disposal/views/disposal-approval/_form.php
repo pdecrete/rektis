@@ -48,7 +48,7 @@ use app\widgets\HeadSignature\HeadSignatureWidget;
     		</table>
     	</div>
 	</div>
-	<?= HeadSignatureWidget::widget(['form' => $form]);?>
+	<?= HeadSignatureWidget::widget(['form' => $form, 'module' => Yii::$app->controller->module->id]);?>
 	<br />
 	<?php if($create): ?>
     	<div class="row">

@@ -171,4 +171,6 @@ return [
     'Doughnut' => 'Ντόνατ',
     'Vertical Bars' => 'Κάθετες Μπάρες',
     'Horizontal Bars' => 'Οριζόντιες Μπάρες',
+    'Current Signature Adjustment' => 'Τρέχουσα Ρύθμιση Υπογράφοντα',
+    'Your current adjustment for document signature is:' => 'Η τρέχουσα ρύθμισή σας για υπογραφή εγγράφου είναι:'
 ];
