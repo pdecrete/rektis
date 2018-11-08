@@ -1,5 +1,5 @@
 <?php
-namespace app\widgets\HeadSignature;
+namespace app\modules\base\widgets\HeadSignature;
 
 use yii\base\Widget;
 use app\models\HeadSignature;

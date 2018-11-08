@@ -127,6 +127,9 @@ $config = [
     'aliases' => $aliases,
     // 'catchAll' => ['site/offline'],
     'modules' => [
+        'base' => [
+            'class' => 'app\modules\base\BaseModule',
+        ],
         'eduinventory' => [
             'class' => 'app\modules\eduinventory\EducationInventoryModule',
         ],

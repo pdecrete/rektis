@@ -1,11 +1,11 @@
 <?php
 
+use app\modules\base\widgets\HeadSignature\HeadSignatureWidget;
 use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\Disposal;
 use kartik\datecontrol\DateControl;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\widgets\HeadSignature\HeadSignatureWidget;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */

@@ -4,6 +4,7 @@ namespace app\modules\disposal\controllers;
 
 use DateTime;
 use Yii;
+use app\modules\base\models\FileImport;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\models\DisposalSearch;
 use yii\web\Controller;
@@ -13,7 +14,6 @@ use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\modules\disposal\DisposalModule;
-use app\models\FileImport;
 use app\models\Specialisation;
 use app\modules\eduinventory\models\Teacher;
 use app\modules\schooltransport\models\Schoolunit;
@@ -502,10 +502,9 @@ class DisposalController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             $import_model = new FileImport();
             
-            if ($import_model->load(Yii::$app->request->post())) {
-                //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
+            if ($import_model->load(Yii::$app->request->post())) {                
                 if(!$import_model->upload($this->module->params['disposal_importfolder'])) {
-                    throw new Exception("(@upload)");
+                    throw new Exception("(Error @upload)");
                 }
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
                 if(!$spreadsheet) {
@@ -514,10 +513,10 @@ class DisposalController extends Controller
                 
                 $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
                
-                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();                
-                $protocol = (string)$disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
-                $action = (string)$disposals_worksheet->getCell($cells['ACTION'])->getValue();
-                $subject = (string)$disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
+                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getFormattedValue();                
+                $protocol = (string)$disposals_worksheet->getCell($cells['PROTOCOL'])->getFormattedValue();
+                $action = (string)$disposals_worksheet->getCell($cells['ACTION'])->getFormattedValue();
+                $subject = (string)$disposals_worksheet->getCell($cells['SUBJECT'])->getFormattedValue();
                 $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
                 $localdir_id = self::getDirectorateId($directorate);
 
@@ -572,7 +571,7 @@ class DisposalController extends Controller
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
                     $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();                                       
                     $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
-                    $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_description' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
+                    $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_name' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
                     $disposal->teacher_id = $teacher_model->teacher_id;
                     $disposal->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
                     $disposal->deleted = 0;

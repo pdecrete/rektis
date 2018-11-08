@@ -56,20 +56,20 @@ class DisposalSearch extends Disposal
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
         
         $query = (new \yii\db\Query())
-        ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*" , $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
-        ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $duties, $localdir_decisions])
+        ->select([$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"])
+        ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions])
         ->where($dspls . ".deleted=0 " .
             " AND " . $dspls . ".archived=" . $archived .
             " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
             " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
-            " AND " . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id" .
+            //" AND (" . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id OR " . $dspls . ".disposalworkobj_id IS NULL) " .
             " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" .
             " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
             " AND " . $dspls . ".school_id=dsp_sch.school_id" .
             " AND " . $tchers . ".school_id=orgn_sch.school_id" .
             " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
-            );
-        
+            )->distinct();
+        //echo $query->distinct()->createCommand()->rawSql; die();
         return $query;
     }
     
