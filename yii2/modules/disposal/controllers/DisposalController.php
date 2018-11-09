@@ -43,8 +43,8 @@ class DisposalController extends Controller
             ],
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
-                    ['actions' => ['getteacher-ajax', 'index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
-                    ['actions' => ['create', 'update', 'delete', 'importdisposals'], 'allow' => true, 'roles' => ['disposal_editor']],
+                    ['actions' => ['getteacher-ajax', 'getlocaldirdecision-ajax', 'index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['create', 'update', 'delete', 'massdelete' ,'importdisposals'], 'allow' => true, 'roles' => ['disposal_editor']],
                 ]
             ]
         ];
@@ -57,13 +57,13 @@ class DisposalController extends Controller
         $directorate = null;
         $data = null;
         if(Yii::$app->request->isAjax){
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            $protocol = Yii::$app->request->post('localdirdecision_protocol');
+             Yii::$app->response->format = Response::FORMAT_JSON;
+            $protocol = Yii::$app->request->post('localdirdecision_protocol');            
             $directorate = Yii::$app->request->post('localdirdecision_directorate');//->andWhere(['localdirdecision_directorate' => $directorate])
             $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->one();
             $data = $localdir_decision;
         }
-        
+
         return Json::encode($data);
     }
     
@@ -360,6 +360,33 @@ class DisposalController extends Controller
         }
     }
 
+    
+    public function actionMassdelete()
+    {        
+        $disposal_ids = Yii::$app->request->post('selection');
+        if (count($disposal_ids) == 0) {
+            Yii::$app->session->addFlash('info', DisposalModule::t('modules/disposal/app', "Please select at least one disposal."));
+            return $this->redirect(['disposal/index']);
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            foreach ($disposal_ids as $disposal_id) {
+                $this->delete($disposal_id);
+            }
+            
+            $transaction->commit();
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The deletion was completed successfully."));
+            return $this->redirect(['index']);
+        }
+        catch(Exception $exc) {
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The deletion failed."));
+            return $this->redirect(['index']);
+        }
+        
+    }
+    
     /**
      * Deletes an existing Disposal model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -369,10 +396,7 @@ class DisposalController extends Controller
     public function actionDelete($id)
     {
         try {
-            $model = $this->findModel($id);
-            $model->deleted = 1;
-            if(!$model->save())
-                throw new Exception();
+            $this->delete($id);
             
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: ', $model->disposal_id, 'disposal');
@@ -383,6 +407,14 @@ class DisposalController extends Controller
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal deletion failed."));
             return $this->redirect(['index']);
         }
+    }
+    
+    private function delete($id)
+    {
+        $model = $this->findModel($id);
+        $model->deleted = 1;
+        if(!$model->save())
+            throw new Exception();
     }
 
     /*public function actionImportdisposalsprepare() {

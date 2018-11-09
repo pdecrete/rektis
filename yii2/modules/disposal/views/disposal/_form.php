@@ -8,18 +8,17 @@ use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
-use app\widgets\HeadSignature\HeadSignature;
-use yii\base\Widget;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
 /* @var $form yii\widgets\ActiveForm */
-//echo "<pre>"; print_r($disposal_hours); echo "</pre>"; die();
+//echo "<pre>"; print_r($directorates); echo "</pre>"; die();
 
 
 $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                     var localdirdecision_protocol = document.getElementById("localdirdecision_protocol_frmid").value;
                                     var localdirdecision_directorate = document.getElementById("localdirdecision_directorate_frmid").value;
+
 
                                     $.ajax({ 
                                             url: url, 
@@ -40,10 +39,10 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                                             $("#localdirdecision_subject_frmid").prop("disabled", true);
                                                         }
                                                      },
-                                            error: function(){alert("Hallo");}
+                                            error: function(){alert("Error");}
 
                         	               })
-                                }
+                                 }
 
                                  function searchTeacherById(url){
                                     var regNumber = document.getElementById("teacher_regnumber_frmid").value;
@@ -74,7 +73,7 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                                             $("#teacher_school_frmid").prop("disabled", true);
                                                         }
                                                      },
-                                            error: function(){alert("Hallo");}
+                                            error: function(){alert("Error");}
 
                         	               })
                                 }';
@@ -111,7 +110,7 @@ $this->registerJs($script, View::POS_END);
 
 $urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
 $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
-
+                                                       
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">

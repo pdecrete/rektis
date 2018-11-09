@@ -9,7 +9,7 @@ use yii\widgets\DetailView;
 
 $this->title = DisposalModule::t('modules/disposal/app', 'View Local Directorate Suggestion');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Local Directorate Suggestions'), 'url' => ['/disposal/disposal-localdirdecision']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions'), 'url' => ['/disposal/disposal-localdirdecision']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-localdirdecision-view">

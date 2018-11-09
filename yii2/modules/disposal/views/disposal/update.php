@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model app\modules\disposal\models\Disposal */
 
 $this->title = DisposalModule::t('modules/disposal/app', 'Update Teacher Disposal');
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => ['/disposal/disposal/']];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>

@@ -24,12 +24,13 @@ $checkboxColumn = [[ 'class' => 'yii\grid\CheckboxColumn',
                     'checkboxOptions' => function ($model) {return ['value' => $model['disposal_id']];}
                   ]];
 $columns = [[   'attribute' => 'teacher_surname',
-                'label' => DisposalModule::t('modules/disposal/app', 'Surname'),
-                'options' => ['width' => '65']
+                'label' => DisposalModule::t('modules/disposal/app', 'Full name'),
+                'options' => ['width' => '65'],
+                'value' => function ($model) {return $model['teacher_surname'] . ' ' . $model['teacher_name'];}
             ],
-            [   'attribute' => 'teacher_name',
+/*             [   'attribute' => 'teacher_name',
                 'label' => DisposalModule::t('modules/disposal/app', 'Name'),
-            ],
+            ], */
             [   'attribute' => 'code',
                 'label' => DisposalModule::t('modules/disposal/app', 'Specialisation'),
                 'filter' => Select2::widget([  'model' => $searchModel,
@@ -134,12 +135,20 @@ $columns = [[   'attribute' => 'teacher_surname',
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 	<?=Html::beginForm(['archiveform'], 'post');?>
 	<?php if(!$archived):?>
-        <p class="text-right">
+    	<div class="text-right">
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import Disposals from Excel'), ['importdisposals'], ['class' => 'btn btn-primary']) ?>
-        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
-        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Disposals\' Approval'), ['disposal-approval/create'], ['class' => 'btn btn-success', 'data-method' => 'POST']) ?>
-            <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Teacher Disposal'), ['create'], ['class' => 'btn btn-success']) ?>
-        </p>
+        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
+        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Delete'), ['massdelete'], ['data'=>['confirm'=>DisposalModule::t('modules/disposal/app', "Are you sure you want to delete these items?")], 'class' => 'btn btn-danger', 'data-method' => 'POST']) ?>
+            <div class="btn-group">
+          		<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+          			<?= DisposalModule::t('modules/disposal/app', 'Create'); ?> <span class="caret"></span>
+      			</button>
+      			<ul class="dropdown-menu" role="menu">
+      				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approval'), ['disposal-approval/create'], ['data-method' => 'POST']) ?></li>
+            		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposal'), ['create']) ?></li>
+      			</ul>
+        	</div>
+    	</div><br />
     <?php else:?>
     	<p class="text-right">
     		<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['index'], ['class' => 'btn btn-primary']) ?>

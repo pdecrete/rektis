@@ -10,7 +10,7 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->title = DisposalModule::t('modules/disposal/app', 'Local Directorate Suggestions');
+$this->title = DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-localdirdecision-index">
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p class="text-right">
-        <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Local Directorate Suggestion'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Decision'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
