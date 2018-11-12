@@ -1,9 +1,10 @@
 <?php
 
+use app\modules\base\widgets\HeadSignature\models\HeadSignature;
 use app\modules\disposal\DisposalModule;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
-use app\models\HeadSignature;
+
 
 /* @var $this yii\web\View */
 

@@ -2,7 +2,7 @@
 namespace app\modules\base\widgets\HeadSignature;
 
 use yii\base\Widget;
-use app\models\HeadSignature;
+use app\modules\base\widgets\HeadSignature\models\HeadSignature;
 use Yii;
 
 class HeadSignatureWidget extends Widget
