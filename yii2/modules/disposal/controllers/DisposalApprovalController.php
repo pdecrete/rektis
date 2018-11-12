@@ -5,6 +5,7 @@ namespace app\modules\disposal\controllers;
 use Exception;
 use Yii;
 use PhpOffice\PhpWord\TemplateProcessor;
+use app\modules\base\widgets\HeadSignature\models\HeadSignature;
 use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalApproval;
 use app\modules\disposal\models\DisposalApprovalSearch;
@@ -21,7 +22,6 @@ use app\modules\eduinventory\models\Teacher;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
 use app\modules\disposal\models\DisposalLocaldirdecision;
-use app\models\HeadSignature;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -152,7 +152,7 @@ class DisposalApprovalController extends Controller
         
         try {            
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                
+                //echo "<pre>"; print_r($disposalapproval_models); echo "<pre>"; die();
                 if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) 
                     throw new Exception("All disposals must belong to the same local Directorate Decision.");
 
@@ -178,8 +178,11 @@ class DisposalApprovalController extends Controller
                     if(!$disposalapproval_model->save())
                         throw new Exception("Failed to assign disposals to the approval.");
                 }
-                if($disposals_counter == 0)
+                if($disposals_counter == 0){
+                    for($i = 0; $i < count($disposals_models); $i++)
+                        $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
                     throw new Exception("Please select at least one disposal.");
+                }
                 
                 if($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null)
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
@@ -235,9 +238,11 @@ class DisposalApprovalController extends Controller
         $teacher_models = array();
         $specialization_models = array();
         $use_template_with_health_reasons = false;
-        //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
-        foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
+        $disposal_ids = array();
+        
+        foreach ($disposalapproval_models as $index=>$disposalapproval_model) {            
             $disposals_models[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
+            $disposal_ids[$index] = $disposalapproval_model['disposal_id'];
             if(!$use_template_with_health_reasons && $disposals_models[$index]->isForHealthReasons())
                 $use_template_with_health_reasons = true;
             $school_models[$index] = $disposals_models[$index]->getSchool()->one();
@@ -251,10 +256,7 @@ class DisposalApprovalController extends Controller
         
         try {
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                
-                if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models))
-                    throw new Exception("All disposals must belong to the same local Directorate Decision.");
-                
+                //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
                 $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 if(!$model->save()) 
                     throw new Exception("Failed to save the changes of the approval.");
@@ -274,8 +276,12 @@ class DisposalApprovalController extends Controller
                             throw new Exception("Failed to save the changes of the approval.");
                     }
                 }
-                if($disposals_counter == count($old_disposalapproval_models))
+                if($disposals_counter == count($old_disposalapproval_models)){//echo "<pre>"; print_r($disposals_models); echo "</pre>"; die();
+                    for($i = 0; $i < count($disposals_models); $i++){
+                        $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
+                    }
                     throw new Exception("Please select at least one disposal.");
+                }
 
                 if($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null)
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
@@ -440,12 +446,11 @@ class DisposalApprovalController extends Controller
     public function checkLocaldirdecisionUniqueness($disposalapproval_models) {        
         if(count($disposalapproval_models) == 0)
             return false;             
-        
+
         $localdirdecision_id = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])['localdirdecision_id'];
-        
         foreach ($disposalapproval_models as $disposalapproval_model){
-            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']])['localdirdecision_id'];
-            if(!$tmp_disposal_model && $localdirdecision_id != Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']])['localdirdecision_id'])
+            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
+            if(!$tmp_disposal_model && $localdirdecision_id != $tmp_disposal_model['localdirdecision_id'])
                 return false;
         }
 

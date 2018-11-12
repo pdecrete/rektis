@@ -11,7 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\modules\disposal\models\DisposalApproval */
 /* @var $form yii\widgets\ActiveForm */
 
-
+//echo "<pre>"; print_r($disposalapproval_models); echo "<pre>"; die();
 
 ?>
 <div class="disposal-approval-form container-fluid">
