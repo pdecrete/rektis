@@ -2,8 +2,8 @@
 
 namespace app\modules\disposal;
 
+use app\modules\base\widgets\HeadSignature\models\HeadSignature;
 use Yii;
-use app\models\HeadSignature;
 
 /**
  * disposal module definition class
