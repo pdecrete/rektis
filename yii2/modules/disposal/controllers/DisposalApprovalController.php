@@ -189,7 +189,7 @@ class DisposalApprovalController extends Controller
                     
                 $transaction->commit();
                 $user = Yii::$app->user->identity->username;
-                Yii::info('User ' . $user . ' ' . 'created Approval with id: ', $model->approval_id, 'disposal');
+                Yii::info('User ' . $user . ' ' . 'created Approval with id: '. $model->approval_id, 'disposal');
 
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
                 return $this->redirect(['disposal-approval/index']);
@@ -288,7 +288,7 @@ class DisposalApprovalController extends Controller
                     
                 $transaction->commit();
                 $user = Yii::$app->user->identity->username;
-                Yii::info('User ' . $user . ' ' . 'updated Approval with id: ', $id, 'disposal');
+                Yii::info('User ' . $user . ' ' . 'updated Approval with id: '. $id, 'disposal');
 
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
                 return $this->redirect(['disposal-approval/index']);
@@ -404,7 +404,7 @@ class DisposalApprovalController extends Controller
             }
 
             $user = Yii::$app->user->identity->username;
-            Yii::info('User ' . $user . ' ' . 'deleted Approval with id: ', $id, 'disposal');
+            Yii::info('User ' . $user . ' ' . 'deleted Approval with id: '. $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.'));
             return $this->redirect(['index']);
         }

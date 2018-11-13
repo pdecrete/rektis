@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalLocaldirdecision */
 
-$this->title = DisposalModule::t('modules/disposal/app', 'View Local Directorate Suggestion');
+$this->title = DisposalModule::t('modules/disposal/app', 'View Local Directorate Decision');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions'), 'url' => ['/disposal/disposal-localdirdecision']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->localdirdecision_id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => Yii::t('app/modules/disposal/', 'Are you sure you want to delete this item?'),
+                'confirm' => DisposalModule::t('modules/disposal/app', 'Are you sure you want to delete this item?'),
                 'method' => 'post',
             ],
         ]) ?>

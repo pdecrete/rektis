@@ -421,7 +421,7 @@ AppAsset::register($this);
                             'url' => ['/disposal/disposal-approval'],
                         ],
                         [
-                            'label' => 'Εισηγήσεις Διευθύνσεων',
+                            'label' => 'Αποφάσεις Διευθύνσεων',
                             'url' => ['/disposal/disposal-localdirdecision'],
                         ],
                         '<li class="divider"></li>',

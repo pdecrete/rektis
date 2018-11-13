@@ -95,6 +95,20 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
+                    'categories' => ['eduinventory'],
+                    'logFile' => '@runtime/logs/eduinventory.log',
+                    'logVars' => []
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['disposal'],
+                    'logFile' => '@runtime/logs/disposal.log',
+                    'logVars' => []
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
                     'categories' => ['financial'],
                     'logFile' => '@runtime/logs/financial.log',
                     'logVars' => [],

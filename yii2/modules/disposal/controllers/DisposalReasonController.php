@@ -80,7 +80,7 @@ class DisposalReasonController extends Controller
                     throw new Exception("Error in saving the details of the disposal reason in the database");
 
                 $user = Yii::$app->user->identity->username;
-                Yii::info('User ' . $user . ' ' . 'created Disposal Reason with id: ', $model->disposalreason_id, 'disposal');
+                Yii::info('User ' . $user . ' ' . 'created Disposal Reason with id: '. $model->disposalreason_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -114,7 +114,7 @@ class DisposalReasonController extends Controller
                     throw new Exception();
 
                     $user = Yii::$app->user->identity->username;
-                    Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: ', $id, 'disposal');
+                    Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: '. $id, 'disposal');
                     Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
                     return $this->redirect(['index']);
             }
@@ -144,7 +144,7 @@ class DisposalReasonController extends Controller
             if(!$this->findModel($id)->delete())
                 throw new Exception("The disposal reason cannot be deleted.");
             $user = Yii::$app->user->identity->username;
-            Yii::info('User ' . $user . ' ' . 'deleted Decision of Local Directorate with id: ', $id, 'disposal');
+            Yii::info('User ' . $user . ' ' . 'deleted Decision of Local Directorate with id: '. $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposal reason was deleted successfully."));
             return $this->redirect(['index']);
         }

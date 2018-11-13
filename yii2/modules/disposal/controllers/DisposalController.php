@@ -221,7 +221,7 @@ class DisposalController extends Controller
                 
                 $transaction->commit();
                 $user = Yii::$app->user->identity->username;
-                Yii::info('User ' . $user . ' ' . 'created Disposal with id: ', $model->disposal_id, 'disposal');
+                Yii::info('User ' . $user . ' ' . 'created Disposal with id: '. $model->disposal_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -325,7 +325,7 @@ class DisposalController extends Controller
                 
                 $transaction->commit();
                 $user = Yii::$app->user->identity->username;
-                Yii::info('User ' . $user . ' ' . 'updated Disposal with id: ', $model->disposal_id, 'disposal');
+                Yii::info('User ' . $user . ' ' . 'updated Disposal with id: '. $model->disposal_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was saved successfully."));
                 return $this->redirect(['index']);
             }
@@ -398,8 +398,6 @@ class DisposalController extends Controller
         try {
             $this->delete($id);
             
-            $user = Yii::$app->user->identity->username;
-            Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: ', $model->disposal_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was deleted successfully."));
             return $this->redirect(['index']);
         }
@@ -411,10 +409,13 @@ class DisposalController extends Controller
     
     private function delete($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModel($id);        
         $model->deleted = 1;
         if(!$model->save())
             throw new Exception();
+        
+        $user = Yii::$app->user->identity->username;
+        Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: '. $model->disposal_id, 'disposal');
     }
 
     /*public function actionImportdisposalsprepare() {

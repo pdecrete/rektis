@@ -68,7 +68,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
         return [
             [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_file', 'approval_signedfile'], 'required'],
             [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate'], 'safe'],
-            [['deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
+            [['approval_republished', 'deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol'], 'string', 'max' => 100],
             [['approval_notes'], 'string', 'max' => 500],
             [['approval_file', 'approval_signedfile'], 'string', 'max' => 300],
@@ -89,6 +89,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
             'approval_signedfile' => Yii::t('app', 'Ψηφιακά Υπογεγραμμένο Αρχείο Έγκρισης'),
             'deleted' => Yii::t('app', 'Deleted'),
             'archived' => Yii::t('app', 'Archived'),
+            'approval_republished' => Yii::t('app', 'Ανακοινοποίηση Έγκρισης'),
             'created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
             'updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),
             'created_by' => Yii::t('app', 'Approval Created By'),

@@ -162,7 +162,7 @@ class DisposalStatisticController extends Controller
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ώρες Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Έναρξη Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λήξη Διάθεσης', DataType::TYPE_STRING);
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Διάθεσης', DataType::TYPE_STRING);
+            //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Αντικείμενο Διάθεσης', DataType::TYPE_STRING);
             foreach ($disposals as $disposal) {
                 $row++;
@@ -188,7 +188,7 @@ class DisposalStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($disposal['disposal_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($disposal['disposal_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);                
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalreason_description'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalworkobj_description'], DataType::TYPE_STRING);
+                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalworkobj_description'], DataType::TYPE_STRING);
                 
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
