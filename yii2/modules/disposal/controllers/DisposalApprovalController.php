@@ -43,12 +43,11 @@ class DisposalApprovalController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['index', 'view', 'download'], 'allow' => true, 'roles' => ['disposal_viewer']],
-                    ['actions' => ['create', 'update', 'delete'], 'allow' => true, 'roles' => ['disposal_editor']],
+                    ['actions' => ['create', 'update', 'delete', 'republish'], 'allow' => true, 'roles' => ['disposal_editor']],
                 ]
             ]
         ];
     }
-
 
     /**
      * Lists all DisposalApproval models.
@@ -96,7 +95,6 @@ class DisposalApprovalController extends Controller
             'specializations' => $specializations
         ]);
     }
-
     
     /**
      * Creates a new DisposalApproval model.
@@ -319,7 +317,8 @@ class DisposalApprovalController extends Controller
     }
     
     
-    private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) {
+    private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) 
+    {
         //echo "<pre>"; print_r($teacher_models); echo "<pre>"; die();
         //echo "<pre>"; echo ($disposals_models[0]['localdirdecision_id']); echo "<pre>"; die();
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
@@ -414,10 +413,9 @@ class DisposalApprovalController extends Controller
             return $this->redirect(['index']);
         }        
     }
-
     
-    
-    public function actionDownload($id) {
+    public function actionDownload($id) 
+    {
         try {
             $approval_model = DisposalApproval::findOne(['approval_id' => $id]);
 
@@ -436,14 +434,21 @@ class DisposalApprovalController extends Controller
             return $this->redirect(['/disposal/disposal-approval/index']);
         }
     }
+
     
+    
+    public function actionRepublish($id) 
+    {
+        $this->redirect(['disposal/index', 'archived' => 1, 'approval_id' => $id, 'republish' => 1]);
+    }
     
     /**
      * Checks whether all the disposalapproval models belong to the same local Directorate Decision
      * @param DisposalDisposalapproval $disposalapproval_models
      * @return boolean
      */
-    public function checkLocaldirdecisionUniqueness($disposalapproval_models) {        
+    public function checkLocaldirdecisionUniqueness($disposalapproval_models) 
+    {        
         if(count($disposalapproval_models) == 0)
             return false;             
 

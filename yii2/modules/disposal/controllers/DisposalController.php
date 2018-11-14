@@ -85,10 +85,16 @@ class DisposalController extends Controller
      * Lists all Disposal models.
      * @return mixed
      */
-    public function actionIndex($archived = 0)
+    public function actionIndex($archived = 0, $approval_id = -1, $republish = 0)
     {   
+        //echo $archived . ' ' . $approval_id . ' ' . $republish; die();
+        
         if (!is_numeric($archived) || ($archived != 0 && $archived != 1)) {
             $archived = 0;
+        }
+        
+        if (!is_numeric($approval_id)) {
+            $archived = -1;
         }
         
         $disposal_reasons = DisposalReason::find()->all();
@@ -97,12 +103,13 @@ class DisposalController extends Controller
         $decisions_protocols = DisposalLocaldirdecision::find()->select('localdirdecision_protocol')->all();
                 
         $searchModel = new DisposalSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'archived' => $archived,
+            'republish' => $republish,
             'disposal_reasons' => $disposal_reasons,
             'specialisations' => $specialisations,
             'directorates' => $directorates,

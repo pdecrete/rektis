@@ -18,7 +18,7 @@ $this->title = ($archived) ? DisposalModule::t('modules/disposal/app', 'Processe
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
 
-$actions = ($archived && !$republish) ? '{view}': '{view} {update} {delete}';   
+$actions = ($archived) ? '{view}': '{view} {update} {delete}';   
     
 $checkboxColumn = [[ 'class' => 'yii\grid\CheckboxColumn',
                     'checkboxOptions' => function ($model) {return ['value' => $model['disposal_id']];}

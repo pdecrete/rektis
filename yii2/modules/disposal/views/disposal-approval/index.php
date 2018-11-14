@@ -31,10 +31,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'created_at',
             'updated_at',
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download}',//, {downloadsigned}',
+             'template' => '{view} {update} {delete} {download} {republish}',//, {downloadsigned}',
              'buttons' => ['download' => function ($url, $model) {
                                             return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
                                                 ['title' => DisposalModule::t('modules/disposal/app', 'Download Decision'),
+                                                    'data-method' => 'post']);
+                                            },
+                           'republish' => function ($url, $model) {
+                                            return Html::a('<span class="glyphicon glyphicon-repeat"></span>', $url,
+                                                ['title' => DisposalModule::t('modules/disposal/app', 'Republish'),
                                                     'data-method' => 'post']);
                                             },
                 ],
@@ -53,6 +58,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     }
                                     if ($action === 'download') {
                                         $url = Url::to(['/disposal/disposal-approval/download', 'id' =>$model['approval_id']]);
+                                        return $url;
+                                    }
+                                    if ($action === 'republish') {
+                                        $url = Url::to(['/disposal/disposal-approval/republish', 'id' =>$model['approval_id']]);
                                         return $url;
                                     }
                                 },
