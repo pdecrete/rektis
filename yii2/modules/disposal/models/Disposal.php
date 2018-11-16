@@ -85,7 +85,7 @@ class Disposal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['disposal_startdate', 'disposal_hours', 'teacher_id', 'school_id', 'disposalreason_id'], 'required'],
+            [['disposal_startdate', 'disposal_hours', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
             [['disposal_hours', 'disposal_republished' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],

@@ -63,6 +63,7 @@ class Teacher extends \yii\db\ActiveRecord
             'teacher_surname' => Yii::t('app', 'Επίθετο'),
             'teacher_name' => Yii::t('app', 'Όνομα'),
             'teacher_registrynumber' => Yii::t('app', 'Αριθμός Μητρώου'),
+            'teacher_afm' => Yii::t('app', 'ΑΦΜ'),
             'specialisation_id' => Yii::t('app', 'Ειδικότητα'),
             'school_id' => Yii::t('app', 'School ID'),
             'teacher_gender' => Yii::t('app', 'Φύλο'),

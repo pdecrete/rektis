@@ -56,19 +56,19 @@ class DisposalSearch extends Disposal
         $duties = $prefix . 'disposal_disposalworkobj';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
         
-        $tables_array = [$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" ,
-            $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"];
+        $tables_array = [$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*",
+                         $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"];
         if($archived)
             $tables_array += [$dspls_apprvs . ".*"];
         
         $query = (new \yii\db\Query())
                 ->select($tables_array)
-                ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $dspls_apprvs])
+                ->from([$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $dspls_apprvs, $duties])
                 ->where([$dspls . ".archived" => $archived])
                 ->andWhere($dspls . ".deleted=0 " .
                     " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
                     " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
-                    //" AND (" . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id OR " . $dspls . ".disposalworkobj_id IS NULL) " .
+                    " AND " . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id" .
                     " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" .
                     " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
                     " AND " . $dspls . ".school_id=dsp_sch.school_id" .

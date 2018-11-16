@@ -3,7 +3,6 @@
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\Pjax;
 use yii\grid\GridView;
 use app\modules\disposal\DisposalModule;
 use kartik\datecontrol\DateControl;
@@ -137,7 +136,6 @@ $columns = [[   'attribute' => 'teacher_surname',
 	<?php if(!$archived):?>
     	<div class="text-right">
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import Disposals from Excel'), ['importdisposals'], ['class' => 'btn btn-primary']) ?>
-        	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Delete'), ['massdelete'], ['data'=>['confirm'=>DisposalModule::t('modules/disposal/app', "Are you sure you want to delete these items?")], 'class' => 'btn btn-danger', 'data-method' => 'POST']) ?>
             <div class="btn-group">
           		<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">

@@ -72,8 +72,12 @@ class DisposalController extends Controller
         $data = null;
         if(Yii::$app->request->isAjax){
             Yii::$app->response->format = Response::FORMAT_JSON;
-            $data = Yii::$app->request->post('regNumber');
-            $teacher = Teacher::findOne(['teacher_registrynumber' => intval($data)]);
+            $searchBy = Yii::$app->request->post('idType');            
+            $data = Yii::$app->request->post('id');
+            if($searchBy == "regnumber")
+                $teacher = Teacher::findOne(['teacher_registrynumber' => $data]);
+            else if($searchBy == "vat")
+                $teacher = Teacher::findOne(['teacher_afm' => $data]);
             $data = $teacher;
             //echo "<pre>"; print_r($teacher); echo "</pre>"; die();
         }
@@ -176,14 +180,15 @@ class DisposalController extends Controller
                 if($model->school_id == $teacher_model->school_id)
                     throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
                                 
-                $existing_teacher_model = Teacher::findOne(['teacher_registrynumber' => $teacher_model->teacher_registrynumber]);
+                $existing_teacher_model = Teacher::findOne(['teacher_afm' => $teacher_model->teacher_afm]);
                 
                 if(is_null($existing_teacher_model)) {
-                    if(!$teacher_model->save()) {
-                        throw new Exception("Error in saving the teacher details in the database.");
-                    }
-                    $existing_teacher_model->setAttributes($teacher_model->attributes);
-                    $model->teacher_id = $teacher_model->teacher_id;
+                    throw new Exception("There is no teacher with such VAT number. Please update the teachers database.");
+                    //if(!$teacher_model->save()) {
+                    //    throw new Exception("Error in saving the teacher details in the database.");
+                    //}
+                    //$existing_teacher_model->setAttributes($teacher_model->attributes);
+                    //$model->teacher_id = $teacher_model->teacher_id;
                 }
                 else {
                     $model->teacher_id = $existing_teacher_model->teacher_id;
@@ -213,7 +218,7 @@ class DisposalController extends Controller
                 
                 $existing_localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol]);
                 if(is_null($existing_localdirdecision_model)) {
-                    if(!$localdirdecision_model->save()) {
+                    if(!$localdirdecision_model->save()) {                        
                         throw new Exception("Error in saving the teacher details in the database.");
                     }
                     $model->localdirdecision_id = $localdirdecision_model->localdirdecision_id;
@@ -222,7 +227,7 @@ class DisposalController extends Controller
                     $model->localdirdecision_id = $existing_localdirdecision_model->localdirdecision_id;
                 
                 if(!$model->save()){
-                    //echo "<pre>"; print_r($model->errors); echo "<pre>"; die();
+                    //echo "<pre>"; print_r($model); echo "<pre>"; die();
                     throw new Exception("Error in saving the disposal details in the database.");
                 }                               
                 
