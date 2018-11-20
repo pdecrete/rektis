@@ -137,20 +137,21 @@ class DisposalApprovalController extends Controller
         
         $directorate_id = Schoolunit::findOne(['school_id' => $teacher_models[0]['school_id']])['directorate_id'];
         $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
-        foreach ($teacher_models as $teacher_model) {
+        
+        /*foreach ($teacher_models as $teacher_model) {
             $teachers_school = Schoolunit::findOne(['school_id' => $teacher_model['school_id']]);    
             if ($teachers_school['directorate_id'] != $directorate_id) {
                 Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Please select teachers of only one directorate."));
                 return $this->redirect(['disposal/index']);
             }
-        }
+        }*/
 
         
         $transaction = Yii::$app->db->beginTransaction();
         
         try {            
             if($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                //echo "<pre>"; print_r($disposalapproval_models); echo "<pre>"; die();
+
                 if(!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) 
                     throw new Exception("All disposals must belong to the same local Directorate Decision.");
 
@@ -450,12 +451,11 @@ class DisposalApprovalController extends Controller
     public function checkLocaldirdecisionUniqueness($disposalapproval_models) 
     {        
         if(count($disposalapproval_models) == 0)
-            return false;             
-
-        $localdirdecision_id = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])['localdirdecision_id'];
+            return false;
+        $localdirdecision_id = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])['localdirdecision_id'];       
         foreach ($disposalapproval_models as $disposalapproval_model){
-            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
-            if(!$tmp_disposal_model && $localdirdecision_id != $tmp_disposal_model['localdirdecision_id'])
+            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);            
+            if(!is_null($tmp_disposal_model) && $localdirdecision_id != $tmp_disposal_model['localdirdecision_id'])
                 return false;
         }
 

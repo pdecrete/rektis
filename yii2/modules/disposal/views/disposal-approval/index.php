@@ -28,8 +28,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'approval_regionaldirectprotocol',
             //'approval_localdirectprotocol',
             'approval_notes',
-            'created_at',
-            'updated_at',
+            ['attribute' => 'created_at',
+             'format' => ['datetime', 'php:d-m-Y H:i']
+            ],
+            ['attribute' => 'updated_at',
+             'format' => ['datetime', 'php:d-m-Y H:i']
+            ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{view} {update} {delete} {download} {republish}',//, {downloadsigned}',
              'buttons' => ['download' => function ($url, $model) {
