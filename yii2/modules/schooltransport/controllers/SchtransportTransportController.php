@@ -126,6 +126,9 @@ class SchtransportTransportController extends Controller
 
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
+        if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) { //Since etwinning programms do not have a unique code, create one for them
+            $program_model->program_code = "eTwinning_" . (string)round(microtime(true) * 1000);
+        }
 
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
