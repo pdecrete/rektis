@@ -47,7 +47,6 @@ if ($program_alias == SchtransportTransport::PARLIAMENT) {
     $progrfields_readOnly['meeting_hostschool'] = true;
 }
 else if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) {
-    $program_model['program_code'] = 'eTwinning';
     $typeahead_data['PROGRAMCODES'] = null;
     $progrfields_readOnly['program_code'] = true;
 }
