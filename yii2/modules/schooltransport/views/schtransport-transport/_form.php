@@ -14,8 +14,24 @@ use app\modules\schooltransport\models\SchtransportTransport;
 /* @var $form yii\widgets\ActiveForm */
 
 //echo "<pre>"; print_r($program_model); echo "</pre>"; die();
-$progrfields_readOnly = false;
-if ($program_alias == 'PARLIAMENT') {
+$progrfields_readOnly = ['school' => false,
+                         'program_code' => false,
+                         'program_title' => false,
+                         'meeting_country' => false,
+                         'meeting_city' => false,
+                         'meeting_hostschool' => false,
+                         'meeting_startdate' => false,
+                         'meeting_enddate' => false,
+                         'headteacher' => false,
+                         'teachers' => false,
+                         'pupils' => false,
+                         'boarddecision' => false,
+                         'directorateprotocol' => false,
+                         'pdeprotocol' => false,
+                         'protocoldate' => false
+                        ];
+
+if ($program_alias == SchtransportTransport::PARLIAMENT) {
     $program_model['program_title'] = 'Βουλή των Ελλήνων';
     $program_model['program_code'] = '-';
     $meeting_model['meeting_country'] = 'Ελλάδα';
@@ -24,8 +40,23 @@ if ($program_alias == 'PARLIAMENT') {
     $typeahead_data['PROGRAMTITLES'] = null;
     $typeahead_data['COUNTRIES'] = null;
     $typeahead_data['CITIES'] = null;
-    $progrfields_readOnly = true;
+    $progrfields_readOnly['program_code'] = true;
+    $progrfields_readOnly['program_title'] = true;
+    $progrfields_readOnly['meeting_country'] = true;
+    $progrfields_readOnly['meeting_city'] = true;
+    $progrfields_readOnly['meeting_hostschool'] = true;
 }
+else if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) {
+    $typeahead_data['PROGRAMCODES'] = null;
+    $progrfields_readOnly['program_code'] = true;
+}
+else if ($program_alias == SchtransportTransport::INTERNATIONAL_PARTNERSHIPS) {
+    $typeahead_data['PROGRAMCODES'] = null;
+    $typeahead_data['PROGRAMTITLES'] = null;
+    $progrfields_readOnly['program_code'] = true;
+    $progrfields_readOnly['program_title'] = true;
+}
+
 ?>
 
 <div class="schtransport-transport-form col-lg-6">
@@ -39,7 +70,7 @@ if ($program_alias == 'PARLIAMENT') {
 
 
 	<?php  if (empty($typeahead_data['PROGRAMCODES'])):
-    echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+	           echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['program_code'], 'disabled' => $disabled]);
            else:
                echo $form->field($program_model, 'program_code')->widget(
                    Typeahead::classname(),
@@ -52,7 +83,7 @@ if ($program_alias == 'PARLIAMENT') {
     ?>
 	                                                       
 	<?php  if (empty($typeahead_data['PROGRAMTITLES'])):
-               echo $form->field($program_model, 'program_title')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+	           echo $form->field($program_model, 'program_title')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['program_title'], 'disabled' => $disabled]);
            else:
                echo $form->field($program_model, 'program_title')->widget(
                    Typeahead::classname(),
@@ -65,7 +96,7 @@ if ($program_alias == 'PARLIAMENT') {
     ?>
 
 	<?php  if (empty($typeahead_data['COUNTRIES'])):
-               echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+	           echo $form->field($meeting_model, 'meeting_country')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['meeting_country'], 'disabled' => $disabled]);
            else:
                echo $form->field($meeting_model, 'meeting_country')->widget(
                    Typeahead::classname(),
@@ -78,7 +109,7 @@ if ($program_alias == 'PARLIAMENT') {
     ?>      
         
 	<?php  if (empty($typeahead_data['CITIES'])):
-               echo $form->field($meeting_model, 'meeting_city')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+	           echo $form->field($meeting_model, 'meeting_city')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['meeting_city'], 'disabled' => $disabled]);
            else:
                echo $form->field($meeting_model, 'meeting_city')->widget(
                    Typeahead::classname(),
@@ -91,7 +122,7 @@ if ($program_alias == 'PARLIAMENT') {
     ?>
     
     <?php if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY])) {
-        echo $form->field($meeting_model, 'meeting_hostschool')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly, 'disabled' => $disabled]);
+        echo $form->field($meeting_model, 'meeting_hostschool')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['meeting_hostschool'], 'disabled' => $disabled]);
     }
     ?>
     
@@ -131,7 +162,8 @@ if ($program_alias == 'PARLIAMENT') {
    	<?php  if (in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS,
                                         SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS,
                                         SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT,
-                                        SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY])) {
+   	                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, 
+   	                                    SchtransportTransport::INTERNATIONAL_PARTNERSHIPS])) {
         echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
     }
     ?>
