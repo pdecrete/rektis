@@ -39,6 +39,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
     const ETWINNING_FOREIGN_COUNTRY = 'ETWINNING_FOREIGN_COUNTRY';
     const SCH_TWINNING_FOREIGN_COUNTRY = 'SCH_TWINNING_FOREIGN_COUNTRY';
     const PARLIAMENT = 'PARLIAMENT';
+    const INTERNATIONAL_PARTNERSHIPS = 'INTERNATIONAL_PARTNERSHIPS';
 
     public $signedfile;
 
