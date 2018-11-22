@@ -50,6 +50,12 @@ else if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) {
     $typeahead_data['PROGRAMCODES'] = null;
     $progrfields_readOnly['program_code'] = true;
 }
+else if ($program_alias == SchtransportTransport::INTERNATIONAL_PARTNERSHIPS) {
+    $typeahead_data['PROGRAMCODES'] = null;
+    $typeahead_data['PROGRAMTITLES'] = null;
+    $progrfields_readOnly['program_code'] = true;
+    $progrfields_readOnly['program_title'] = true;
+}
 
 ?>
 
@@ -64,7 +70,7 @@ else if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) {
 
 
 	<?php  if (empty($typeahead_data['PROGRAMCODES'])):
-	echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['program_code'], 'disabled' => $disabled]);
+	           echo $form->field($program_model, 'program_code')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['program_code'], 'disabled' => $disabled]);
            else:
                echo $form->field($program_model, 'program_code')->widget(
                    Typeahead::classname(),
@@ -156,7 +162,8 @@ else if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) {
    	<?php  if (in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS,
                                         SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS,
                                         SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT,
-                                        SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY])) {
+   	                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, 
+   	                                    SchtransportTransport::INTERNATIONAL_PARTNERSHIPS])) {
         echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
     }
     ?>
