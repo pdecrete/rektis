@@ -417,6 +417,10 @@ AppAsset::register($this);
                             'url' => ['/disposal/disposal?archived=1'],
                         ],
                         [
+                            'label' => 'Απορριφθείσες Διαθέσεις',
+                            'url' => ['/disposal/disposal?rejected=1'],
+                        ],
+                        [
                             'label' => 'Εγκρίσεις Διαθέσεων',
                             'url' => ['/disposal/disposal-approval'],
                         ],

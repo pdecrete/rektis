@@ -19,6 +19,8 @@ use app\modules\schooltransport\models\Directorate;
  * @property string $disposal_startdate
  * @property string $disposal_enddate
  * @property integer $disposal_hours
+ * @property integer $disposal_republished
+ * @property integer $disposal_rejected
  * @property string $created_at
  * @property string $updated_at
  * @property integer $deleted
@@ -87,7 +89,7 @@ class Disposal extends \yii\db\ActiveRecord
         return [
             [['disposal_startdate', 'disposal_hours', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
-            [['disposal_hours', 'disposal_republished' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
+            [['disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'teacher_id']],
@@ -109,6 +111,7 @@ class Disposal extends \yii\db\ActiveRecord
             'disposal_enddate' => DisposalModule::t('modules/disposal/app', 'Λήξη Διάθεσης'),
             'disposal_hours' => DisposalModule::t('modules/disposal/app', 'Ώρες Διάθεσης'),
             'disposal_republished' => DisposalModule::t('modules/disposal/app', 'Ανακοινοποιημένη Διάθεση'),
+            'disposal_rejected' => DisposalModule::t('modules/disposal/app', 'Απορριφθείσα Διάθεση'),
             'disposal_created_at' => DisposalModule::t('modules/disposal/app', 'Ημ/νία Δημιουργίας'),
             'disposal_updated_at' => DisposalModule::t('modules/disposal/app', 'Ημ/νία Επεξεργασίας'),
             'deleted' => DisposalModule::t('modules/disposal/app', 'Deleted'),

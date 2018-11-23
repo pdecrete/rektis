@@ -22,17 +22,22 @@ $this->params['breadcrumbs'][] = $this->title;
     			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), Url::to(['/disposal/disposal']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
             </div>
     		<div class="col-lg-4">
-                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals');?></h3>
-    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals approvals');?></p>
-    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
-            </div>
-    		<div class="col-lg-4">
                 <h3><?= DisposalModule::t('modules/disposal/app', 'Processed Disposals');?></h3>
     			<p><?= DisposalModule::t('modules/disposal/app', 'View approved disposals');?></p>
     			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approved Disposals'), Url::to(['/disposal/disposal', 'archived' => 1]), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
-            </div>                
+            </div>
+    		<div class="col-lg-4">
+                <h3><?= DisposalModule::t('modules/disposal/app', 'Rejected Disposals');?></h3>
+    			<p><?= DisposalModule::t('modules/disposal/app', 'View rejected disposals');?></p>
+    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), Url::to(['/disposal/disposal', 'rejected' => 1]), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            </div>                            
       	</div>
       	<div class="row">
+    		<div class="col-lg-4">
+                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals');?></h3>
+    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals approvals');?></p>
+    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+            </div>      	
             <div class="col-lg-4">
                 <h3><?= DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions');?></h3>
                 <p><?= DisposalModule::t('modules/disposal/app', 'Manage decisions of local Directorates');?></p>

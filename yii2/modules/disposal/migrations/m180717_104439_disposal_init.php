@@ -113,6 +113,7 @@ class m180717_104439_disposal_init extends Migration
                              `disposal_enddate` DATE DEFAULT NULL COMMENT 'Λήξη Διάθεσης',
                              `disposal_hours` TINYINT NOT NULL COMMENT 'Ώρες Διάθεσης',
                              `disposal_republished` INTEGER DEFAULT NULL,
+                             `disposal_rejected` INTEGER DEFAULT 0,
                              `created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',
                              `updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας',
                              `created_by` INTEGER,

@@ -17,9 +17,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-    <p class="text-right">
-    	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['disposal/index'], ['class' => 'btn btn-primary']) ?>
-    </p>
+    <div class="text-right">
+		<div class="btn-group">
+      		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      			<?= DisposalModule::t('modules/disposal/app', 'View'); ?> <span class="caret"></span>
+  			</button>
+  			<ul class="dropdown-menu" role="menu">
+  				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['disposal/index']) ?></li>
+  				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approved Disposals'), ['disposal/index', 'archived' => 1]) ?></li>
+        		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), ['disposal/index', 'rejected' => 1]) ?></li>
+  			</ul>
+    	</div>
+    </div><br />
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

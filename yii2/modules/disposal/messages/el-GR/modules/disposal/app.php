@@ -145,7 +145,7 @@ return [
     'Directorate Protocol' => 'Πρωτόκολλο',
     'Disposal' => 'Διάθεση',
     'Reason' => 'Λόγος',
-    'Import Disposals from Excel' => 'Εισαγωγή Διαθέσεων από Excel',
+    'Import from Excel' => 'Εισαγωγή από Excel',
     'Import Disposals' => 'Εισαγωγή Διαθέσεων',
     'Disposals Excel File' => 'Αρχείο Excel Διαθέσεων',
     'Select Directorate ...' => 'Επιλέξτε Διεύθυνση ...',
@@ -185,5 +185,18 @@ return [
     'The decision was created successfully.' => 'Η απόφαση δημιουργήθηκε επιτυχώς.',
     'The decision cannot change because the already assigned disposals to the decision refer to schools of teachers of different Directorate.' => 'Τα στοιχεία της απόφασης δεν μπορούν να αλλάξουν, διότι η απόφαση είναι συνδεδεμένη με διαθέσεις εκπαιδευτικών οι οποίοι ανήκουν σε διαφορετική Δ/νση από την επιλεχθείσα. ',
     'View Local Directorate Decision' => 'Προβολή Απόφασης Τοπικής Διεύθυνσης',
-    'Are you sure you want to delete this item?' => 'Είστε σίγουρος/η ότι θέλετε να διαγράψετε το στοιχείο αυτό;'
+    'Are you sure you want to delete this item?' => 'Είστε σίγουρος/η ότι θέλετε να διαγράψετε το στοιχείο αυτό;',
+    'Reject Disposal' => 'Απόρριψη (μη έγκριση) Διάθεσης',
+    'The teacher disposal was rejected successfully and moved to the Rejected Disposals. You can still restore the disposal from the Rejected Disposals state.' => 
+        'Η διάθεση του εκπαιδευτικού απορρίφθηκε επιτυχώς και μεταφέρθηκε στις Απορριφθείσες Διαθέσεις. Μπορείτε να επανεφέρετε τη διάθεση σε "υπό έγκριση" κατάσταση αν το επιθυμείτε.',
+    'The teacher disposal rejection failed.' => 'Η απόρριψη της διάθεσης απέτυχε.',
+    'Rejected Disposals' => 'Απορριφθείσες Διαθέσεις',
+    'View rejected disposals' => 'Προβολή απορριφθεισών διαθέσεων',
+    'View' => 'Προβολή',
+    'Are you sure you want to reject this disposal?' => 'Είστε σίγουρος/η ότι θέλετε να απορρίψετε αυτή τη διάθεση;',
+    'Are you sure you want to restore this disposal?' => '',
+    'Restore Disposal in "under approval" state' => 'Επαναφορά διάθεσης σε "υπό έγκριση" κατάσταση',
+    'Are you sure you want to restore this disposal?' => 'Είστε σίγουρος/η ότι θέλετε να επαναφέρετε αυτή τη διάθεση;',
+    'The teacher disposal was restored successfully.' => 'H επαναφορά της διάθεση έγινε ολοκληρώθηκες επιτυχώς.',
+    'The teacher disposal restoration failed.' => 'Η επαναφορά της διάθεσης απέτυχε.'
 ];

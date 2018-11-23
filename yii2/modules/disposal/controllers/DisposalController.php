@@ -44,7 +44,7 @@ class DisposalController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['getteacher-ajax', 'getlocaldirdecision-ajax', 'index', 'view'], 'allow' => true, 'roles' => ['disposal_viewer']],
-                    ['actions' => ['create', 'update', 'delete', 'massdelete' ,'importdisposals'], 'allow' => true, 'roles' => ['disposal_editor']],
+                    ['actions' => ['create', 'update', 'delete', 'massdelete' ,'importdisposals', 'reject', 'restore'], 'allow' => true, 'roles' => ['disposal_editor']],
                 ]
             ]
         ];
@@ -89,7 +89,7 @@ class DisposalController extends Controller
      * Lists all Disposal models.
      * @return mixed
      */
-    public function actionIndex($archived = 0, $approval_id = -1, $republish = 0)
+    public function actionIndex($archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
     {   
         //echo $archived . ' ' . $approval_id . ' ' . $republish; die();
         
@@ -97,8 +97,10 @@ class DisposalController extends Controller
             $archived = 0;
         }
         
-        if (!is_numeric($approval_id)) {
+        if (!is_numeric($approval_id) || !is_numeric($republish) || !is_numeric($rejected)) {
             $archived = -1;
+            $republish = 0;
+            $rejected = 0;
         }
         
         $disposal_reasons = DisposalReason::find()->all();
@@ -107,13 +109,14 @@ class DisposalController extends Controller
         $decisions_protocols = DisposalLocaldirdecision::find()->select('localdirdecision_protocol')->all();
                 
         $searchModel = new DisposalSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id, $republish, $rejected);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'archived' => $archived,
             'republish' => $republish,
+            'rejected' => $rejected,
             'disposal_reasons' => $disposal_reasons,
             'specialisations' => $specialisations,
             'directorates' => $directorates,
@@ -126,7 +129,7 @@ class DisposalController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id, $archived = 0)
+    public function actionView($id)
     {        
         $model = $this->findModel($id);
         $teacher = $model->getTeacher()->one();
@@ -150,8 +153,7 @@ class DisposalController extends Controller
         $array_model['disposalworkobj_id'] = $disposal_workobj['disposalworkobj_description'];
         
         return $this->render('view', [
-            'model' => $array_model,
-            'archived' => $archived
+            'model' => $array_model
         ]);
     }
 
@@ -280,7 +282,7 @@ class DisposalController extends Controller
         try {            
             $model = $this->findModel($id);
             
-            if($model->deleted == 1 || $model->archived == 1){
+            if($model->deleted == 1 || $model->archived == 1 || $model->disposal_rejected == 1){
                 Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The disposal is not allowed to be updated."));
                 return $this->redirect(['index']);
             }
@@ -414,20 +416,89 @@ class DisposalController extends Controller
             return $this->redirect(['index']);
         }
         catch (Exception $exc) {
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal deletion failed."));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The deletion failed."));
+            return $this->redirect(['index']);
+        }
+    }
+
+    private function delete($id)
+    {
+        $model = $this->findModel($id);
+        if($model->archived == 1 || $model->disposal_rejected == 1)
+            throw new Exception();
+        $model->deleted = 1;
+        if(!$model->save())
+            throw new Exception();
+            
+        $user = Yii::$app->user->identity->username;
+        Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: '. $model->disposal_id, 'disposal');
+    }
+    
+    /**
+     * Restores an existing Disposal model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionRestore($id)
+    {
+        try {
+            $this->restore($id);
+            
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was restored successfully."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal restoration failed."));
             return $this->redirect(['index']);
         }
     }
     
-    private function delete($id)
+    private function restore($id)
     {
-        $model = $this->findModel($id);        
-        $model->deleted = 1;
+        $model = $this->findModel($id);
+        if($model->archived == 1 || ($model->archived == 0 && $model->disposal_rejected == 0))
+            throw new Exception();
+        $model->disposal_rejected = 0;
         if(!$model->save())
             throw new Exception();
         
         $user = Yii::$app->user->identity->username;
-        Yii::info('User ' . $user . ' ' . 'deleted Disposal with id: '. $model->disposal_id, 'disposal');
+        Yii::info('User ' . $user . ' ' . 'restored Disposal with id: '. $model->disposal_id, 'disposal');
+    }
+    
+    /**
+     * Rejects a Disposal.
+     * If rejection is successful, the disposal will be moved to the rejected disposals page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionReject($id)
+    {
+        try {
+            $this->reject($id);
+            
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The teacher disposal was rejected successfully and moved to the Rejected Disposals. You can still restore the disposal from the Rejected Disposals state."));
+            return $this->redirect(['index']);
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "The teacher disposal rejection failed."));
+            return $this->redirect(['index']);
+        }
+    }
+    
+
+    private function reject($id)
+    {
+        $model = $this->findModel($id);
+        if($model->archived == 1 || $model->disposal_rejected == 1)
+            throw new Exception();
+        $model->disposal_rejected = 1;
+        if(!$model->save())
+            throw new Exception();
+            
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'rejected Disposal with id: '. $model->disposal_id, 'disposal');
     }
 
     /*public function actionImportdisposalsprepare() {

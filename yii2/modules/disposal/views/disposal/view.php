@@ -7,17 +7,25 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
 
-$url = 'index?archived=' . $archived; 
+$archived = $model['archived'];
+$rejected = $model['disposal_rejected'];
+
+$url = 'index?archived=' . $archived . '&rejected=' . $rejected; 
 $this->title = DisposalModule::t('modules/disposal/app', 'View Teacher\'s Disposal');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ($archived) ? ['label' => DisposalModule::t('modules/disposal/app', 'Processed Disposals'), 'url' => [$url]] 
-                                             : ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => [$url]];
+if ($archived)
+    $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Processed Disposals'), 'url' => [$url]];
+else if ($rejected)
+    $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), 'url' => [$url]];
+else
+    $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => [$url]];
+
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-	<?php if(!$archived):?>
+	<?php if(!$archived && !$rejected):?>
         <p class="text-right">
             <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model['disposal_id']], ['class' => 'btn btn-primary']) ?>
             <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model['disposal_id']], [
