@@ -7,12 +7,13 @@ class ButtonShortcuts extends Widget
 {
     public $rejected;
     public $archived;
-    
-     public function init() {
+
+    public function init()
+    {
         parent::init();
     }
-    
-    public function run() 
+
+    public function run()
     {
         return $this->render('buttons_shortcuts');
     }

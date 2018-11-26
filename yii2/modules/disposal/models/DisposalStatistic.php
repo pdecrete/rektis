@@ -15,13 +15,13 @@ class DisposalStatistic extends Model
     const GROUPBY_SPECIALIZATION = 4;
     const GROUPBY_DUTY = 5;
     const GROUPBY_REASON = 6;
-    
+
     const CHARTTYPE_BAR = 'bar';
     const CHARTTYPE_HORIZONTALBAR = 'horizontalBar';
     const CHARTTYPE_PIE = 'pie';
     const CHARTTYPE_DOUGHNUT = 'doughnut';
     const CHARTTYPE_POLARAREA = 'polarArea';
-    
+
     public $statistic_schoolyear;
     public $statistic_educationlevel;
     public $statistic_prefecture;
@@ -30,7 +30,7 @@ class DisposalStatistic extends Model
     public $statistic_reason;
     public $statistic_groupby;
     public $statistic_charttype;
-    
+
     /**
      * @inheritdoc
      */
@@ -48,11 +48,11 @@ class DisposalStatistic extends Model
             [['statistic_charttype'], 'string', 'max' => 50]
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
-    
+
     public function attributeLabels()
     {
         return ['statistic_schoolyear' => DisposalModule::t('modules/disposal/app', 'Σχολικό έτος'),
@@ -65,8 +65,8 @@ class DisposalStatistic extends Model
             'statistic_charttype' => DisposalModule::t('modules/disposal/app', 'Τύπος Γραφήματος'),
         ];
     }
-    
-    
+
+
     public function getStatistics()
     {
         //echo "<pre>"; print_r($this); echo "</pre>"; die();
@@ -78,7 +78,7 @@ class DisposalStatistic extends Model
         $specs = $tblprefix . 'specialisation';
         $schl = $tblprefix . 'schoolunit';
 
-        
+
         $groupby_options = DisposalStatistic::getGroupByOptions();
         $andWhereCondition = '';
         $data = [];
@@ -89,9 +89,9 @@ class DisposalStatistic extends Model
             foreach ($school_years as $school_year => $literal) {
                 $andWhereCondition = $dsp . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
                     $dsp . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31'";
-                    $data['LABELS'][$index] = $school_year;
-                    $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
-                    $index++;
+                $data['LABELS'][$index] = $school_year;
+                $data['DISPOSALS_COUNT'][$index] = DisposalStatistic::countDisposals($andWhereCondition);
+                $index++;
             }
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_REASON) {
             $reasons = DisposalStatistic::getReasonOptions();
@@ -117,13 +117,13 @@ class DisposalStatistic extends Model
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_SPECIALIZATION) {
             $specializations = EduinventoryHelper::getSpecializations();
             foreach ($specializations as $specialization_id => $specialization_code) {
-                $andWhereCondition = $specs . ".id='" . $specialization_id . "'";                
+                $andWhereCondition = $specs . ".id='" . $specialization_id . "'";
                 $disposals_count = DisposalStatistic::countDisposals($andWhereCondition);
-                if($disposals_count != 0) {
+                if ($disposals_count != 0) {
                     $data['LABELS'][$index] = $specialization_code;
                     $data['DISPOSALS_COUNT'][$index] = $disposals_count;
                     $index++;
-                }                
+                }
             }
         } elseif ($this->statistic_groupby == DisposalStatistic::GROUPBY_DUTY) {
             $duties = DisposalStatistic::getDutyOptions();
@@ -144,7 +144,7 @@ class DisposalStatistic extends Model
                 $index++;
             }
             $more_disposals = DisposalStatistic::countDisposals("") - $disposals_count;
-            if($more_disposals > 0) {            
+            if ($more_disposals > 0) {
                 $data['LABELS'][$index] = "Άγνωστο";
                 $data['DISPOSALS_COUNT'][$index] = $more_disposals;
                 $index++;
@@ -172,7 +172,7 @@ class DisposalStatistic extends Model
         $level_literal = '';
         $program_literal = '';
         $country_literal = '';
-        
+
         $counter = 0;
         foreach ($years as $year) {
             $counter++;
@@ -183,10 +183,10 @@ class DisposalStatistic extends Model
                 $years_literal .= '"';
             }
         }
-                
+
         return $literal;
     }
-    
+
     /**
      * Returns the school years options based on the dates of the disposals saved in the database.
      *
@@ -196,20 +196,21 @@ class DisposalStatistic extends Model
     {
         $school_years = [];
         $min_startdate = Disposal::find()->where(['archived' => 1])->min('disposal_startdate');
-        if(is_null($min_startdate))
+        if (is_null($min_startdate)) {
             return null;
+        }
         $max_startdate = Disposal::find()->where(['archived' => 1])->max('disposal_startdate');
-            
+
         $min_year = EduinventoryHelper::getSchoolYearOf($min_startdate);
         $max_year = EduinventoryHelper::getSchoolYearOf($max_startdate);
         for ($i = $min_year; $i <= $max_year; $i++) {
             $school_years[$i] = (string)$i . '-' . (string)($i+1);
         }
-            
+
         return $school_years;
     }
-    
-    
+
+
     /**
      * Returns the chart type options supported by the statistics.
      *
@@ -224,19 +225,19 @@ class DisposalStatistic extends Model
             DisposalStatistic::CHARTTYPE_POLARAREA => DisposalModule::t('modules/disposal/app', "Polar Area")
         ];
     }
-    
-    
+
+
     /**
      * Returns the duty options for a disposal
-     * 
+     *
      * return string[]
      */
     public static function getDutyOptions()
-    {   
+    {
         return ArrayHelper::map(DisposalWorkobj::find()->all(), 'disposalworkobj_id', 'disposalworkobj_description');
     }
-    
-    
+
+
     /**
      * Returns the reason options for a disposal
      *
@@ -246,8 +247,8 @@ class DisposalStatistic extends Model
     {
         return ArrayHelper::map(DisposalReason::find()->all(), 'disposalreason_id', 'disposalreason_description');
     }
-    
-    
+
+
     /**
      * Returns the number of disposals based on the condition passed as parameter.
      *
@@ -264,7 +265,7 @@ class DisposalStatistic extends Model
         $specs = $tblprefix . 'specialisation';
 
         $dir = $tblprefix . 'directorate';
-        
+
         $query = (new \yii\db\Query())
         ->select("COUNT(" . $dsp . ".disposal_id) AS DISPOSALS_COUNT")
         ->from($dsp . "," . $drs . "," . $ddt . "," . $tchr . "," . $schl . "," . $dir . "," . $specs)
@@ -283,34 +284,34 @@ class DisposalStatistic extends Model
         $specializations['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλες οι ειδικότητες');
         $specializations = EduinventoryHelper::getSpecializations();
         $groupby_options = DisposalStatistic::getGroupByOptions();
-        
-        
+
+
         if ($this->statistic_prefecture != 'ALL') {
             $query = $query->andWhere($dir . ".directorate_name LIKE '%" . $this->statistic_prefecture . "%'");
         }
-        
+
         if ($this->statistic_educationlevel != 'ALL') {
             $query = $query->andWhere($dir . ".directorate_name LIKE '%" . $this->statistic_educationlevel . "%'");
         }
-        
+
         if ($this->statistic_duty != 'ALL') {
             $query = $query->andWhere($ddt . ".disposalworkobj_id=" . $this->statistic_duty);
         }
-        
+
         if ($this->statistic_reason != 'ALL') {
             $query = $query->andWhere($drs . ".disposalreason_id=" . $this->statistic_reason);
         }
-        
+
         if ($this->statistic_specialization != 'ALL') {
             $query = $query->andWhere($specs . ".id=" . $this->statistic_specialization);
         }
-        
+
         $firstyear_flag = false;
         foreach ($this->statistic_schoolyear as $school_year) {
             if (!$firstyear_flag) {
                 $subquery = "(" . $dsp . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
                     $dsp . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31')";
-                    $firstyear_flag = true;
+                $firstyear_flag = true;
             } else {
                 $subquery .= " OR " . "(" . $dsp . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
                     $dsp . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31')";
@@ -321,15 +322,15 @@ class DisposalStatistic extends Model
         //echo $query->createCommand()->rawSql;
         return $query->one()['DISPOSALS_COUNT'];
     }
-    
-    
+
+
     /**
      * Returns the group by options of the statistics.
      *
      * @return string[]
      */
     public static function getGroupByOptions()
-    {   
+    {
         return [ DisposalStatistic::GROUPBY_YEAR => DisposalModule::t('modules/disposal/app', "By school year"),
             DisposalStatistic::GROUPBY_EDULEVEL => DisposalModule::t('modules/disposal/app', "By education level"),
             DisposalStatistic::GROUPBY_PERFECTURE => DisposalModule::t('modules/disposal/app', "By perfecture"),
@@ -339,4 +340,3 @@ class DisposalStatistic extends Model
         ];
     }
 }
-

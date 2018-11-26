@@ -3,7 +3,6 @@
 use app\modules\disposal\DisposalModule;
 use yii\helpers\Html;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
 

@@ -20,7 +20,7 @@ class DisposalSearch extends Disposal
     public $directorate_shortname;
     public $disposalreason_description;
     public $localdirdecision_protocol;
-    
+
     /**
      * @inheritdoc
      */
@@ -42,8 +42,9 @@ class DisposalSearch extends Disposal
         return Model::scenarios();
     }
 
-    
-    public static function getAllDisposalsQuery($archived = 0, $approval_id = -1, $republish = 0, $rejected = 0) {
+
+    public static function getAllDisposalsQuery($archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
+    {
         /* TODO cannot be $rejected = 1 AND ($archived = 1 OR $approval_id != -1) */
         $prefix = Yii::$app->db->tablePrefix;
         $dspls = $prefix . 'disposal_disposal';
@@ -56,20 +57,21 @@ class DisposalSearch extends Disposal
         $reasons = $prefix . 'disposal_disposalreason';
         $duties = $prefix . 'disposal_disposalworkobj';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
-        
+
         $tables_fields_array = [$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*",
                                  $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"];
         $tables_array = [$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
-        if($archived) {
+        if ($archived) {
             $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".*"]);
             $tables_array = array_merge($tables_array, [$dspls_apprvs]);
         }
-        
+
         $query = (new \yii\db\Query())
                 ->select($tables_fields_array)
                 ->from($tables_array)
                 ->where([$dspls . ".archived" => $archived])
-                ->andWhere($dspls . ".deleted=0 " .
+                ->andWhere(
+                    $dspls . ".deleted=0 " .
                     " AND " . $dspls . ".disposal_rejected=" . $rejected .
                     " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
                     " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
@@ -80,18 +82,20 @@ class DisposalSearch extends Disposal
                     " AND " . $tchers . ".school_id=orgn_sch.school_id" .
                     " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
                     )->distinct();
-        
-        if($archived)
+
+        if ($archived) {
             $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id");
-        
-        if($approval_id != -1)
+        }
+
+        if ($approval_id != -1) {
             $query->andWhere([$dspls_apprvs . ".approval_id" => $approval_id]);
-        
+        }
+
         //echo $query->createCommand()->rawSql; die();
         return $query;
     }
-    
-    
+
+
     /**
      * Creates data provider instance with search query applied
      *
@@ -100,14 +104,14 @@ class DisposalSearch extends Disposal
      * @return ActiveDataProvider
      */
     public function search($params, $archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
-    {                
+    {
         $dspls = Yii::$app->db->tablePrefix . 'disposal_disposal';
         $query = self::getAllDisposalsQuery($archived, $approval_id, $republish, $rejected);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
-                                          $dspls . '.updated_at', 'disposal_school', 'organic_school', 'disposal_startdate', 'disposal_enddate', 
+                                          $dspls . '.updated_at', 'disposal_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposalreason_description', 'localdirdecision_protocol'],
                                          'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
                       ],
@@ -128,11 +132,11 @@ class DisposalSearch extends Disposal
             'teacher_id' => $this->teacher_id,
             'school_id' => $this->school_id
         ]);
-             
+
         $query->andFilterWhere(['like', 'teacher_name', $this->teacher_name]);
         $query->andFilterWhere(['like', 'teacher_surname', $this->teacher_surname]);
         $query->andFilterWhere(['like', 'teacher_registrynumber', $this->teacher_registrynumber]);
-        $query->andFilterWhere(['like', 'code', $this->code]);        
+        $query->andFilterWhere(['like', 'code', $this->code]);
         $query->andFilterWhere(['like', 'dsp_sch.school_name', $this->disposal_school]);
         $query->andFilterWhere(['like', 'orgn_sch.school_name', $this->organic_school]);
         $query->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);

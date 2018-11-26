@@ -76,31 +76,30 @@ class DisposalLocaldirdecisionController extends Controller
     {
         $model = new DisposalLocaldirdecision();
         $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
-        
+
         try {
             if ($model->load(Yii::$app->request->post())) {
-                if(!$model->save())
+                if (!$model->save()) {
                     throw new Exception("The creation of the decision decisions failed.");
-            }
-            else {
+                }
+            } else {
                 return $this->render('create', [
                     'model' => $model,
                     'directorates' => $directorates
                 ]);
             }
-         
+
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'created Decision of Local Directorate with id: '. $model->localdirdecision_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The decision was created successfully."));
             return $this->redirect(['index']);
-        }
-        catch (Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('create', [
                 'model' => $model,
                 'directorates' => $directorates
             ]);
-        }        
+        }
     }
 
     /**
@@ -113,34 +112,34 @@ class DisposalLocaldirdecisionController extends Controller
     {
         $model = $this->findModel($id);
         $directorates = Directorate::find()->orderBy('directorate_shortname')->all();
-        
+
         try {
             if ($model->load(Yii::$app->request->post())) {
                 $assigned_disposals = Disposal::findAll(['localdirdecision_id' => $model->localdirdecision_id]);
-                if(count($assigned_disposals) >= 1 && $assigned_disposals[0]->getTeacherDirectorate()->directorate_id != $model->directorate_id) 
+                if (count($assigned_disposals) >= 1 && $assigned_disposals[0]->getTeacherDirectorate()->directorate_id != $model->directorate_id) {
                     throw new Exception("The decision cannot change because the already assigned disposals to the decision refer to schools of teachers of different Directorate.");
-                if(!$model->save())
+                }
+                if (!$model->save()) {
                     throw new Exception("The update of the decision of the directorate failed.");
-            }
-            else {
+                }
+            } else {
                 return $this->render('update', [
                     'model' => $model,
                     'directorates' => $directorates
                 ]);
             }
-            
+
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: '. $model->localdirdecision_id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The decision of the directorate was updated successfully."));
             return $this->redirect(['index']);
-        }
-        catch (Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('update', [
                 'model' => $model,
                 'directorates' => $directorates
             ]);
-        }   
+        }
     }
 
     /**
@@ -152,14 +151,14 @@ class DisposalLocaldirdecisionController extends Controller
     public function actionDelete($id)
     {
         try {
-            if(!$this->findModel($id)->delete())
+            if (!$this->findModel($id)->delete()) {
                 throw new Exception("The decision of the directorate cannot be deleted.");
+            }
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'created Decision of Local Directorate with id: '. $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The decision of the directorate was deleted successfully."));
             return $this->redirect(['index']);
-        }
-        catch(Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }

@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
     				</tr>
     				
     			</thead>    			
-    			<?php foreach($disposals_models as $index=>$disposal_model): ?>
+    			<?php foreach ($disposals_models as $index=>$disposal_model): ?>
     				<tr>
     					<td>
 							<?= $form->field($disposalapproval_models[$index], "[{$index}]disposal_id")->checkbox(['label' => '', 'value' => $disposalapproval_models[$index]['disposal_id']]); ?>
@@ -50,7 +50,7 @@ use yii\widgets\ActiveForm;
 	</div>
 	<?= HeadSignatureWidget::widget(['form' => $form, 'module' => Yii::$app->controller->module->id]);?>
 	<br />
-	<?php if($create): ?>
+	<?php if ($create): ?>
     	<div class="row">
     		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>
     	</div>

@@ -2,10 +2,8 @@
 
 namespace app\modules\disposal\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\disposal\models\DisposalWorkobj;
 
 /**
  * DisposalWorkobjSearch represents the model behind the search form about `app\modules\disposal\models\DisposalWorkobj`.

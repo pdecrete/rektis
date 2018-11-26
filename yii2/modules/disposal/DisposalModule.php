@@ -20,11 +20,11 @@ class DisposalModule extends \yii\base\Module
         parent::init();
         \Yii::configure($this, require __DIR__ . '/config/params.php');
         $this->registerTranslations();
-        if(!isset(Yii::$app->session[$this->id . "_whosigns"])){           
+        if (!isset(Yii::$app->session[$this->id . "_whosigns"])) {
             Yii::$app->session->set($this->id . "_whosigns", HeadSignature::DIRECTOR_SIGN);
         }
     }
-    
+
     public function registerTranslations()
     {
         Yii::$app->i18n->translations['modules/disposal/*'] = [
@@ -37,7 +37,7 @@ class DisposalModule extends \yii\base\Module
             ],
         ];
     }
-    
+
     public static function t($category, $message, $params = [], $language = null)
     {
         return Yii::t($category, $message, $params, 'el-GR');

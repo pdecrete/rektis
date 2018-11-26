@@ -25,17 +25,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'approval_file') ?>
 
-    <?php // echo $form->field($model, 'approval_signedfile') ?>
+    <?php // echo $form->field($model, 'approval_signedfile')?>
 
-    <?php // echo $form->field($model, 'approval_created_at') ?>
+    <?php // echo $form->field($model, 'approval_created_at')?>
 
-    <?php // echo $form->field($model, 'approval_updated_at') ?>
+    <?php // echo $form->field($model, 'approval_updated_at')?>
 
-    <?php // echo $form->field($model, 'approval_created_by') ?>
+    <?php // echo $form->field($model, 'approval_created_by')?>
 
-    <?php // echo $form->field($model, 'approval_updated_by') ?>
+    <?php // echo $form->field($model, 'approval_updated_by')?>
 
-    <?php // echo $form->field($model, 'approvaltype_id') ?>
+    <?php // echo $form->field($model, 'approvaltype_id')?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

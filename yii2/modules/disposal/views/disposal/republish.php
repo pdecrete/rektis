@@ -3,12 +3,12 @@
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\Pjax;
 use yii\grid\GridView;
 use app\modules\disposal\DisposalModule;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
 use app\modules\disposal\models\Disposal;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\disposal\models\DisposalSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -18,15 +18,19 @@ $this->title = ($archived) ? DisposalModule::t('modules/disposal/app', 'Processe
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
 
-$actions = ($archived) ? '{view}': '{view} {update} {delete}';   
-    
+$actions = ($archived) ? '{view}': '{view} {update} {delete}';
+
 $checkboxColumn = [[ 'class' => 'yii\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model) {return ['value' => $model['disposal_id']];}
+                    'checkboxOptions' => function ($model) {
+                        return ['value' => $model['disposal_id']];
+                    }
                   ]];
 $columns = [[   'attribute' => 'teacher_surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Full name'),
                 'options' => ['width' => '65'],
-                'value' => function ($model) {return $model['teacher_surname'] . ' ' . $model['teacher_name'];}
+                'value' => function ($model) {
+                    return $model['teacher_surname'] . ' ' . $model['teacher_name'];
+                }
             ],
 /*             [   'attribute' => 'teacher_name',
                 'label' => DisposalModule::t('modules/disposal/app', 'Name'),
@@ -77,7 +81,7 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_startdate',
                 'label' => DisposalModule::t('modules/disposal/app', 'From'),
-                
+
                 'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_startdate',
@@ -100,7 +104,13 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_hours',
                 'label' => DisposalModule::t('modules/disposal/app', 'Hours'),
-                'value' => function($model){if($model['disposal_hours'] == Disposal::FULL_DISPOSAL) return 'Ολική Διάθεση'; else return $model['disposal_hours'];},
+                'value' => function ($model) {
+                    if ($model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
+                        return 'Ολική Διάθεση';
+                    } else {
+                        return $model['disposal_hours'];
+                    }
+                },
                 'filter' => Select2::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_hours',
                     'data' => ArrayHelper::map(Disposal::getHourOptions(), 'hours', 'hours_name'),
@@ -113,28 +123,29 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'contentOptions' => ['class' => 'text-nowrap'],
                 'template' => $actions,
                 'urlCreator' => function ($action, $model) use ($archived) {
-                if ($action === 'view') {
-                    return Url::to(['/disposal/disposal/view', 'id' =>$model['disposal_id'], 'archived' => $archived]);
-                }
-                if ($action === 'update') {
-                    return Url::to(['/disposal/disposal/update', 'id' =>$model['disposal_id']]);
-                }
-                if ($action === 'delete') {
-                    return Url::to(['/disposal/disposal/delete', 'id' =>$model['disposal_id']]);
-                }
+                    if ($action === 'view') {
+                        return Url::to(['/disposal/disposal/view', 'id' =>$model['disposal_id'], 'archived' => $archived]);
+                    }
+                    if ($action === 'update') {
+                        return Url::to(['/disposal/disposal/update', 'id' =>$model['disposal_id']]);
+                    }
+                    if ($action === 'delete') {
+                        return Url::to(['/disposal/disposal/delete', 'id' =>$model['disposal_id']]);
+                    }
                 },
                 'headerOptions' => ['class'=> 'text-center']
             ],
         ];
-    if(!$archived) 
+    if (!$archived) {
         $columns = array_merge($checkboxColumn, $columns);
+    }
 ?>
 <div class="disposal-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 	<?=Html::beginForm(['archiveform'], 'post');?>
-	<?php if(!$archived):?>
+	<?php if (!$archived):?>
     	<div class="text-right">
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import Disposals from Excel'), ['importdisposals'], ['class' => 'btn btn-primary']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Approvals'), ['disposal-approval/index'], ['class' => 'btn btn-primary']) ?>
@@ -159,7 +170,7 @@ $columns = [[   'attribute' => 'teacher_surname',
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => $columns,
-            
+
     ]); ?>
     
 <?= Html::endForm();?>

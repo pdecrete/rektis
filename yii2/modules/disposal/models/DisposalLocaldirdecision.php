@@ -20,7 +20,7 @@ use app\modules\schooltransport\models\Directorate;
  * @property integer $updated_by
  * @property integer $deleted
  * @property integer $archived
- * @property integer $directorate_id 
+ * @property integer $directorate_id
  *
  * @property DisposalDisposal[] $disposalDisposals
  * @property User $createdBy
@@ -78,24 +78,24 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
         $disposal_models = Disposal::find()->where(['localdirdecision_id' => $this->localdirdecision_id])->all();
         if(countcount($disposal_models) == 0)
             return true;
-        
+
         $directorate_id = $disposal_models[0]->getSchool()['directorate_id'];
         foreach ($disposal_models as $disposal_model) {
             if($directorate_id != $disposal_model->getSchool()['directorate_id'])
                 return false;
         }
-            
+
         return true;
     }
-    
+
     public function getDirectorate() {
         if(!$this->assignedDisposalsConsistency())
             throw new Exception("Incosistent directorate assignments to disposals");
         $disposal_models = Disposal::find()->where(['localdirdecision_id' => $this->localdirdecision_id])->all();
         return $disposal_models[0]->getSchool()['directorate_id'];
     }
-    */    
-        
+    */
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -119,7 +119,7 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -127,7 +127,7 @@ class DisposalLocaldirdecision extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Directorate::className(), ['directorate_id' => 'directorate_id']);
     }
-    
+
 
     /**
      * @inheritdoc

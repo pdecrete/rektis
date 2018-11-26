@@ -2,10 +2,8 @@
 
 namespace app\modules\disposal\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\disposal\models\DisposalApproval;
 
 /**
  * DisposalApprovalSearch represents the model behind the search form about `app\modules\disposal\models\DisposalApproval`.
@@ -39,9 +37,9 @@ class DisposalApprovalSearch extends DisposalApproval
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $archived = 0)
     {
-        $query = DisposalApproval::find()->where(['deleted' => 0]);
+        $query = DisposalApproval::find()->where(['deleted' => 0, 'archived' => $archived]);
 
         // add conditions that should always apply here
 

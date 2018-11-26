@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\Disposal */
 
-$url = 'index?archived=0'; 
+$url = 'index?archived=0';
 $this->title = DisposalModule::t('modules/disposal/app', 'Import Disposals');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => [$url]];

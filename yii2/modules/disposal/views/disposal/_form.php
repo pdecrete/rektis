@@ -109,22 +109,22 @@ $script = '$(document).on("click", "#chkbox_endteachyear", function enabledisabl
                     $("#disposalend_datepicker").prop("disabled", true);
                     $("#disposalend_datepicker").val("").trigger("change");
                     alert("Done true...");
-                }    
+                }
            })';
 $this->registerJs($script, View::POS_END);
 */
 
 $urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
 $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
-                                                       
+
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="disposal-form">
 	<div class="row">
 		<div class="col-lg-6">
 			<?= $form->field($localdirdecision_model, 'directorate_id')->widget(Select2::classname(), [
-	                     'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_name'), 
-			             'options' => ['disabled' => $ldrdec_disabled, 'onchange' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");', 'id' => 'localdirdecision_directorate_frmid', 'placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],			             
+                         'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_name'),
+                         'options' => ['disabled' => $ldrdec_disabled, 'onchange' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");', 'id' => 'localdirdecision_directorate_frmid', 'placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],
                     ])->label('Διεύθυνση Εκπαίδευσης'); ?>
 		</div>	
 		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_protocol')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_protocol_frmid', 'oninput' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");']) ?></div>
@@ -144,19 +144,19 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 	<div class="row">
 		<div class="col-lg-3"><?= $form->field($teacher_model, 'specialisation_id')->widget(Select2::classname(), [
                                                 'data' => ArrayHelper::map($specialisations, 'id', 'code'),
-		                                        'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
+                                                'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
 		</div>
 		<div class="col-lg-3">
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
-			                    'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
+                                'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
                             ])->label('Σχολείο Υπηρέτησης'); ?>
         </div>
 		<div class="col-lg-3">
 			<?= $form->field($model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
-			                    'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal school...')],
+                                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal school...')],
                             ])->label('Σχολείο Διάθεσης'); ?>
 		</div>
 		<div class="col-lg-3">
@@ -176,15 +176,15 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 		</div>
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposalreason_id')->widget(Select2::classname(), [
-			                     'data' => ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description'),
-			                     'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
+                                 'data' => ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description'),
+                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
                             ])->label('Αιτιολογία Διάθεσης'); ?>
 		</div>
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposalworkobj_id')->widget(Select2::classname(), [
-			                     'data' => ArrayHelper::map($disposal_workobjs, 'disposalworkobj_id', 'disposalworkobj_description'),
-			                     'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
-			                     'pluginOptions' => ['allowClear' => true]
+                                 'data' => ArrayHelper::map($disposal_workobjs, 'disposalworkobj_id', 'disposalworkobj_description'),
+                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
+                                 'pluginOptions' => ['allowClear' => true]
                             ])->label('Καθήκον Διάθεσης'); ?>
 		</div>			
 	</div>	

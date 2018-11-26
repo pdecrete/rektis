@@ -16,7 +16,7 @@ use yii\filters\VerbFilter;
  * DisposalReasonController implements the CRUD actions for DisposalReason model.
  */
 class DisposalReasonController extends Controller
-{   
+{
     /**
      * @inheritdoc
      */
@@ -71,26 +71,25 @@ class DisposalReasonController extends Controller
      * @return mixed
      */
     public function actionCreate()
-    {       
+    {
         try {
             $model = new DisposalReason();
-            
-            if($model->load(Yii::$app->request->post())){
-                if(!$model->save())
+
+            if ($model->load(Yii::$app->request->post())) {
+                if (!$model->save()) {
                     throw new Exception("Error in saving the details of the disposal reason in the database");
+                }
 
                 $user = Yii::$app->user->identity->username;
                 Yii::info('User ' . $user . ' ' . 'created Disposal Reason with id: '. $model->disposalreason_id, 'disposal');
                 Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
                 return $this->redirect(['index']);
-            }
-            else {
+            } else {
                 return $this->render('create', [
                     'model' => $model,
                 ]);
             }
-        }
-        catch (Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('create', [
                 'model' => $model,
@@ -105,26 +104,25 @@ class DisposalReasonController extends Controller
      * @return mixed
      */
     public function actionUpdate($id)
-    {        
+    {
         try {
             $model = $this->findModel($id);
-            
-            if($model->load(Yii::$app->request->post())){
-                if(!$model->save())
-                    throw new Exception();
 
-                    $user = Yii::$app->user->identity->username;
-                    Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: '. $id, 'disposal');
-                    Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
-                    return $this->redirect(['index']);
-            }
-            else {
+            if ($model->load(Yii::$app->request->post())) {
+                if (!$model->save()) {
+                    throw new Exception();
+                }
+
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'updated Decision of Local Directorate with id: '. $id, 'disposal');
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The details of the disposal reason were saved successfully."));
+                return $this->redirect(['index']);
+            } else {
                 return $this->render('update', [
                     'model' => $model,
                 ]);
             }
-        }
-        catch (Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->render('update', [
                 'model' => $model,
@@ -141,17 +139,17 @@ class DisposalReasonController extends Controller
     public function actionDelete($id)
     {
         try {
-            if(!$this->findModel($id)->delete())
+            if (!$this->findModel($id)->delete()) {
                 throw new Exception("The disposal reason cannot be deleted.");
+            }
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'deleted Decision of Local Directorate with id: '. $id, 'disposal');
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposal reason was deleted successfully."));
             return $this->redirect(['index']);
-        }
-        catch (Exception $exc) {
+        } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
-        }           
+        }
     }
 
     /**

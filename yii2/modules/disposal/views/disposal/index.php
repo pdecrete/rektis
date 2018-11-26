@@ -10,6 +10,7 @@ use kartik\select2\Select2;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\widgets\ButtonShortcuts;
 use yii\base\Widget;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\disposal\models\DisposalSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -17,31 +18,37 @@ use yii\base\Widget;
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->title = "";
 
-if ($archived ) 
+if ($archived) {
     $this->title = DisposalModule::t('modules/disposal/app', 'Processed Disposals');
-else if ($rejected)
+} elseif ($rejected) {
     $this->title = DisposalModule::t('modules/disposal/app', 'Rejected Disposals');
-else 
+} else {
     $this->title = DisposalModule::t('modules/disposal/app', 'Disposals for Approval');
+}
 
 $this->params['breadcrumbs'][] = $this->title;
 //echo "<pre>"; print_r($dataProvider->models); echo "</pre>"; die();
- 
-if ($archived)
+
+if ($archived) {
     $actions = '{view}';
-else if ($rejected)
+} elseif ($rejected) {
     $actions = '{view} {restore}';
-else
+} else {
     $actions = '{view} {update} {delete} {reject}';
-    
+}
+
 $checkboxColumn = [[ 'class' => 'yii\grid\CheckboxColumn',
-                    'checkboxOptions' => function ($model) {return ['value' => $model['disposal_id']];}
+                    'checkboxOptions' => function ($model) {
+                        return ['value' => $model['disposal_id']];
+                    }
                   ]];
 
 $columns = [[   'attribute' => 'teacher_surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Full name'),
                 'options' => ['width' => '65'],
-                'value' => function ($model) {return $model['teacher_surname'] . ' ' . $model['teacher_name'];}
+                'value' => function ($model) {
+                    return $model['teacher_surname'] . ' ' . $model['teacher_name'];
+                }
             ],
             [   'attribute' => 'code',
                 'label' => DisposalModule::t('modules/disposal/app', 'Specialisation'),
@@ -89,7 +96,7 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_startdate',
                 'label' => DisposalModule::t('modules/disposal/app', 'From'),
-                
+
                 'format' => ['date', 'php:d-m-Y'],
                 'filter' => DateControl::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_startdate',
@@ -112,7 +119,13 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_hours',
                 'label' => DisposalModule::t('modules/disposal/app', 'Hours'),
-                'value' => function($model){if($model['disposal_hours'] == Disposal::FULL_DISPOSAL) return 'Ολική Διάθεση'; else return $model['disposal_hours'];},
+                'value' => function ($model) {
+                    if ($model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
+                        return 'Ολική Διάθεση';
+                    } else {
+                        return $model['disposal_hours'];
+                    }
+                },
                 'filter' => Select2::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_hours',
                     'data' => ArrayHelper::map(Disposal::getHourOptions(), 'hours', 'hours_name'),
@@ -125,17 +138,23 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'contentOptions' => ['class' => 'text-nowrap'],
                 'template' => $actions,
                 'buttons' => ['reject' => function ($url, $model) {
-                                                    return Html::a( '<span class="glyphicon glyphicon-remove"></span>', $url,
+                    return Html::a(
+                                                        '<span class="glyphicon glyphicon-remove"></span>',
+                                                        $url,
                                                                     ['title' => DisposalModule::t('modules/disposal/app', 'Reject Disposal'),
                                                                      'data'=> ['confirm'=> DisposalModule::t('modules/disposal/app', "Are you sure you want to reject this disposal?")],
-                                                                     'data-method' => 'post']);
-                                            },
+                                                                     'data-method' => 'post']
+                                                    );
+                },
                               'restore' => function ($url, $model) {
-                                                    return Html::a( '<span class="glyphicon glyphicon-transfer"></span>', $url,
+                                  return Html::a(
+                                                        '<span class="glyphicon glyphicon-transfer"></span>',
+                                                        $url,
                                                                     ['title' => DisposalModule::t('modules/disposal/app', 'Restore Disposal in "under approval" state'),
                                                                      'data'=> ['confirm'=> DisposalModule::t('modules/disposal/app', "Are you sure you want to restore this disposal?")],
-                                                                     'data-method' => 'post']);
-                                            }],
+                                                                     'data-method' => 'post']
+                                                    );
+                              }],
                 'urlCreator' => function ($action, $model) use ($archived) {
                     if ($action === 'view') {
                         return Url::to(['/disposal/disposal/view', 'id' =>$model['disposal_id']]);
@@ -156,15 +175,16 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'headerOptions' => ['class'=> 'text-center']
             ],
         ];
-if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected) || (isset($rejected) && !$rejected)))
-        $columns = array_merge($checkboxColumn, $columns);
+if ((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected) || (isset($rejected) && !$rejected))) {
+    $columns = array_merge($checkboxColumn, $columns);
+}
 ?>
 <div class="disposal-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-	<?=Html::beginForm(['archiveform'], 'post');?>	
+	<?=Html::beginForm(['form'], 'post');?>	
     	<div class="text-right"> 	
-        	<?php if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected) || (isset($rejected) && !$rejected))):?>
+        	<?php if ((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected) || (isset($rejected) && !$rejected))):?>
                 <div class="btn-group">
               		<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
               			<?= DisposalModule::t('modules/disposal/app', 'Create'); ?> <span class="caret"></span>
@@ -184,7 +204,7 @@ if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected)
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => $columns,
-            
+
     ]); ?>
     
 <?= Html::endForm();?>

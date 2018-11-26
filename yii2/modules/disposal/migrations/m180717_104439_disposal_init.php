@@ -12,7 +12,7 @@ class m180717_104439_disposal_init extends Migration
             // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
-        
+
         $dbDisposalTables = [
             'table_teacher' => $this->db->tablePrefix . 'teacher',
             'table_disposalreason' => $this->db->tablePrefix . 'disposal_disposalreason',
@@ -21,7 +21,7 @@ class m180717_104439_disposal_init extends Migration
             'table_disposal' => $this->db->tablePrefix . 'disposal_disposal',
             'table_ledger' => $this->db->tablePrefix . 'disposal_ledger',
             'table_approval' => $this->db->tablePrefix . 'disposal_approval',
-            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',            
+            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',
         ];
         $table_schoolunit = $this->db->tablePrefix . 'schoolunit';
         $table_specialisation = $this->db->tablePrefix . 'specialisation';
@@ -48,7 +48,7 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         */
-        
+
         /* CREATE TABLE admapp_disposal_disposalreason */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_disposalreason'] .
                           " (`disposalreason_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -59,7 +59,7 @@ class m180717_104439_disposal_init extends Migration
                             ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_disposalreason'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
-        Yii::$app->db->createCommand($create_command)->execute();        
+        Yii::$app->db->createCommand($create_command)->execute();
         $insert_command = "INSERT INTO " . $dbDisposalTables['table_disposalreason'] . "(disposalreason_name, disposalreason_description) VALUES ";
         Yii::$app->db->createCommand($insert_command . "('supplementing_workinghours', 'Συμπλήρωση ωραρίου')")->execute();
         Yii::$app->db->createCommand($insert_command . "('cover_timeoff', 'Κάλυψη ολιγοήμερης άδειας')")->execute();
@@ -81,8 +81,8 @@ class m180717_104439_disposal_init extends Migration
         Yii::$app->db->createCommand($insert_command . "('administrative_work', 'Παροχή διοικητικού έργου')")->execute();
         Yii::$app->db->createCommand($insert_command . "('secretary_work', 'Γραμματειακή υποστήριξη')")->execute();
         Yii::$app->db->createCommand($insert_command . "('supplementary_teaching', 'Ενισχυτική διδασκαλία')")->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_disposal_localdirdecision */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_localdirdecision'] .
                           " (`localdirdecision_id` INTEGER NOT NULL AUTO_INCREMENT, 
@@ -105,7 +105,7 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_localdirdecision'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
         /* CREATE TABLE admapp_disposal_disposal */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_disposal'] .
                           " (`disposal_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -137,7 +137,7 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_disposal'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
+
         /* CREATE TABLE admapp_disposal_ledger */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_ledger'] .
                             "(`ledger_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -174,7 +174,7 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
         */
-        
+
         /* CREATE TABLE admapp_disposal_approval */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_approval'] .
                           " (`approval_id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -197,8 +197,8 @@ class m180717_104439_disposal_init extends Migration
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_approval'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
         Yii::$app->db->createCommand($create_command)->execute();
-        
-        
+
+
         /* CREATE TABLE admapp_disposal_disposalapproval */
         $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_disposalapproval'] .
                           " (`disposal_id` INTEGER NOT NULL,
@@ -222,9 +222,9 @@ class m180717_104439_disposal_init extends Migration
             'table_disposal' => $this->db->tablePrefix . 'disposal_disposal',
             'table_ledger' => $this->db->tablePrefix . 'disposal_ledger',
             'table_approval' => $this->db->tablePrefix . 'disposal_approval',
-            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',            
+            'table_disposalapproval' => $this->db->tablePrefix . 'disposal_disposalapproval',
         ];
-        
+
         $dbDisposalTables = array_reverse($dbDisposalTables);
         $i = 0;
         foreach ($dbDisposalTables as $dbtable) {

@@ -3,7 +3,6 @@
 use app\modules\disposal\DisposalModule;
 use yii\helpers\Html;
 
-
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalReason */
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];

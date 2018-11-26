@@ -18,7 +18,7 @@ use yii\db\Expression;
  * @property string $approval_file
  * @property string $approval_signedfile
  * @property integer $deleted
- * @property integer $archived 
+ * @property integer $archived
  * @property string $created_at
  * @property string $updated_at
  * @property integer $created_by
@@ -41,7 +41,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
                 'value' => Yii::$app->user->identity->getId()
             ],
             [
-                'class' => TimestampBehavior::className(),                
+                'class' => TimestampBehavior::className(),
                 'attributes' => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
@@ -50,8 +50,8 @@ class DisposalApproval extends \yii\db\ActiveRecord
             ],
         ];
     }
-        
-    
+
+
     /**
      * @inheritdoc
      */
@@ -104,7 +104,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -112,8 +112,8 @@ class DisposalApproval extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
-    
-    
+
+
     /**
      * @return \yii\db\ActiveQuery
      */

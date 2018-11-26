@@ -16,8 +16,8 @@ use yii\widgets\ActiveForm;
 	<div class="row">
 		<div class="col-lg-4">
 			<?= $form->field($model, 'directorate_id')->widget(Select2::classname(), [
-	                     'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_name'),
-	                     'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],
+                         'data' => ArrayHelper::map($directorates, 'directorate_id', 'directorate_name'),
+                         'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select Directorate ...')],
                     ])->label('Διεύθυνση Εκπαίδευσης'); ?>
 		</div>	
 		<div class="col-lg-4"><?= $form->field($model, 'localdirdecision_protocol')->textInput(['maxlength' => true]) ?></div>

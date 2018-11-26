@@ -5,7 +5,6 @@ use app\modules\disposal\DisposalModule;
 use yii\bootstrap\Html;
 use yii\helpers\Url;
 
-
 /* @var $this yii\web\View */
 
 $this->title = DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals');

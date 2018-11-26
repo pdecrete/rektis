@@ -5,7 +5,6 @@ namespace app\modules\disposal\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\modules\disposal\models\DisposalLocaldirdecision;
 
 /**
  * DisposalLocaldirdecisionSearch represents the model behind the search form about `app\modules\disposal\models\DisposalLocaldirdecision`.
@@ -45,7 +44,7 @@ class DisposalLocaldirdecisionSearch extends DisposalLocaldirdecision
         $prefix = Yii::$app->db->tablePrefix;
         $dir_o_schl = $prefix . 'directorate';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
-        
+
         $query = (new \yii\db\Query())
         ->select([$localdir_decisions . ".*", $dir_o_schl . ".*"])
         ->from([$localdir_decisions, $dir_o_schl])

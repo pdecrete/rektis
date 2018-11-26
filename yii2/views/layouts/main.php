@@ -420,9 +420,14 @@ AppAsset::register($this);
                             'label' => 'Απορριφθείσες Διαθέσεις',
                             'url' => ['/disposal/disposal?rejected=1'],
                         ],
+                        '<li class="divider"></li>',
                         [
                             'label' => 'Εγκρίσεις Διαθέσεων',
                             'url' => ['/disposal/disposal-approval'],
+                        ],
+                        [
+                            'label' => 'Αρχειοθετημένες Εγκρίσεις Διαθέσεων',
+                            'url' => ['/disposal/disposal-approval?archived=1'],
                         ],
                         [
                             'label' => 'Αποφάσεις Διευθύνσεων',

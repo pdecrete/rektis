@@ -6,6 +6,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\disposal\models\DisposalLocaldirdecisionSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -17,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="disposal-localdirdecision-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]);?>
 
     <div class="text-right">
         <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Decision'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -30,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'directorate_shortname',
              'label' => DisposalModule::t('modules/disposal/app', 'Directorate'),
-            ],            
+            ],
             'localdirdecision_protocol',
             'localdirdecision_subject',
             'localdirdecision_action',
@@ -43,18 +44,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['class' => 'yii\grid\ActionColumn',
              'urlCreator' => function ($action, $model) {
-                if ($action === 'delete') {
-                    $url = Url::to(['/disposal/disposal-localdirdecision/delete', 'id' =>$model['localdirdecision_id']]);
-                    return $url;
-                }
-                if ($action === 'update') {
-                    $url = Url::to(['/disposal/disposal-localdirdecision/update', 'id' =>$model['localdirdecision_id']]);
-                    return $url;
-                }
-                if ($action === 'view') {
-                    $url = Url::to(['/disposal/disposal-localdirdecision/view', 'id' =>$model['localdirdecision_id']]);
-                    return $url;
-                }
+                 if ($action === 'delete') {
+                     $url = Url::to(['/disposal/disposal-localdirdecision/delete', 'id' =>$model['localdirdecision_id']]);
+                     return $url;
+                 }
+                 if ($action === 'update') {
+                     $url = Url::to(['/disposal/disposal-localdirdecision/update', 'id' =>$model['localdirdecision_id']]);
+                     return $url;
+                 }
+                 if ($action === 'view') {
+                     $url = Url::to(['/disposal/disposal-localdirdecision/view', 'id' =>$model['localdirdecision_id']]);
+                     return $url;
+                 }
              },
              'contentOptions' => ['class' => 'text-nowrap'],
             ],

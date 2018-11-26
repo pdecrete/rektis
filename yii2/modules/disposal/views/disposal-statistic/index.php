@@ -67,15 +67,15 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
             <?= $form->field($model, 'statistic_schoolyear')->widget(Select2::classname(), [
                 'data' => $school_years,
                 'options' => ['multiple' => true, 'placeholder' => DisposalModule::t('modules/disposal/app', 'Select school year...')],
-                ])->label('Σχολικό Έτος'); 
+                ])->label('Σχολικό Έτος');
             ?>
     	</div>
     	<div class="col-lg-6">
 	        <?= $form->field($model, 'statistic_prefecture')->widget(Select2::classname(), [
             'data' => $prefectures,
-	            'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select prefecture...')],
-                ])->label('Νομός'); 
-	        ?>
+                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select prefecture...')],
+                ])->label('Νομός');
+            ?>
     	</div>
 	</div>
 	<div class="row">
@@ -83,14 +83,14 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
             <?= $form->field($model, 'statistic_educationlevel')->widget(Select2::classname(), [
                 'data' => $education_levels,
                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select education level...')],
-                ])->label('Βαθμίδα'); 
+                ])->label('Βαθμίδα');
             ?>
     	</div>	
     	<div class="col-lg-6">
 	        <?= $form->field($model, 'statistic_specialization')->widget(Select2::classname(), [
-	            'data' => $specializations,
-	            'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select specialization...')],
-                ])->label('Ειδικότητα διατιθέμενων εκπαιδευτικών'); 
+                'data' => $specializations,
+                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select specialization...')],
+                ])->label('Ειδικότητα διατιθέμενων εκπαιδευτικών');
             ?>
 		</div>
 	</div>
@@ -99,14 +99,14 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
             <?= $form->field($model, 'statistic_reason')->widget(Select2::classname(), [
                 'data' => $reasons,
                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal reason...')],
-                ])->label('Λόγος Διάθεσης'); 
+                ])->label('Λόγος Διάθεσης');
             ?>    	
     	</div>
     	<div class="col-lg-6">
 	        <?= $form->field($model, 'statistic_duty')->widget(Select2::classname(), [
-	            'data' => $duties,
-	            'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select duty...')],
-                ])->label('Καθήκον Διάθεσης'); 
+                'data' => $duties,
+                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select duty...')],
+                ])->label('Καθήκον Διάθεσης');
             ?>
 		</div>
 	</div>	    
@@ -115,14 +115,14 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
             <?= $form->field($model, 'statistic_charttype')->widget(Select2::classname(), [
                 'data' => $chart_types,
                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select chart type...')],
-                ])->label('Τύπος Γραφήματος'); 
+                ])->label('Τύπος Γραφήματος');
             ?>
     	</div>
     	<div class="col-lg-6">
             <?= $form->field($model, 'statistic_groupby')->widget(Select2::classname(), [
                 'data' => $groupby_options,
                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select grouping method...')],
-                ])->label('Ομαδοποίηση'); 
+                ])->label('Ομαδοποίηση');
             ?>
     	</div>
   	</div>
@@ -138,15 +138,15 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 <div id="canvasChart" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <?php   
+            <?php
                     $height = 100;
                     $clientOptions['clientOptions'] = '';
-                    if($selected_chart_type == DisposalStatistic::CHARTTYPE_HORIZONTALBAR){
+                    if ($selected_chart_type == DisposalStatistic::CHARTTYPE_HORIZONTALBAR) {
                         $height = 15*count($result_data['DISPOSALS_COUNT']) + 30;
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false],
                             'responsive' => true,
-                            'scales' => [                               
+                            'scales' => [
                                 'xAxes' => [[
                                     'ticks' => [
                                         'min' => 0,
@@ -159,10 +159,10 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
                                     ],
                                 ]],
                             ]
-                        ]]; 
+                        ]];
                     }
-                                        
-                    if($selected_chart_type == DisposalStatistic::CHARTTYPE_BAR){
+
+                    if ($selected_chart_type == DisposalStatistic::CHARTTYPE_BAR) {
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false, 'position' => 'bottom'],
                             'responsive' => true,
@@ -179,27 +179,28 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
                                     ],
                                 ]],
                             ]
-                            ]]; 
+                            ]];
+                    } else {
+                        $clientOptions['clientOptions']['legend'] = ['position' => 'bottom'];
                     }
-                    else $clientOptions['clientOptions']['legend'] = ['position' => 'bottom'];
-                    
-                    $clientOptions['clientOptions']['title'] = ['display' => true, 'text' => $chart_title];                    
-                    
+
+                    $clientOptions['clientOptions']['title'] = ['display' => true, 'text' => $chart_title];
+
                     $colors = ['#f6e58d', '#e056fd', '#686de0', '#30336b', '#95afc0', '#22a6b3', '#be2edd', '#4834d4', '#130f40', '#130f40',
-                               '#ffbe76', '#ff7979', '#badc58', '#c7ecee', '#f9ca24', '#f0932b', '#eb4d4b', '#6ab04c', '#7ed6df', '#535c68']; 
-                    $more_colors = count($result_data['LABELS']) - count($colors);            
-                    for(; $more_colors > 0; $more_colors--){
+                               '#ffbe76', '#ff7979', '#badc58', '#c7ecee', '#f9ca24', '#f0932b', '#eb4d4b', '#6ab04c', '#7ed6df', '#535c68'];
+                    $more_colors = count($result_data['LABELS']) - count($colors);
+                    for (; $more_colors > 0; $more_colors--) {
                         array_push($colors, 'rgb(' . rand(0, 255) .',' . rand(0, 255) . ',' . rand(0, 255) . ')');
                     }
                     $colors = array_slice($colors, 0, count($result_data['LABELS']));
-                    
+
                     echo ChartJs::widget(['type' => $selected_chart_type,
                                           'options' => ['height' => $height, 'animation' => ['onAnimationComplete' => new \yii\web\JsExpression('alert("Hallo");')]],
                                           'data' => [   'labels' => $result_data['LABELS'],
                                                         'datasets' => [['label' => DisposalModule::t('modules/disposal/app', "Πλήθος Διαθέσεων"),
                                                                      'backgroundColor' => $colors,
-                                                                     'data' => $result_data['DISPOSALS_COUNT']]]],                                          
-                                                        'clientOptions' => $clientOptions['clientOptions']                                          
+                                                                     'data' => $result_data['DISPOSALS_COUNT']]]],
+                                                        'clientOptions' => $clientOptions['clientOptions']
                                      ]);
             ?> 
         </div>
@@ -215,11 +216,11 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 			</thead>
 			<tbody>
 				<?php
-				    $num_of_data = count($result_data['LABELS']);
-				    for ($i = 0; $i < $num_of_data; $i++){
-				        echo "<tr><td>" . $result_data['LABELS'][$i] . "</td><td class='text-center'>" . $result_data['DISPOSALS_COUNT'][$i] . "</td></tr>";
-				    }
-				?>
+                    $num_of_data = count($result_data['LABELS']);
+                    for ($i = 0; $i < $num_of_data; $i++) {
+                        echo "<tr><td>" . $result_data['LABELS'][$i] . "</td><td class='text-center'>" . $result_data['DISPOSALS_COUNT'][$i] . "</td></tr>";
+                    }
+                ?>
 				<tr><td><strong>ΣΥΝΟΛΟ:</strong></td><td class='text-center'><strong><?= array_sum($result_data['DISPOSALS_COUNT']); ?></strong></td></tr>				
 			</tbody>
 		</table>

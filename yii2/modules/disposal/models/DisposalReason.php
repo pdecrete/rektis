@@ -19,7 +19,7 @@ class DisposalReason extends \yii\db\ActiveRecord
     const COVER_TIMEOFF = 'cover_timeoff';
     const HEALTH_REASONS = 'health_reasons';
     const SERVICE_REASONS = 'service_reasons';
-    
+
     /**
      * @inheritdoc
      */

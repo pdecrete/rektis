@@ -4,14 +4,13 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use app\modules\disposal\DisposalModule;
 
-
 /* @var $this yii\web\View */
 $this->title = DisposalModule::t('modules/disposal/app', 'Help');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $collapse_in = [1 => "", 2 => "", 3 => ""];
-if(array_key_exists($helpId, $collapse_in)){
+if (array_key_exists($helpId, $collapse_in)) {
     $collapse_in[$helpId] = 'in';
 }
 
@@ -45,7 +44,7 @@ if(array_key_exists($helpId, $collapse_in)){
     	    <div class="form-group text-right">
 				<?= Html::a(Yii::t('app', 'Update'), ['/Pages/page/update', 'id' => $approval_help['id']], ['class' => 'btn btn-primary']) ?>
 			</div>
-			<div><em>Τελευταία ενημέρωση: <?= date("d-m-Y",$approval_help['updated_at'])?></em></div>
+			<div><em>Τελευταία ενημέρωση: <?= date("d-m-Y", $approval_help['updated_at'])?></em></div>
 		</div>
       </div>
     </div>

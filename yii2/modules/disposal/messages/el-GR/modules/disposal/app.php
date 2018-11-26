@@ -20,7 +20,7 @@ return [
     'School' => 'Σχολείο',
     'Save and reate new' => 'Αποθήκευση και δημιουργία νέας',
     'Save' => 'Αποθήκευση',
-    'Update' => 'Ενημέρωση',    
+    'Update' => 'Ενημέρωση',
     'Create' => 'Δημιουργία',
     'Delete' => 'Διαγραφή',
     'Directorate of Education' => 'Διεύθυνση Εκπαίδευσης',
@@ -132,7 +132,7 @@ return [
     'Help approving a disposal' => 'Βοήθεια Έγκρισης Διάθεσης',
     'Help using the application' => 'Βοήθεια Χρήσης της Εφαρμογής',
     'Legislation' => 'Νομοθεσία',
-    'Full time Disposal' => 'Ολική Διάθεση',    
+    'Full time Disposal' => 'Ολική Διάθεση',
     'The decision of the directorate was deleted successfully.' => 'Η απόφαση της Δ/νσης διαγράφηκε επιτυχώς.',
     'The decision of the directorate cannot be deleted.' => 'Η απόφαση της Δ/νσης δεν μπορεί να διαγραφεί.',
     'Local Directorate Decisions' => 'Αποφάσεις τοπικών Διευθύνσεων',
@@ -156,7 +156,7 @@ return [
     'The local directorate decision already exists and not change was applied to it.' => 'Η απόφαση της τοπικής Διεύθυνσης υπάρχει ήδη και καμία αλλαγή δεν έγινε στα στοιχεία αυτής.',
     'Error in saving local directorate decision details. Please check if all of its elements in the Excel file are filled in and valid (i.e. protocol, action, subject)' => 'Σφάλμα στην αποθήκευση της απόφασης της τοπικής Διεύθυνσης. Παρακαλώ ελέγξτε αν όλα τα στοιχεία στο Excel αρχείο είναι συμπληρωμένα και έγκυρα (π.χ. πρωτόκολλο, πράξη, θέμα).',
     'Error in saving teacher details refered to the disposals. Please check if teacher details for all disposals in the Excel file are filled in and valid.' => 'Σφάλμα στην αποθήκευση των στοιχείων των εκπαιδευτικών που αφορούν οι διαθέσεις. Παρακαλώ ελέγξτε αν όλα τα στοιχεία των εκπαιδευτικών για όλες τις διαθέσεις στο Excel αρχείο είναι συμπληρωμένα και έγκυρα.',
-    'Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.' => 'Σφάλμα στην αποθήκευση των στοιχείων των διαθέσεων. Παρακαλώ ελέγξτε αν τα στοιχεία όλων των διαθέσεων στο Excel αρχείο είναι συμπληρωμένα και έγκυρα.',   
+    'Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.' => 'Σφάλμα στην αποθήκευση των στοιχείων των διαθέσεων. Παρακαλώ ελέγξτε αν τα στοιχεία όλων των διαθέσεων στο Excel αρχείο είναι συμπληρωμένα και έγκυρα.',
     'Export transportations to Excel file' => 'Εξαγωγή μετακινήσεων σε Excel αρχείο',
     'Current school year' => 'Τρέχοντος σχολικού έτους',
     'Previous school year' => 'Προηγούμενου σχολικού έτους',
@@ -187,7 +187,7 @@ return [
     'View Local Directorate Decision' => 'Προβολή Απόφασης Τοπικής Διεύθυνσης',
     'Are you sure you want to delete this item?' => 'Είστε σίγουρος/η ότι θέλετε να διαγράψετε το στοιχείο αυτό;',
     'Reject Disposal' => 'Απόρριψη (μη έγκριση) Διάθεσης',
-    'The teacher disposal was rejected successfully and moved to the Rejected Disposals. You can still restore the disposal from the Rejected Disposals state.' => 
+    'The teacher disposal was rejected successfully and moved to the Rejected Disposals. You can still restore the disposal from the Rejected Disposals state.' =>
         'Η διάθεση του εκπαιδευτικού απορρίφθηκε επιτυχώς και μεταφέρθηκε στις Απορριφθείσες Διαθέσεις. Μπορείτε να επανεφέρετε τη διάθεση σε "προς έγκριση" κατάσταση αν το επιθυμείτε.',
     'The teacher disposal rejection failed.' => 'Η απόρριψη της διάθεσης απέτυχε.',
     'Rejected Disposals' => 'Απορριφθείσες Διαθέσεις',
@@ -199,5 +199,10 @@ return [
     'Are you sure you want to restore this disposal?' => 'Είστε σίγουρος/η ότι θέλετε να επαναφέρετε αυτή τη διάθεση;',
     'The teacher disposal was restored successfully.' => 'H επαναφορά της διάθεση έγινε ολοκληρώθηκες επιτυχώς.',
     'The teacher disposal restoration failed.' => 'Η επαναφορά της διάθεσης απέτυχε.',
-    'Directorate Decisions' => 'Αποφάσεις Διευθύνσεων'
+    'Directorate Decisions' => 'Αποφάσεις Διευθύνσεων',
+    'Republish' => 'Ανακοινοποίηση',
+    'Archive' => 'Αρχειοθέτηση',
+    'Archived Approvals' => 'Αρχειοθετημένες Εγκρίσεις',
+    'The archive was completed successfully.' => 'Η αρχειοθέτηση ολοκληρώθηκε επιτυχώς.',
+    'The restoration was completed successfully.' => 'Η επαναφορά ολοκληρώθηκε επιτυχώς.'
 ];
