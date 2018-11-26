@@ -8,6 +8,8 @@ use app\modules\disposal\DisposalModule;
 use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
 use app\modules\disposal\models\Disposal;
+use app\modules\disposal\widgets\ButtonShortcuts;
+use yii\base\Widget;
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\disposal\models\DisposalSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -160,7 +162,6 @@ if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected)
 <div class="disposal-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 	<?=Html::beginForm(['archiveform'], 'post');?>	
     	<div class="text-right"> 	
         	<?php if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected) || (isset($rejected) && !$rejected))):?>
@@ -176,16 +177,7 @@ if((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected)
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import from Excel'), ['importdisposals'], ['class' => 'btn btn-success']) ?>
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Delete'), ['massdelete'], ['data'=>['confirm'=>DisposalModule::t('modules/disposal/app', "Are you sure you want to delete these items?")], 'class' => 'btn btn-danger', 'data-method' => 'POST']) ?>
         	<?php endif;?>
-    		<div class="btn-group">
-          		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-          			<?= DisposalModule::t('modules/disposal/app', 'View'); ?> <span class="caret"></span>
-      			</button>
-      			<ul class="dropdown-menu" role="menu">
-      				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['index']) ?></li>
-      				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approved Disposals'), ['index', 'archived' => 1]) ?></li>
-            		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), ['index', 'rejected' => 1]) ?></li>
-      			</ul>
-        	</div>  
+			<?php echo ButtonShortcuts::widget(); ?>
     	</div><br />    
 
 	<?= GridView::widget([

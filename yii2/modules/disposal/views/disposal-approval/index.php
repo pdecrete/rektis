@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\disposal\DisposalModule;
+use app\modules\disposal\widgets\ButtonShortcuts;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -18,16 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
     <div class="text-right">
-		<div class="btn-group">
-      		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-      			<?= DisposalModule::t('modules/disposal/app', 'View'); ?> <span class="caret"></span>
-  			</button>
-  			<ul class="dropdown-menu" role="menu">
-  				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), ['disposal/index']) ?></li>
-  				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approved Disposals'), ['disposal/index', 'archived' => 1]) ?></li>
-        		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), ['disposal/index', 'rejected' => 1]) ?></li>
-  			</ul>
-    	</div>
+		<?php echo ButtonShortcuts::widget(); ?>
     </div><br />
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -44,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
              'format' => ['datetime', 'php:d-m-Y H:i']
             ],
             ['class' => 'yii\grid\ActionColumn',
-             'template' => '{view} {update} {delete} {download} {republish}',//, {downloadsigned}',
+                'template' => '{view} {update} {delete} {download}',//, {republish}',
              'buttons' => ['download' => function ($url, $model) {
                                             return Html::a('<span class="glyphicon glyphicon-download"></span>', $url,
                                                 ['title' => DisposalModule::t('modules/disposal/app', 'Download Decision'),

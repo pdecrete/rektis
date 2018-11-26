@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\disposal\DisposalModule;
+use app\modules\disposal\widgets\ButtonShortcuts;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -18,9 +19,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p class="text-right">
+    <div class="text-right">
         <?= Html::a(DisposalModule::t('modules/disposal/app', 'Create Decision'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <?php echo ButtonShortcuts::widget(); ?>
+    </div><br />
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
