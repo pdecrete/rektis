@@ -10,9 +10,9 @@ use yii\filters\AccessControl;
 use app\modules\SubstituteTeacher\models\SubstituteTeacherFile;
 use app\modules\SubstituteTeacher\models\BaseImportModel;
 use app\modules\SubstituteTeacher\models\Position;
+use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\Prefecture;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
-use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
@@ -238,7 +238,6 @@ class ImportController extends Controller
                 'highestColumnIndex' => $highestColumnIndex,
         ]);
     }
-
 
     /**
      * 
@@ -1551,7 +1550,7 @@ class ImportController extends Controller
 
         return ($return_parsed === true) ? $placement_preferences_parsed : ($placement_preferences_parsed !== false);
     }
-    
+
     /**
      *
      * @param array $errors in the form of model errors after validation

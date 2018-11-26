@@ -20,7 +20,6 @@ class TeacherRegistrySearch extends TeacherRegistry
             // ['specialisation_ids', 'each', 'rule' => ['integer']],
             ['specialisation_ids', 'integer'],
             [['gender', 'surname', 'firstname', 'fathername', 'mothername', 'marital_status', 'mobile_phone', 'home_phone', 'work_phone', 'home_address', 'city', 'postal_code', 'social_security_number', 'tax_identification_number', 'tax_service', 'identity_number', 'passport_number', 'bank', 'iban', 'email', 'birthdate', 'birthplace', 'comments', 'created_at', 'updated_at', 'ama', 'efka_facility', 'municipality'], 'safe'],
-
         ];
     }
 
