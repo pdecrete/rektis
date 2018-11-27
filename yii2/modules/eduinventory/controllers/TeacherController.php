@@ -8,10 +8,10 @@ use yii\web\NotFoundHttpException;
 use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\modules\base\models\FileImport;
 use app\modules\eduinventory\models\Teacher;
 use app\modules\eduinventory\models\TeacherSearch;
 use app\modules\schooltransport\models\Schoolunit;
-use app\models\FileImport;
 use app\models\Specialisation;
 use app\modules\eduinventory\EducationInventoryModule;
 
@@ -245,7 +245,8 @@ class TeacherController extends Controller
                     $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
-                        echo $specialisation . " " . $specialisation_with_blank . " "; echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
+                        //echo $specialisation . " " . $specialisation_with_blank . " "; echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
+                        echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
