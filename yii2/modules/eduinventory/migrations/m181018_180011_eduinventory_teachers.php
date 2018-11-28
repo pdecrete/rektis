@@ -135,6 +135,7 @@ class m181018_180011_eduinventory_teachers extends Migration
         $this->_update('ΔΕ 0115', 'ΔΕ01.15', 'Αργυροχρυσοχοϊας');
         $this->_update('ΔΕ 0116', 'ΔΕ01.16', 'Τεχν. Αμαξωμάτων');
         $this->_update('ΔΕ 0117', 'ΔΕ01.17', 'Κομμωτικής');
+        $this->_update('ΠΕ 0101', 'ΠΕ01', 'Θεολόγος');
         $this->_update('ΠΕ 0201', 'ΠΕ02', 'Φιλόλογος');
         $this->_update('ΠΕ 0301', 'ΠΕ03', 'Μαθηματικός');
         $this->_update('ΠΕ 0401', 'ΠΕ04.01', 'Φυσικός');
@@ -238,8 +239,7 @@ class m181018_180011_eduinventory_teachers extends Migration
         $insert_command = "INSERT INTO " . $table_specialisation . " (`code`, `name`) VALUES ";
         
         if(Yii::$app->db->createCommand($select_command)->query()->count() == 0)
-            echo Yii::$app->db->createCommand($insert_command . "('" . $code . "', '" . $description . "')")->rawSql;//->execute();
-        Console::stdout("Finished insertions\n");
+            echo Yii::$app->db->createCommand($insert_command . "('" . $code . "', '" . $description . "')")->execute();
     }
     
     public function _update($oldcode, $newcode, $description)
