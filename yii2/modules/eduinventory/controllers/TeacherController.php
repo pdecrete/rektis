@@ -246,7 +246,7 @@ class TeacherController extends Controller
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
                         //echo $specialisation . " " . $specialisation_with_blank . " "; echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
-                        echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                        //echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
