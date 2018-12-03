@@ -52,18 +52,16 @@ class FileImport extends Model
                 if (empty($this->importfile->saveAs($path . $this->importfile))) {
                     throw new Exception("The file is empty");
                 }                
-                return true;
+                //return true;
             } 
             else {
-                echo "<pre>"; print_r($this->errors); echo "</pre>"; die();                
+                //echo "<pre>"; print_r($this->errors); echo "</pre>"; die();                
                 throw new Exception("<pre>" . print_r($this->errors) . "</pre>");
-                return false;
-
             }
         }
         catch(Exception $exc) {
             Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
-            return false;
+            //return false;
         }
     }
 }

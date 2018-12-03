@@ -45,7 +45,9 @@ class m181018_180011_eduinventory_teachers extends Migration
         $this->_insert('ΠΕ01.50', 'Θεολόγοι Ειδικής Αγωγής');
         $this->_insert('ΠΕ02.50', 'Φιλόλογοι Ειδικής Αγωγής');        
         $this->_insert('ΠΕ03.50', 'Μαθηματικοί Ειδικής Αγωγής');        
-        $this->_insert('ΠΕ04.02.50', 'Χημικός Ειδικής Αγωγής');        
+        $this->_insert('ΠΕ04.01.50', 'Φυσικός Ειδικής Αγωγής');
+        $this->_insert('ΠΕ04.02.50', 'Χημικός Ειδικής Αγωγής');
+        $this->_insert('ΠΕ04.04.50', 'Βιολόγος Ειδικής Αγωγής');
         $this->_insert('ΠΕ04.05.50', 'Γεωλόγος Ειδικής Αγωγής');        
         $this->_insert('ΠΕ06.50', 'Αγγλικής Φιλολογίας Ειδικής Αγωγής');        
         $this->_insert('ΠΕ08.50', 'Καλλιτεχνικών Ειδικής Αγωγής');
@@ -55,7 +57,7 @@ class m181018_180011_eduinventory_teachers extends Migration
         $this->_insert('ΠΕ78', 'Κοινωνικών Επιστημών');
         $this->_insert('ΠΕ78.50', 'Κοινωνικών Επιστημών Ειδικής Αγωγής');
         $this->_insert('ΠΕ79.01', 'Μουσικής Επιστήμης');
-        $this->_insert('ΠΕ79,01.50', 'Μουσικής Επιστήμης Ειδικής Αγωγής');
+        $this->_insert('ΠΕ79.01.50', 'Μουσικής Επιστήμης Ειδικής Αγωγής');
         $this->_insert('ΠΕ80', 'Οικονομίας');
         $this->_insert('ΠΕ80.50', 'Οικονομίας Ειδικής Αγωγής');
         $this->_insert('ΠΕ81', 'Πολ. Μηχανικών - Αρχιτεκτόνων');
@@ -239,7 +241,7 @@ class m181018_180011_eduinventory_teachers extends Migration
         $insert_command = "INSERT INTO " . $table_specialisation . " (`code`, `name`) VALUES ";
         
         if(Yii::$app->db->createCommand($select_command)->query()->count() == 0)
-            echo Yii::$app->db->createCommand($insert_command . "('" . $code . "', '" . $description . "')")->execute();
+            Yii::$app->db->createCommand($insert_command . "('" . $code . "', '" . $description . "')")->execute();
     }
     
     public function _update($oldcode, $newcode, $description)
