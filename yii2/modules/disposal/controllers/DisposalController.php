@@ -622,9 +622,7 @@ class DisposalController extends Controller
             $import_model = new FileImport();
 
             if ($import_model->load(Yii::$app->request->post())) {
-                if (!$import_model->upload($this->module->params['disposal_importfolder'])) {
-                    throw new Exception("(Error @upload)");
-                }
+                $import_model->upload($this->module->params['disposal_importfolder']);
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
                 if (!$spreadsheet) {
                     throw new Exception("(@import)");

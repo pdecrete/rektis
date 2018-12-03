@@ -240,7 +240,7 @@ class TeacherController extends Controller
                     $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
-                        echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                        //echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
