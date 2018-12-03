@@ -191,10 +191,8 @@ class TeacherController extends Controller
             $import_model = new FileImport();
             
             if ($import_model->load(Yii::$app->request->post())) {
-                //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
-                if(!$import_model->upload($this->module->params['eduinventory_importfolder'])) {
-                    throw new Exception("Error in uploading file.");
-                }
+                $import_model->upload($this->module->params['eduinventory_importfolder']);
+
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['eduinventory_importfolder']) . $import_model->importfile);
                 if(!$spreadsheet) {
                     throw new Exception("Error in opening Excel file.");
@@ -202,8 +200,8 @@ class TeacherController extends Controller
                 
                 $teachers_worksheet = $spreadsheet->getSheet(0);
                 $rowiterator = $teachers_worksheet->getRowIterator($base_teachersdata_row, null);
-                //echo "Hallo outside"; die();
-                foreach ($rowiterator as $row) { //echo "Hallo inside"; die();
+
+                foreach ($rowiterator as $row) { 
                     $currentrow_index = $row->getRowIndex();
                     
                     $currentteacher_am = trim($teachers_worksheet->getCellByColumnAndRow($teachers_columns['AM'], $currentrow_index)->getFormattedValue());
@@ -237,16 +235,12 @@ class TeacherController extends Controller
                     $teacher_model->teacher_mothername = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['MOTHERNAME'], $currentrow_index)->getValue();                        
                     $teacher_model->school_id = Schoolunit::findOne(['school_mineducode' => intval($teachers_worksheet->getCellByColumnAndRow($teachers_columns['ORGANIC_SCHOOL'], $currentrow_index)->getFormattedValue())])['school_id'];
                     $specialisation = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['SPECIALISATION'], $currentrow_index)->getValue();
+                    //$specialisation = $this->temporaryModification($specialisation);
                     $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, NULL, 'UTF-8');
-                    /*if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
-                        $specialisation = mb_substr($specialisation, 0, 4);
-                        $specialisation_with_blank = mb_substr($specialisation_with_blank, 0, 5);
-                    }*/
                     $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
-                        //echo $specialisation . " " . $specialisation_with_blank . " "; echo "<pre>"; print_r($teacher_model); echo "<pre>"; die();
-                        //echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                        echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
@@ -272,6 +266,31 @@ class TeacherController extends Controller
         }
     }
 
+    private function temporaryModification($specialisation) { /* TODO REMOVE WHEN SubstituteTeacher Front will be corrected */
+        if($specialisation == "ΔΕ1ΕΒΠ")
+            return 'ΔΕ1';
+        else if ($specialisation == "ΠΕ21")
+            return "ΠΕ 2100";
+        else if ($specialisation == "ΠΕ22")
+            return "ΠΕ 2200";
+        else if ($specialisation == "ΠΕ23")
+            return "ΠΕ 2300";
+        else if ($specialisation == "ΠΕ24")
+            return "ΠΕ 2400";
+        else if ($specialisation == "ΠΕ25")
+            return "ΠΕ 2500";
+        else if ($specialisation == "ΠΕ28")
+            return "ΠΕ 2800";
+        else if ($specialisation == "ΠΕ29")
+            return "ΠΕ 2900";
+        else if ($specialisation == "ΠΕ30")
+            return "ΠΕ 3000";
+        else if ($specialisation == "ΠΕ31")
+            return "ΠΕ 3100";
+        else
+            return $specialisation;
+    }
+    
     
     private function writeLog($infomessage) 
     {

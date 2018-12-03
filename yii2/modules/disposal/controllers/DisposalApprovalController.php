@@ -236,6 +236,10 @@ class DisposalApprovalController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if($model->archived == 1 || $model->deleted == 1) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            return $this->redirect(['disposal-approval/index']);
+        }
         $disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
         $disposals_models = [];
         $school_models = [];
@@ -393,6 +397,9 @@ class DisposalApprovalController extends Controller
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $approval_model = $this->findModel($id);
+            if($approval_model->archived == 1 || $approval_model->deleted == 1) {
+                throw new Exception('Not allowed action for that approval');
+            }
             $approval_model->deleted = 1;
             if (!$approval_model->save()) {
                 throw new Exception("The deletion of the disposals\' approval failed.");
