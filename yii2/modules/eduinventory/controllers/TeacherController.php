@@ -235,12 +235,12 @@ class TeacherController extends Controller
                     $teacher_model->teacher_mothername = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['MOTHERNAME'], $currentrow_index)->getValue();                        
                     $teacher_model->school_id = Schoolunit::findOne(['school_mineducode' => intval($teachers_worksheet->getCellByColumnAndRow($teachers_columns['ORGANIC_SCHOOL'], $currentrow_index)->getFormattedValue())])['school_id'];
                     $specialisation = $teachers_worksheet->getCellByColumnAndRow($teachers_columns['SPECIALISATION'], $currentrow_index)->getValue();
-                    //$specialisation = $this->temporaryModification($specialisation);
+                    $specialisation = $this->temporaryModification($specialisation);
                     $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, NULL, 'UTF-8');
                     $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
-                        echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                        //echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
