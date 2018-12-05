@@ -11,7 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $model app\modules\disposal\models\DisposalApproval */
 /* @var $form yii\widgets\ActiveForm */
 
-//echo "<pre>"; print_r($disposalapproval_models); echo "<pre>"; die();
+//echo "<pre>"; print_r($disposals_models); echo "<pre>"; die();
 
 ?>
 <div class="disposal-approval-form container-fluid">
@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
     		<table class="table table-hover table-condensed">
     			<thead>
     				<tr>
-    					<th></th><th>Εκπαιδευτικός</th><th>Ειδικότητα</th><th>Σχολείο Διάθεσης</th><th>Ώρες</th><th>Από</th><th>Έως</th>
+    					<th></th><th>Εκπαιδευτικός</th><th>Ειδικότητα</th><th>Σχολείο Υπηρέτησης</th><th>Σχολείο Διάθεσης</th><th>Ώρες</th><th>Από</th><th>Έως</th>
     				</tr>
     				
     			</thead>    			
@@ -39,7 +39,8 @@ use yii\widgets\ActiveForm;
 						</td>
 						<td><?php echo $teacher_models[$index]['teacher_surname'] . ' ' . $teacher_models[$index]['teacher_name']; ?></td>
 						<td><?php echo $specialization_models[$index]['code']; ?></td>
-						<td><?php echo $school_models[$index]['school_name']; ?></td>
+						<td><?php echo $fromschool_models[$index]['school_name']; ?></td>
+						<td><?php echo $toschool_models[$index]['school_name']; ?></td>
 						<td><?php echo ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) ? DisposalModule::t('modules/disposal/app', 'Full time Disposal') : $disposal_model['disposal_hours']; ?></td>
 						<td><?php echo \Yii::$app->formatter->asDate($disposal_model['disposal_startdate']); ?></td>
 						<td><?php echo \Yii::$app->formatter->asDate($disposal_model['disposal_enddate']); ?></td>

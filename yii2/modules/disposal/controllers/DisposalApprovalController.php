@@ -81,8 +81,8 @@ class DisposalApprovalController extends Controller
         $specializations = [];
         foreach ($disposal_models as $index => $disposal_model) {
             $teacher_models[$index] = Teacher::findOne(['teacher_id' => $disposal_model['teacher_id']]);
-            $disposal_schools[$index] = Schoolunit::findOne(['school_id' => $disposal_model['school_id']]);
-            $organic_schools[$index] = Schoolunit::findOne(['school_id' => $teacher_models[$index]['school_id']]);
+            $disposal_schools[$index] = Schoolunit::findOne(['school_id' => $disposal_model['toschool_id']]);
+            $service_schools[$index] = Schoolunit::findOne(['school_id' => $disposal_model['fromschool_id']]);
             $specializations[$index] = Specialisation::findOne(['id' => $teacher_models[$index]['specialisation_id']]);
         }
 
@@ -92,7 +92,7 @@ class DisposalApprovalController extends Controller
             'disposal_models' => $disposal_models,
             'teacher_models' => $teacher_models,
             'disposal_schools' => $disposal_schools,
-            'organic_schools' => $organic_schools,
+            'service_schools' => $service_schools,
             'specializations' => $specializations
         ]);
     }
@@ -120,7 +120,8 @@ class DisposalApprovalController extends Controller
         $disposalapproval_models = [];
         $disposals_models = [];
         $teacher_models = [];
-        $school_models = [];
+        $toschool_models = [];
+        $fromschool_models = [];
         $specialization_models = [];
         $use_template_with_health_reasons = false;
         //echo "<pre>"; print_r($disposal_ids);   echo "</pre>"; die();
@@ -132,11 +133,12 @@ class DisposalApprovalController extends Controller
             $disposalapproval_models[$index] = new DisposalDisposalapproval();
             $disposalapproval_models[$index]->disposal_id = $disposal_id;
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
-            $school_models[$index] = $disposals_models[$index]->getSchool()->one();
+            $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
+            $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
         }
 
-        $directorate_id = Schoolunit::findOne(['school_id' => $teacher_models[0]['school_id']])['directorate_id'];
+        $directorate_id = Schoolunit::findOne(['school_id' => $disposals_models[0]['fromschool_id']])['directorate_id'];
         $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
 
         /*foreach ($teacher_models as $teacher_model) {
@@ -189,7 +191,7 @@ class DisposalApprovalController extends Controller
                     throw new Exception("Please select at least one disposal.");
                 }
 
-                if ($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
+                if ($this->createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
                 }
 
@@ -205,7 +207,8 @@ class DisposalApprovalController extends Controller
                     'disposals_models' => $disposals_models,
                     'disposalapproval_models' => $disposalapproval_models,
                     'teacher_models' => $teacher_models,
-                    'school_models' => $school_models,
+                    'fromschool_models' => $fromschool_models,
+                    'toschool_models' => $toschool_models,
                     'specialization_models' => $specialization_models,
                     'disposal_ids' => $disposal_ids,
                     'selection' => 1
@@ -219,7 +222,8 @@ class DisposalApprovalController extends Controller
                 'disposals_models' => $disposals_models,
                 'disposalapproval_models' => $disposalapproval_models,
                 'teacher_models' => $teacher_models,
-                'school_models' => $school_models,
+                'fromschool_models' => $fromschool_models,
+                'toschool_models' => $toschool_models,
                 'specialization_models' => $specialization_models,
                 'disposal_ids' => $disposal_ids,
                 'selection' => 1
@@ -242,7 +246,8 @@ class DisposalApprovalController extends Controller
         }
         $disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
         $disposals_models = [];
-        $school_models = [];
+        $toschool_models = [];
+        $fromschool_models = [];
         $teacher_models = [];
         $specialization_models = [];
         $use_template_with_health_reasons = false;
@@ -254,11 +259,12 @@ class DisposalApprovalController extends Controller
             if (!$use_template_with_health_reasons && $disposals_models[$index]->isForHealthReasons()) {
                 $use_template_with_health_reasons = true;
             }
-            $school_models[$index] = $disposals_models[$index]->getSchool()->one();
+            $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
+            $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
         }
-        $directorate_id = Schoolunit::findOne(['school_id' => $teacher_models[0]['school_id']])['directorate_id'];
+        $directorate_id = Schoolunit::findOne(['school_id' => $disposals_models[0]['fromschool_id']])['directorate_id'];
         $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
 
         $transaction = Yii::$app->db->beginTransaction();
@@ -273,10 +279,10 @@ class DisposalApprovalController extends Controller
 
                 $old_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
                 $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
-
+                
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
-                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
+                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
                         $disposals_counter++;
                         if (!$old_disposalapproval_model->delete()) {
                             throw new Exception("Failed to save the changes of the approval.");
@@ -288,14 +294,14 @@ class DisposalApprovalController extends Controller
                         }
                     }
                 }
-                if ($disposals_counter == count($old_disposalapproval_models)) {//echo "<pre>"; print_r($disposals_models); echo "</pre>"; die();
+                if ($disposals_counter == count($old_disposalapproval_models)) {
                     for ($i = 0; $i < count($disposals_models); $i++) {
                         $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
                     }
                     throw new Exception("Please select at least one disposal.");
                 }
 
-                if ($this->createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
+                if ($this->createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
                 }
 
@@ -311,7 +317,8 @@ class DisposalApprovalController extends Controller
                     'disposals_models' => $disposals_models,
                     'disposalapproval_models' => $disposalapproval_models,
                     'teacher_models' => $teacher_models,
-                    'school_models' => $school_models,
+                    'fromschool_models' => $fromschool_models,
+                    'toschool_models' => $toschool_models,
                     'specialization_models' => $specialization_models,
                 ]);
             }
@@ -323,16 +330,17 @@ class DisposalApprovalController extends Controller
                 'disposals_models' => $disposals_models,
                 'disposalapproval_models' => $disposalapproval_models,
                 'teacher_models' => $teacher_models,
-                'school_models' => $school_models,
+                'fromschool_models' => $fromschool_models,
+                'toschool_models' => $toschool_models,
                 'specialization_models' => $specialization_models,
             ]);
         }
     }
 
 
-    private function createApprovalFile($model, $disposals_models, $school_models, $teacher_models, $specialization_models, $directorate_model, $template_filename)
+    private function createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename)
     {
-        //echo "<pre>"; print_r($teacher_models); echo "<pre>"; die();
+        //echo "<pre>"; print_r($fromschool_models); echo "<pre>"; die();
         //echo "<pre>"; echo ($disposals_models[0]['localdirdecision_id']); echo "<pre>"; die();
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
@@ -367,16 +375,15 @@ class DisposalApprovalController extends Controller
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {
             $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
-            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται";
-            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? " με ολική διάθεση ":
-            " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα";
-            $teacher_disposals .= " στο \"" . $school_models[$i]['school_name'] . "\"";
+            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";  
+            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? " με ολική διάθεση " : " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα";            
+            $teacher_disposals .= " στο \"" . $toschool_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
-            //if ($disposals_models[$i]['disposalworkobj_id'] != null)
             $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
-            $teacher_disposals .= ".</w:t><w:br/><w:t>";
+            $teacher_disposals .= ".</w:t><w:br/><w:t>";            
         }
+        
         $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
 
         $whosigns = Yii::$app->session[Yii::$app->controller->module->id . "_whosigns"];

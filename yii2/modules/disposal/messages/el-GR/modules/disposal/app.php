@@ -100,7 +100,7 @@ return [
     'Disposals for Approval' => 'Διαθέσεις προς Έγκριση',
     'Processed Disposals' => 'Διεκπεραιωμένες Διαθέσεις',
     'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.' => 'Η έγκριση των διαθέσεων διαγράφηκε επιτυχώς και οι διαθέσεις που περιλαμβάνονταν σε αυτή επιστράφησαν στην ενότητα "Διαθέσεις προς έγκριση".',
-    'The school of the disposal must be different to the school of the organic position of the teacher' => 'Το σχολείο διάθεσης πρέπει να είναι διαφορετικό από το σχολείο οργανικής θέσης του εκπαιδευτικού.',
+    'The school of the disposal must be different to the school of the service position of the teacher' => 'Το σχολείο διάθεσης πρέπει να είναι διαφορετικό από το σχολείο υπηρέτησης του εκπαιδευτικού.',
     'The approval of the disposals was created successfully.' => 'Η έγκριση των διαθέσεων δημιουργήθηκε επιτυχώς.',
     'The approval of the disposals was updated successfully.' => 'Η έγκριση των διαθέσεων ενημερώθηκε επιτυχώς.',
     'Please select teachers of only one directorate.' => 'Παρακαλώ επιλέξτε εκπαιδευτικούς μόνο μίας Διεύθυνσης.',
@@ -204,5 +204,7 @@ return [
     'Archive' => 'Αρχειοθέτηση',
     'Archived Approvals' => 'Αρχειοθετημένες Εγκρίσεις',
     'The archive was completed successfully.' => 'Η αρχειοθέτηση ολοκληρώθηκε επιτυχώς.',
-    'The restoration was completed successfully.' => 'Η επαναφορά ολοκληρώθηκε επιτυχώς.'
+    'The restoration was completed successfully.' => 'Η επαναφορά ολοκληρώθηκε επιτυχώς.',
+    'The "full disposal" does not agree in the "hours" and "days" drop-down menu.' => 'H "ολική διάθεση" δεν συμφωνεί στα αναπτυσσόμενα μενού των ωρών και ημερών.',
+    'Service' => 'Υπηρέτηση'
 ];

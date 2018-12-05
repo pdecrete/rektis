@@ -77,11 +77,11 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'pluginOptions' => ['allowClear' => true, 'width' => '80']
                 ])
             ],
-            [   'attribute' => 'organic_school',
-                'label' => DisposalModule::t('modules/disposal/app', 'Organic Post'),
+            [   'attribute' => 'from_school',
+                'label' => DisposalModule::t('modules/disposal/app', 'Service'),
                 'options' => ['width' => '65']
             ],
-            [   'attribute' => 'disposal_school',
+            [   'attribute' => 'to_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Disposal'),
                 'options' => ['width' => '65']
             ],
@@ -189,9 +189,9 @@ if ((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected
               		<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
               			<?= DisposalModule::t('modules/disposal/app', 'Create'); ?> <span class="caret"></span>
           			</button>
-          			<ul class="dropdown-menu" role="menu">
-          				<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approval'), ['disposal-approval/create'], ['data-method' => 'POST']) ?></li>
+          			<ul class="dropdown-menu" role="menu">          				
                 		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposal'), ['create']) ?></li>
+                		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approval'), ['disposal-approval/create'], ['data-method' => 'POST']) ?></li>
           			</ul>
             	</div>    	
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import from Excel'), ['importdisposals'], ['class' => 'btn btn-success']) ?>

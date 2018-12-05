@@ -16,7 +16,8 @@ class DisposalSearch extends Disposal
     public $teacher_registrynumber;
     public $code;
     public $organic_school;
-    public $disposal_school;
+    public $from_school;
+    public $to_school;
     public $directorate_shortname;
     public $disposalreason_description;
     public $localdirdecision_protocol;
@@ -27,8 +28,9 @@ class DisposalSearch extends Disposal
     public function rules()
     {
         return [
-            [['disposal_id', 'teacher_id', 'school_id', 'localdirdecision_id'], 'integer'],
-            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'disposal_school', 'code', 'directorate_shortname', 'disposalreason_description', 'localdirdecision_protocol'], 'string'],
+            [['disposal_id', 'teacher_id', 'fromschool_id', 'toschool_id', 'localdirdecision_id'], 'integer'],
+            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'from_school', 'to_school', 'code', 'directorate_shortname', 
+              'disposalreason_description', 'localdirdecision_protocol'], 'string'],
             [['disposal_startdate', 'disposal_enddate', 'disposal_hours'], 'safe'],
         ];
     }
@@ -51,6 +53,7 @@ class DisposalSearch extends Disposal
         $dspls_apprvs = $prefix . 'disposal_disposalapproval';
         $tchers = $prefix . 'teacher';
         $specs = $prefix . 'specialisation';
+        $s_schls = $prefix . 'schoolunit srv_sch';
         $d_schls = $prefix . 'schoolunit dsp_sch';
         $o_schls = $prefix . 'schoolunit orgn_sch';
         $dir_o_schl = $prefix . 'directorate';
@@ -59,8 +62,8 @@ class DisposalSearch extends Disposal
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
 
         $tables_fields_array = [$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*",
-                                 $localdir_decisions . ".*" , "`dsp_sch`.school_name AS disposal_school, `orgn_sch`.school_name AS organic_school"];
-        $tables_array = [$dspls, $tchers, $specs, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
+                                 $localdir_decisions . ".*" , "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];
+        $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
         if ($archived) {
             $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".*"]);
             $tables_array = array_merge($tables_array, [$dspls_apprvs]);
@@ -78,7 +81,8 @@ class DisposalSearch extends Disposal
                     " AND " . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id" .
                     " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" .
                     " AND " . $tchers . ".specialisation_id=" . $specs . ".id" .
-                    " AND " . $dspls . ".school_id=dsp_sch.school_id" .
+                    " AND " . $dspls . ".fromschool_id=srv_sch.school_id" .
+                    " AND " . $dspls . ".toschool_id=dsp_sch.school_id" .
                     " AND " . $tchers . ".school_id=orgn_sch.school_id" .
                     " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
                     )->distinct();
@@ -111,7 +115,7 @@ class DisposalSearch extends Disposal
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
-                                          $dspls . '.updated_at', 'disposal_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
+                                          $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposalreason_description', 'localdirdecision_protocol'],
                                          'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
                       ],
@@ -130,14 +134,16 @@ class DisposalSearch extends Disposal
         $query->andFilterWhere([
             'disposal_hours' => $this->disposal_hours,
             'teacher_id' => $this->teacher_id,
-            'school_id' => $this->school_id
+            //'toschool_id' => $this->toschool_id,
+            //'fromschool_id' => $this->fromschool_id
         ]);
 
         $query->andFilterWhere(['like', 'teacher_name', $this->teacher_name]);
         $query->andFilterWhere(['like', 'teacher_surname', $this->teacher_surname]);
         $query->andFilterWhere(['like', 'teacher_registrynumber', $this->teacher_registrynumber]);
         $query->andFilterWhere(['like', 'code', $this->code]);
-        $query->andFilterWhere(['like', 'dsp_sch.school_name', $this->disposal_school]);
+        $query->andFilterWhere(['like', 'srv_sch.school_name', $this->from_school]);
+        $query->andFilterWhere(['like', 'dsp_sch.school_name', $this->to_school]);
         $query->andFilterWhere(['like', 'orgn_sch.school_name', $this->organic_school]);
         $query->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);
         $query->andFilterWhere(['like', 'disposalreason_description', $this->disposalreason_description]);

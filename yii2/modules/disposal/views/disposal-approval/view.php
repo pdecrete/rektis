@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
             	<tr>
             		<td><?php echo $teacher_models[$index]['teacher_surname'] . ' ' .  $teacher_models[$index]['teacher_name']; ?></td>
             		<td><?php echo $specializations[$index]['code'] . ', ' . $specializations[$index]['name']; ?></td>
-            		<td><?php echo $organic_schools[$index]['school_name']; ?></td>
+            		<td><?php echo $service_schools[$index]['school_name']; ?></td>
             		<td><?php echo $disposal_schools[$index]['school_name']; ?></td>
             		<td><?php echo ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) ? DisposalModule::t('modules/disposal/app', 'Full time Disposal') : $disposal_model['disposal_hours']; ?></td>
             		<td><?php echo date_format(date_create($disposal_model['disposal_startdate']), 'd/m/Y'); ?></td>
