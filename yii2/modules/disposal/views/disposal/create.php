@@ -21,6 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'localdirdecision_model' => $localdirdecision_model,
         'schools' => $schools,
         'disposal_hours' => $disposal_hours,
+        'disposal_days' => $disposal_days,
         'specialisations' => $specialisations,
         'disposal_reasons' => $disposal_reasons,
         'disposal_workobjs' => $disposal_workobjs,

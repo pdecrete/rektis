@@ -28,7 +28,8 @@ use app\modules\schooltransport\models\Directorate;
  * @property integer $created_by
  * @property integer $updated_by
  * @property integer $teacher_id
- * @property integer $school_id
+ * @property integer $fromschool_id
+ * @property integer $toschool_id
  * @property integer $disposalreason_id
  * @property integer $disposalworkobj_id
  * @property integer $localdirdecision_id
@@ -87,13 +88,15 @@ class Disposal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['disposal_startdate', 'disposal_hours', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
+            [['disposal_startdate', 'disposal_days', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
-            [['disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'school_id', 'disposalreason_id', 'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
+            [['disposal_days', 'disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 
+              'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'teacher_id']],
-            [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['school_id' => 'school_id']],
+            [['fromschool_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['fromschool_id' => 'school_id']],
+            [['toschool_id'], 'exist', 'skipOnError' => true, 'targetClass' => Schoolunit::className(), 'targetAttribute' => ['toschool_id' => 'school_id']],
             [['disposalreason_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalReason::className(), 'targetAttribute' => ['disposalreason_id' => 'disposalreason_id']],
             [['disposalworkobj_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalWorkobj::className(), 'targetAttribute' => ['disposalworkobj_id' => 'disposalworkobj_id']],
             [['localdirdecision_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalLocaldirdecision::className(), 'targetAttribute' => ['localdirdecision_id' => 'localdirdecision_id']],
@@ -110,6 +113,7 @@ class Disposal extends \yii\db\ActiveRecord
             'disposal_startdate' => DisposalModule::t('modules/disposal/app', 'Έναρξη Διάθεσης'),
             'disposal_enddate' => DisposalModule::t('modules/disposal/app', 'Λήξη Διάθεσης'),
             'disposal_hours' => DisposalModule::t('modules/disposal/app', 'Ώρες Διάθεσης'),
+            'disposal_days' => DisposalModule::t('modules/disposal/app', 'Ημέρες Διάθεσης'),
             'disposal_republished' => DisposalModule::t('modules/disposal/app', 'Ανακοινοποιημένη Διάθεση'),
             'disposal_rejected' => DisposalModule::t('modules/disposal/app', 'Απορριφθείσα Διάθεση'),
             'disposal_created_at' => DisposalModule::t('modules/disposal/app', 'Ημ/νία Δημιουργίας'),
@@ -119,7 +123,8 @@ class Disposal extends \yii\db\ActiveRecord
             'created_by' => DisposalModule::t('modules/disposal/app', 'Created By'),
             'updated_by' => DisposalModule::t('modules/disposal/app', 'Updated By'),
             'teacher_id' => DisposalModule::t('modules/disposal/app', 'Teacher'),
-            'school_id' => DisposalModule::t('modules/disposal/app', 'Disposal School'),
+            'fromschool_id' => DisposalModule::t('modules/disposal/app', 'Service School'),
+            'toschool_id' => DisposalModule::t('modules/disposal/app', 'Disposal School'),
             'disposalreason_id' => DisposalModule::t('modules/disposal/app', 'Disposal Reason'),
             'disposalworkobj_id' => DisposalModule::t('modules/disposal/app', 'Disposal Working Object'),
             'localdirdecision_id' => DisposalModule::t('modules/disposal/app', 'Local Directorate'),
@@ -179,9 +184,17 @@ class Disposal extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSchool()
+    public function getFromSchool()
     {
-        return $this->hasOne(Schoolunit::className(), ['school_id' => 'school_id']);
+        return $this->hasOne(Schoolunit::className(), ['school_id' => 'fromschool_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getToSchool()
+    {
+        return $this->hasOne(Schoolunit::className(), ['school_id' => 'toschool_id']);
     }
 
     /**
@@ -234,6 +247,18 @@ class Disposal extends \yii\db\ActiveRecord
             $disposal_hours[$i] = ["hours" => $i, "hours_name" => $i];
         }
         return $disposal_hours;
+    }
+    
+    /**
+     * @return array
+     */
+    public static function getDayOptions()
+    {
+        $disposal_days[Disposal::FULL_DISPOSAL] = ["days" => Disposal::FULL_DISPOSAL, "days_name" => "Ολική Διάθεση"];
+        for ($i = 1; $i <= 5; $i++) {
+            $disposal_days[$i] = ["days" => $i, "days_name" => $i];
+        }
+        return $disposal_days;
     }
 
     /**

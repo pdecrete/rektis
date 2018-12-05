@@ -151,21 +151,36 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
                                 'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
-                            ])->label('Σχολείο Υπηρέτησης'); ?>
+                            ])->label('Οργανική Θέση'); ?>
         </div>
+	</div>
+	<hr />
+	<div class="row">
 		<div class="col-lg-3">
-			<?= $form->field($model, 'school_id')->widget(Select2::classname(), [
+			<?= $form->field($model, 'fromschool_id')->widget(Select2::classname(), [
+                                'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
+                                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal school...')],
+                            ])->label('Σχολείο Υπηρέτησης'); ?>
+		</div>	
+		<div class="col-lg-3">
+			<?= $form->field($model, 'toschool_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal school...')],
                             ])->label('Σχολείο Διάθεσης'); ?>
-		</div>
+		</div>	
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposal_hours')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($disposal_hours, 'hours', 'hours_name'),
                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal hours...')],
                             ])->label('Ώρες Διάθεσης'); ?>
-		</div>					
-	</div>
+		</div>
+		<div class="col-lg-3">
+			<?= $form->field($model, 'disposal_days')->widget(Select2::classname(), [
+                                'data' => ArrayHelper::map($disposal_days, 'days', 'days_name'),
+                                'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal days...')],
+                            ])->label('Ημέρες Διάθεσης'); ?>
+		</div>
+	</div>	
 	<div class="row">
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposal_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?>
@@ -173,7 +188,7 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposal_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE, 'options' => ['id' => 'disposalend_datepicker']]); ?>
 			<?= $form->field($model, 'disposal_endofteachingyear_flag')->checkbox(['label'=>'Λήξη στο τέλος του διδακτικού έτους', 'id' => 'chkbox_endteachyear', 'onclick' => 'setEndOfTeachingYearDate()']); ?>
-		</div>
+		</div>	
 		<div class="col-lg-3">
 			<?= $form->field($model, 'disposalreason_id')->widget(Select2::classname(), [
                                  'data' => ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description'),
@@ -186,8 +201,8 @@ $urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax
                                  'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
                                  'pluginOptions' => ['allowClear' => true]
                             ])->label('Καθήκον Διάθεσης'); ?>
-		</div>			
-	</div>	
+		</div>
+	</div>
     <div class="form-group pull-right">
         <?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

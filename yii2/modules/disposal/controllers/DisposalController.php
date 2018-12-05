@@ -136,7 +136,8 @@ class DisposalController extends Controller
         $teacher = $model->getTeacher()->one();
         $specialisation = Specialisation::findOne(['id' => $teacher['specialisation_id']]);
         $organicpost = Schoolunit::findOne(['school_id' => $teacher['school_id']]);
-        $disposal_school = $model->getSchool()->one();
+        $disposal_school = $model->getToSchool()->one();
+        $service_school = $model->getFromSchool()->one();
         $disposal_reason = $model->getDisposalreason()->one();
         $disposal_workobj = $model->getDisposalworkobj()->one();
         $array_model = $model->toArray();
@@ -149,7 +150,8 @@ class DisposalController extends Controller
         $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
         $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
         $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
-        $array_model['school_id'] = $disposal_school['school_name'];
+        $array_model['fromschool_id'] = $service_school['school_name'];
+        $array_model['toschool_id'] = $disposal_school['school_name'];
         $array_model['Organic Post'] = $organicpost->school_name;
         $array_model['disposalreason_id'] = $disposal_reason['disposalreason_description'];
         $array_model['disposalworkobj_id'] = $disposal_workobj['disposalworkobj_description'];
@@ -178,11 +180,17 @@ class DisposalController extends Controller
             $model = new Disposal();
 
             $disposal_hours = Disposal::getHourOptions();
+            $disposal_days = Disposal::getDayOptions();
 
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
                 //echo "<pre>"; print_r($model); echo "</pre>"; die();
-                if ($model->school_id == $teacher_model->school_id) {
-                    throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
+                
+                if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
+                    throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
+                }
+                
+                if ($model->toschool_id == $model->fromschool_id) {
+                    throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
                 }
 
                 $existing_teacher_model = Teacher::findOne(['teacher_afm' => $teacher_model->teacher_afm]);
@@ -204,7 +212,7 @@ class DisposalController extends Controller
                 }
 
                 if ($model->disposal_endofteachingyear_flag == 1) {
-                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);
+                    $school_model = Schoolunit::findOne(['school_id' => $model->fromschool_id]);
                     if ($school_model->getSchoolStage() == 'PRIMARY') {
                         $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
                             (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
@@ -248,6 +256,7 @@ class DisposalController extends Controller
                     'localdirdecision_model' => $localdirdecision_model,
                     'schools' => $schools,
                     'disposal_hours' => $disposal_hours,
+                    'disposal_days' => $disposal_days,
                     'specialisations' => $specialisations,
                     'disposal_reasons' => $disposal_reasons,
                     'disposal_workobjs' => $disposal_workobjs,
@@ -263,6 +272,7 @@ class DisposalController extends Controller
                 'localdirdecision_model' => $localdirdecision_model,
                 'schools' => $schools,
                 'disposal_hours' => $disposal_hours,
+                'disposal_days' => $disposal_days,
                 'specialisations' => $specialisations,
                 'disposal_reasons' => $disposal_reasons,
                 'disposal_workobjs' => $disposal_workobjs,
@@ -296,12 +306,17 @@ class DisposalController extends Controller
             $directorates = Directorate::find()->orderBy('directorate_name')->all();
 
             $disposal_hours = Disposal::getHourOptions();
+            $disposal_days = Disposal::getDayOptions();
 
             if ($model->load(Yii::$app->request->post())) {
                 $transaction = Yii::$app->db->beginTransaction();
 
-                if ($model->school_id == $teacher_model->school_id) {
-                    throw new Exception("The school of the disposal must be different to the school of the organic position of the teacher");
+                if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
+                    throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
+                }
+                
+                if ($model->fromschool_id == $model->toschool_id) {
+                    throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
                 }
 
                 if ($model->disposal_enddate == "") {
@@ -309,7 +324,7 @@ class DisposalController extends Controller
                 }
 
                 if ($model->disposal_endofteachingyear_flag == 1) {
-                    $school_model = Schoolunit::findOne(['school_id' => $teacher_model->school_id]);
+                    $school_model = Schoolunit::findOne(['school_id' => $model->fromschool_id]);
                     if ($school_model->getSchoolStage() == 'PRIMARY') {
                         $timestamp = strtotime($this->module->params['teachyear_enddate_primary'] . '-' .
                             (Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-d", $model->disposal_startdate)) + 1));
@@ -352,6 +367,7 @@ class DisposalController extends Controller
                     'localdirdecision_model' => $localdirdecision_model,
                     'schools' => $schools,
                     'disposal_hours' => $disposal_hours,
+                    'disposal_days' => $disposal_days,
                     'specialisations' => $specialisations,
                     'disposal_reasons' => $disposal_reasons,
                     'disposal_workobjs' => $disposal_workobjs,
@@ -367,6 +383,7 @@ class DisposalController extends Controller
                 'localdirdecision_model' => $localdirdecision_model,
                 'schools' => $schools,
                 'disposal_hours' => $disposal_hours,
+                'disposal_days' => $disposal_days,
                 'specialisations' => $specialisations,
                 'disposal_reasons' => $disposal_reasons,
                 'disposal_workobjs' => $disposal_workobjs,
@@ -613,8 +630,8 @@ class DisposalController extends Controller
     public function actionImportdisposals()
     {
         $cells = ['DIRECTORATE' => 'C3', 'PROTOCOL' => 'C4', 'ACTION' => 'C5', 'SUBJECT' => 'C6'];
-        $disposals_columns = [  'AM' => 2, 'SURNAME' => 3, 'NAME' => 4, 'SPECIALISATION' => 5, 'ORGANIC_SCHOOL' => 6, 'DISPOSAL_SCHOOL' => 7,
-                                'HOURS' => 8, 'START_DATE' => 9, 'END_DATE' => 10, 'DISPOSAL_REASON' => 11, 'DISPOSAL_DUTY' => 12];
+        $disposals_columns = [  'AM' => 2, 'SURNAME' => 3, 'NAME' => 4, 'SPECIALISATION' => 5, 'SERVICE_SCHOOL' => 6, 'DISPOSAL_SCHOOL' => 7,
+                                'HOURS' => 8, 'DAYS' => 9, 'START_DATE' => 10, 'END_DATE' => 11, 'DISPOSAL_REASON' => 12, 'DISPOSAL_DUTY' => 13];
         $base_disposalsdata_row = 9;
         try {
             $directorate = '';
@@ -668,7 +685,7 @@ class DisposalController extends Controller
                         $teacher_model->teacher_registrynumber = intval($currentteacher_am);
                         $teacher_model->teacher_surname = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SURNAME'], $currentrow_index)->getValue();
                         $teacher_model->teacher_name = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['NAME'], $currentrow_index)->getValue();
-                        $teacher_model->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
+                        $teacher_model->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SERVICE_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
 
                         /* Find the specialisation_id of the teacher */
                         $specialisation = mb_substr($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(), 0, 7, 'UTF-8');
@@ -688,15 +705,18 @@ class DisposalController extends Controller
                     $disposal->disposal_startdate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
                     $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
+                    $disposal->disposal_days = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DAYS'], $currentrow_index)->getValue();
                     $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
                     $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_name' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
                     $disposal->teacher_id = $teacher_model->teacher_id;
-                    $disposal->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
+                    $disposal->fromschool_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SERVICE_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
+                    $disposal->toschool_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
                     $disposal->deleted = 0;
                     $disposal->archived = 0;
                     $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
 
                     if (!$disposal->save()) {
+                        echo "<pre>"; print_r($disposal->errors); echo "</pre>"; die(); 
                         throw new Exception("Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.");
                     }
                 }
