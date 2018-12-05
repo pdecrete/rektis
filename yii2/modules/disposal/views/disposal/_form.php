@@ -114,8 +114,8 @@ $script = '$(document).on("click", "#chkbox_endteachyear", function enabledisabl
 $this->registerJs($script, View::POS_END);
 */
 
-$urlTeacherCheck = Url::to('/disposal/disposal/getteacher-ajax');
-$urlLocaldirDecisionCheck = Url::to('/disposal/disposal/getlocaldirdecision-ajax');
+$urlTeacherCheck = Url::toRoute(['disposal/getteacher-ajax']);
+$urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 
 ?>
 <?php $form = ActiveForm::begin(); ?>
