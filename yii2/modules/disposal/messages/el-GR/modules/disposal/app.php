@@ -206,5 +206,6 @@ return [
     'The archive was completed successfully.' => 'Η αρχειοθέτηση ολοκληρώθηκε επιτυχώς.',
     'The restoration was completed successfully.' => 'Η επαναφορά ολοκληρώθηκε επιτυχώς.',
     'The "full disposal" does not agree in the "hours" and "days" drop-down menu.' => 'H "ολική διάθεση" δεν συμφωνεί στα αναπτυσσόμενα μενού των ωρών και ημερών.',
-    'Service' => 'Υπηρέτηση'
+    'Service' => 'Υπηρέτηση',
+    'Error in dates in line {line} of Excel file.' => 'Σφάλμα στις ημερομηνίες στη γραμμή {line} του Excel αρχείου.',    
 ];

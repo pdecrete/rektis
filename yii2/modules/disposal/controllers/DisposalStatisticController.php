@@ -29,7 +29,7 @@ class DisposalStatisticController extends Controller
             ],
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
-                    ['actions' => ['index', 'exportstatistic', 'exportexcel'], 'allow' => true, 'roles' => ['schtransport_viewer']],
+                    ['actions' => ['index', 'exportstatistic', 'exportexcel'], 'allow' => true, 'roles' => ['disposal_viewer']],
                 ]
             ]
         ];

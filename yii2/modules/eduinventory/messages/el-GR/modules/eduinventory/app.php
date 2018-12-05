@@ -80,5 +80,6 @@ return [
     'Educational Data' => 'Εκπαιδευτικά Δεδομένα',
     'View/edit/delete teachers' => 'Προβολή/επεξεργασία/διαγραφή εκπαιδευτικών',
     'The teachers were imported successfully.' => 'Οι εκπαιδευτικοί εισήχθησαν επιτυχώς.',
-    'Import Teachers from Excel' => 'Εισαγωγή Εκπαιδευτικών από Excel αρχείο'
+    'Import Teachers' => 'Εισαγωγή Εκπαιδευτικών',
+    'Select Teachers Excel File' => 'Επιλέξτε το Excel αρχείο με τους εκπαιδευτικούς'
 ];
