@@ -43,9 +43,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             ['label'=> DisposalModule::t('modules/disposal/app', 'Teacher'), 'value'=>$model['teacher_id']],
-            ['label'=> DisposalModule::t('modules/disposal/app', 'Organic Post'), 'value'=>$model['Organic Post']],
-            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal School'), 'value'=>$model['school_id']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Current School'), 'value'=>$model['fromschool_id']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal School'), 'value'=>$model['toschool_id']],
             ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Duration'), 'value'=>$model['disposal_startdate'] . ' - ' . $model['disposal_enddate']],
+            ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Days'), 'value'=>$model['disposal_days']],
             ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Hours'), 'value'=>$model['disposal_hours']],
             ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Reason'), 'value'=>$model['disposalreason_id']],
             ['label'=> DisposalModule::t('modules/disposal/app', 'Disposal Duty'), 'value'=>$model['disposalworkobj_id']],

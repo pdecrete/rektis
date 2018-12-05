@@ -405,7 +405,7 @@ AppAsset::register($this);
                 ],
                 [
                     'label' => 'Διαθέσεις',
-                    'visible' => !Yii::$app->user->isGuest,
+                    'visible' => Yii::$app->user->can('disposal_director') || Yii::$app->user->can('disposal_editor') || Yii::$app->user->can('disposal_viewer'),
                     'items' => [
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-user"></i></li>',
                         [

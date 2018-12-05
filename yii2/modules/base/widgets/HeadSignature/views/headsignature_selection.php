@@ -35,7 +35,7 @@ $ajaxscript_SetWhoSigns = 'function setWhoSigns(url, module){
 
 
 $this->registerJs($ajaxscript_SetWhoSigns, View::POS_HEAD);
-$url_setWhoSigns = Url::to('/head-signature/signatureajax');
+$url_setWhoSigns = Url::toRoute(['/head-signature/signatureajax']);
 ?>
 
 <div class="row">

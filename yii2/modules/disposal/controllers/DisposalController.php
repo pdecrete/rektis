@@ -23,6 +23,7 @@ use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
+use yii\validators\DateValidator;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -144,9 +145,7 @@ class DisposalController extends Controller
 
         if ($array_model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
             $array_model['disposal_hours'] = 'Ολική Διάθεση';
-        } else {
-            $array_model['disposal_hours'] .= ' ώρες';
-        }
+        } 
         $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
         $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
         $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
@@ -702,8 +701,14 @@ class DisposalController extends Controller
                     }
 
                     $disposal = new Disposal();
-                    $disposal->disposal_startdate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
-                    $disposal->disposal_enddate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
+                    $dv = new DateValidator();
+                    
+                    $startdate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue();
+                    $enddate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue();
+                    if(!$dv->validate($startdate) || !$dv->validate($enddate))
+                        throw new Exception("Error in dates in line {line} of Excel file.", $currentrow_index);
+                    $disposal->disposal_startdate = yii::$app->formatter->asDate($startdate, "php:Y-m-d");
+                    $disposal->disposal_enddate = yii::$app->formatter->asDate($enddate, "php:Y-m-d");
                     $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
                     $disposal->disposal_days = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DAYS'], $currentrow_index)->getValue();
                     $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
@@ -716,7 +721,7 @@ class DisposalController extends Controller
                     $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
 
                     if (!$disposal->save()) {
-                        echo "<pre>"; print_r($disposal->errors); echo "</pre>"; die(); 
+                        //echo "<pre>"; print_r($disposal->errors); echo "</pre>"; die(); 
                         throw new Exception("Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.");
                     }
                 }
@@ -733,7 +738,10 @@ class DisposalController extends Controller
             }
         } catch (Exception $exc) {
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            if($exc->getCode() > 0)
+                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage(), ['line' => $exc->getCode()]));
+            else 
+                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }
     }

@@ -16,7 +16,7 @@ $this->title =  DisposalModule::t('modules/disposal/app', $title);
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download} {republish}' : '{view}';
+$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}' : '{view}';//{republish}
 ?>
 <?=Html::beginForm(['archiveform'], 'post');?>
 <div class="disposal-approval-index">
