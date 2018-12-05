@@ -189,9 +189,9 @@ class DisposalController extends Controller
                     throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
                 }
                 
-                if ($model->toschool_id == $model->fromschool_id) {
+                /* if ($model->toschool_id == $model->fromschool_id) {
                     throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
-                }
+                } */
 
                 $existing_teacher_model = Teacher::findOne(['teacher_afm' => $teacher_model->teacher_afm]);
 
@@ -315,9 +315,9 @@ class DisposalController extends Controller
                     throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
                 }
                 
-                if ($model->fromschool_id == $model->toschool_id) {
+/*                 if ($model->fromschool_id == $model->toschool_id) {
                     throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
-                }
+                } */
 
                 if ($model->disposal_enddate == "") {
                     $model->disposal_endofteachingyear_flag = 1;
