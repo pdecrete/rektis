@@ -377,7 +377,7 @@ class DisposalApprovalController extends Controller
             $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
             $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";            
             
-            $hours_word = (!is_null($disposals_models[$i]['disposal_hours']) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα " : " ώρες";
+            $hours_word = (!is_null($disposals_models[$i]['disposal_hours']) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
             $days_word = (!is_null($disposals_models[$i]['disposal_days']) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
             
             if($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL)
