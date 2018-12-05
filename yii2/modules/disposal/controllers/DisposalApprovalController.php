@@ -372,11 +372,21 @@ class DisposalApprovalController extends Controller
         $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
         $templateProcessor->setValue('local_pyspe', $pyspe);
 
-        $teacher_disposals = "";
+        $teacher_disposals = "";        
         for ($i = 0; $i < count($teacher_models); $i++) {
             $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
-            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";  
-            $teacher_disposals .= ($disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) ? " με ολική διάθεση " : " για " . $disposals_models[$i]['disposal_hours'] . " ώρες την εβδομάδα";            
+            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";            
+            
+            $hours_word = (!is_null($disposals_models[$i]['disposal_hours']) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα " : " ώρες";
+            $days_word = (!is_null($disposals_models[$i]['disposal_days']) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
+            
+            if($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL)
+                $teacher_disposals .= " με ολική διάθεση ";
+            else if(!is_null($disposals_models[$i]['disposal_hours']))
+                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα (" . $disposals_models[$i]['disposal_days'] . $hours_word . ")";
+            else
+                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
+            
             $teacher_disposals .= " στο \"" . $toschool_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
