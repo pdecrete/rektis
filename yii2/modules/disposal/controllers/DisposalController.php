@@ -24,6 +24,9 @@ use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
 use yii\validators\DateValidator;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 /**
  * DisposalController implements the CRUD actions for Disposal model.
@@ -702,11 +705,29 @@ class DisposalController extends Controller
 
                     $disposal = new Disposal();
                     $dv = new DateValidator();
+                    $startdate = null;
+                    $enddate = null;
+                    $startdate_cell = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index);
+                    $enddate_cell = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index);
                     
-                    $startdate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue();
-                    $enddate = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue();
-                    if(!$dv->validate($startdate) || !$dv->validate($enddate))
-                        throw new Exception("Error in dates in line {line} of Excel file.", $currentrow_index);
+                    if(in_array($startdate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2])) {
+                        $startdate = $startdate_cell->getFormattedValue();
+                        $startdate = str_replace("/", "-", $startdate);
+                    }
+                    else if($startdate_cell->getDataType() == DataType::TYPE_NUMERIC) {
+                        $startdate = $startdate_cell->getValue();
+                        $startdate = Date::excelToDateTimeObject($startdate)->format("d-m-Y");
+                    }
+                    
+                    if(in_array($enddate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2])) {
+                        $enddate = $enddate_cell->getFormattedValue();
+                        $enddate = str_replace("/", "-", $enddate);
+                    }
+                    else if($enddate_cell->getDataType() == DataType::TYPE_NUMERIC) {
+                        $enddate = $enddate_cell->getValue();
+                        $enddate = Date::excelToDateTimeObject($enddate)->format("d-m-Y");;
+                    }                                        
+
                     $disposal->disposal_startdate = yii::$app->formatter->asDate($startdate, "php:Y-m-d");
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($enddate, "php:Y-m-d");
                     $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
@@ -738,14 +759,17 @@ class DisposalController extends Controller
             }
         } catch (Exception $exc) {
             $transaction->rollBack();
-            if($exc->getCode() > 0)
-                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage(), ['line' => $exc->getCode()]));
-            else 
-                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            return $this->redirect(['index']);
+        }
+        catch (\yii\base\InvalidParamException $invp_exc) {
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $invp_exc->getMessage()));
             return $this->redirect(['index']);
         }
     }
-
+    
+    
     /**
      * Receives the school as it is in the Excel file for importing disposals and returns its id.
      * The schools in the Excel file has the form of "School_name (school_id)".
