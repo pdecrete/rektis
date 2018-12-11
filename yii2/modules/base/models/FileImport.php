@@ -55,7 +55,7 @@ class FileImport extends Model
                 //return true;
             } 
             else {
-                echo "<pre>"; print_r($this->errors); echo "</pre>"; die();                
+                //echo "<pre>"; print_r($this->errors); echo "</pre>"; die();                
                 throw new Exception("<pre>" . print_r($this->errors) . "</pre>");
             }
         }
