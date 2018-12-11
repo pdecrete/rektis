@@ -142,7 +142,7 @@ class m180717_104439_disposal_init extends Migration
         Yii::$app->db->createCommand($create_command)->execute();
 
         /* CREATE TABLE admapp_disposal_ledger */
-        $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_ledger'] .
+        /* $create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_ledger'] .
                             "(`ledger_id` INTEGER NOT NULL AUTO_INCREMENT,
                               `disposal_id` INTEGER NOT NULL,
                               `disposal_startdate` DATE NOT NULL COMMENT 'Έναρξη Διάθεσης',
@@ -164,7 +164,7 @@ class m180717_104439_disposal_init extends Migration
                              ) " . $tableOptions;
         Console::stdout("\n" . $i++ . ". *** Creating table " . $dbDisposalTables['table_ledger'] . ". *** \n");
         Console::stdout("SQL Command: " . $create_command . "\n");
-        Yii::$app->db->createCommand($create_command)->execute();
+        Yii::$app->db->createCommand($create_command)->execute();*/
 
         /* CREATE TABLE admapp_disposal_approvaltype */
         /*$create_command = "CREATE TABLE IF NOT EXISTS " . $dbDisposalTables['table_approvaltype'] .
