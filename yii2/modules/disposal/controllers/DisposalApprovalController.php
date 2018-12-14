@@ -9,6 +9,7 @@ use app\modules\base\widgets\HeadSignature\models\HeadSignature;
 use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalApproval;
 use app\modules\disposal\models\DisposalApprovalSearch;
+use app\modules\disposal\models\DisposalWorkobj;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Model;
@@ -22,6 +23,7 @@ use app\modules\eduinventory\models\Teacher;
 use app\models\Specialisation;
 use yii\helpers\ArrayHelper;
 use app\modules\disposal\models\DisposalLocaldirdecision;
+use app\modules\disposal\models\DisposalReason;
 
 /**
  * DisposalApprovalController implements the CRUD actions for DisposalApproval model.
@@ -45,7 +47,7 @@ class DisposalApprovalController extends Controller
                     ['actions' => ['index', 'view', 'download'], 'allow' => true, 'roles' => ['disposal_viewer']],
                     ['actions' => ['create', 'update', 'delete', 'republish', 'archive', 'massarchive'], 'allow' => true, 'roles' => ['disposal_editor']],
                 ]
-            ]
+            ],
         ];
     }
 
@@ -122,6 +124,8 @@ class DisposalApprovalController extends Controller
         $teacher_models = [];
         $toschool_models = [];
         $fromschool_models = [];
+        $duty_models = [];
+        $reason_models = [];
         $specialization_models = [];
         $use_template_with_health_reasons = false;
         //echo "<pre>"; print_r($disposal_ids);   echo "</pre>"; die();
@@ -135,6 +139,8 @@ class DisposalApprovalController extends Controller
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
             $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
+            $reason_models[$index] = $disposals_models[$index]->getDisposalreason()->one();
+            $duty_models[$index] = $disposals_models[$index]->getDisposalworkobj()->one();
             $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
         }
 
@@ -149,15 +155,21 @@ class DisposalApprovalController extends Controller
             }
         }*/
 
-
+        try {
+            if (!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) {
+                throw new Exception("All disposals must belong to the same local Directorate Decision.");
+            }
+        }
+        catch (Exception $exc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            return $this->redirect(['disposal/index']);
+        }
+        
         $transaction = Yii::$app->db->beginTransaction();
 
-        try {
+        try {            
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                if (!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) {
-                    throw new Exception("All disposals must belong to the same local Directorate Decision.");
-                }
-
+                
                 $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
                 $model->approval_signedfile = '-'; //TODO allow null (has been changed in migration)
@@ -209,6 +221,8 @@ class DisposalApprovalController extends Controller
                     'teacher_models' => $teacher_models,
                     'fromschool_models' => $fromschool_models,
                     'toschool_models' => $toschool_models,
+                    'duty_models' => $duty_models,
+                    'reason_models' => $reason_models,
                     'specialization_models' => $specialization_models,
                     'disposal_ids' => $disposal_ids,
                     'selection' => 1
@@ -224,6 +238,8 @@ class DisposalApprovalController extends Controller
                 'teacher_models' => $teacher_models,
                 'fromschool_models' => $fromschool_models,
                 'toschool_models' => $toschool_models,
+                'duty_models' => $duty_models,
+                'reason_models' => $reason_models,
                 'specialization_models' => $specialization_models,
                 'disposal_ids' => $disposal_ids,
                 'selection' => 1
@@ -239,17 +255,21 @@ class DisposalApprovalController extends Controller
      */
     public function actionUpdate($id)
     {
+        
         $model = $this->findModel($id);
-        if($model->archived == 1 || $model->deleted == 1) {
+        if($model->archived == 1 || $model->deleted == 1 || !is_null(self::isRepublished($id))) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
             return $this->redirect(['disposal-approval/index']);
         }
+        //$disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
         $disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
         $disposals_models = [];
         $toschool_models = [];
         $fromschool_models = [];
         $teacher_models = [];
         $specialization_models = [];
+        $duty_models = [];
+        $reason_models = [];
         $use_template_with_health_reasons = false;
         $disposal_ids = [];
 
@@ -262,7 +282,9 @@ class DisposalApprovalController extends Controller
             $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
             $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
-            $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
+            $reason_models[$index] = $disposals_models[$index]->getDisposalreason()->one();
+            $duty_models[$index] = $disposals_models[$index]->getDisposalworkobj()->one();
+            $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();            
         }
         $directorate_id = Schoolunit::findOne(['school_id' => $disposals_models[0]['fromschool_id']])['directorate_id'];
         $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
@@ -319,6 +341,8 @@ class DisposalApprovalController extends Controller
                     'teacher_models' => $teacher_models,
                     'fromschool_models' => $fromschool_models,
                     'toschool_models' => $toschool_models,
+                    'duty_models' => $duty_models,
+                    'reason_models' => $reason_models,
                     'specialization_models' => $specialization_models,
                 ]);
             }
@@ -332,7 +356,248 @@ class DisposalApprovalController extends Controller
                 'teacher_models' => $teacher_models,
                 'fromschool_models' => $fromschool_models,
                 'toschool_models' => $toschool_models,
+                'duty_models' => $duty_models,
+                'reason_models' => $reason_models,
                 'specialization_models' => $specialization_models,
+            ]);
+        }
+    }
+    
+    
+    /*
+     * Returns the $id of the republish approval of an approval
+     */
+    private static function isRepublished($id) {
+        return DisposalApproval::findOne(['approval_id' => $id])['approval_republished'];
+    }
+    
+    private static function disposalChanged($disp1, $disp2) {
+        if(!($disp1 instanceof Disposal) || !($disp2 instanceof Disposal))
+            return false;
+    
+        $hours_boolvalue = true;
+        if(!is_null($disp1['disposal_hours']) && !is_null($disp2['disposal_hours']))
+            $hours_boolvalue = $disp1['disposal_hours'] == $disp2['disposal_hours'];
+            
+        return !($disp1['disposal_startdate'] == $disp2['disposal_startdate'] &&
+                $disp1['disposal_enddate'] == $disp2['disposal_enddate'] &&
+                $hours_boolvalue &&
+                $disp1['disposal_days'] == $disp2['disposal_days'] &&
+                $disp1['fromschool_id'] == $disp2['fromschool_id'] &&
+                $disp1['toschool_id'] == $disp2['toschool_id'] &&
+                $disp1['disposalreason_id'] == $disp2['disposalreason_id'] &&
+                $disp1['disposalworkobj_id'] == $disp2['disposalworkobj_id']);
+    }
+    
+    
+    public function actionRepublish($id)
+    {
+        $approval_changed = false;
+        $initialModel = $this->findModel($id);
+        
+        if($initialModel->deleted == 1 || !is_null(self::isRepublished($id))) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            return $this->redirect(['disposal-approval/index']);
+        }
+        
+        
+        $model = new DisposalApproval();
+        $model->attributes = $initialModel->attributes;
+        //$model->approval_republished = $initialModel->approval_id;
+        
+        if($model->archived == 1 || $model->deleted == 1) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            return $this->redirect(['disposal-approval/index']);
+        }
+
+        $initial_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $initialModel->approval_id]);
+        
+        $disposalapproval_models = array();
+        foreach ($initial_disposalapproval_models as $index=>$initial_disposalapproval_model) {
+            $disposalapproval_models[$index] = new DisposalDisposalapproval();
+            $disposalapproval_models[$index]->disposal_id = $initial_disposalapproval_model->disposal_id;
+        }
+
+        $disposals_models = [];
+        $teacher_models = [];
+        $specialization_models = [];
+        $use_template_with_health_reasons = false;
+        $disposal_ids = [];
+        
+        $disposal_reasons = DisposalReason::find()->all();
+        $disposal_duties = DisposalWorkobj::find()->all();
+        $disposal_hours = Disposal::getHourOptions();
+        $disposal_days = Disposal::getDayOptions();
+        $schools = Schoolunit::find()->all();
+        
+        foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
+            $disposals_models[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
+            //$disposals_models[$index] = new Disposal();
+            //$disposals_models[$index]->attributes = $initial_disposals_models[$index]->attributes;
+            $disposal_ids[$index] = $disposalapproval_model['disposal_id'];
+
+            $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
+            $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
+            $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
+            $reason_models[$index] = $disposals_models[$index]->getDisposalreason()->one();
+            $duty_models[$index] = $disposals_models[$index]->getDisposalworkobj()->one();
+            $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
+        }
+        $directorate_id = Schoolunit::findOne(['school_id' => $disposals_models[0]['fromschool_id']])['directorate_id'];
+        $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
+        
+        $transaction = Yii::$app->db->beginTransaction();
+        
+        
+        try {
+            if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post()) && Model::loadMultiple($disposals_models, Yii::$app->request->post())) {
+                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                
+                $model->approval_regionaldirectprotocol = trim($model->approval_regionaldirectprotocol);
+                $model->approval_regionaldirectprotocoldate = trim($model->approval_regionaldirectprotocoldate);
+                
+                if($model->approval_regionaldirectprotocol != $initialModel->approval_regionaldirectprotocol || $model->approval_regionaldirectprotocoldate != $initialModel->approval_regionaldirectprotocoldate) {
+                    $approval_changed = true;
+                }
+                
+                if (!$model->save()) {
+                    throw new Exception("Failed to save the changes of the approval.");
+                }
+                
+                $initialModel->approval_republished = $model->approval_id;                
+                if (!$initialModel->save()) {
+                    throw new Exception("Failed to save the changes of the approval.");
+                }
+                
+                $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
+                
+                $disposals_counter = 0;
+                foreach ($disposals_models as $index=>$disposal_model) {
+                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids)) {
+                        $approval_changed = true;
+                        $disposals_counter++;
+                        if (!$initial_disposalapproval_models[$index]->delete()) {
+                            throw new Exception("1.Failed to save the changes of the approval.");
+                        }
+                        $restore_disposal_model = Disposal::findOne(['disposal_id' => $initial_disposalapproval_models[$index]->disposal_id]);
+                        $restore_disposal_model->archived = 0;
+                        if (!$restore_disposal_model->save()) {
+                            throw new Exception("2.Failed to save the changes of the approval.");
+                        }
+                    } else if(self::disposalChanged($disposal_model, Disposal::findOne(['disposal_id' => $disposal_model['disposal_id']]))) {
+                        $approval_changed = true;
+                        $republish_disposal_model = new Disposal();
+                        $republish_disposal_model->attributes = $disposal_model->attributes;
+                        //$republish_disposal_model->disposal_republished = $disposal_model->disposal_id;
+                        
+                        if(!$republish_disposal_model->save()) {
+                            throw new Exception("3.Failed to save the changes of the approval.");
+                        }
+
+                        $disposal_model = Disposal::findOne(['disposal_id' => $disposal_model->disposal_id]); /* Reset changes */
+                        $disposal_model->disposal_republished = $republish_disposal_model->disposal_id;;                        
+                        
+                        if(!$disposal_model->save()) {
+                           throw new Exception("3.Failed to save the changes of the approval.");
+                        }
+                        
+                        $republish_disposalapproval_model = new DisposalDisposalapproval();
+                        $republish_disposalapproval_model->approval_id = $model->approval_id;
+                        $republish_disposalapproval_model->disposal_id = $republish_disposal_model->disposal_id;
+                        
+                        if(!$republish_disposalapproval_model->save()) {
+                            throw new Exception("4.Failed to save the changes of the approval.");
+                        }                        
+                    } else {                       
+                        $republish_disposalapproval_model = new DisposalDisposalapproval();
+                        $republish_disposalapproval_model->approval_id = $model->approval_id;
+                        $republish_disposalapproval_model->disposal_id = $disposal_model->disposal_id;                        
+                        
+                        if(!$republish_disposalapproval_model->save()) {
+                           echo "<pre>"; print_r($republish_disposalapproval_model); echo "</pre>"; die();
+                           throw new Exception("4.Failed to save the changes of the approval.");
+                        }
+                    }
+                    
+                }
+                
+                if(!$approval_changed) {
+                    throw new Exception("Error: There should be at least one change in relation to the initial Approval.");
+                }
+
+                if ($disposals_counter == count($initial_disposalapproval_models)) {
+                    for ($i = 0; $i < count($disposals_models); $i++) {
+                        $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
+                    }
+                    throw new Exception("Please select at least one disposal.");
+                }
+
+                              
+                unset($fromschool_models, $toschool_models, $teacher_models, $reason_models, $duty_models, $specialization_models, $disposals_models_republish);
+                $fromschool_models = [];
+                $toschool_models = [];
+                $teacher_models = [];
+                $reason_models = [];
+                $duty_models = [];
+                $specialization_models = [];
+                $disposals_models_republish = [];
+                $disposalapproval_models_republish = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
+                //echo "<pre>"; print_r($disposalapproval_models_republish); echo "</pre>"; die();
+                //echo "<pre>"; print_r(Disposal::findOne(['disposal_id' => $disposalapproval_models_republish[0]->disposal_id])); echo "</pre>"; die();
+                foreach ($disposalapproval_models_republish as $index=>$disposalapproval_model_republish) {
+                    $disposals_models_republish[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model_republish->disposal_id]);                    
+                    if (!$use_template_with_health_reasons && $disposals_models_republish[$index]->isForHealthReasons()) {
+                        $use_template_with_health_reasons = true;
+                    }
+                    //echo "<pre>"; print_r($disposals_models_republish[$index]->getTeacher()->one()); echo "<pre>"; die();
+                    $fromschool_models[$index] = $disposals_models_republish[$index]->getFromSchool()->one();
+                    $toschool_models[$index] = $disposals_models_republish[$index]->getToSchool()->one();
+                    $teacher_models[$index] = $disposals_models_republish[$index]->getTeacher()->one();
+                    $reason_models[$index] = $disposals_models_republish[$index]->getDisposalreason()->one();
+                    $duty_models[$index] = $disposals_models_republish[$index]->getDisposalworkobj()->one();
+                    $specialization_models[$index] = $teacher_models[$index]->getSpecialisation()->one();
+                } 
+                
+                if ($this->createApprovalFile($model, $disposals_models_republish, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
+                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
+                }
+                
+                $transaction->commit();
+                $user = Yii::$app->user->identity->username;
+                Yii::info('User ' . $user . ' ' . 'updated Approval with id: '. $id, 'disposal');
+                
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
+                return $this->redirect(['disposal-approval/index']);
+            } else {
+                return $this->render('republish', [
+                    'model' => $model,
+                    'disposals_models' => $disposals_models,
+                    'disposalapproval_models' => $disposalapproval_models,
+                    'teacher_models' => $teacher_models,
+                    'specialization_models' => $specialization_models,
+                    
+                    'disposal_hours' => $disposal_hours,
+                    'disposal_days' => $disposal_days,
+                    'disposal_reasons' => $disposal_reasons,
+                    'disposal_duties' => $disposal_duties,
+                    'schools' => $schools
+                ]);
+            }
+        } catch (Exception $exc) {
+            $transaction->rollBack();
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
+            return $this->render('republish', [
+                'model' => $model,
+                'disposals_models' => $disposals_models,
+                'disposalapproval_models' => $disposalapproval_models,
+                'teacher_models' => $teacher_models,
+                'specialization_models' => $specialization_models,
+
+                'disposal_hours' => $disposal_hours,
+                'disposal_days' => $disposal_days,
+                'disposal_reasons' => $disposal_reasons,
+                'disposal_duties' => $disposal_duties,
+                'schools' => $schools
             ]);
         }
     }
@@ -414,22 +679,62 @@ class DisposalApprovalController extends Controller
         try {
             $transaction = Yii::$app->db->beginTransaction();
             $approval_model = $this->findModel($id);
-            if($approval_model->archived == 1 || $approval_model->deleted == 1) {
+            if($approval_model->archived == 1 || $approval_model->deleted == 1 || !is_null(self::isRepublished($id))) {
                 throw new Exception('Not allowed action for that approval');
             }
-            $approval_model->deleted = 1;
-            if (!$approval_model->save()) {
-                throw new Exception("The deletion of the disposals\' approval failed.");
-            }
-
-            $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
-            foreach ($disposal_ids as $disposal_id) {
-                $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();
-                $disposal_model->archived = 0;
-                if (!$disposal_model->save()) {
+            
+            /* If it is a republish */
+            $initial_approval = DisposalApproval::findOne(['approval_republished' => $id]);
+            if(!is_null($initial_approval)) {
+                $initial_approval->approval_republished = null;
+                if(!$initial_approval->save()) {
+                    throw new Exception('The deletion of the disposals\' approval failed.');
+                }               
+                
+                $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
+                foreach ($disposal_ids as $disposal_id) {
+                    if(!$disposal_id->delete()) {
+                        throw new Exception("The deletion of the disposals\' approval failed.");
+                    }                    
+                }
+                unset($disposal_ids);
+                $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $initial_approval->approval_id]);
+                foreach ($disposal_ids as $disposal_id) {
+                    $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();
+                    $disposal_model->disposal_rejected = 0;
+                    $disposal_model->archived = 1;
+                    
+                    if(!is_null($disposal_model->disposal_republished)) {                        
+                        $delete_republished_disposal = Disposal::findOne(['disposal_id' => $disposal_model->disposal_republished]);
+                        if(!$delete_republished_disposal->delete()) {
+                            throw new Exception("The deletion of the disposals\' approval failed.");
+                        }
+                        $disposal_model->disposal_republished = null;
+                    }
+                    if(!$disposal_model->save()) {
+                        throw new Exception("The deletion of the disposals\' approval failed.");
+                    }
+                }
+                if(!$approval_model->delete()) {
                     throw new Exception("The deletion of the disposals\' approval failed.");
                 }
+            }   
+            else {                
+                $approval_model->deleted = 1;
+                if (!$approval_model->save()) {
+                    throw new Exception("The deletion of the disposals\' approval failed.");
+                }
+    
+                $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
+                foreach ($disposal_ids as $disposal_id) {
+                    $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();
+                    $disposal_model->archived = 0;
+                    if (!$disposal_model->save()) {
+                        throw new Exception("The deletion of the disposals\' approval failed.");
+                    }
+                }
             }
+            
             $transaction->commit();
             /* delete old file: */
             if (file_exists(Yii::getAlias($this->module->params['disposal_exportfolder']) . $approval_model->approval_file)) {
@@ -467,12 +772,6 @@ class DisposalApprovalController extends Controller
         }
     }
 
-
-
-    public function actionRepublish($id)
-    {
-        $this->redirect(['disposal/index', 'archived' => 1, 'approval_id' => $id, 'republish' => 1]);
-    }
 
     /**
      * Checks whether all the disposalapproval models belong to the same local Directorate Decision
