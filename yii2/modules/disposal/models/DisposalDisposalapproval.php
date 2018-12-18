@@ -52,7 +52,7 @@ class DisposalDisposalapproval extends \yii\db\ActiveRecord
      */
     public function getDisposal()
     {
-        return $this->hasOne(DisposalDisposal::className(), ['disposal_id' => 'disposal_id']);
+        return $this->hasOne(Disposal::className(), ['disposal_id' => 'disposal_id']);
     }
 
     /**

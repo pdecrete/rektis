@@ -45,12 +45,13 @@ class DisposalSearch extends Disposal
     }
 
 
-    public static function getAllDisposalsQuery($archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
+    public static function getAllDisposalsQuery($archived = 0, $approval_id = -1, $rejected = 0)
     {
         /* TODO cannot be $rejected = 1 AND ($archived = 1 OR $approval_id != -1) */
         $prefix = Yii::$app->db->tablePrefix;
         $dspls = $prefix . 'disposal_disposal';
         $dspls_apprvs = $prefix . 'disposal_disposalapproval';
+        $apprvs = $prefix . 'disposal_approval';
         $tchers = $prefix . 'teacher';
         $specs = $prefix . 'specialisation';
         $s_schls = $prefix . 'schoolunit srv_sch';
@@ -65,8 +66,8 @@ class DisposalSearch extends Disposal
                                  $localdir_decisions . ".*" , "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];
         $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
         if ($archived) {
-            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".*"]);
-            $tables_array = array_merge($tables_array, [$dspls_apprvs]);
+            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".*", $apprvs . ".*"]);
+            $tables_array = array_merge($tables_array, [$dspls_apprvs, $apprvs]);
         }
 
         $query = (new \yii\db\Query())
@@ -75,6 +76,7 @@ class DisposalSearch extends Disposal
                 ->where([$dspls . ".archived" => $archived])
                 ->andWhere(
                     $dspls . ".deleted=0 " .
+                    " AND " .$dspls . ".disposal_republished IS NULL " .
                     " AND " . $dspls . ".disposal_rejected=" . $rejected .
                     " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
                     " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
@@ -88,7 +90,7 @@ class DisposalSearch extends Disposal
                     )->distinct();
 
         if ($archived) {
-            $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id");
+            $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id")->andWhere($apprvs . ".approval_id=" . $dspls_apprvs . ".approval_id")->andWhere($apprvs . ".approval_republished IS NULL" );
         }
 
         if ($approval_id != -1) {
@@ -107,10 +109,10 @@ class DisposalSearch extends Disposal
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
+    public function search($params, $archived = 0, $approval_id = -1, $rejected = 0)
     {
         $dspls = Yii::$app->db->tablePrefix . 'disposal_disposal';
-        $query = self::getAllDisposalsQuery($archived, $approval_id, $republish, $rejected);
+        $query = self::getAllDisposalsQuery($archived, $approval_id, $rejected);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

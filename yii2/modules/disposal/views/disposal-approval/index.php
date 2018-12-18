@@ -16,7 +16,7 @@ $this->title =  DisposalModule::t('modules/disposal/app', $title);
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}' : '{view}';//{republish}
+$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download} {republish}' : '{view} {download} {republish}';
 ?>
 <?=Html::beginForm(['archiveform'], 'post');?>
 <div class="disposal-approval-index">
@@ -40,9 +40,18 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                   return ['value' => $model['approval_id']];
               }
             ],
-            //['class' => 'yii\grid\SerialColumn'],
-            'approval_regionaldirectprotocol',
-            //'approval_localdirectprotocol',
+            ['attribute' => 'approval_regionaldirectprotocol',
+             'value' => function($model) {
+                 if(!is_null($model['approval_republished']))
+                    return '<strike>' . $model['approval_regionaldirectprotocol'] . '</strike> (Ανακοινοποιημένη)';
+                 else
+                     return $model['approval_regionaldirectprotocol'];
+             },
+             'format' => 'html'
+            ],
+            ['attribute' => 'approval_regionaldirectprotocoldate',
+                'format' => ['datetime', 'php:d-m-Y']
+            ],            
             'approval_notes',
             ['attribute' => 'created_at',
              'format' => ['datetime', 'php:d-m-Y H:i']

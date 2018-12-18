@@ -17,6 +17,7 @@ use yii\db\Expression;
  * @property string $approval_notes
  * @property string $approval_file
  * @property string $approval_signedfile
+ * @property integer $approval_republished
  * @property integer $deleted
  * @property integer $archived
  * @property string $created_at
@@ -112,7 +113,6 @@ class DisposalApproval extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
-
 
     /**
      * @return \yii\db\ActiveQuery

@@ -67,6 +67,7 @@ return [
     'To' => 'Μέχρι',
     'Hours' => 'Ώρες',
     'Disposal Hours' => 'Ώρες Διάθεσης',
+    'Disposal Days' => 'Ημέρες Διάθεσης',
     'Actions' => 'Ενέργειες',
     'End of teaching year.' => 'Λήξη διδακτικού έτους.',
     'Create Teacher Disposal' => 'Δημιουργία Διάθεσης',
@@ -207,5 +208,9 @@ return [
     'The restoration was completed successfully.' => 'Η επαναφορά ολοκληρώθηκε επιτυχώς.',
     'The "full disposal" does not agree in the "hours" and "days" drop-down menu.' => 'H "ολική διάθεση" δεν συμφωνεί στα αναπτυσσόμενα μενού των ωρών και ημερών.',
     'Service' => 'Υπηρέτηση',
-    'Error in dates in line {line} of Excel file.' => 'Σφάλμα στις ημερομηνίες στη γραμμή {line} του Excel αρχείου.',    
+    'Error in dates in line {line} of Excel file.' => 'Σφάλμα στις ημερομηνίες στη γραμμή {line} του Excel αρχείου.',
+    'Current School' => 'Σχολείο Υπηρέτησης',
+    'Disposals Republication' => 'Ανοικοινοποίηση διαθέσεων',
+    'The disposal is not allowed to be updated.' => 'Δεν επιτρέπεται η επεξεργασία για αυτή τη διάθεση',
+    'Republish Approval' => 'Ανακοινοποίηση Έγκρισης'
 ];

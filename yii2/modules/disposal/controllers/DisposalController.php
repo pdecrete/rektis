@@ -94,17 +94,14 @@ class DisposalController extends Controller
      * Lists all Disposal models.
      * @return mixed
      */
-    public function actionIndex($archived = 0, $approval_id = -1, $republish = 0, $rejected = 0)
+    public function actionIndex($archived = 0, $approval_id = -1, $rejected = 0)
     {
-        //echo $archived . ' ' . $approval_id . ' ' . $republish; die();
-
         if (!is_numeric($archived) || ($archived != 0 && $archived != 1)) {
             $archived = 0;
         }
 
-        if (!is_numeric($approval_id) || !is_numeric($republish) || !is_numeric($rejected)) {
-            $archived = -1;
-            $republish = 0;
+        if (!is_numeric($approval_id) || !is_numeric($rejected)) {
+            $approval_id = -1;
             $rejected = 0;
         }
 
@@ -114,13 +111,12 @@ class DisposalController extends Controller
         $decisions_protocols = DisposalLocaldirdecision::find()->select('localdirdecision_protocol')->all();
 
         $searchModel = new DisposalSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id, $republish, $rejected);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id, $rejected);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'archived' => $archived,
-            'republish' => $republish,
             'rejected' => $rejected,
             'disposal_reasons' => $disposal_reasons,
             'specialisations' => $specialisations,
@@ -704,7 +700,6 @@ class DisposalController extends Controller
                     }
 
                     $disposal = new Disposal();
-                    $dv = new DateValidator();
                     $startdate = null;
                     $enddate = null;
                     $startdate_cell = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index);
