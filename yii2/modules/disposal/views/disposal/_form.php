@@ -172,6 +172,7 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 			<?= $form->field($model, 'disposal_hours')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($disposal_hours, 'hours', 'hours_name'),
                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal hours...')],
+			                    'pluginOptions' => ['allowClear' => true],
                             ])->label('Ώρες Διάθεσης'); ?>
 		</div>
 		<div class="col-lg-3">
