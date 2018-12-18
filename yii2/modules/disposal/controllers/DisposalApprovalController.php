@@ -484,8 +484,10 @@ class DisposalApprovalController extends Controller
                         if (!$restore_disposal_model->save()) {
                             throw new Exception("2.Failed to save the changes of the approval.");
                         }
-                    } else if(self::disposalChanged($disposal_model, Disposal::findOne(['disposal_id' => $disposal_model['disposal_id']]))) {
-                        $approval_changed = true;
+                    } else {// if(self::disposalChanged($disposal_model, Disposal::findOne(['disposal_id' => $disposal_model['disposal_id']]))) {
+                        if(self::disposalChanged($disposal_model, Disposal::findOne(['disposal_id' => $disposal_model['disposal_id']]))) {
+                            $approval_changed = true;
+                        }
                         $republish_disposal_model = new Disposal();
                         $republish_disposal_model->attributes = $disposal_model->attributes;
                         //$republish_disposal_model->disposal_republished = $disposal_model->disposal_id;
@@ -495,7 +497,8 @@ class DisposalApprovalController extends Controller
                         }
 
                         $disposal_model = Disposal::findOne(['disposal_id' => $disposal_model->disposal_id]); /* Reset changes */
-                        $disposal_model->disposal_republished = $republish_disposal_model->disposal_id;;                        
+                        $disposal_model->disposal_republished = $republish_disposal_model->disposal_id;
+                        $disposal_model->deleted = 1;
                         
                         if(!$disposal_model->save()) {
                            throw new Exception("3.Failed to save the changes of the approval.");
@@ -508,7 +511,7 @@ class DisposalApprovalController extends Controller
                         if(!$republish_disposalapproval_model->save()) {
                             throw new Exception("4.Failed to save the changes of the approval.");
                         }                        
-                    } else {                       
+                    }/*  else {                       
                         $republish_disposalapproval_model = new DisposalDisposalapproval();
                         $republish_disposalapproval_model->approval_id = $model->approval_id;
                         $republish_disposalapproval_model->disposal_id = $disposal_model->disposal_id;                        
@@ -517,7 +520,7 @@ class DisposalApprovalController extends Controller
                            echo "<pre>"; print_r($republish_disposalapproval_model); echo "</pre>"; die();
                            throw new Exception("4.Failed to save the changes of the approval.");
                         }
-                    }
+                    } */
                     
                 }
                 
@@ -683,48 +686,44 @@ class DisposalApprovalController extends Controller
                 throw new Exception('Not allowed action for that approval');
             }
             
-            /* If it is a republish */
+            $approval_model->deleted = 1;
+            if (!$approval_model->save()) {
+                throw new Exception("The deletion of the disposals\' approval failed.");
+            }
+            /* If it is a republish:
+             * - find the last Approval that has been republished and set approval_republished as null
+             * - soft delete each disposal of the republication Approval             * 
+             * - undelete each disposal of the initial Approval
+             * */
             $initial_approval = DisposalApproval::findOne(['approval_republished' => $id]);
             if(!is_null($initial_approval)) {
                 $initial_approval->approval_republished = null;
                 if(!$initial_approval->save()) {
                     throw new Exception('The deletion of the disposals\' approval failed.');
-                }               
+                }
                 
                 $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
                 foreach ($disposal_ids as $disposal_id) {
-                    if(!$disposal_id->delete()) {
-                        throw new Exception("The deletion of the disposals\' approval failed.");
-                    }                    
+                    $republish_disposal = Disposal::findOne(['disposal_id' => $disposal_id->disposal_id]);
+                    $republish_disposal->deleted = 1;
+                    if(!$republish_disposal->save()) {
+                        throw new Exception('The deletion of the disposals\' approval failed.');
+                    }
                 }
                 unset($disposal_ids);
                 $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $initial_approval->approval_id]);
                 foreach ($disposal_ids as $disposal_id) {
                     $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();
+                    $disposal_model->deleted = 0;
                     $disposal_model->disposal_rejected = 0;
-                    $disposal_model->archived = 1;
+                    $disposal_model->disposal_republished = null;
                     
-                    if(!is_null($disposal_model->disposal_republished)) {                        
-                        $delete_republished_disposal = Disposal::findOne(['disposal_id' => $disposal_model->disposal_republished]);
-                        if(!$delete_republished_disposal->delete()) {
-                            throw new Exception("The deletion of the disposals\' approval failed.");
-                        }
-                        $disposal_model->disposal_republished = null;
-                    }
                     if(!$disposal_model->save()) {
                         throw new Exception("The deletion of the disposals\' approval failed.");
                     }
                 }
-                if(!$approval_model->delete()) {
-                    throw new Exception("The deletion of the disposals\' approval failed.");
-                }
             }   
-            else {                
-                $approval_model->deleted = 1;
-                if (!$approval_model->save()) {
-                    throw new Exception("The deletion of the disposals\' approval failed.");
-                }
-    
+            else {   
                 $disposal_ids = DisposalDisposalapproval::findAll(['approval_id' => $approval_model->approval_id]);
                 foreach ($disposal_ids as $disposal_id) {
                     $disposal_model = Disposal::find()->where(['disposal_id' => $disposal_id['disposal_id']])->one();

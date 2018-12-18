@@ -270,10 +270,13 @@ class DisposalStatistic extends Model
         ->select("COUNT(" . $dsp . ".disposal_id) AS DISPOSALS_COUNT")
         ->from($dsp . "," . $drs . "," . $ddt . "," . $tchr . "," . $schl . "," . $dir . "," . $specs)
         ->where($dsp . ".archived=1")
+        ->andWhere($dsp . ".deleted=0")
+        ->andWhere($dsp . ".disposal_rejected=0")
+        ->andWhere($dsp . ".disposal_republished IS NULL")
         ->andWhere($dsp . ".disposalreason_id=" . $drs . ".disposalreason_id")
         ->andWhere($dsp . ".disposalworkobj_id=" . $ddt . ".disposalworkobj_id")
         ->andWhere($dsp . ".teacher_id=" . $tchr . ".teacher_id")
-        ->andWhere($tchr . ".school_id=" . $schl . ".school_id")
+        ->andWhere($dsp . ".fromschool_id=" . $schl . ".school_id")
         ->andWhere($dir . ".directorate_id=" . $schl . ".directorate_id")
         ->andWhere($tchr . ".specialisation_id=" . $specs . ".id");
         //echo $query->createCommand()->rawSql; die();
