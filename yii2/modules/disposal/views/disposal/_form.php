@@ -17,25 +17,26 @@ use yii\helpers\Url;
 
 $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                     var localdirdecision_protocol = document.getElementById("localdirdecision_protocol_frmid").value;
+                                    var localdirdecision_action = document.getElementById("localdirdecision_action_frmid").value;
                                     var localdirdecision_directorate = document.getElementById("localdirdecision_directorate_frmid").value;
 
 
                                     $.ajax({ 
                                             url: url, 
                                             type: "post", 
-                                            data: {"localdirdecision_protocol":localdirdecision_protocol, "localdirdecision_directorate":localdirdecision_directorate},
+                                            data: {"localdirdecision_protocol":localdirdecision_protocol, "localdirdecision_action":localdirdecision_action, "localdirdecision_directorate":localdirdecision_directorate},
                                             success: function(data){
                                                         data = JSON.parse(data);
                                                         if(data == null) {
-                                                            $("#localdirdecision_action_frmid").prop("disabled", false);
+                                                            //$("#localdirdecision_action_frmid").prop("disabled", false);
                                                             $("#localdirdecision_subject_frmid").prop("disabled", false);
-                                                            $("#localdirdecision_action_frmid").val("").trigger("change");
+                                                            //$("#localdirdecision_action_frmid").val("").trigger("change");
                                                             $("#localdirdecision_subject_frmid").val("").trigger("change");
                                                         }
                                                         else {
                                                             $("#localdirdecision_subject_frmid").val(data.localdirdecision_subject).trigger("change");                                                            
-                                                            $("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
-                                                            $("#localdirdecision_action_frmid").prop("disabled", true);
+                                                           // $("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
+                                                            //$("#localdirdecision_action_frmid").prop("disabled", true);
                                                             $("#localdirdecision_subject_frmid").prop("disabled", true);
                                                         }
                                                      },
@@ -128,7 +129,7 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
                     ])->label('Διεύθυνση Εκπαίδευσης'); ?>
 		</div>	
 		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_protocol')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_protocol_frmid', 'oninput' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");']) ?></div>
-		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_action')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_action_frmid']) ?></div>		
+		<div class="col-lg-3"><?= $form->field($localdirdecision_model, 'localdirdecision_action')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_action_frmid', 'oninput' => 'searchLocaldirdecisionById("' . $urlLocaldirDecisionCheck .'");']) ?></div>		
 	</div>
 	<div class="row">
 		<div class="col-lg-12"><?= $form->field($localdirdecision_model, 'localdirdecision_subject')->textInput(['disabled' => $ldrdec_disabled, 'id' => 'localdirdecision_subject_frmid']) ?></div>

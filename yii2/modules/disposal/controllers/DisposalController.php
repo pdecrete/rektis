@@ -64,7 +64,8 @@ class DisposalController extends Controller
             Yii::$app->response->format = Response::FORMAT_JSON;
             $protocol = Yii::$app->request->post('localdirdecision_protocol');
             $directorate = Yii::$app->request->post('localdirdecision_directorate');//->andWhere(['localdirdecision_directorate' => $directorate])
-            $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->one();
+            $action = Yii::$app->request->post('localdirdecision_action');
+            $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->andWhere(['localdirdecision_action' => $action])->one();
             $data = $localdir_decision;
         }
 
@@ -108,7 +109,9 @@ class DisposalController extends Controller
         $disposal_reasons = DisposalReason::find()->all();
         $specialisations = Specialisation::find()->select('code')->all();
         $directorates = Directorate::find()->select('directorate_shortname')->all();
-        $decisions_protocols = DisposalLocaldirdecision::find()->select('localdirdecision_protocol')->all();
+        $decisions = DisposalLocaldirdecision::find();
+        $decisions_protocols = $decisions->select('localdirdecision_protocol')->all();
+        $decisions_actions = $decisions->select('localdirdecision_action')->all();
 
         $searchModel = new DisposalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id, $rejected);
@@ -121,7 +124,8 @@ class DisposalController extends Controller
             'disposal_reasons' => $disposal_reasons,
             'specialisations' => $specialisations,
             'directorates' => $directorates,
-            'decisions_protocols' => $decisions_protocols
+            'decisions_protocols' => $decisions_protocols,
+            'decisions_actions' => $decisions_actions
         ]);
     }
 
@@ -182,7 +186,8 @@ class DisposalController extends Controller
 
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
                 //echo "<pre>"; print_r($model); echo "</pre>"; die();
-                
+                $localdirdecision_model->localdirdecision_action = trim($localdirdecision_model->localdirdecision_action);
+                $localdirdecision_model->localdirdecision_protocol = trim($localdirdecision_model->localdirdecision_protocol);
                 if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
                     throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
                 }
@@ -227,7 +232,10 @@ class DisposalController extends Controller
                 }
 
 
-                $existing_localdirdecision_model = DisposalLocaldirdecision::findOne(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol]);
+                $existing_localdirdecision_model = DisposalLocaldirdecision::find()
+                                                    ->where(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol])
+                                                    ->andWhere(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol])
+                                                    ->andWhere(['localdirdecision_protocol' => $localdirdecision_model->directorate_id])->one();
                 if (is_null($existing_localdirdecision_model)) {
                     if (!$localdirdecision_model->save()) {
                         throw new Exception("Error in saving the teacher details in the database.");

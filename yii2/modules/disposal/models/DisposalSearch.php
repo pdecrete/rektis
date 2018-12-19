@@ -21,6 +21,7 @@ class DisposalSearch extends Disposal
     public $directorate_shortname;
     public $disposalreason_description;
     public $localdirdecision_protocol;
+    public $localdirdecision_action;
 
     /**
      * @inheritdoc
@@ -30,8 +31,8 @@ class DisposalSearch extends Disposal
         return [
             [['disposal_id', 'teacher_id', 'fromschool_id', 'toschool_id', 'localdirdecision_id'], 'integer'],
             [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'from_school', 'to_school', 'code', 'directorate_shortname', 
-              'disposalreason_description', 'localdirdecision_protocol'], 'string'],
-            [['disposal_startdate', 'disposal_enddate', 'disposal_hours'], 'safe'],
+              'disposalreason_description', 'localdirdecision_protocol', 'localdirdecision_action'], 'string'],
+            [['disposal_startdate', 'disposal_enddate', 'disposal_hours', 'disposal_days'], 'safe'],
         ];
     }
 
@@ -118,7 +119,8 @@ class DisposalSearch extends Disposal
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
-                                         'directorate_shortname', 'disposal_hours', 'disposalreason_description', 'localdirdecision_protocol'],
+                                         'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol', 
+                                         'localdirdecision_action'],
                                          'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
                       ],
             'pagination' => false,
@@ -135,6 +137,7 @@ class DisposalSearch extends Disposal
         // grid filtering conditions
         $query->andFilterWhere([
             'disposal_hours' => $this->disposal_hours,
+            'disposal_days' => $this->disposal_days,
             'teacher_id' => $this->teacher_id,
             //'toschool_id' => $this->toschool_id,
             //'fromschool_id' => $this->fromschool_id
@@ -150,6 +153,7 @@ class DisposalSearch extends Disposal
         $query->andFilterWhere(['like', 'directorate_shortname', $this->directorate_shortname]);
         $query->andFilterWhere(['like', 'disposalreason_description', $this->disposalreason_description]);
         $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol]);
+        $query->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action]);
         $query->andFilterWhere(['>=', 'disposal_startdate', $this->disposal_startdate]);
         $query->andFilterWhere(['<=', 'disposal_enddate', $this->disposal_enddate]);
         //echo $query->createCommand()->rawSql; die();

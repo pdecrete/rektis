@@ -77,6 +77,15 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'pluginOptions' => ['allowClear' => true, 'width' => '80']
                 ])
             ],
+            [   'attribute' => 'localdirdecision_action',
+                'label' => DisposalModule::t('modules/disposal/app', 'Action'),
+                'filter' => Select2::widget([  'model' => $searchModel,
+                    'attribute' => 'localdirdecision_action',
+                    'data' => ArrayHelper::map($decisions_actions, 'localdirdecision_action', 'localdirdecision_action'),
+                    'options' => ['placeholder' => '   '],
+                    'pluginOptions' => ['allowClear' => true, 'width' => '80']
+                ])
+            ],
             [   'attribute' => 'from_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Service'),
                 'options' => ['width' => '65']
@@ -94,7 +103,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'pluginOptions' => ['allowClear' => true, 'width' => '80']
                 ])
             ],
-            [   'attribute' => 'disposal_startdate',
+            /* [   'attribute' => 'disposal_startdate',
                 'label' => DisposalModule::t('modules/disposal/app', 'From'),
 
                 'format' => ['date', 'php:d-m-Y'],
@@ -116,6 +125,22 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'widgetOptions' => ['layout' => '{remove}{input}'],
                 ]),
                 'headerOptions' => ['class'=> 'text-center'],
+            ], */
+            [   'attribute' => 'disposal_days',
+                'label' => DisposalModule::t('modules/disposal/app', 'Days'),
+                'value' => function ($model) {
+                if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
+                    return 'Ολική Διάθεση';
+                } else {
+                    return $model['disposal_days'];
+                }
+                },
+                'filter' => Select2::widget([  'model' => $searchModel,
+                    'attribute' => 'disposal_days',
+                    'data' => ArrayHelper::map(Disposal::getDayOptions(), 'days', 'days_name'),
+                    'options' => ['placeholder' => '   '],
+                    'pluginOptions' => ['allowClear' => true, 'width' => '60']
+                ])
             ],
             [   'attribute' => 'disposal_hours',
                 'label' => DisposalModule::t('modules/disposal/app', 'Hours'),

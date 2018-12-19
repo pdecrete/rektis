@@ -76,7 +76,6 @@ class DisposalApprovalController extends Controller
     {
         $model = $this->findModel($id);
         $disposal_models = $model->getDisposals()->all();
-        //echo "<pre>"; print_r($disposal_models); echo "</pre>"; die();
         $teacher_models = [];
         $disposal_schools = [];
         $organic_schools = [];
@@ -128,7 +127,7 @@ class DisposalApprovalController extends Controller
         $reason_models = [];
         $specialization_models = [];
         $use_template_with_health_reasons = false;
-        //echo "<pre>"; print_r($disposal_ids);   echo "</pre>"; die();
+
         foreach ($disposal_ids as $index=>$disposal_id) {
             $disposals_models[$index] = Disposal::find()->where(['disposal_id' => $disposal_id])->one();
             if (!$use_template_with_health_reasons && $disposals_models[$index]->isForHealthReasons()) {
@@ -147,14 +146,6 @@ class DisposalApprovalController extends Controller
         $directorate_id = Schoolunit::findOne(['school_id' => $disposals_models[0]['fromschool_id']])['directorate_id'];
         $directorate_model = Directorate::findOne(['directorate_id' => $directorate_id]);
 
-        /*foreach ($teacher_models as $teacher_model) {
-            $teachers_school = Schoolunit::findOne(['school_id' => $teacher_model['school_id']]);
-            if ($teachers_school['directorate_id'] != $directorate_id) {
-                Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Please select teachers of only one directorate."));
-                return $this->redirect(['disposal/index']);
-            }
-        }*/
-
         try {
             if (!$this->checkLocaldirdecisionUniqueness($disposalapproval_models)) {
                 throw new Exception("All disposals must belong to the same local Directorate Decision.");
@@ -172,11 +163,10 @@ class DisposalApprovalController extends Controller
                 
                 $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
-                $model->approval_signedfile = '-'; //TODO allow null (has been changed in migration)
-                if (!$model->save()) {
+                $model->approval_signedfile = '-'; 
+                if (!$model->save()) {                    
                     throw new Exception("Failed to save the approval in the database.");
                 }
-                //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
                 $disposals_counter = 0;
                 foreach ($disposalapproval_models as $disposalapproval_model) {
                     if ($disposalapproval_model->disposal_id == 0) {
@@ -293,7 +283,6 @@ class DisposalApprovalController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                //echo "<pre>"; print_r($disposalapproval_models); echo "</pre>"; die();
                 $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
                 if (!$model->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
@@ -511,17 +500,7 @@ class DisposalApprovalController extends Controller
                         if(!$republish_disposalapproval_model->save()) {
                             throw new Exception("4.Failed to save the changes of the approval.");
                         }                        
-                    }/*  else {                       
-                        $republish_disposalapproval_model = new DisposalDisposalapproval();
-                        $republish_disposalapproval_model->approval_id = $model->approval_id;
-                        $republish_disposalapproval_model->disposal_id = $disposal_model->disposal_id;                        
-                        
-                        if(!$republish_disposalapproval_model->save()) {
-                           echo "<pre>"; print_r($republish_disposalapproval_model); echo "</pre>"; die();
-                           throw new Exception("4.Failed to save the changes of the approval.");
-                        }
-                    } */
-                    
+                    }                    
                 }
                 
                 if(!$approval_changed) {
@@ -545,14 +524,12 @@ class DisposalApprovalController extends Controller
                 $specialization_models = [];
                 $disposals_models_republish = [];
                 $disposalapproval_models_republish = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
-                //echo "<pre>"; print_r($disposalapproval_models_republish); echo "</pre>"; die();
-                //echo "<pre>"; print_r(Disposal::findOne(['disposal_id' => $disposalapproval_models_republish[0]->disposal_id])); echo "</pre>"; die();
+
                 foreach ($disposalapproval_models_republish as $index=>$disposalapproval_model_republish) {
                     $disposals_models_republish[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model_republish->disposal_id]);                    
                     if (!$use_template_with_health_reasons && $disposals_models_republish[$index]->isForHealthReasons()) {
                         $use_template_with_health_reasons = true;
                     }
-                    //echo "<pre>"; print_r($disposals_models_republish[$index]->getTeacher()->one()); echo "<pre>"; die();
                     $fromschool_models[$index] = $disposals_models_republish[$index]->getFromSchool()->one();
                     $toschool_models[$index] = $disposals_models_republish[$index]->getToSchool()->one();
                     $teacher_models[$index] = $disposals_models_republish[$index]->getTeacher()->one();
@@ -608,16 +585,34 @@ class DisposalApprovalController extends Controller
 
     private function createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename)
     {
-        //echo "<pre>"; print_r($fromschool_models); echo "<pre>"; die();
-        //echo "<pre>"; echo ($disposals_models[0]['localdirdecision_id']); echo "<pre>"; die();
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
 
         if (!file_exists($template_path)) {
             return null;
         }
-        $localdirdecision_model = DisposalLocaldirdecision::find()->where(['localdirdecision_id' =>  $disposals_models[0]['localdirdecision_id']])->one();
-        //echo "<pre>"; print_r($localdirdecision_model); echo "<pre>"; die();
+        
+        $actions = [];
+        $protocol = $disposals_models[0]->getLocaldirdecision()->one()['localdirdecision_action'];
+        $subject = $disposals_models[0]->getLocaldirdecision()->one()['localdirdecision_subject'];
+        foreach ($disposals_models as $index=>$disposal_model) {
+            $actions[$index] = $disposal_model->getLocaldirdecision()->one()['localdirdecision_action'];
+        }
+        $document_action = "";
+        $actions = array_unique($actions);
+        $actions = array_values($actions);
+        for($i = 0; $i < count($actions); $i++) {
+            $document_action .= $actions[$i];
+
+            if(count($actions) >= 2 && $i == count($actions) - 2)
+                $document_action .= " και ";
+            else if($i != count($actions) - 1)
+                $document_action .= ', ';
+        }
+        if(count($actions) > 1)
+            $document_action = 'τις αριθμ. ' . $document_action . ' Πράξεις';
+        else 
+            $document_action = 'την αριθμ. ' . $document_action . ' Πράξη';
 
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
         $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
@@ -633,9 +628,9 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('webaddress', Yii::$app->params['web_address']);
         $templateProcessor->setValue('local_directorate', $directorate_model['directorate_name']);
         $templateProcessor->setValue('local_directorate_genitive', str_replace('Διεύθυνση', 'Διεύθυνσης', $directorate_model['directorate_name']));
-        $templateProcessor->setValue('local_directorate_protocol', $localdirdecision_model->localdirdecision_protocol);
-        $templateProcessor->setValue('local_directorate_decisionsubject', $localdirdecision_model->localdirdecision_subject);
-        $templateProcessor->setValue('local_directorate_action', $localdirdecision_model->localdirdecision_action);
+        $templateProcessor->setValue('local_directorate_protocol', $protocol);// $localdirdecision_model->localdirdecision_protocol);
+        $templateProcessor->setValue('local_directorate_decisionsubject', $subject); //$localdirdecision_model->localdirdecision_subject);
+        $templateProcessor->setValue('local_directorate_action', $document_action); //$localdirdecision_model->localdirdecision_action);
         $pyspe = !strpos(mb_strtolower($directorate_model['directorate_name'], 'UTF-8'), 'πρωτοβ') ? "ΠΥΣΠΕ " : "ΠΥΣΔΕ ";
         $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
         $templateProcessor->setValue('local_pyspe', $pyspe);
@@ -782,14 +777,14 @@ class DisposalApprovalController extends Controller
         if (count($disposalapproval_models) == 0) {
             return false;
         }
-        $localdirdecision_id = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])['localdirdecision_id'];
+
+        $localdirdecision = Disposal::findOne(['disposal_id' => $disposalapproval_models[0]['disposal_id']])->getLocaldirdecision()->one();
         foreach ($disposalapproval_models as $disposalapproval_model) {
-            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']]);
-            if (!is_null($tmp_disposal_model) && $localdirdecision_id != $tmp_disposal_model['localdirdecision_id']) {
+            $tmp_disposal_model = Disposal::findOne(['disposal_id' => $disposalapproval_model['disposal_id']])->getLocaldirdecision()->one();
+            if($localdirdecision['localdirdecision_protocol'] != $tmp_disposal_model['localdirdecision_protocol'] || $localdirdecision['directorate_id'] != $tmp_disposal_model['directorate_id']) {
                 return false;
             }
         }
-
         return true;
     }
 
