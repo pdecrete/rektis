@@ -66,6 +66,7 @@ return [
     'From' => 'Από',
     'To' => 'Μέχρι',
     'Hours' => 'Ώρες',
+    'Days' => 'Ημέρες',
     'Disposal Hours' => 'Ώρες Διάθεσης',
     'Disposal Days' => 'Ημέρες Διάθεσης',
     'Actions' => 'Ενέργειες',
@@ -212,5 +213,6 @@ return [
     'Current School' => 'Σχολείο Υπηρέτησης',
     'Disposals Republication' => 'Ανοικοινοποίηση διαθέσεων',
     'The disposal is not allowed to be updated.' => 'Δεν επιτρέπεται η επεξεργασία για αυτή τη διάθεση',
-    'Republish Approval' => 'Ανακοινοποίηση Έγκρισης'
+    'Republish Approval' => 'Ανακοινοποίηση Έγκρισης',
+    'Action' => 'Πράξη'
 ];

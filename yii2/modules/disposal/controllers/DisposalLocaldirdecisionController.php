@@ -79,6 +79,9 @@ class DisposalLocaldirdecisionController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post())) {
+                $model->localdirdecision_protocol = trim($model->localdirdecision_protocol);
+                $model->localdirdecision_action = trim($model->localdirdecision_action);
+                
                 if (!$model->save()) {
                     throw new Exception("The creation of the decision decisions failed.");
                 }
@@ -119,6 +122,8 @@ class DisposalLocaldirdecisionController extends Controller
                 if (count($assigned_disposals) >= 1 && $assigned_disposals[0]->getTeacherDirectorate()->directorate_id != $model->directorate_id) {
                     throw new Exception("The decision cannot change because the already assigned disposals to the decision refer to schools of teachers of different Directorate.");
                 }
+                $model->localdirdecision_protocol = trim($model->localdirdecision_protocol);
+                $model->localdirdecision_action = trim($model->localdirdecision_action);
                 if (!$model->save()) {
                     throw new Exception("The update of the decision of the directorate failed.");
                 }
