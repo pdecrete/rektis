@@ -230,11 +230,10 @@ class DisposalController extends Controller
                     throw new Exception("The start date of the disposal must be earlier its end date.");
                 }
 
-
                 $existing_localdirdecision_model = DisposalLocaldirdecision::find()
-                                                    ->where(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol])
-                                                    ->andWhere(['localdirdecision_protocol' => $localdirdecision_model->localdirdecision_protocol])
-                                                    ->andWhere(['localdirdecision_protocol' => $localdirdecision_model->directorate_id])->one();
+                                                    ->where(['like', 'localdirdecision_protocol', $localdirdecision_model->localdirdecision_protocol])
+                                                    ->andWhere(['like', 'localdirdecision_action', $localdirdecision_model->localdirdecision_action])
+                                                    ->andWhere(['directorate_id' => $localdirdecision_model->directorate_id])->one();
                 if (is_null($existing_localdirdecision_model)) {
                     if (!$localdirdecision_model->save()) {
                         throw new Exception("Error in saving the teacher details in the database.");

@@ -637,7 +637,7 @@ class DisposalApprovalController extends Controller
 
         $teacher_disposals = "";        
         for ($i = 0; $i < count($teacher_models); $i++) {
-            $teacher_disposals .= "- " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
+            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
             $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";            
             
             $hours_word = (!is_null($disposals_models[$i]['disposal_hours']) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
@@ -654,7 +654,7 @@ class DisposalApprovalController extends Controller
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
             $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
-            $teacher_disposals .= ".</w:t><w:br/><w:t>";            
+            $teacher_disposals .= ".</w:t><w:br/><w:br/><w:t>";            
         }
         
         $templateProcessor->setValue('teacher_disposals', $teacher_disposals);
@@ -678,7 +678,7 @@ class DisposalApprovalController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             $approval_model = $this->findModel($id);
             if($approval_model->archived == 1 || $approval_model->deleted == 1 || !is_null(self::isRepublished($id))) {
-                throw new Exception('Not allowed action for that approval');
+                throw new Exception('Not allowed action for that approval.');
             }
             
             $approval_model->deleted = 1;
@@ -741,7 +741,7 @@ class DisposalApprovalController extends Controller
             return $this->redirect(['index']);
         } catch (Exception $exc) {
             $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', $exc->getMessage());
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
         }
     }
