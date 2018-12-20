@@ -214,5 +214,8 @@ return [
     'Disposals Republication' => 'Ανοικοινοποίηση διαθέσεων',
     'The disposal is not allowed to be updated.' => 'Δεν επιτρέπεται η επεξεργασία για αυτή τη διάθεση',
     'Republish Approval' => 'Ανακοινοποίηση Έγκρισης',
-    'Action' => 'Πράξη'
+    'Action' => 'Πράξη',
+    'Select disposal days...' => 'Επιλέξτε μέρες διάθεσης...',
+    'Error: There should be at least one change in relation to the initial Approval.' => 'Σφάλμα: Πρέπει να υπάρχει τουλάχιστον μια αλλαγή σε σχέση με την Έγκριση που ανακοινοποιείται.',
+    'Not allowed action for that approval.' => 'Μη επιτρεπτή ενέργεια για αυτή την Έγκριση.'
 ];
