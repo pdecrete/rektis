@@ -64,8 +64,8 @@ class DisposalController extends Controller
             Yii::$app->response->format = Response::FORMAT_JSON;
             $protocol = Yii::$app->request->post('localdirdecision_protocol');
             $directorate = Yii::$app->request->post('localdirdecision_directorate');//->andWhere(['localdirdecision_directorate' => $directorate])
-            $action = Yii::$app->request->post('localdirdecision_action');
-            $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->andWhere(['localdirdecision_action' => $action])->one();
+            //$action = Yii::$app->request->post('localdirdecision_action');
+            $localdir_decision = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $directorate])->one();//->andWhere(['localdirdecision_action' => $action])->one();
             $data = $localdir_decision;
         }
 
@@ -185,7 +185,6 @@ class DisposalController extends Controller
             $disposal_days = Disposal::getDayOptions();
 
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
-                //echo "<pre>"; print_r($model); echo "</pre>"; die();
                 $localdirdecision_model->localdirdecision_action = trim($localdirdecision_model->localdirdecision_action);
                 $localdirdecision_model->localdirdecision_protocol = trim($localdirdecision_model->localdirdecision_protocol);
                 if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
