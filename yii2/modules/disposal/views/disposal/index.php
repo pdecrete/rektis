@@ -47,8 +47,11 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Full name'),
                 'options' => ['width' => '65'],
                 'value' => function ($model) {
-                    return $model['teacher_surname'] . ' ' . $model['teacher_name'];
-                }
+                    $startdate = Yii::$app->formatter->asDate($model['disposal_startdate']);
+                    $enddate = Yii::$app->formatter->asDate($model['disposal_enddate']);
+                    return '<span data-toggle="tooltip" title="'. $startdate . ' έως ' . $enddate . '">' . $model['teacher_surname'] . ' ' . $model['teacher_name'] . '</span>';
+                },
+                'format' => 'html'
             ],
             [   'attribute' => 'code',
                 'label' => DisposalModule::t('modules/disposal/app', 'Specialisation'),
@@ -129,11 +132,11 @@ $columns = [[   'attribute' => 'teacher_surname',
             [   'attribute' => 'disposal_days',
                 'label' => DisposalModule::t('modules/disposal/app', 'Days'),
                 'value' => function ($model) {
-                if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
-                    return 'Ολική Διάθεση';
-                } else {
-                    return $model['disposal_days'];
-                }
+                    if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
+                        return 'Ολική Διάθεση';
+                    } else {
+                        return $model['disposal_days'];
+                    }
                 },
                 'filter' => Select2::widget([  'model' => $searchModel,
                     'attribute' => 'disposal_days',

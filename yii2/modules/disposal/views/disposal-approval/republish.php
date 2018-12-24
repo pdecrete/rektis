@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'specialization_models' => $specialization_models,
         'selection' => 1,
         'republish' => 1,
-        
+
         'disposal_hours' => $disposal_hours,
         'disposal_days' => $disposal_days,
         'disposal_reasons' => $disposal_reasons,

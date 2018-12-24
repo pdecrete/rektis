@@ -23,8 +23,6 @@ use app\modules\disposal\models\DisposalWorkobj;
 use yii\helpers\Json;
 use app\modules\disposal\models\DisposalLocaldirdecision;
 use app\modules\schooltransport\models\Directorate;
-use yii\validators\DateValidator;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -148,7 +146,7 @@ class DisposalController extends Controller
 
         if ($array_model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
             $array_model['disposal_hours'] = 'Ολική Διάθεση';
-        } 
+        }
         $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
         $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
         $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
@@ -187,10 +185,9 @@ class DisposalController extends Controller
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
                 $localdirdecision_model->localdirdecision_action = trim($localdirdecision_model->localdirdecision_action);
                 $localdirdecision_model->localdirdecision_protocol = trim($localdirdecision_model->localdirdecision_protocol);
-                if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
-                    throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
-                }
-                
+
+                $this->checkDaysHoursValidity($model);
+
                 /* if ($model->toschool_id == $model->fromschool_id) {
                     throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
                 } */
@@ -286,6 +283,19 @@ class DisposalController extends Controller
         }
     }
 
+
+    private function checkDaysHoursValidity($model)
+    {
+        if (($model->disposal_hours == -1 && $model->disposal_days != -1)
+            || (($model->disposal_hours != -1 && $model->disposal_hours != 0) && $model->disposal_days == -1)
+            || ($model->disposal_days == 5 && $model->disposal_hours == 0)
+            ) {
+            throw new Exception('Error: Please check the validity of "days" and "hours" of the disposal.');
+        } elseif ($model->disposal_days == -1) {
+            $model->disposal_hours = -1;
+        }
+    }
+
     /**
      * Updates an existing Disposal model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -315,13 +325,11 @@ class DisposalController extends Controller
             if ($model->load(Yii::$app->request->post())) {
                 $transaction = Yii::$app->db->beginTransaction();
 
-                if(($model->disposal_hours == -1 && $model->disposal_days != -1) || ($model->disposal_hours != -1 && $model->disposal_days == -1)) {
-                    throw new Exception('The "full disposal" does not agree in the "hours" and "days" drop-down menu.');
-                }
-                
-/*                 if ($model->fromschool_id == $model->toschool_id) {
-                    throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
-                } */
+
+                $this->checkDaysHoursValidity($model);
+                /*                 if ($model->fromschool_id == $model->toschool_id) {
+                                    throw new Exception("The school of the disposal must be different to the school of the service position of the teacher");
+                                } */
 
                 if ($model->disposal_enddate == "") {
                     $model->disposal_endofteachingyear_flag = 1;
@@ -524,112 +532,6 @@ class DisposalController extends Controller
         Yii::info('User ' . $user . ' ' . 'rejected Disposal with id: '. $model->disposal_id, 'disposal');
     }
 
-    /*public function actionImportdisposalsprepare() {
-        $cells = ['DIRECTORATE' => 'C3', 'PROTOCOL' => 'C4', 'ACTION' => 'C5', 'SUBJECT' => 'C6'];
-        $disposals_columns = [  'AM' => 2, 'SURNAME' => 3, 'NAME' => 4, 'SPECIALISATION' => 5, 'ORGANIC_SCHOOL' => 6, 'DISPOSAL_SCHOOL' => 7,
-            'HOURS' => 8, 'START_DATE' => 9, 'END_DATE' => 10, 'DISPOSAL_REASON' => 11, 'DISPOSAL_DUTY' => 12];
-        $base_disposalsdata_row = 9;
-        try {
-            $transaction = Yii::$app->db->beginTransaction();
-            $import_model = new FileImport();
-
-            if ($import_model->load(Yii::$app->request->post())) {
-                //$import_model->excelfile_disposals = \yii\web\UploadedFile::getInstance($import_model, 'excelfile_disposals');
-                if(!$import_model->upload($this->module->params['disposal_importfolder'])) {
-                    throw new Exception("(@upload)");
-                }
-                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(Yii::getAlias(Yii::$app->controller->module->params['disposal_importfolder']) . $import_model->importfile);
-                if(!$spreadsheet) {
-                    throw new Exception("(@import)");
-                }
-
-                $disposals_worksheet = $spreadsheet->getSheetByName('Διαθέσεις');
-
-                $directorate = $disposals_worksheet->getCell($cells['DIRECTORATE'])->getValue();
-                $protocol = (string)$disposals_worksheet->getCell($cells['PROTOCOL'])->getValue();
-                $action = (string)$disposals_worksheet->getCell($cells['ACTION'])->getValue();
-                $subject = (string)$disposals_worksheet->getCell($cells['SUBJECT'])->getValue();
-                $rowiterator = $disposals_worksheet->getRowIterator($base_disposalsdata_row, null);
-                $localdir_id = self::getDirectorateId($directorate);
-
-                $localdir_dec = DisposalLocaldirdecision::find()->where(['localdirdecision_protocol' => $protocol])->andWhere(['directorate_id' => $localdir_id])->one();
-                if($localdir_dec)
-                    Yii::$app->session->addFlash('info', DisposalModule::t('modules/disposal/app', "The local directorate decision already exists and not change was applied to it."));
-                    else {
-                        $localdir_dec = new DisposalLocaldirdecision();
-                        $localdir_dec->localdirdecision_protocol = $protocol;
-                        $localdir_dec->localdirdecision_action = $action;
-                        $localdir_dec->localdirdecision_subject = $subject;
-                        $localdir_dec->directorate_id = $localdir_id;
-                        $localdir_dec->deleted = 0;
-                        $localdir_dec->archived = 0;
-                        if(!$localdir_dec->save()) {
-                            throw new Exception("(@localdir_save)");
-                        }
-                    }
-
-                    foreach ($rowiterator as $row) {
-                        $currentrow_index = $row->getRowIndex();
-
-                        $currentteacher_am = trim($disposals_worksheet->getCellByColumnAndRow($disposals_columns['AM'], $currentrow_index)->getValue());
-                        if($currentteacher_am == "")
-                            break;
-
-                            $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->one();
-
-                            if(!$teacher_model) {
-                                $teacher_model = new Teacher();
-                                $teacher_model->teacher_registrynumber = intval($currentteacher_am);
-                                $teacher_model->teacher_surname = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SURNAME'], $currentrow_index)->getValue();
-                                $teacher_model->teacher_name = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['NAME'], $currentrow_index)->getValue();
-                                $teacher_model->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['ORGANIC_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
-
-                                $specialisation = mb_substr($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(), 0, 7, 'UTF-8');
-                                $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, 5, 'UTF-8');
-                                if(mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
-                                    $specialisation = mb_substr($specialisation, 0, 4);
-                                    $specialisation_with_blank = mb_substr($specialisation_with_blank, 0, 5);
-                                }
-                                $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
-                                $teacher_model->specialisation_id = $specialisation_id;
-                                if(!$teacher_model->save()) {
-                                    throw new Exception("(@teacher_save)");
-                                }
-                            }
-
-                            $disposal = new Disposal();
-                            $disposal->disposal_startdate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
-                            $disposal->disposal_enddate = yii::$app->formatter->asDate($disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index)->getFormattedValue(), "php:Y-m-d");
-                            $disposal->disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
-                            $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
-                            $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_description' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
-                            $disposal->teacher_id = $teacher_model->teacher_id;
-                            $disposal->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
-                            $disposal->deleted = 0;
-                            $disposal->archived = 0;
-                            $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
-
-                            if(!$disposal->save()) {
-                                throw new Exception("(@disposal_save)");
-                            }
-                    }
-
-                    $transaction->commit();
-                    Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposals were imported successfully."));
-                    return $this->redirect(['index']);
-            }
-            else {
-                return $this->render('importdisposals', [
-                    'import_model' => $import_model,
-                ]);
-            }
-        }
-        catch (Exception $exc) {
-            $transaction->rollBack();
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Error in importing disposals. " . $exc->getMessage()));
-            return $this->redirect(['index']);
-        }
-    }*/
 
     public function actionImportdisposals()
     {
@@ -710,24 +612,23 @@ class DisposalController extends Controller
                     $enddate = null;
                     $startdate_cell = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['START_DATE'], $currentrow_index);
                     $enddate_cell = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['END_DATE'], $currentrow_index);
-                    
-                    if(in_array($startdate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2])) {
+
+                    if (in_array($startdate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2], true)) {
                         $startdate = $startdate_cell->getFormattedValue();
                         $startdate = str_replace("/", "-", $startdate);
-                    }
-                    else if($startdate_cell->getDataType() == DataType::TYPE_NUMERIC) {
+                    } elseif ($startdate_cell->getDataType() == DataType::TYPE_NUMERIC) {
                         $startdate = $startdate_cell->getValue();
                         $startdate = Date::excelToDateTimeObject($startdate)->format("d-m-Y");
                     }
-                    
-                    if(in_array($enddate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2])) {
+
+                    if (in_array($enddate_cell->getDataType(), [DataType::TYPE_STRING, DataType::TYPE_STRING2], true)) {
                         $enddate = $enddate_cell->getFormattedValue();
                         $enddate = str_replace("/", "-", $enddate);
-                    }
-                    else if($enddate_cell->getDataType() == DataType::TYPE_NUMERIC) {
+                    } elseif ($enddate_cell->getDataType() == DataType::TYPE_NUMERIC) {
                         $enddate = $enddate_cell->getValue();
-                        $enddate = Date::excelToDateTimeObject($enddate)->format("d-m-Y");;
-                    }                                        
+                        $enddate = Date::excelToDateTimeObject($enddate)->format("d-m-Y");
+                        ;
+                    }
 
                     $disposal->disposal_startdate = yii::$app->formatter->asDate($startdate, "php:Y-m-d");
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($enddate, "php:Y-m-d");
@@ -743,7 +644,6 @@ class DisposalController extends Controller
                     $disposal->localdirdecision_id = $localdir_dec->localdirdecision_id;
 
                     if (!$disposal->save()) {
-                        //echo "<pre>"; print_r($disposal->errors); echo "</pre>"; die(); 
                         throw new Exception("Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.");
                     }
                 }
@@ -762,15 +662,14 @@ class DisposalController extends Controller
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             return $this->redirect(['index']);
-        }
-        catch (\yii\base\InvalidParamException $invp_exc) {
+        } catch (\yii\base\InvalidParamException $invp_exc) {
             $transaction->rollBack();
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $invp_exc->getMessage()));
             return $this->redirect(['index']);
         }
     }
-    
-    
+
+
     /**
      * Receives the school as it is in the Excel file for importing disposals and returns its id.
      * The schools in the Excel file has the form of "School_name (school_id)".

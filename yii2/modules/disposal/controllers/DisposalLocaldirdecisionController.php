@@ -81,7 +81,7 @@ class DisposalLocaldirdecisionController extends Controller
             if ($model->load(Yii::$app->request->post())) {
                 $model->localdirdecision_protocol = trim($model->localdirdecision_protocol);
                 $model->localdirdecision_action = trim($model->localdirdecision_action);
-                
+
                 if (!$model->save()) {
                     throw new Exception("The creation of the decision decisions failed.");
                 }

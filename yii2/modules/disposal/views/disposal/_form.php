@@ -99,24 +99,6 @@ $setenddate = 'function setEndOfTeachingYearDate() {
 $this->registerJs($ajaxscript_searchTeacherById, View::POS_HEAD);
 $this->registerJs($setenddate, View::POS_HEAD);
 
-/*
-$script = '$(document).on("click", "#chkbox_endteachyear", function enabledisableDisposalendDatepicker() {
-                //var disposalend_datepicker = document.getElementById("disposalend_datepicker");
-                var disposalend_datepicker = $("#disposalend_datepicker").prop("disabled", true);
-                alert($("#disposalend_datepicker").kvDatepicker().attr("disabled"));
-                if(disposalend_datepicker.disabled){
-                    $("#disposalend_datepicker").kvDatepicker().prop("disabled", false);
-                    alert("Done false...");
-                }
-                else {
-                    $("#disposalend_datepicker").prop("disabled", true);
-                    $("#disposalend_datepicker").val("").trigger("change");
-                    alert("Done true...");
-                }
-           })';
-$this->registerJs($script, View::POS_END);
-*/
-
 $urlTeacherCheck = Url::toRoute(['disposal/getteacher-ajax']);
 $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 
@@ -175,7 +157,7 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 			<?= $form->field($model, 'disposal_hours')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($disposal_hours, 'hours', 'hours_name'),
                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal hours...')],
-			                    'pluginOptions' => ['allowClear' => true],
+                                'pluginOptions' => ['allowClear' => true],
                             ])->label('Ώρες Διάθεσης'); ?>
 		</div>
 		<div class="col-lg-3">

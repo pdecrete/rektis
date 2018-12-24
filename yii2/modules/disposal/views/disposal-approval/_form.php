@@ -48,23 +48,23 @@ use yii\widgets\ActiveForm;
     									<?php echo $teacher_models[$index]['teacher_surname'] . ' ' . $teacher_models[$index]['teacher_name'] . ', ' . $specialization_models[$index]['code']; ?>
 									</td>
     								<td colspan="2"><?= $form->field($disposal_model, '['.$index.']fromschool_id')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($schools, 'school_id', 'school_name')])->label(false); ?></td>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($schools, 'school_id', 'school_name')])->label(false); ?></td>
     								<td colspan="2"><?= $form->field($disposal_model, '['.$index.']toschool_id')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($schools, 'school_id', 'school_name')])->label(false); ?></td>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($schools, 'school_id', 'school_name')])->label(false); ?></td>
 							            
     							</tr>
     							<tr>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_hours')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_hours, 'hours', 'hours_name')])->label(false); ?></td>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_hours, 'hours', 'hours_name')])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_days')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_days, 'days', 'days_name')])->label(false); ?></td>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_days, 'days', 'days_name')])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->label(false); ?></td>    								
     								<td><?= $form->field($disposal_model, '['.$index.']disposalreason_id')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description')])->label(false); ?>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description')])->label(false); ?>
 						            </td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposalworkobj_id')
-    								            ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description')])->label(false); ?>
+                                                ->widget(Select2::classname(), ['data' => ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description')])->label(false); ?>
 						            </td>	
     							</tr>        					
 						</table>
