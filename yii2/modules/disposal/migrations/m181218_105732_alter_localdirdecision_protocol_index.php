@@ -26,19 +26,4 @@ class m181218_105732_alter_localdirdecision_protocol_index extends Migration
         Yii::$app->db->createCommand($alter_command_drop)->execute();
         Yii::$app->db->createCommand($alter_command_add)->execute();
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m181218_105732_alter_localdirdecision_protocol_index cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

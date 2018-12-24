@@ -41,17 +41,18 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
               }
             ],
             ['attribute' => 'approval_regionaldirectprotocol',
-             'value' => function($model) {
-                 if(!is_null($model['approval_republished']))
-                    return '<strike>' . $model['approval_regionaldirectprotocol'] . '</strike> (Ανακοινοποιημένη)';
-                 else
+             'value' => function ($model) {
+                 if (!is_null($model['approval_republished'])) {
+                     return '<strike>' . $model['approval_regionaldirectprotocol'] . '</strike> (Ανακοινοποιημένη)';
+                 } else {
                      return $model['approval_regionaldirectprotocol'];
+                 }
              },
              'format' => 'html'
             ],
             ['attribute' => 'approval_regionaldirectprotocoldate',
                 'format' => ['datetime', 'php:d-m-Y']
-            ],            
+            ],
             'approval_notes',
             ['attribute' => 'created_at',
              'format' => ['datetime', 'php:d-m-Y H:i']

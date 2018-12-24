@@ -149,7 +149,7 @@ class m180717_104439_disposal_init extends Migration
                               `disposal_enddate` DATE NOT NULL COMMENT 'Λήξη Διάθεσης',
                               `disposal_hours` TINYINT NOT NULL COMMENT 'Ώρες Διάθεσης',
                               `disposal_action` VARCHAR(200) NOT NULL COMMENT 'Πράξη Διάθεσης',
-                              `created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',                              
+                              `created_at` TIMESTAMP COMMENT 'Ημ/νία Δημιουργίας',
                               `updated_at` TIMESTAMP COMMENT 'Ημ/νία Επεξεργασίας',
                               `deleted` BOOLEAN NOT NULL DEFAULT 0,
                               `created_by` INTEGER NOT NULL,

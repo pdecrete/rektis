@@ -30,7 +30,7 @@ class DisposalSearch extends Disposal
     {
         return [
             [['disposal_id', 'teacher_id', 'fromschool_id', 'toschool_id', 'localdirdecision_id'], 'integer'],
-            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'from_school', 'to_school', 'code', 'directorate_shortname', 
+            [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'from_school', 'to_school', 'code', 'directorate_shortname',
               'disposalreason_description', 'localdirdecision_protocol', 'localdirdecision_action'], 'string'],
             [['disposal_startdate', 'disposal_enddate', 'disposal_hours', 'disposal_days'], 'safe'],
         ];
@@ -91,7 +91,7 @@ class DisposalSearch extends Disposal
                     )->distinct();
 
         if ($archived) {
-            $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id")->andWhere($apprvs . ".approval_id=" . $dspls_apprvs . ".approval_id")->andWhere($apprvs . ".approval_republished IS NULL" );
+            $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id")->andWhere($apprvs . ".approval_id=" . $dspls_apprvs . ".approval_id")->andWhere($apprvs . ".approval_republished IS NULL");
         }
 
         if ($approval_id != -1) {
@@ -119,9 +119,9 @@ class DisposalSearch extends Disposal
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
-                                         'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol', 
+                                         'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
                                          'localdirdecision_action'],
-                                         'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
+                                        'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
                       ],
             'pagination' => false,
         ]);

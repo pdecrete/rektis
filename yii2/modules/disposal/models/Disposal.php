@@ -90,7 +90,7 @@ class Disposal extends \yii\db\ActiveRecord
         return [
             [['disposal_startdate', 'disposal_days', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
-            [['disposal_days', 'disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 
+            [['disposal_days', 'disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id',
               'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
@@ -188,7 +188,7 @@ class Disposal extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Schoolunit::className(), ['school_id' => 'fromschool_id']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -248,7 +248,7 @@ class Disposal extends \yii\db\ActiveRecord
         }
         return $disposal_hours;
     }
-    
+
     /**
      * @return array
      */
