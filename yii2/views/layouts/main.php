@@ -195,7 +195,12 @@ AppAsset::register($this);
                             'url' => ['/leave-balance'],
                             'visible' => Yii::$app->user->can('leave_user')
                         ],
-
+                        [
+                            'label' => 'Στατιστικά αδειών',
+                            'url' => ['/leave-statistic'],
+                            'visible' => Yii::$app->user->can('leave_user')
+                        ],
+                        
                         '<li class="divider"></li>',
                         '<li class="dropdown-header"><i class="glyphicon glyphicon-plane"></i></li>',
                         [
