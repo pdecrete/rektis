@@ -46,7 +46,7 @@ $kaescount = count($kaetitles);
         		</tr>
 <?php           foreach ($kaetitles as $index => $kaetitle):?>
 				<tr>
-					<td class="text-center"><?php echo sprintf('%04d', $model[$index]->kae_id); ?></td>
+					<td class="text-center"><?php echo (strlen($model[$index]->kae_id) <= 4) ? sprintf('%04d', $model[$index]->kae_id) : $model[$index]->kae_id; ?></td>
 					<td><?php echo $kaetitle ?></td>
 					<td class="text-center">
 						<?= $form->field($model[$index], "[{$index}]kaecredit_amount")

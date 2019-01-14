@@ -52,6 +52,10 @@ class Module extends \yii\base\Module
     {
         //echo "<pre>"; print_r(Yii::$app->i18n->getMessageSource($category)); echo "</pre>"; die();
         //echo Yii::$app->i18n->getMessageSource($category)
-        return Yii::t($category, $message, $params, 'el-GR');
+        $message = Yii::t($category, $message, $params, 'el-GR');
+        if(Yii::$app->session["working_year"] >= 2019)
+            $message = str_replace('ΚΑΕ', 'Λογαριασμός', $message);
+
+        return $message;
     }
 }

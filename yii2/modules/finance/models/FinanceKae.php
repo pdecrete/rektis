@@ -31,7 +31,7 @@ class FinanceKae extends \yii\db\ActiveRecord
     {
         return [
             [['kae_id', 'kae_title'], 'required'],
-            [['kae_id'], 'integer'],
+            [['kae_id'], 'number'],
             [['kae_title'], 'string', 'max' => 255],
             [['kae_description'], 'string', 'max' => 1024],
         ];

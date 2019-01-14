@@ -20,6 +20,7 @@ if ($kaesCount != 0):
         }
     }
 
+
 ?>
     
     <p style="text-align: right;">
@@ -39,12 +40,12 @@ if ($kaesCount != 0):
       			<?php foreach ($kaesListDivide as $kaeList) : ?>
       						<div class="col-lg-<?php echo 12/$columnsNum; ?>">
       							<?php foreach ($kaeList as $kaeListItem):
-                                          if (FinanceKaecredit::findOne(['kae_id' => $kaeListItem->kae_id])['kaecredit_amount'] != 0):
+      							if (FinanceKaecredit::find()->where(['kae_id' => $kaeListItem->kae_id])->andWhere(['year' => Yii::$app->session["working_year"]])->one()['kaecredit_amount'] != 0):
                                   ?>
                                         <p><a href='<?php echo Url::to([$actionUrl, 'id' => $kaeListItem->kae_id]); ?>' 
                                         <?php if (isset($balances)) {
                                       ?>data-toggle="tooltip" title="<?= Module::t('modules/finance/app', 'Available for Usage') . ": " . Money::toCurrency($balances[$kaeListItem->kae_id], true) ?><?php
-                                  }?>"><span class="label label-primary"><?= sprintf('%04d', $kaeListItem->kae_id); ?></span>
+                                        }?>"><span class="label label-primary"><?=  (strlen($kaeListItem->kae_id) <= 4) ? sprintf('%04d', $kaeListItem->kae_id) : $kaeListItem->kae_id; ?></span>
                                         <?php echo $kaeListItem->kae_title;?></a>
                                         </p>
                                 <?php   endif;

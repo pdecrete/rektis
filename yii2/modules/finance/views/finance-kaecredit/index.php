@@ -37,7 +37,7 @@ $provider = new ArrayDataProvider([
                                     'label' => Module::t('modules/finance/app', 'RCN'),
                                     'format' => 'html',
                                     'value' => function ($model) {
-                                        return sprintf('%04d', $model['kae_id']);
+                                        return (strlen($model['kae_id']) <= 4) ? sprintf('%04d', $model['kae_id']) : $model['kae_id'];
                                     },
                                     'headerOptions' => ['class'=> 'text-center'],
                                     'contentOptions' => ['class' => 'text-center']
