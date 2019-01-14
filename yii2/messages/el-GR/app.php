@@ -385,4 +385,5 @@ return [
     'Current year' => 'Τρέχοντος έτος',
     'Previous year' => 'Προηγούμενου έτους',
     'All years' => 'Όλων των ετών',
+    'Export to PDF' => 'Εξαγωγή σε PDF'
 ];
