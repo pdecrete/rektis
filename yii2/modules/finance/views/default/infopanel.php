@@ -22,7 +22,7 @@ if (Integrity::uniqueCurrentYear()):
     foreach ($credits as $credit) {
         if ($credit->kaecredit_amount != 0) {
             $kaecredit_percentage = FinanceKaecreditpercentage::getKaeCreditSumPercentage($credit->kaecredit_id);
-            $labels[$index] = sprintf('%04d', $credit->kae_id);
+            $labels[$index] = (strlen($credit->kae_id) <= 4) ? sprintf('%04d', $credit->kae_id) : $credit->kae_id;
             $data[$index] = Money::toCurrency($credit->kaecredit_amount);
             $available[$index] = Money::toCurrency($credit->kaecredit_amount*Money::dbPercentagetoDecimal($kaecredit_percentage));
             $withdrawals[$index] = Money::toCurrency(FinanceKaewithdrawal::getWithdrawsSum($credit->kaecredit_id));

@@ -49,7 +49,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 	</table>
 	<!--p><?= '<img src=' . $greek_logo . '>' ?></p-->
     <p><strong><?= Module::t('modules/finance/app', 'Expedinture Payment Report') ?> </strong>
-               <?= '(' . Module::t('modules/finance/app', 'RCN') . sprintf('%04d', $kae)
+               <?= '(' . Module::t('modules/finance/app', 'RCN') . (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae
                     . ' - ' . Module::t('modules/finance/app', 'Financial Year')
                     . ' ' . $year . ')'
                 ?></p>

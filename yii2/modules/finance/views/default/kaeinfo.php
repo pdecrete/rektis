@@ -20,7 +20,7 @@ $withdrawalsSum = 0;
     <div class="container-fluid well">
   		<div class="row">
         <table class="table table-hover">
-            <thead><tr><th class="text-center" colspan="2"><?php echo Module::t('modules/finance/app', 'RCN') . ' ' . sprintf('%04d', $kae->kae_id) . " - " . $kae->kae_title  ?></th></tr></thead>
+            <thead><tr><th class="text-center" colspan="2"><?php echo Module::t('modules/finance/app', 'RCN') . ' ' . ((strlen($kae->kae_id) <= 4) ? sprintf('%04d', $kae->kae_id) : $kae->kae_id) . " - " . $kae->kae_title  ?></th></tr></thead>
             <tr class="info"><td><?= Module::t('modules/finance/app', 'RCN Initial Credit') ?>:</td><td class="text-right"><?= Money::toCurrency($kaeCredit->kaecredit_amount, true) ?></td></tr>
             <tr class="info"><td><?= Module::t('modules/finance/app', 'Total Attributed Percentage') ?>:</td><td class="text-right"><?= Money::toPercentage($kaeCreditSumPercentage) ?></td></tr>
             <tr class="info"><td><?= Module::t('modules/finance/app', 'Available Amount') ?>:</td><td class="text-right"><?= $balance_formatted ?></td></tr>

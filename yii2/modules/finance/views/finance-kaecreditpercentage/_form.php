@@ -14,7 +14,7 @@ use app\modules\finance\components\Money;
 $model->kaeperc_percentage = Money::toPercentage($model->kaeperc_percentage);
 
 $model->kaeperc_date = date("Y-m-d H:i:s");
-$kae->kae_id = sprintf('%04d', $kae->kae_id);
+$kae->kae_id = (strlen($kae['kae_id']) <= 4) ? sprintf('%04d', $kae['kae_id']) : $kae['kae_id'];;
 ?>
 <div class="row">
 <div class="finance-kaecreditpercentage-form col-lg-6">
