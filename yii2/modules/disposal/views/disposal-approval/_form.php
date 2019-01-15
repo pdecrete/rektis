@@ -79,7 +79,7 @@ use yii\widgets\ActiveForm;
         				
         			</thead>    			
         			<?php foreach ($disposals_models as $index=>$disposal_model): ?>
-        				<tr>
+        				<tr>        					
         					<td>
     							<?= $form->field($disposalapproval_models[$index], "[{$index}]disposal_id")->checkbox(['label' => '', 'value' => $disposalapproval_models[$index]['disposal_id']]); ?>
     						</td>
@@ -99,10 +99,13 @@ use yii\widgets\ActiveForm;
     		<?php endif;?>
     	</div>
 	</div>
+	<div>
+		<div class="col-lg-12"><strong>(Εμφανιζόμενες Διαθέσεις: <?= $index+1?>)</strong></div>
+	</div>
 	<?= HeadSignatureWidget::widget(['form' => $form, 'module' => Yii::$app->controller->module->id]);?>
 	<br />
 	<?php if (isset($create) && $create): ?>
-    	<div class="row">
+    	<div class="row">    		
     		<div class="col-lg-12"><?php echo Html::hiddenInput('disposal_ids', serialize($disposal_ids)); ?></div>
     	</div>
 	<?php endif;?>
