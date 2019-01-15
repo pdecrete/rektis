@@ -282,13 +282,19 @@ class DisposalApprovalController extends Controller
                 if (!$model->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
                 }
-
+                
                 $old_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
-                $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
+                
+              /*   foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
+                    if($disposalapproval_model['disposal_id'] == 0)
+                        unset($disposalapproval_models[$index]);
+                } */
 
+                $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
+                //echo "<pre>"; print_r($new_disposal_ids); echo "<pre>"; die();
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
-                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
+                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
                         $disposals_counter++;
                         if (!$old_disposalapproval_model->delete()) {
                             throw new Exception("Failed to save the changes of the approval.");
@@ -587,7 +593,7 @@ class DisposalApprovalController extends Controller
         }
 
         $actions = [];
-        $protocol = $disposals_models[0]->getLocaldirdecision()->one()['localdirdecision_action'];
+        $protocol = $disposals_models[0]->getLocaldirdecision()->one()['localdirdecision_protocol'];
         $subject = $disposals_models[0]->getLocaldirdecision()->one()['localdirdecision_subject'];
         foreach ($disposals_models as $index=>$disposal_model) {
             $actions[$index] = $disposal_model->getLocaldirdecision()->one()['localdirdecision_action'];

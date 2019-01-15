@@ -177,8 +177,8 @@ class DisposalStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['code'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['name'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['directorate_shortname'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['organic_school'], DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposal_school'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['from_school'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['to_school'], DataType::TYPE_STRING);
                 if ($disposal['disposal_hours'] == -1) {
                     $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'ΟΛΙΚΗ ΔΙΑΘΕΣΗ', DataType::TYPE_STRING);
                 } else {

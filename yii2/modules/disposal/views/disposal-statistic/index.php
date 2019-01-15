@@ -138,7 +138,20 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 <div id="canvasChart" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <?php
+            <?php   $max_result = max($result_data['DISPOSALS_COUNT']); 
+            
+                    $results_count = count($result_data['DISPOSALS_COUNT']);
+                    $fontsize = 12;
+                    $minrotation = 0;
+                    if($results_count > 15 && $results_count <= 30)
+                        $fontsize = 10;
+                    else if($results_count > 30) {
+                        $fontsize = 9;
+                        $minrotation = 90;
+                    }
+                        
+                    $stepSize = ceil($max_result/10); 
+                    $max_value = $stepSize*10;
                     $height = 100;
                     $clientOptions['clientOptions'] = '';
                     if ($selected_chart_type == DisposalStatistic::CHARTTYPE_HORIZONTALBAR) {
@@ -149,9 +162,10 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
                             'scales' => [
                                 'xAxes' => [[
                                     'ticks' => [
+                                        'stepSize' => $stepSize,
                                         'min' => 0,
-                                        'stepSize' => 1,
-                                        'max' => max($result_data['DISPOSALS_COUNT']) + 1
+                                        'autoSkip' => false,
+                                        'max' => $max_value
                                     ],
                                     'scaleLabel' => [
                                         'display' => true,
@@ -166,12 +180,24 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false, 'position' => 'bottom'],
                             'responsive' => true,
-                            'scales' => [
+                            'scales' => [ 
+                                'xAxes' => [[
+                                'ticks' => [
+                                    'stepSize' => $stepSize,
+                                    'min' => 0,
+                                    'autoSkip' => false,
+                                    'minRotation' => $minrotation,
+                                    'max' => $max_value,
+                                    'fontSize' => $fontsize,
+                                    ]
+                                ]],
                                 'yAxes' => [[
                                     'ticks' => [
+                                        'stepSize' => $stepSize,
                                         'min' => 0,
-                                        'stepSize' => 1,
-                                        'max' => max($result_data['DISPOSALS_COUNT']) + 2
+                                        'maxRotation' => 90,
+                                        'autoSkip' => true,
+                                        'max' => $max_value
                                     ],
                                     'scaleLabel' => [
                                         'display' => true,
