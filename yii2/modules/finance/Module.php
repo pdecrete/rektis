@@ -54,7 +54,7 @@ class Module extends \yii\base\Module
         //echo Yii::$app->i18n->getMessageSource($category)
         $message = Yii::t($category, $message, $params, 'el-GR');
         if(Yii::$app->session["working_year"] >= 2019)
-            $message = str_replace('ΚΑΕ', 'ΛΑΕ', $message);
+            $message = str_replace('ΚΑΕ', 'ΑΛΕ', $message);
 
         return $message;
     }
