@@ -133,6 +133,11 @@ class SchtransportTransportController extends Controller
             $program_model->program_code = "InternationalPartnership_" . (string)round(microtime(true) * 1000);
             $program_model->program_title = 'Διεθνής Συνεργασία';
         }
+        else if ($program_alias ==  SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
+            $program_model->program_code = "ExcursionForeignCountry_" . (string)round(microtime(true) * 1000);
+            $program_model->program_title = 'Πολυήμερη εκδρομή στο εξωτερικό';
+            $meeting_model->meeting_city = '-';
+        }
 
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
