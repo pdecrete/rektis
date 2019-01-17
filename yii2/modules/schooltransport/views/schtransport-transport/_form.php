@@ -56,6 +56,14 @@ else if ($program_alias == SchtransportTransport::INTERNATIONAL_PARTNERSHIPS) {
     $progrfields_readOnly['program_code'] = true;
     $progrfields_readOnly['program_title'] = true;
 }
+else if ($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
+    $typeahead_data['PROGRAMCODES'] = null;
+    $typeahead_data['PROGRAMTITLES'] = null;
+    $typeahead_data['CITIES'] = null;
+    $progrfields_readOnly['program_code'] = true;
+    $progrfields_readOnly['program_title'] = true;
+    $progrfields_readOnly['meeting_city'] = true;
+}
 
 ?>
 
