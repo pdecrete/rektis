@@ -648,7 +648,7 @@ class DisposalApprovalController extends Controller
             if ($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL) {
                 $teacher_disposals .= " με ολική διάθεση ";
             } elseif (!is_null($disposals_models[$i]['disposal_hours'])) {
-                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα (" . $disposals_models[$i]['disposal_days'] . $hours_word . ")";
+                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα (" . $disposals_models[$i]['disposal_hours'] . $hours_word . ")";
             } else {
                 $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
             }
