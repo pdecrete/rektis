@@ -95,6 +95,20 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['info'],
+                    'categories' => ['eduinventory'],
+                    'logFile' => '@runtime/logs/eduinventory.log',
+                    'logVars' => []
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['disposal'],
+                    'logFile' => '@runtime/logs/disposal.log',
+                    'logVars' => []
+                ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
                     'categories' => ['financial'],
                     'logFile' => '@runtime/logs/financial.log',
                     'logVars' => [],
@@ -127,6 +141,12 @@ $config = [
     'aliases' => $aliases,
     // 'catchAll' => ['site/offline'],
     'modules' => [
+        'base' => [
+            'class' => 'app\modules\base\BaseModule',
+        ],
+        'eduinventory' => [
+            'class' => 'app\modules\eduinventory\EducationInventoryModule',
+        ],
         'SubstituteTeacher' => [
             'class' => 'app\modules\SubstituteTeacher\SubstituteTeacherModule',
         ],
@@ -138,6 +158,9 @@ $config = [
         ],
         'schooltransport' => [
             'class' => 'app\modules\schooltransport\Module',
+        ],
+        'disposal' => [
+            'class' => 'app\modules\disposal\DisposalModule',
         ],
         'datecontrol' => [
             'class' => 'kartik\datecontrol\Module',

@@ -126,6 +126,18 @@ class SchtransportTransportController extends Controller
 
         $meeting_model = new SchtransportMeeting();
         $program_model = new SchtransportProgram();
+        if ($program_alias == SchtransportTransport::ETWINNING_FOREIGN_COUNTRY) { //Since etwinning programms do not have a unique code, create one for them
+            $program_model->program_code = "eTwinning_" . (string)round(microtime(true) * 1000);
+        }
+        else if ($program_alias ==  SchtransportTransport::INTERNATIONAL_PARTNERSHIPS) {
+            $program_model->program_code = "InternationalPartnership_" . (string)round(microtime(true) * 1000);
+            $program_model->program_title = 'Διεθνής Συνεργασία';
+        }
+        else if ($program_alias ==  SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
+            $program_model->program_code = "ExcursionForeignCountry_" . (string)round(microtime(true) * 1000);
+            $program_model->program_title = 'Πολυήμερη εκδρομή στο εξωτερικό';
+            $meeting_model->meeting_city = '-';
+        }
 
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
@@ -470,14 +482,14 @@ class SchtransportTransportController extends Controller
                                     SchtransportTransport::EDUCATIONAL_VISITS, SchtransportTransport::EDUCATIONAL_EXCURSIONS,
                                     SchtransportTransport::SCHOOL_EXCURIONS, SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY,
                                     SchtransportTransport::PARLIAMENT, SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY,
-                                    SchtransportTransport::ETWINNING_FOREIGN_COUNTRY], true)) {
+                                    SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, SchtransportTransport::INTERNATIONAL_PARTNERSHIPS], true)) {
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
         }
         if (in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS,
                                     SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS,
                                     SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT,
-                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY], true)) {
+                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, SchtransportTransport::INTERNATIONAL_PARTNERSHIPS], true)) {
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
         }

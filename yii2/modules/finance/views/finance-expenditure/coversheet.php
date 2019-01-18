@@ -43,7 +43,7 @@ foreach ($expenditures_model as $expenditure_model){
     	endforeach;
 	?>
 	</ul>
-    της υπηρεσίας μας <strong>(<?= Yii::$app->params['finance_code']; ?>, KAE <?= sprintf('%04d', $kae); ?>)</strong> 
+    της υπηρεσίας μας <strong>(<?= Yii::$app->params['finance_code']; ?>, ΑΛΕ <?= (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae; ?>)</strong> 
     συνολικού ποσού: <strong><?= Money::toCurrency($sum_amount, true); ?></strong>, 
     στο όνομα του δικαιούχου "<strong><?= $supplier_model['suppl_name'] ?></strong>" και παρακαλούμε για τις δικές σας ενέργειες. 
 </p>
