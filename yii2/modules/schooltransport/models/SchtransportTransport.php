@@ -62,7 +62,7 @@ class SchtransportTransport extends \yii\db\ActiveRecord
             [['meeting_id', 'school_id'], 'integer'],
             [['transport_headteacher'], 'string', 'max' => 100],
             [['transport_teachers'], 'string', 'max' => 1000],
-            [['transport_students'], 'string', 'max' => 2000],
+            [['transport_students'], 'string', 'max' => 5000],
             [['transport_class'], 'string', 'max' => 10],
             [['transport_schoolrecord'], 'string', 'max' => 200],
             [['transport_localdirectorate_protocol', 'transport_pde_protocol', 'transport_dateprotocolcompleted'], 'string', 'max' => 100],
