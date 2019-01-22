@@ -74,7 +74,10 @@ class DisposalApprovalController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $disposal_models = $model->getDisposals()->all();
+        $disposalapproval_models = DisposalDisposalapproval::find()->where(['approval_id' => $id])->orderBy('disposalapproval_order')->all();
+        foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
+            $disposal_models[$index] = Disposal::findOne(['disposal_id' => $disposalapproval_model->disposal_id]);
+        }
         $teacher_models = [];
         $disposal_schools = [];
         $organic_schools = [];
@@ -134,6 +137,7 @@ class DisposalApprovalController extends Controller
             }
             $disposalapproval_models[$index] = new DisposalDisposalapproval();
             $disposalapproval_models[$index]->disposal_id = $disposal_id;
+            $disposalapproval_models[$index]->disposalapproval_order = $index;
             $teacher_models[$index] = $disposals_models[$index]->getTeacher()->one();
             $fromschool_models[$index] = $disposals_models[$index]->getFromSchool()->one();
             $toschool_models[$index] = $disposals_models[$index]->getToSchool()->one();
@@ -247,7 +251,7 @@ class DisposalApprovalController extends Controller
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
             return $this->redirect(['disposal-approval/index']);
         }
-        $disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
+        $disposalapproval_models = DisposalDisposalapproval::find()->where(['approval_id' => $model->approval_id])->orderBy('disposalapproval_order')->all();
         $disposals_models = [];
         $toschool_models = [];
         $fromschool_models = [];
