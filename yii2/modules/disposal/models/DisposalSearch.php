@@ -87,7 +87,7 @@ class DisposalSearch extends Disposal
                     " AND " . $dspls . ".fromschool_id=srv_sch.school_id" .
                     " AND " . $dspls . ".toschool_id=dsp_sch.school_id" .
                     " AND " . $tchers . ".school_id=orgn_sch.school_id" .
-                    " AND orgn_sch.directorate_id=" . $dir_o_schl . ".directorate_id"
+                    " AND " . $localdir_decisions . ".directorate_id=" . $dir_o_schl . ".directorate_id"
                     )->distinct();
 
         if ($archived) {
