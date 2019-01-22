@@ -124,8 +124,10 @@ class DisposalSearch extends Disposal
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
                                          'localdirdecision_action'],
-                                        'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC]
+                                        'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC],
+                'enableMultiSort' => true,
                       ],
+            
             'pagination' => false,
         ]);
 
