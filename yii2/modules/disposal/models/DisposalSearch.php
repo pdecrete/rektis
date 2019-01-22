@@ -77,7 +77,7 @@ class DisposalSearch extends Disposal
                 ->where([$dspls . ".archived" => $archived])
                 ->andWhere(
                     $dspls . ".deleted=0 " .
-                    " AND " .$dspls . ".disposal_republished IS NULL " .
+                    " AND " . $dspls . ".disposal_republished IS NULL " .
                     " AND " . $dspls . ".disposal_rejected=" . $rejected .
                     " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
                     " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
@@ -91,7 +91,10 @@ class DisposalSearch extends Disposal
                     )->distinct();
 
         if ($archived) {
-            $query->andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id")->andWhere($apprvs . ".approval_id=" . $dspls_apprvs . ".approval_id")->andWhere($apprvs . ".approval_republished IS NULL");
+            $query->andWhere($apprvs . ".deleted=0")->
+                    andWhere($dspls . ".disposal_id=" . $dspls_apprvs . ".disposal_id")->
+                    andWhere($apprvs . ".approval_id=" . $dspls_apprvs . ".approval_id")->
+                    andWhere($apprvs . ".approval_republished IS NULL");
         }
 
         if ($approval_id != -1) {
