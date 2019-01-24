@@ -18,6 +18,8 @@ use yii\db\Expression;
  * @property string $approval_file
  * @property string $approval_signedfile
  * @property integer $approval_republished
+ * @property string $approval_republishedtext
+ * @property date $approval_republisheddate
  * @property integer $deleted
  * @property integer $archived
  * @property string $created_at
@@ -68,10 +70,11 @@ class DisposalApproval extends \yii\db\ActiveRecord
     {
         return [
             [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_file', 'approval_signedfile'], 'required'],
-            [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate'], 'safe'],
+            [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate', 'approval_republishdate'], 'safe'],
             [['approval_republished', 'deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol'], 'string', 'max' => 100],
             [['approval_notes'], 'string', 'max' => 500],
+            [['approval_republishtext'], 'string', 'max' => 2000],
             [['approval_file', 'approval_signedfile'], 'string', 'max' => 300],
         ];
     }
@@ -91,6 +94,8 @@ class DisposalApproval extends \yii\db\ActiveRecord
             'deleted' => Yii::t('app', 'Deleted'),
             'archived' => Yii::t('app', 'Archived'),
             'approval_republished' => Yii::t('app', 'Ανακοινοποίηση Έγκρισης'),
+            'approval_republishtext' => Yii::t('app', 'Ανακοινοποίηση ως προς'),
+            'approval_republishdate' => Yii::t('app', 'Ημερομηνία Ανακοινοποίησης'),
             'created_at' => Yii::t('app', 'Ημ/νία Δημιουργίας'),
             'updated_at' => Yii::t('app', 'Ημ/νία Επεξεργασίας'),
             'created_by' => Yii::t('app', 'Approval Created By'),
@@ -128,6 +133,18 @@ class DisposalApproval extends \yii\db\ActiveRecord
     public function getDisposals()
     {
         return $this->hasMany(Disposal::className(), ['disposal_id' => 'disposal_id'])->viaTable('{{%disposal_disposalapproval}}', ['approval_id' => 'approval_id']);
+    }
+
+    /**
+     * If $this approval is a republish, then it returns the initial approval, otherwise returns null
+     * 
+     * @return \app\modules\disposal\models\DisposalApproval
+     */
+    public function getRepublishedApproval() 
+    {
+        if($this->approval_id == null)
+            return null;
+        return DisposalApproval::findOne(['approval_republished' => $this->approval_id]);
     }
 
     /**
