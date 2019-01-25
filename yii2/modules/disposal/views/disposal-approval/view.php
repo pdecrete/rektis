@@ -30,15 +30,24 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+	<?php 
+	$attribures =  [
+                    'approval_regionaldirectprotocol',
+            	    'approval_notes',
+            	    ['label' => 'Αρχείο Έγκρισης', 
+            	     'format' => 'html', 
+            	     'value' => Html::a(DisposalModule::t('modules/disposal/app', 'Donwload file'), ['disposal-approval/download', 'id' =>$model['approval_id']])            	        
+            	    ],
+            	    'approval_signedfile',
+            	   ];
+	if ($model->getRepublishedApproval() != null) {
+	    $attribures = array_merge($attribures, ['approval_republishtext', ['attribute' => 'approval_republishdate', 'format' => ['datetime', 'php:d-m-Y']]]);
+	}
+	
+	?>
     <?= DetailView::widget([
         'model' => $model,
-        'attributes' => [
-            'approval_regionaldirectprotocol',
-            //'approval_localdirectprotocol',
-            'approval_notes',
-            ['label' => 'Αρχείο Έγκρισης', 'format' => 'html', 'value' => Html::a(DisposalModule::t('modules/disposal/app', 'Donwload file'), ['disposal-approval/download', 'id' =>$model['approval_id']])],
-            'approval_signedfile',
-        ],
+        'attributes' => $attribures
     ]) ?>
 
 	<h3><?= DisposalModule::t('modules/disposal/app', 'Disposals'); ?></h3>

@@ -163,8 +163,14 @@ class DisposalApprovalController extends Controller
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
                 $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
-                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
+                //$model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
                 $model->approval_signedfile = '-';
+                $model->approval_file = "-";
+
+                if (!$model->save()) {//save two times because we need $model->approval_id for the filename
+                    throw new Exception("Failed to save the approval in the database.");
+                }
+                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . $model->approval_id . ".docx";
                 if (!$model->save()) {
                     throw new Exception("Failed to save the approval in the database.");
                 }
@@ -282,7 +288,13 @@ class DisposalApprovalController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                
+                $template_filename = "";
+                if($model->getRepublishedApproval() != null)
+                    $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_REPUBLISH_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_REPUBLISH_TEMPLATE";
+                else
+                    $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                
                 if (!$model->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
                 }
@@ -400,13 +412,16 @@ class DisposalApprovalController extends Controller
 
         $model = new DisposalApproval();
         $model->attributes = $initialModel->attributes;
+        $model->approval_notes = "";
+        $model->approval_republishtext = "";
+        $model->approval_republishdate = date("Y-m-d");
 
         if ($model->archived == 1 || $model->deleted == 1) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
             return $this->redirect(['disposal-approval/index']);
         }
 
-        $initial_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $initialModel->approval_id]);
+        $initial_disposalapproval_models = DisposalDisposalapproval::find()->where(['approval_id' => $initialModel->approval_id])->orderBy('disposalapproval_order')->all();
 
         $disposalapproval_models = [];
         foreach ($initial_disposalapproval_models as $index=>$initial_disposalapproval_model) {
@@ -445,7 +460,7 @@ class DisposalApprovalController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post()) && Model::loadMultiple($disposals_models, Yii::$app->request->post())) {
-                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
+                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_REPUBLISH_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_REPUBLISH_TEMPLATE";
 
                 $model->approval_regionaldirectprotocol = trim($model->approval_regionaldirectprotocol);
                 $model->approval_regionaldirectprotocoldate = trim($model->approval_regionaldirectprotocoldate);
@@ -454,20 +469,31 @@ class DisposalApprovalController extends Controller
                     $approval_changed = true;
                 }
 
+                $model->approval_file = "-";                
+                if (!$model->save()) {//save two times because we need $model->approval_id for the filename
+                    throw new Exception("Failed to save the approval in the database.");
+                }
+                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . $model->approval_id . ".docx";
                 if (!$model->save()) {
-                    throw new Exception("Failed to save the changes of the approval.");
+                    throw new Exception("Failed to save the approval in the database.");
                 }
 
                 $initialModel->approval_republished = $model->approval_id;
                 if (!$initialModel->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
                 }
-
+                
                 $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
 
+//                 echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />"; 
+//                 echo "<pre>"; print_r($disposalapproval_models); echo "<pre><br /><br />"; die();
                 $disposals_counter = 0;
+                $order = 0;
                 foreach ($disposals_models as $index=>$disposal_model) {
-                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids, true)) {
+                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids)) {
+//                         echo $initial_disposalapproval_models[$index]->disposal_id . ""; 
+//                         echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />";
+//                         die();
                         $approval_changed = true;
                         $disposals_counter++;
                         if (!$initial_disposalapproval_models[$index]->delete()) {
@@ -500,8 +526,10 @@ class DisposalApprovalController extends Controller
                         $republish_disposalapproval_model = new DisposalDisposalapproval();
                         $republish_disposalapproval_model->approval_id = $model->approval_id;
                         $republish_disposalapproval_model->disposal_id = $republish_disposal_model->disposal_id;
+                        $republish_disposalapproval_model->disposalapproval_order = $order++;
 
                         if (!$republish_disposalapproval_model->save()) {
+                            //echo "<pre>"; print_r($republish_disposalapproval_model->errors); echo "<pre><br /><br />"; die();
                             throw new Exception("4.Failed to save the changes of the approval.");
                         }
                     }
@@ -590,8 +618,7 @@ class DisposalApprovalController extends Controller
     private function createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename)
     {
         $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
-        $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $template_filename . '_' . $model->approval_id . ".docx";
-
+        $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
         if (!file_exists($template_path)) {
             return null;
         }
@@ -620,10 +647,14 @@ class DisposalApprovalController extends Controller
             $document_action = 'την αριθμ. ' . $document_action . ' Πράξη';
         }
 
-        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
-        $fullpath_fileName = Yii::getAlias($this->module->params['disposal_exportfolder']) . $model->approval_file;
+        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";        
 
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
+        if($model->getRepublishedApproval() != null) {
+            $templateProcessor->setValue('republish_notice', $model->approval_republishtext);
+            $templateProcessor->setValue('republish_date', date_format(date_create($model->approval_republishdate), 'd-m-Y'));
+            $templateProcessor->setValue('city', Yii::$app->params['city']);
+        }
         $templateProcessor->setValue('regionaldirect_protocoldate', date_format(date_create($model->approval_regionaldirectprotocoldate), 'd-m-Y'));
         $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
