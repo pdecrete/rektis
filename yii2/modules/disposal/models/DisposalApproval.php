@@ -85,7 +85,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'approval_id' => Yii::t('app', 'Approval ID'),
+            'approval_id' => Yii::t('app', 'Α/Α'),
             'approval_regionaldirectprotocol' => Yii::t('app', 'Πρωτόκολλο ΠΔΕ'),
             'approval_regionaldirectprotocoldate' => Yii::t('app', 'Ημερομηνία Πρωτοκόλλου ΠΔΕ'),
             'approval_notes' => Yii::t('app', 'Σημειώσεις'),
