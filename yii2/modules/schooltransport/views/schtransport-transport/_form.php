@@ -64,6 +64,14 @@ else if ($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
     $progrfields_readOnly['program_title'] = true;
     $progrfields_readOnly['meeting_city'] = true;
 }
+else if ($program_alias == SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY) {
+    $typeahead_data['PROGRAMCODES'] = null;
+    $typeahead_data['PROGRAMTITLES'] = null;
+    $typeahead_data['CITIES'] = null;
+    $progrfields_readOnly['program_code'] = true;
+    $progrfields_readOnly['program_title'] = true;
+    $progrfields_readOnly['meeting_city'] = true;
+}
 
 ?>
 
@@ -129,7 +137,7 @@ else if ($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
            endif;
     ?>
     
-    <?php if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY])) {
+    <?php if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY])) {
         echo $form->field($meeting_model, 'meeting_hostschool')->textInput(['maxlength' => true, 'readOnly' => $progrfields_readOnly['meeting_hostschool'], 'disabled' => $disabled]);
     }
     ?>
@@ -171,7 +179,7 @@ else if ($program_alias == SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY) {
                                         SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS,
                                         SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT,
    	                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, 
-   	                                    SchtransportTransport::INTERNATIONAL_PARTNERSHIPS])) {
+   	                                    SchtransportTransport::INTERNATIONAL_PARTNERSHIPS, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY])) {
         echo $form->field($model, 'transport_schoolrecord')->textInput(['maxlength' => true, 'disabled' => $disabled]);
     }
     ?>
