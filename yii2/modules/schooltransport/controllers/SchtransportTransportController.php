@@ -161,7 +161,8 @@ class SchtransportTransportController extends Controller
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == '')) {
                     throw new Exception("Please define the hosting school.");
                 }
-                
+                $model->transport_teachers = trim($model->transport_teachers);
+                $model->transport_students = trim($model->transport_students);
                 $existing_program = SchtransportProgram::findOne(['program_code' => $program_model->program_code]);
                 $program_exists = !(count($existing_program) == 0);
                 if ($program_exists && $existing_program->programcategory_id != $id) {
@@ -296,7 +297,8 @@ class SchtransportTransportController extends Controller
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == '')) {
                     throw new Exception("Please define the hosting school.");
                 }
-                
+                $model->transport_teachers = trim($model->transport_teachers);
+                $model->transport_students = trim($model->transport_students);
                 $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if (!$program_exists) {
                     if (!$program_model->save()) {

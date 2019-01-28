@@ -129,7 +129,20 @@ $current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-
 <div id="canvasChart" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <?php   
+            <?php   $max_result = max($result_data['TRANSPORTS_COUNT']); 
+            
+                    $results_count = count($result_data['TRANSPORTS_COUNT']);
+                    $fontsize = 12;
+                    $minrotation = 0;
+                    if($results_count > 15 && $results_count <= 30)
+                        $fontsize = 10;
+                    else if($results_count > 30) {
+                        $fontsize = 9;
+                        $minrotation = 90;
+                    }
+                        
+                    $stepSize = ceil($max_result/10); 
+                    $max_value = $stepSize*10;
                     $height = 100;
                     $clientOptions['clientOptions'] = '';
                     if($selected_chart_type == Statistic::CHARTTYPE_HORIZONTALBAR){
@@ -140,13 +153,14 @@ $current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-
                             'scales' => [                               
                                 'xAxes' => [[
                                     'ticks' => [
+                                        'stepSize' => $stepSize,
                                         'min' => 0,
-                                        'stepSize' => 1,
-                                        'max' => max($result_data['TRANSPORTS_COUNT']) + 1
+                                        'autoSkip' => false,
+                                        'max' => $max_value
                                     ],
                                     'scaleLabel' => [
                                         'display' => true,
-                                        'labelString' => 'Πλήθος Μετακινήσεων',
+                                        'labelString' => 'Πλήθος Διαθέσεων',
                                     ],
                                 ]],
                             ]
@@ -158,15 +172,27 @@ $current_startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat("Y-m-
                             'legend' => ['display' => false, 'position' => 'bottom'],
                             'responsive' => true,
                             'scales' => [
+                                'xAxes' => [[
+                                    'ticks' => [
+                                        'stepSize' => $stepSize,
+                                        'min' => 0,
+                                        'autoSkip' => false,
+                                        'minRotation' => $minrotation,
+                                        'max' => $max_value,
+                                        'fontSize' => $fontsize,
+                                    ]
+                                ]],
                                 'yAxes' => [[
                                     'ticks' => [
+                                        'stepSize' => $stepSize,
                                         'min' => 0,
-                                        'stepSize' => 1,
-                                        'max' => max($result_data['TRANSPORTS_COUNT']) + 2
+                                        'maxRotation' => 90,
+                                        'autoSkip' => true,
+                                        'max' => $max_value
                                     ],
                                     'scaleLabel' => [
                                         'display' => true,
-                                        'labelString' => 'Πλήθος Μετακινήσεων',
+                                        'labelString' => 'Πλήθος Διαθέσεων',
                                     ],
                                 ]],
                             ]
