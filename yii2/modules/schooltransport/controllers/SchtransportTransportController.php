@@ -138,6 +138,11 @@ class SchtransportTransportController extends Controller
             $program_model->program_title = 'Πολυήμερη εκδρομή στο εξωτερικό';
             $meeting_model->meeting_city = '-';
         }
+        else if($program_alias == SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY) {
+            $program_model->program_code = "Sch_twinning_foreign_country_" . (string)round(microtime(true) * 1000);
+            $program_model->program_title = 'Αδελφοποίηση σχολείων';
+            $meeting_model->meeting_city = '-';
+        }
 
         $program_model->programcategory_id = $id;
         $countries = SchtransportCountry::find()->select('country_name')->column();
@@ -152,11 +157,12 @@ class SchtransportTransportController extends Controller
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())) {
-                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY], true) &&
+                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY], SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY, true) &&
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == '')) {
                     throw new Exception("Please define the hosting school.");
                 }
-
+                $model->transport_teachers = trim($model->transport_teachers);
+                $model->transport_students = trim($model->transport_students);
                 $existing_program = SchtransportProgram::findOne(['program_code' => $program_model->program_code]);
                 $program_exists = !(count($existing_program) == 0);
                 if ($program_exists && $existing_program->programcategory_id != $id) {
@@ -287,11 +293,12 @@ class SchtransportTransportController extends Controller
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())) {
-                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY], true) &&
+                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY], true) &&
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == '')) {
                     throw new Exception("Please define the hosting school.");
                 }
-
+                $model->transport_teachers = trim($model->transport_teachers);
+                $model->transport_students = trim($model->transport_students);
                 $program_exists = !(count(SchtransportProgram::findOne(['program_code' => $program_model->program_code])) == 0);
                 if (!$program_exists) {
                     if (!$program_model->save()) {
@@ -305,27 +312,25 @@ class SchtransportTransportController extends Controller
                 }
 
                 $model->meeting_id = $meeting_model->meeting_id;
-
                 /* delete old file: */
                 if (file_exists(Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $model->transport_approvalfile)) {
                     unlink(Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $model->transport_approvalfile);
                 }
-
                 $filename = $this->createApprovalFile($model, $meeting_model, $program_model);
                 if ($filename == null) {
                     throw new Exception("The template file could not be found.");
                 }
+                
                 $model->transport_approvalfile = $filename;
                 $model->transport_creationdate = date("Y-m-d H:i:s");
                 if (!($model->transport_startdate < $model->transport_enddate)) {
                     throw new Exception("End date of transportation is prior start date. Please correct.");
                 }
-
                 if (!$model->save()) {
                     throw new Exception("Failure in creating the school transportation.");
                 }
-
                 $transaction->commit();
+            
                 if (!$readonly_mode) {
                     $user = Yii::$app->user->identity->username;
                     Yii::info('User ' . $user . ' updated transport with id "' . $model->transport_id . '".', 'schooltransport');
@@ -431,10 +436,6 @@ class SchtransportTransportController extends Controller
 
     private function createApprovalFile($transport_model, $meeting_model, $program_model)
     {
-        //echo "<pre>"; print_r($transport_model); echo "</pre>";
-        //echo "<pre>"; print_r($meeting_model); echo "</pre>";
-        //echo "<pre>"; print_r($program_model); echo "</pre>";
-        //die();
         $country_article = 'στη';
         $country = SchtransportCountry::findOne(['country_name' => $meeting_model['meeting_country']]);
         if ($country != null) {
@@ -442,6 +443,10 @@ class SchtransportTransportController extends Controller
         }
 
         $school_model = Schoolunit::findOne(['school_id' => $transport_model['school_id']]);
+//         echo "<pre>"; print_r($transport_model); echo "</pre>";
+//         echo "<pre>"; print_r($meeting_model); echo "</pre>";
+//         echo "<pre>"; print_r($school_model); echo "</pre>";
+//         die();
         $directorate_model = $school_model->getDirectorate()->one();
 
         $programcateg_model = SchtransportProgramcategory::findOne(['programcategory_id' => $program_model['programcategory_id']]);
@@ -456,17 +461,12 @@ class SchtransportTransportController extends Controller
         $fileName = $this->getFilename(
             $program_action,
             $school_model->school_name,
-                                    $meeting_model['meeting_country'],
+            $meeting_model['meeting_country'],
             $meeting_model['meeting_city'],
             $transport_model['transport_id']
         );
-        $fullpath_fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $this->getFilename(
-            $program_action,
-            $school_model->school_name,
-                                    $meeting_model['meeting_country'],
-            $meeting_model['meeting_city'],
-            $transport_model['transport_id']
-        );
+        $fullpath_fileName = Yii::getAlias("@vendor/admapp/exports/schooltransports/") . $fileName;
+        //echo $fullpath_fileName; die();
 
         $template_path = "@vendor/admapp/resources/schooltransports/" . $program_action . "_" . $directorate_model->directorate_stage . ".docx";
 
@@ -481,7 +481,7 @@ class SchtransportTransportController extends Controller
         if (in_array($program_alias, [SchtransportTransport::KA1_STUDENTS, SchtransportTransport::KA2_STUDENTS, SchtransportTransport::TEACHING_VISITS,
                                     SchtransportTransport::EDUCATIONAL_VISITS, SchtransportTransport::EDUCATIONAL_EXCURSIONS,
                                     SchtransportTransport::SCHOOL_EXCURIONS, SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY,
-                                    SchtransportTransport::PARLIAMENT, SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY,
+                                    SchtransportTransport::PARLIAMENT, SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY,
                                     SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, SchtransportTransport::INTERNATIONAL_PARTNERSHIPS], true)) {
             $templateProcessor->setValue('students', $transport_model['transport_students']);
             $templateProcessor->setValue('head_teacher', $transport_model['transport_headteacher']);
@@ -489,11 +489,12 @@ class SchtransportTransportController extends Controller
         if (in_array($program_alias, [SchtransportTransport::TEACHING_VISITS, SchtransportTransport::EDUCATIONAL_VISITS,
                                     SchtransportTransport::EDUCATIONAL_EXCURSIONS, SchtransportTransport::SCHOOL_EXCURIONS,
                                     SchtransportTransport::EXCURIONS_FOREIGN_COUNTRY, SchtransportTransport::PARLIAMENT,
-                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, SchtransportTransport::INTERNATIONAL_PARTNERSHIPS], true)) {
+                                    SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::ETWINNING_FOREIGN_COUNTRY, 
+                                    SchtransportTransport::INTERNATIONAL_PARTNERSHIPS, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY], true)) {
             $templateProcessor->setValue('school_record', $transport_model['transport_schoolrecord']);
             $templateProcessor->setValue('class', $transport_model['transport_class']);
         }
-        if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY], true)) {
+        if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY], true)) {
             $templateProcessor->setValue('host_school', $meeting_model->meeting_hostschool);
         }
 
@@ -527,12 +528,14 @@ class SchtransportTransportController extends Controller
     private function getFilename($program_action, $school_name, $meeting_country, $meeting_city, $transport_id)
     {
         $school_name  = str_replace('/', '_', $school_name);
+        $school_name = preg_replace('/\s+/', '', $school_name);
         return $program_action . "_" . str_replace(" ", "_", $school_name) . "_" . $meeting_country . "_" . $meeting_city . "_" . $transport_id . ".docx";
     }
 
     private function getFilenamesigned($program_action, $school_name, $meeting_country, $meeting_city, $transport_id)
     {
         $school_name  = str_replace('/', '_', $school_name);
+        $school_name = preg_replace('/\s+/', '', $school_name);
         $filename = $this->getFilename($program_action, $school_name, $meeting_country, $meeting_city, $transport_id);
         $extension_pos = strrpos($filename, '.docx');
         return substr_replace($filename, '_signed.pdf', $extension_pos, strlen($filename));
@@ -602,7 +605,6 @@ class SchtransportTransportController extends Controller
             //$program_action = $this->getProgramAction($programcateg_model, $directorate_model);
 
             $file = Yii::getAlias($this->module->params['schooltransport_uploadfolder']) . $transport_model->transport_signedapprovalfile;
-            //echo $file; die();
 
             if (!is_readable($file)) {
                 throw new Exception("The decision file cannot be found.");
