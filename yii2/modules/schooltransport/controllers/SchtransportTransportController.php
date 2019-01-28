@@ -157,7 +157,7 @@ class SchtransportTransportController extends Controller
             if ($model->load(Yii::$app->request->post())
                 && $meeting_model->load(Yii::$app->request->post())
                 && $program_model->load(Yii::$app->request->post())) {
-                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY], SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY, true) &&
+                if (in_array($program_alias, [SchtransportTransport::OMOGENEIA_FOREIGN_COUNTRY, SchtransportTransport::SCH_TWINNING_FOREIGN_COUNTRY], true) &&
                     ($meeting_model->meeting_hostschool == null || trim($meeting_model->meeting_hostschool) == '')) {
                     throw new Exception("Please define the hosting school.");
                 }
