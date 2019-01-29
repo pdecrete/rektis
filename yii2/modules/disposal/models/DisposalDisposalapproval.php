@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $disposal_id
  * @property integer $approval_id
+ * @property integer $disposalapproval_order
  *
  * @property DisposalDisposal $disposal
  * @property DisposalApproval $approval
@@ -29,8 +30,8 @@ class DisposalDisposalapproval extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['disposal_id', 'approval_id'], 'required'],
-            [['disposal_id', 'approval_id'], 'integer'],
+            [['disposal_id', 'approval_id', 'disposalapproval_order'], 'required'],
+            [['disposal_id', 'approval_id', 'disposalapproval_order'], 'integer'],
             [['disposal_id'], 'exist', 'skipOnError' => true, 'targetClass' => Disposal::className(), 'targetAttribute' => ['disposal_id' => 'disposal_id']],
             [['approval_id'], 'exist', 'skipOnError' => true, 'targetClass' => DisposalApproval::className(), 'targetAttribute' => ['approval_id' => 'approval_id']],
         ];
@@ -44,6 +45,7 @@ class DisposalDisposalapproval extends \yii\db\ActiveRecord
         return [
             'disposal_id' => Yii::t('app', 'Disposal ID'),
             'approval_id' => Yii::t('app', 'Approval ID'),
+            'disposalapproval_order' => Yii::t('app', 'Order'),
         ];
     }
 

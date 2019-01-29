@@ -33,7 +33,7 @@ class SchoolunitController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['index', 'view'], 'allow' => true, 'roles' => ['schtransport_viewer']],
-                    ['actions' => ['massupdate'], 'allow' => true, 'roles' => ['financial_editor']]
+                    ['actions' => ['massupdate'], 'allow' => true, 'roles' => ['schtransport_editor']]
                 ]
             ]
         ];

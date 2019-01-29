@@ -40,10 +40,12 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                   return ['value' => $model['approval_id']];
               }
             ],
+            'approval_id'
+            ,
             ['attribute' => 'approval_regionaldirectprotocol',
              'value' => function ($model) {
                  if (!is_null($model['approval_republished'])) {
-                     return '<strike>' . $model['approval_regionaldirectprotocol'] . '</strike> (Ανακοινοποιημένη)';
+                     return '<strike>' . $model['approval_regionaldirectprotocol'] . '</strike> (Ανακοινοποιημένη στην Α/Α '. $model['approval_republished'] . ')';
                  } else {
                      return $model['approval_regionaldirectprotocol'];
                  }
