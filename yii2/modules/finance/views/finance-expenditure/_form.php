@@ -9,6 +9,8 @@ use app\modules\finance\components\Money;
 use dosamigos\chartjs\ChartJs;
 use app\modules\finance\models\FinanceDeduction;
 use yii\web\View;
+use yii2\modules\finance\widgets\MixedVAT;
+use yii\base\Widget;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\finance\models\FinanceExpenditure */
@@ -50,8 +52,7 @@ $this->registerJs($script, View::POS_READY);
 $model->exp_amount = Money::toCurrency($model->exp_amount);
 ?>
 
-<div class="finance-expenditure-form col-lg-6">
-
+<div class="finance-expenditure-form col-lg-6">	
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'exp_amount')->textInput(['maxlength' => true,
@@ -143,5 +144,6 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 
 </div>
 <div class="col-lg-6">
+	<?= \app\modules\finance\widgets\MixedVAT::widget([]);?>
 	<?= $this->render('/default/kaewithdrawalsexpenditures', ['withdrawals_expendituressum' => $withdrawals_expendituressum, 'horizontal' => false]);?>			
 </div>

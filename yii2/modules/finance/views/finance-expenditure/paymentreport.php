@@ -88,9 +88,12 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		<?php   foreach ($models as $model):
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
                     $vat = $net_value * (Money::toPercentage($model['EXPENDITURE']['fpa_value'])/100);
-                    $taxes = 0;
+                    $flat_taxes_sum = 0;
+                    foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax) {
+                        $flat_taxes_sum += $flattax;
+                    }
                     $sum_expenditure_taxes = 0;
-                    $payable_amount = $net_value + $vat + $taxes;?>				
+                    $payable_amount = $net_value + $vat - $flat_taxes_sum;?>				
             		<tr>
             			<td <?= $inline_td_css_left?>><?= $model['SUPPLIER']['suppl_name']; ?></td>
             			<td <?= $inline_td_css_left?>><?= $model['INVOICE']['inv_number']; ?></td>
@@ -124,7 +127,9 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
         <?php       $sum_net_value += $net_value;
                     $sum_vat += $vat;
                     $sum_payable_amount += $payable_amount - $sum_expenditure_taxes;
-                endforeach;?>
+                endforeach;
+                        
+        ?>
                 
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>

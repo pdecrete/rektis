@@ -331,34 +331,64 @@ AppAsset::register($this);
                 [
                     'label' => 'Διαχείριση Δαπανών',
                     'visible' => Yii::$app->user->can('financial_director') || Yii::$app->user->can('financial_editor') || Yii::$app->user->can('financial_viewer'),
-                    'items' => [
-                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Ενότητες</li>',
-                        [
-                            'label' => 'Κεντρική Διαχείριση',
-                            'url' => ['/finance/default']
-                        ],
-                        [
-                            'label' => 'Διαχείριση Οικονομικού Έτους',
-                            'url' => ['/finance/default/administeryear'],
-                        ],
-                        [
-                            'label' => 'Παράμετροι',
-                            'url' => ['/finance/default/parameterize'],
-                        ],
-                        '<li class="divider"></li>',
-                        '<li class="dropdown-header"><i class="glyphicon glyphicon-share-alt"></i> Συντομεύσεις</li>',
+                    'items' => [                        
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-share-alt"></i> Διαχείριση Δαπανών</li>',
                         [
                             'label' => 'Δαπάνες',
                             'url' => ['/finance/finance-expenditure'],
                         ],
                         [
-                            'label' => 'Τιμολόγια',
+                            'label' => 'Παραστατικά',
                             'url' => ['/finance/finance-invoice'],
                         ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Διαχείριση Οικονομικού Έτους</li>',
+                        [
+                            'label' => 'Οικονομικά Έτη',
+                            'url' => ['/finance/finance-year']
+                        ],
+                        [
+                            'label' => 'Διαχείριση ΚΑΕ',
+                            'url' => ['/finance/finance-kae']
+                        ],
+                        [
+                            'label' => 'Πιστώσεις ΚΑΕ',
+                            'url' => ['/finance/finance-kaecredit']
+                        ],
+                        [
+                            'label' => 'Ποσοστά διάθεσης πιστώσεων ΚΑΕ',
+                            'url' => ['/finance/finance-kaecreditpercentage']
+                        ],
+                        [
+                            'label' => 'Αναλήψεις',
+                            'url' => ['/finance/finance-kaewithdrawal']
+                        ],
+                        '<li class="divider"></li>',
+                        '<li class="dropdown-header"><i class="glyphicon glyphicon-euro"></i> Παράμετροι</li>',
                         [
                             'label' => 'Προμηθευτές',
                             'url' => ['/finance/finance-supplier']
-                        ]
+                        ],
+                        [
+                            'label' => 'ΔΟΥ',
+                            'url' => ['/finance/finance-taxoffice'],
+                        ],
+                        [
+                            'label' => 'ΦΠΑ',
+                            'url' => ['/finance/finance-fpa'],
+                        ],
+                        [
+                            'label' => 'Καταστάσεις Δαπανών',
+                            'url' => ['/finance/finance-state']
+                        ],
+                        [
+                            'label' => 'Κρατήσεις Δαπανών',
+                            'url' => ['/finance/finance-deduction'],
+                        ],
+                        [
+                            'label' => 'Τύποι Παραστατικών',
+                            'url' => ['/finance/invoice-type'],
+                        ],
                     ],
                 ],
                 [
