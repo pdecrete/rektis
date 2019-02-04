@@ -387,7 +387,7 @@ AppAsset::register($this);
                         ],
                         [
                             'label' => 'Τύποι Παραστατικών',
-                            'url' => ['/finance/invoice-type'],
+                            'url' => ['/finance/finance-invoicetype'],
                         ],
                     ],
                 ],
