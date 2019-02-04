@@ -19,7 +19,7 @@ class FinanceExpenditureSearch extends FinanceExpenditure
     {
         return [
             [['exp_id', 'exp_amount', 'exp_deleted',  'fpa_value'], 'integer'],
-            [['suppl_id', 'exp_date', 'exp_lock'], 'safe'],
+            [['suppl_id', 'exp_date', 'exp_lock'], 'safe'],            
         ];
     }
 
@@ -73,7 +73,7 @@ class FinanceExpenditureSearch extends FinanceExpenditure
             'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',
                                         'exp_amount', 'exp_date', 'exp_description', 'statescount', 'kae_id'
                                         ],
-                'defaultOrder' => ['suppl_id'=>SORT_ASC, 'exp_id'=>SORT_ASC]
+                'defaultOrder' => ['exp_date'=> SORT_DESC, 'suppl_id'=>SORT_ASC, 'exp_id'=>SORT_ASC]
             ],
         ]);
 
