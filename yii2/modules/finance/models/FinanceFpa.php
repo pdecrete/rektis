@@ -27,7 +27,7 @@ class FinanceFpa extends \yii\db\ActiveRecord
     {
         return [
             [['fpa_value'], 'required'],
-            [['fpa_value'], 'integer'],
+            [['fpa_value'], 'number'],
         ];
     }
 

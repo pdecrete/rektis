@@ -15,7 +15,7 @@ $model->fpa_value = Money::toPercentage($model->fpa_value, false);
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'fpa_value')->textInput() ?>
+    <?= $form->field($model, 'fpa_value')->textInput(['type' => 'number', 'step' => '0.01', 'min' => 0, 'max' => 100, 'style' => 'text-align: left']) ?>
 
     <div class="form-group pull-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>

@@ -123,7 +123,7 @@ $model->exp_amount = Money::toCurrency($model->exp_amount);
 	<h3><?= Module::t('modules/finance/app', 'Flat Taxes');?></h3>
 	<p>
 		<?php foreach ($model->flat_taxes as $index => $value):?>
-        		<?= $form->field($model, 'flat_taxes[' . $index. ']')->textInput(['flattaxcounter' => count($model->flat_taxes)-1,'type' => 'number', 'min' => "0.00" ,
+        		<?= $form->field($model, 'flat_taxes[' . $index. ']')->textInput(['flattaxcounter' => count($model->flat_taxes)-1,'type' => 'number',
                                                                   'step' => '0.01',
                                                                   'style' => 'text-align: left',
         	                                                      'value' => $model->flat_taxes[$index]])->label(false);?>

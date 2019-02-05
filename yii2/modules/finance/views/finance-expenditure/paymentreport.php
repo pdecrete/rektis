@@ -66,12 +66,12 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_th_css?>><?= $key ?></td>
 		<?php   endforeach;?>
+			<?php if($show_flattaxes_column): ?>
+				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Λοιποί Φόροι') ?></td>
+			<?php endif;?>		
 			<?php if($show_notes_column): ?>
 				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
 			<?php endif;?>
-			<?php if($show_flattaxes_column): ?>
-				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Φόροι') ?></td>
-			<?php endif;?>			
 			<td <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
 		</tr>
 		<tr>
@@ -93,7 +93,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
                         $flat_taxes_sum += $flattax;
                     }
                     $sum_expenditure_taxes = 0;
-                    $payable_amount = $net_value + $vat - $flat_taxes_sum;?>				
+                    $payable_amount = $net_value + $vat + $flat_taxes_sum;?>				
             		<tr>
             			<td <?= $inline_td_css_left?>><?= $model['SUPPLIER']['suppl_name']; ?></td>
             			<td <?= $inline_td_css_left?>><?= $model['INVOICE']['inv_number']; ?></td>
@@ -111,9 +111,6 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 								<td <?= $inline_td_css_right?>></td>                                
        	<?php               endif;?>                    		    
 		<?php           endforeach;?>
-		<?php           if($show_notes_column): ?>
-							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
-		<?php           endif; ?>					
 		<?php           if($show_flattaxes_column): ?>
 							<td <?= $inline_td_css_right?>>
 								<?php   foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax):
@@ -121,7 +118,10 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 								        endforeach;       
 							    ?>
 							</td>
-		<?php           endif; ?>			
+		<?php           endif; ?>
+		<?php           if($show_notes_column): ?>
+							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
+		<?php           endif; ?>		
         				<td <?= $inline_td_css_right?>><?= number_format($payable_amount - $sum_expenditure_taxes, 2, ',', '.') ?></td>
         			</tr>
         <?php       $sum_net_value += $net_value;

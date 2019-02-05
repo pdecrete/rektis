@@ -2,6 +2,7 @@
 
 use app\modules\finance\Module;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use app\modules\finance\components\Money;
 
@@ -29,11 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
              'template' => '{update}&nbsp;{delete}',
              'urlCreator' => function ($action, $model) {
                  if ($action === 'update') {
-                     $url ='finance-fpa/update?id=' . Money::toDbPercentage($model['fpa_value']);
+                     $url = Url::to(['/finance/finance-fpa/update', 'id' => Money::toDbPercentage($model['fpa_value'])]);
                      return $url;
                  }
                  if ($action === 'delete') {
-                     $url = 'finance-fpa/delete?id=' . Money::toDbPercentage($model['fpa_value']);
+                     $url = Url::to(['/finance/finance-fpa/delete', 'id' => Money::toDbPercentage($model['fpa_value'])]);
                      return $url;
                  }
              }
