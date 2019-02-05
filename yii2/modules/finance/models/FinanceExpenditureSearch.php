@@ -70,6 +70,7 @@ class FinanceExpenditureSearch extends FinanceExpenditure
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => false,
             'sort' => ['attributes' => ['suppl_id', 'fpa_value', 'exp_id', 'statescount',
                                         'exp_amount', 'exp_date', 'exp_description', 'statescount', 'kae_id'
                                         ],
