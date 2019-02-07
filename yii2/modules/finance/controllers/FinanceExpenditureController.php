@@ -68,9 +68,7 @@ class FinanceExpenditureController extends Controller
     {
         $searchModel = new FinanceExpenditureSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        $kaesListModel = FinanceKae::find()->all();
-        
+      
         $kaesListModel = (new \yii\db\Query())->select("*")
         ->from(['admapp_finance_kaecredit', 'admapp_finance_kae'])
         ->where('admapp_finance_kaecredit.kae_id=admapp_finance_kae.kae_id')

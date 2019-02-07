@@ -2,7 +2,6 @@
 
 use app\modules\finance\Module;
 use app\modules\finance\components\Money;
-use app\modules\finance\models\FinanceKaecredit;
 use yii\helpers\Url;
 
 $columnsNum = 3;
