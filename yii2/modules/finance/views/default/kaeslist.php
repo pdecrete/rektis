@@ -9,7 +9,6 @@ $columnsNum = 3;
 $kaesCount = count($kaes);
 $kaesSubListCount = ceil($kaesCount/$columnsNum);
 $kaesListDivide = [];
-//var_dump($otherbuttons); die();
 if ($kaesCount != 0):
     for ($i = 0; $i < $columnsNum; $i++) {
         for ($j = 0; $j < $kaesSubListCount; $j++) {
@@ -19,7 +18,6 @@ if ($kaesCount != 0):
             $kaesListDivide[$i][$j] = $kaes[$kaesSubListCount*$i + $j];
         }
     }
-
 
 ?>
     
@@ -40,15 +38,14 @@ if ($kaesCount != 0):
       			<?php foreach ($kaesListDivide as $kaeList) : ?>
       						<div class="col-lg-<?php echo 12/$columnsNum; ?>">
       							<?php foreach ($kaeList as $kaeListItem):
-      							if (FinanceKaecredit::find()->where(['kae_id' => $kaeListItem->kae_id])->andWhere(['year' => Yii::$app->session["working_year"]])->one()['kaecredit_amount'] != 0):
                                   ?>
-                                        <p><a href='<?php echo Url::to([$actionUrl, 'id' => $kaeListItem->kae_id]); ?>' 
+                                        <p><a href='<?php echo Url::to([$actionUrl, 'id' => $kaeListItem['kae_id']]); ?>' 
                                         <?php if (isset($balances)) {
-                                      ?>data-toggle="tooltip" title="<?= Module::t('modules/finance/app', 'Available for Usage') . ": " . Money::toCurrency($balances[$kaeListItem->kae_id], true) ?><?php
-                                        }?>"><span class="label label-primary"><?=  (strlen($kaeListItem->kae_id) <= 4) ? sprintf('%04d', $kaeListItem->kae_id) : $kaeListItem->kae_id; ?></span>
-                                        <?php echo $kaeListItem->kae_title;?></a>
+                                        ?>data-toggle="tooltip" title="<?= Module::t('modules/finance/app', 'Available for Usage') . ": " . Money::toCurrency($balances[$kaeListItem['kae_id']], true) ?><?php
+                                        }?>"><span class="label label-primary"><?=  (strlen($kaeListItem['kae_id']) <= 4) ? sprintf('%04d', $kaeListItem['kae_id']) : $kaeListItem['kae_id']; ?></span>
+                                        <?php echo $kaeListItem['kae_title'];?></a>
                                         </p>
-                                <?php   endif;
+                                <?php
                                       endforeach;?>
       						</div>		
       			<?php endforeach;?>      			
