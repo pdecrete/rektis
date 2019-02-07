@@ -104,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['class'=> 'text-center'],
                 'contentOptions' => ['class' => 'text-right']
                 ],
-            ['attribute' => 'exp_date',
+/*             ['attribute' => 'exp_date',
              'format' => ['date', 'php:d-m-Y'],
              'label' => Module::t('modules/finance/app', 'Created'),
              'filter' => DateControl::widget([
@@ -117,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]),
               'headerOptions' => ['class'=> 'text-center'],
               'contentOptions' => ['class' => 'text-center']
-            ],
+            ], */
 /*             ['attribute' => 'exp_description',
                 'label' => Module::t('modules/finance/app', 'Description'),
                 'format' => 'html',
