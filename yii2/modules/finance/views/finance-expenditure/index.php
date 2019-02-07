@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
              'contentOptions' => ['class' => 'text-right']
             ],
             ['attribute' => 'exp_flattaxes',
-                'label' => Module::t('modules/finance/app', 'Flat taxes'),
+                'header' => Module::t('modules/finance/app', 'Other<br />Taxes'),
                 'format' => 'html',
                 'value' => function ($model) {
                                 $ret_value = '';
