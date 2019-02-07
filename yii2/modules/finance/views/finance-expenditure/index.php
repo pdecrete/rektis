@@ -54,12 +54,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
+            ['class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) {
+                return ['value' => $model['exp_id']];
+                }],
             ['class' => 'yii\grid\SerialColumn'],
             ['attribute' => 'suppl_id',
              'label' => Module::t('modules/finance/app', 'Supplier'),
              'format' => 'html',
              'value' => function ($model) {
-                 return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];
+                 return "<a href='#' data-toggle='tooltip' data-placement='bottom' title='" . $model['exp_description'] . "'>" . FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'] . "</a>";
              },
              'headerOptions' => ['class'=> 'text-center']
             ],
@@ -84,6 +88,22 @@ $this->params['breadcrumbs'][] = $this->title;
              'headerOptions' => ['class'=> 'text-center'],
              'contentOptions' => ['class' => 'text-right']
             ],
+            ['attribute' => 'exp_flattaxes',
+                'label' => Module::t('modules/finance/app', 'Flat taxes'),
+                'format' => 'html',
+                'value' => function ($model) {
+                                $ret_value = '';
+                                if(isset($model['exp_flattaxes'])) {
+                                    $flattaxes = json_decode($model['exp_flattaxes']);                                
+                                    foreach ($flattaxes as $flattax)
+                                        $ret_value .= Money::toCurrency($flattax, true) . "<br />";
+                                }
+                                return $ret_value;
+                            },
+                'filter' => FinanceFpa::getFpaLevels(),
+                'headerOptions' => ['class'=> 'text-center'],
+                'contentOptions' => ['class' => 'text-right']
+                ],
             ['attribute' => 'exp_date',
              'format' => ['date', 'php:d-m-Y'],
              'label' => Module::t('modules/finance/app', 'Created'),
@@ -98,13 +118,13 @@ $this->params['breadcrumbs'][] = $this->title;
               'headerOptions' => ['class'=> 'text-center'],
               'contentOptions' => ['class' => 'text-center']
             ],
-            ['attribute' => 'exp_description',
+/*             ['attribute' => 'exp_description',
                 'label' => Module::t('modules/finance/app', 'Description'),
                 'format' => 'html',
                 'value' => function ($model) {
                     return $model['exp_description'];
                 }
-            ],
+            ], */
             ['attribute' => 'Withdrawals', 'label' => Module::t('modules/finance/app', 'Assigned Withdrawals'),
              'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals) {
@@ -113,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $retvalue = "";
                     //$retvalue = "<ul>";
                     for ($i = 0; $i < $count_withdrawals; $i++) {
-                        $retvalue .= "<strong>- " . $exp_withdrawals[$i]['kaewithdr_decision'] . '</strong>' .
+                        $retvalue .= "<strong style='white-space:nowrap;'>- " . $exp_withdrawals[$i]['kaewithdr_decision'] . '</strong>' .
                     '<br />' . Module::t('modules/finance/app', 'Assigned Amount') . ':<br/>' .
                     Money::toCurrency($expendwithdrawals[$model['exp_id']]['EXPENDWITHDRAWAL'][$i], true);
                         $retvalue .= "<br />";
@@ -299,10 +319,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
               'headerOptions' => ['class'=> 'text-center']
             ],
-            ['class' => 'yii\grid\CheckboxColumn',
-                        'checkboxOptions' => function ($model) {
-                            return ['value' => $model['exp_id']];
-                        }],
        ],
     ]); ?>
     <?php  Pjax::end();?>

@@ -168,16 +168,16 @@ return [
     'Voucher Date' => 'Ημερομηνία Παραστατικού',
     'Voucher Order' => 'Σειρά Παραστατικού',
     'Create Expenditure' => 'Δημιουργία Δαπάνης',
-    'Voucher<br />Actions' => 'Ενέργειες<br />Παραστατικών',
+    'Voucher<br />Actions' => 'Ενέργειες<br />Παραστ/κών',
     'Expenditure<br />Actions' => 'Ενέργειες<br />Δαπανών',
     'State' => 'Κατάσταση',
     'States' => 'Καταστάσεις',
-    'Assigned Withdrawals' => 'Συσχετισμένες Αναλήψεις',
+    'Assigned Withdrawals' => 'Από Αναλήψεις',
     'View Supplier' => 'Προβολή Προμηθευτή',
     'Supplier' => 'Προμηθευτής',
     'Amount' => 'Ποσό',
     'VAT' => 'ΦΠΑ',
-    'Created' => 'Δημιουργήθηκε',
+    'Created' => 'Δημιουργία',
     'Parameters' => 'Παράμετροι',
     'Create/Update/Delete Withdrawal from an RCN\'s credit' => 'Δημιουργία/Ενημέρωση/Διαγραφή Ανάληψης από την πίστωση ενός ΚΑΕ',
     'The action is not permitted! The year is locked.' => 'Μη επιτρεπτή ενέργεια! Το έτος είναι κλειδωμένο.',
@@ -304,5 +304,6 @@ return [
     'Initial Amount' => 'Αρχικό Ποσό',
     'Notes' => 'Σημειώσεις',
     'Text Key' => 'Λεκτικό Κλειδί',
-    'Flat Taxes' => 'Σταθεροί Φόροι'
+    'Flat Taxes' => 'Σταθεροί Φόροι',
+    'Value after VAT' => 'Αξία μετά ΦΠΑ'
 ];

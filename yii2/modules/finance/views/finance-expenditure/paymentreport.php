@@ -51,7 +51,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 	</table>
 	<!--p><?= '<img src=' . $greek_logo . '>' ?></p-->
     <p><strong><?= Module::t('modules/finance/app', 'Expedinture Payment Report') ?> </strong>
-               <?= '(' . Module::t('modules/finance/app', 'RCN') . (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae
+               <?= '(' . Module::t('modules/finance/app', 'RCN') . ((strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae)
                     . ' - ' . Module::t('modules/finance/app', 'Financial Year')
                     . ' ' . $year . ')'
                 ?></p>
@@ -62,28 +62,27 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Beneficiary Details') ?></td>
 			<td rowspan="2" <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Voucher Number') ?></td>
 			<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Rationale') ?></td>
+		<?php if($show_flattaxes_column): ?>
+			<td colspan="5" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Expenditure Amount') ?></td>
+		<?php else:?>
 			<td colspan="3" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Expenditure Amount') ?></td>
+		<?php endif;?>
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_th_css?>><?= $key ?></td>
 		<?php   endforeach;?>
-			<?php if($show_flattaxes_column): ?>
-				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Λοιποί Φόροι') ?></td>
-			<?php endif;?>		
-			<?php if($show_notes_column): ?>
-				<td rowspan="2" <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
-			<?php endif;?>
-			<td <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
+			<td rowspan="2" <?= $inline_th_css_min_width?>><?= Module::t('modules/finance/app', 'Payable Amount') ?></td>												
 		</tr>
 		<tr>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Net Value') ?></td>					
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'VAT') ?></td>
-			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Sum') ?></td>
-			
+			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Value after VAT') ?></td>
+					<?php if($show_flattaxes_column): ?>
+			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Λοιποί<br />Φόροι') ?></td>
+			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
+		<?php endif;?>
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_th_css_min_width?>><?= $value['PERCENTAGE'] ?></td>										
-		<?php   endforeach;?>
-			
-			<td <?= $inline_td_css_right?>></td>
+		<?php   endforeach;?>			
 		</tr>
 		<?php   foreach ($models as $model):
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
@@ -91,7 +90,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
                     $flat_taxes_sum = 0;
                     if($show_flattaxes_column) {
                         foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax) {
-                            $flat_taxes_sum += $flattax;
+                            $flat_taxes_sum += Money::toCurrency($flattax);
                         }
                     }
                     $sum_expenditure_taxes = 0;
@@ -103,7 +102,17 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
             			<td <?= $inline_td_css_right?>><?= number_format($net_value, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($vat, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($net_value + $vat, 2, ',', '.') ?></td>
-
+		<?php           if($show_flattaxes_column): ?>
+							<td <?= $inline_td_css_right?>>
+								<?php   foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax):
+                                            echo number_format(Money::toCurrency($flattax), 2, ',', '.') . "<br />";
+								        endforeach;       
+							    ?>
+							</td>
+		<?php           endif; ?>
+		<?php           if($show_notes_column): ?>
+							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
+		<?php           endif; ?>
 		<?php           foreach ($deductions_array['SUM'] as $key=>$value):
                             if (isset($deductions_array[$model['EXPENDITURE']['exp_id']][$key])):
                                 $tax = Money::toCurrency($model['EXPENDITURE']['exp_amount'], false)*Money::toPercentage($deductions_array[$model['EXPENDITURE']['exp_id']][$key], false)/100;
@@ -113,17 +122,6 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 								<td <?= $inline_td_css_right?>></td>                                
        	<?php               endif;?>                    		    
 		<?php           endforeach;?>
-		<?php           if($show_flattaxes_column): ?>
-							<td <?= $inline_td_css_right?>>
-								<?php   foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax):
-									       echo number_format($flattax, 2, ',', '.') . "<br />";
-								        endforeach;       
-							    ?>
-							</td>
-		<?php           endif; ?>
-		<?php           if($show_notes_column): ?>
-							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
-		<?php           endif; ?>		
         				<td <?= $inline_td_css_right?>><?= number_format($payable_amount - $sum_expenditure_taxes, 2, ',', '.') ?></td>
         			</tr>
         <?php       $sum_net_value += $net_value;

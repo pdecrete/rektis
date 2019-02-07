@@ -99,8 +99,8 @@ class FinanceExpenditureController extends Controller
                 ->where(['kaewithdr_id' => $kaewithdrawal['kaewithdr_id']])
                 ->one()['kaecredit_id'];
 
-                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'] +
-                $kaewithdrawal['expwithdr_amount']*Money::toDecimalPercentage($expend_model['fpa_value']);
+                $expendwithdrawals[$expend_model['exp_id']]['EXPENDWITHDRAWAL'][$i] = $kaewithdrawal['expwithdr_amount'];// +
+                //$kaewithdrawal['expwithdr_amount']*Money::toDecimalPercentage($expend_model['fpa_value']);
             }
         }
 
@@ -198,6 +198,8 @@ class FinanceExpenditureController extends Controller
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
             $model->flat_taxes = array_values(array_filter($model->flat_taxes)); //remove the 0 values
+            if(!empty($model->flat_taxes))
+                $model->flat_taxes = array_map('app\modules\finance\components\Money::toCents', $model->flat_taxes);
             $model->exp_flattaxes = Json::encode($model->flat_taxes);
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models)) {
                 Yii::$app->session->addFlash('danger', Module::t('modules/finance/app', "The expenditure was not saved. Please correct the assigned withdrawals (at least one and no duplicates)."));
@@ -249,6 +251,8 @@ class FinanceExpenditureController extends Controller
 
         $model = $this->findModel($id);
         $model->flat_taxes = json_decode($model->exp_flattaxes);
+        if(!empty($model->flat_taxes))
+            $model->flat_taxes = array_map('app\modules\finance\components\Money::toCurrency', $model->flat_taxes);
         if(empty($model->flat_taxes))
             $model->flat_taxes[0] = null;
             
@@ -317,6 +321,8 @@ class FinanceExpenditureController extends Controller
             && Model::loadMultiple($expendwithdrawals_models, Yii::$app->request->post())
             && Model::loadMultiple($expenddeduction_models, Yii::$app->request->post())) {
             $model->flat_taxes = array_values(array_filter($model->flat_taxes)); //remove the 0 values
+            $model->flat_taxes = array_map('app\modules\finance\components\Money::toCents', $model->flat_taxes);
+            //echo "<pre>"; print_r($model->flat_taxes); echo "<pre>"; die();
             $model->exp_flattaxes = Json::encode($model->flat_taxes);
             //echo "<pre>"; print_r($model->exp_flattaxes); echo "</pre>";die();
             if (!$this->saveModels($model, $expendwithdrawals_models, $expenddeduction_models, false)) {
@@ -434,36 +440,39 @@ class FinanceExpenditureController extends Controller
             }
            
             $fpa = Money::toDecimalPercentage($model->fpa_value);
-            $partial_amount = $model->exp_amount;
+            $flat_taxes = json_decode($model->exp_flattaxes);
+            $flat_taxes_sum = array_sum($flat_taxes);
+            $partial_amount = $model->exp_amount + $model->exp_amount*$fpa + $flat_taxes_sum;
 
             foreach ($expendwithdrawals_models as $expendwithdrawals_model) {
                 if($expendwithdrawals_model->kaewithdr_id == null)
                     continue;
-                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);     
+                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
                 
                 $expendwithdrawals_model->exp_id = $model->exp_id;
-                if (($partial_amount + $partial_amount*$fpa) > $withdrawal_balance) {  
-                    $expendwithdrawals_model->expwithdr_amount = floor($withdrawal_balance/(1+$fpa));
+                //if (($partial_amount + $partial_amount*$fpa) > $withdrawal_balance) {  
+                if (($partial_amount) > $withdrawal_balance) {
+                    //$expendwithdrawals_model->expwithdr_amount = floor($withdrawal_balance/(1+$fpa));
+                    $expendwithdrawals_model->expwithdr_amount = $withdrawal_balance;
                     $partial_amount = $partial_amount - $expendwithdrawals_model->expwithdr_amount;
                     if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
-                        $exist_model->expwithdr_amount = $expendwithdrawals_model['expwithdr_amount'];
+                        $exist_model->expwithdr_amount = floor($expendwithdrawals_model['expwithdr_amount']);
                         $exist_model->expwithdr_order = $expendwithdrawals_model->expwithdr_order;
-                        if(!$exist_model->save()){
-                            print_r($exist_model->errors); die();
+                        if(!$exist_model->save())
                             throw new Exception("Error in assigning withdrawals to exceptions1.");
-                        }
                     }
                     else if (!$expendwithdrawals_model->save()) {
                         throw new Exception("Error in assigning withdrawals to exceptions2.");
                     }
                 } 
-                else if(($partial_amount + $partial_amount*$fpa) <= $withdrawal_balance) {
+                //else if(($partial_amount + $partial_amount*$fpa) <= $withdrawal_balance) {
+                else if(($partial_amount) <= $withdrawal_balance) {
                     $expendwithdrawals_model->expwithdr_amount = $partial_amount;              
                     if(count($exist_model = FinanceExpendwithdrawal::findOne(['exp_id' => $expendwithdrawals_model['exp_id'], 'kaewithdr_id' => $expendwithdrawals_model['kaewithdr_id']])) != 0){
-                        $exist_model->expwithdr_amount = $partial_amount;
+                        $exist_model->expwithdr_amount = floor($partial_amount);
                         $exist_model->expwithdr_order = $expendwithdrawals_model->expwithdr_order;
                         
-                        if(!$exist_model->save())
+                        if(!$exist_model->save()) 
                             throw new Exception("Error in assigning withdrawals to exceptions3.");
                     }
                     else if (!$expendwithdrawals_model->save()) {
