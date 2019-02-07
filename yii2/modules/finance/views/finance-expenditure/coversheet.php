@@ -5,9 +5,11 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 $sum_amount = 0;
 foreach ($expenditures_model as $expenditure_model){
     $sum_flattaxes = 0;
-    $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
-    foreach ($flattaxes as $flattax)
-        $sum_flattaxes += $flattax;
+    if(isset($expenditure_model['EXPENDITURE']['exp_flattaxes'])) {
+        $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
+        foreach ($flattaxes as $flattax)
+            $sum_flattaxes += $flattax;
+    }
     $sum_amount += $expenditure_model['EXPENDITURE']['exp_amount'] + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value'])) + $sum_flattaxes;
 }
 
@@ -40,10 +42,11 @@ foreach ($expenditures_model as $expenditure_model){
     <?php  
         foreach ($expenditures_model as $expenditure_model ):
             $sum_flattaxes = 0;
-            $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
-            foreach ($flattaxes as $flattax)
-                $sum_flattaxes += $flattax;
-            
+            if(isset($expenditure_model['EXPENDITURE']['exp_flattaxes'])) {
+                $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
+                foreach ($flattaxes as $flattax)
+                    $sum_flattaxes += $flattax;
+            }
             $exp_payvalue = $expenditure_model['EXPENDITURE']['exp_amount'] 
                         + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']))
                         + $sum_flattaxes;
