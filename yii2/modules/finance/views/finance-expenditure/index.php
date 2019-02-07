@@ -63,7 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
              'label' => Module::t('modules/finance/app', 'Supplier'),
              'format' => 'html',
              'value' => function ($model) {
-                 return "<a href='#' data-toggle='tooltip' data-placement='bottom' title='" . $model['exp_description'] . "'>" . FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'] . "</a>";
+                 //return "<a href='#' data-toggle='tooltip' data-placement='bottom' title='" . $model['exp_description'] . "'>" . FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'] . "</a>";
+                return FinanceSupplier::find()->where(['suppl_id' => $model['suppl_id']])->one()['suppl_name'];
              },
              'headerOptions' => ['class'=> 'text-center']
             ],
@@ -118,13 +119,13 @@ $this->params['breadcrumbs'][] = $this->title;
               'headerOptions' => ['class'=> 'text-center'],
               'contentOptions' => ['class' => 'text-center']
             ], */
-/*             ['attribute' => 'exp_description',
+            ['attribute' => 'exp_description',
                 'label' => Module::t('modules/finance/app', 'Description'),
                 'format' => 'html',
                 'value' => function ($model) {
                     return $model['exp_description'];
                 }
-            ], */
+            ], 
             ['attribute' => 'Withdrawals', 'label' => Module::t('modules/finance/app', 'Assigned Withdrawals'),
              'format' => 'html',
                 'value' => function ($model) use ($expendwithdrawals) {
