@@ -305,5 +305,6 @@ return [
     'Notes' => 'Σημειώσεις',
     'Text Key' => 'Λεκτικό Κλειδί',
     'Flat Taxes' => 'Σταθεροί Φόροι',
-    'Value after VAT' => 'Αξία μετά ΦΠΑ'
+    'Value after VAT' => 'Αξία μετά ΦΠΑ',
+    'Other<br />Taxes' => 'Λοιποί<br />Φόροι'
 ];
