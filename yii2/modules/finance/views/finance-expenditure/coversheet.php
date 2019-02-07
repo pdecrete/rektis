@@ -4,8 +4,11 @@ use app\modules\finance\components\Money;
 $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 $sum_amount = 0;
 foreach ($expenditures_model as $expenditure_model){
-    $sum_amount += $expenditure_model['EXPENDITURE']['exp_amount'] + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']));
-    //$sum_amount -= $expenditure_model['DEDUCTIONS'];
+    $sum_flattaxes = 0;
+    $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
+    foreach ($flattaxes as $flattax)
+        $sum_flattaxes += $flattax;
+    $sum_amount += $expenditure_model['EXPENDITURE']['exp_amount'] + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value'])) + $sum_flattaxes;
 }
 
 ?>
@@ -36,9 +39,14 @@ foreach ($expenditures_model as $expenditure_model){
     <ul>
     <?php  
         foreach ($expenditures_model as $expenditure_model ):
+            $sum_flattaxes = 0;
+            $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
+            foreach ($flattaxes as $flattax)
+                $sum_flattaxes += $flattax;
+            
             $exp_payvalue = $expenditure_model['EXPENDITURE']['exp_amount'] 
-                            + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']));
-                            //- $expenditure_model['DEDUCTIONS'];
+                        + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']))
+                        + $sum_flattaxes;
             echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($exp_payvalue, true) . "</li>";
     	endforeach;
 	?>
