@@ -19,6 +19,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'teacher_name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'teacher_registrynumber')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($model, 'teacher_afm')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'specialisation_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($specialisations, 'id', 'code'),
@@ -28,7 +30,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'school_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
             'options' => ['placeholder' => Yii::t('app', 'Select school...')],
-        ])->label('Σχολείο Υπηρέτησης'); ?>
+        ])->label('Οργανική Θέση'); ?>
 
     <div class="form-group pull-right">
     	<?= Html::a(Yii::t('app', 'Return'), ['index'], ['class' => 'btn btn-default']) ?>
