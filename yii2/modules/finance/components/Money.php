@@ -44,7 +44,8 @@ class Money
     
     public static function toDecimalPercentage($dbPercentage)
     {
-        return round($dbPercentage/10000, 2);
+        //return round($dbPercentage/10000, 2);
+        return $dbPercentage/10000;
     }
 
     public static function dbPercentagetoDecimal($percentage)
