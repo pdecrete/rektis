@@ -8,7 +8,6 @@ use yii\base\Model;
 use app\modules\finance\Module;
 use app\modules\finance\models\FinanceExpenditure;
 use app\modules\finance\models\FinanceExpenditureSearch;
-use app\modules\finance\models\FinanceKae;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
@@ -27,7 +26,6 @@ use app\modules\finance\models\FinanceInvoice;
 use app\modules\finance\models\FinanceDeduction;
 use app\modules\finance\models\FinanceExpenddeduction;
 use app\modules\finance\models\FinanceState;
-use yii\web\User;
 
 /**
  * FinanceExpenditureController implements the CRUD actions for FinanceExpenditure model.
@@ -448,13 +446,12 @@ class FinanceExpenditureController extends Controller
             $fpa = Money::toDecimalPercentage($model->fpa_value);
             $flat_taxes = json_decode($model->exp_flattaxes);
             $flat_taxes_sum = array_sum($flat_taxes);
-            $partial_amount = $model->exp_amount + $model->exp_amount*$fpa + $flat_taxes_sum;
+            $partial_amount = floor($model->exp_amount + $model->exp_amount*$fpa + $flat_taxes_sum);
 
             foreach ($expendwithdrawals_models as $expendwithdrawals_model) {
                 if($expendwithdrawals_model->kaewithdr_id == null)
                     continue;
-                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);
-                
+                $withdrawal_balance = FinanceExpendwithdrawal::getWithdrawalBalance($expendwithdrawals_model->kaewithdr_id);                
                 $expendwithdrawals_model->exp_id = $model->exp_id;
                 //if (($partial_amount + $partial_amount*$fpa) > $withdrawal_balance) {  
                 if (($partial_amount) > $withdrawal_balance) {
