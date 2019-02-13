@@ -77,13 +77,13 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Net Value') ?></td>					
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'VAT') ?></td>
 			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Value after VAT') ?></td>
-					<?php if($show_flattaxes_column): ?>
-			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Λοιποί<br />Φόροι') ?></td>
-			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
-		<?php endif;?>
-		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
-					<td <?= $inline_th_css_min_width?>><?= $value['PERCENTAGE'] ?></td>										
-		<?php   endforeach;?>			
+			<?php if($show_flattaxes_column): ?>
+    			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Λοιποί<br />Φόροι') ?></td>
+    			<td <?= $inline_th_css?>><?= Module::t('modules/finance/app', 'Notes') ?></td>
+			<?php endif;?>
+			<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
+						<td <?= $inline_th_css_min_width?>><?= $value['PERCENTAGE'] ?></td>										
+			<?php   endforeach;?>			
 		</tr>
 		<?php   foreach ($models as $model):
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
@@ -110,8 +110,6 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 								        endforeach;       
 							    ?>
 							</td>
-		<?php           endif; ?>
-		<?php           if($show_notes_column): ?>
 							<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_notes']; ?></td>
 		<?php           endif; ?>
 		<?php           foreach ($deductions_array['SUM'] as $key=>$value):
@@ -141,9 +139,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 			<td <?= $inline_td_css_right?>><?= number_format($sum_vat, 2, ',', '.') ?></td>
 			<td <?= $inline_td_css_right?>><?= number_format($sum_net_value + $sum_vat, 2, ',', '.') ?></td>
     		<?php if($show_flattaxes_column): ?>
-    			<td <?= $inline_td_css_right?>><?= $allexpenditures_flat_taxes_sum?></td>
-    		<?php endif;?>			
-    		<?php if($show_notes_column): ?>
+    			<td <?= $inline_td_css_right?>><?= number_format($allexpenditures_flat_taxes_sum, 2, ',', '.') ?></td>
     			<td <?= $inline_td_css_right?>></td>
     		<?php endif;?>
 
