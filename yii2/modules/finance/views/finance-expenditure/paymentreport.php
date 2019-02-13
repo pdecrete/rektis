@@ -16,6 +16,7 @@ $sum_vat = 0;
 $sum_taxes = 0;
 $sum_payable_amount = 0;
 $sum_expenditure_taxes = 0;
+$allexpenditures_flat_taxes_sum = 0;
 
 $deductions_array = [];
 $deductions_array_sum = [];
@@ -127,6 +128,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
         <?php       $sum_net_value += $net_value;
                     $sum_vat += $vat;
                     $sum_payable_amount += $payable_amount - $sum_expenditure_taxes;
+                    $allexpenditures_flat_taxes_sum += $flat_taxes_sum;
                 endforeach;
                         
         ?>
@@ -138,15 +140,16 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 			<td <?= $inline_td_css_right?>><?= number_format($sum_net_value, 2, ',', '.') ?></td>							
 			<td <?= $inline_td_css_right?>><?= number_format($sum_vat, 2, ',', '.') ?></td>
 			<td <?= $inline_td_css_right?>><?= number_format($sum_net_value + $sum_vat, 2, ',', '.') ?></td>
+    		<?php if($show_flattaxes_column): ?>
+    			<td <?= $inline_td_css_right?>><?= $allexpenditures_flat_taxes_sum?></td>
+    		<?php endif;?>			
+    		<?php if($show_notes_column): ?>
+    			<td <?= $inline_td_css_right?>></td>
+    		<?php endif;?>
+
 		<?php   foreach ($deductions_array['SUM'] as $key=>$value):?>
 					<td <?= $inline_td_css_right?>><?= number_format($value['SUM_AMOUNT'], 2, ',', '.') ?></td>										
 		<?php   endforeach;?>
-		<?php if($show_notes_column): ?>
-			<td <?= $inline_td_css_right?>></td>
-		<?php endif;?>
-		<?php if($show_flattaxes_column): ?>
-			<td <?= $inline_td_css_right?>></td>
-		<?php endif;?>
 			<td <?= $inline_td_css_right?>><?= number_format($sum_payable_amount, 2, ',', '.') ?></td>
 		</tr>						
 	</table>

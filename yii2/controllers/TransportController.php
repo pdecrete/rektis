@@ -595,10 +595,10 @@ class TransportController extends Controller
                     $fmodel = \app\models\TransportFunds::findone($funds[$g]);
                     if ($fund_str == '') {
                         $fund_str = $fund . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
-                        $kae_str = $fmodel->code . ' (KAE: ' . $fmodel->kae . ')';
+                        $kae_str = $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
                     } else {
                         $fund_str .= ', ' . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
-                        $kae_str .= ', ' . $fmodel->code . ' (KAE: ' . $fmodel->kae . ')';
+                        $kae_str .= ', ' . $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
                     }
                 }
                 if ($fund_str !== '') {
