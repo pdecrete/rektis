@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                 'filter' => FinanceFpa::getFpaLevels(),
                 'headerOptions' => ['class'=> 'text-center'],
-                'contentOptions' => ['class' => 'text-right']
+                'contentOptions' => ['class' => 'text-right text-nowrap']
                 ],
 /*             ['attribute' => 'exp_date',
              'format' => ['date', 'php:d-m-Y'],
@@ -150,7 +150,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'html',
                 'value' => function ($model) {
                     //return $expendwithdrawals[$model['exp_id']]['RELATEDKAE'];
-                    return sprintf('%04d', $model['kae_id']);
+                    //return sprintf('%04d', $model['kae_id']);
+                    return $model['kae_id'];
                 }
             ],
             ['attribute' => 'statescount',
