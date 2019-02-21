@@ -87,7 +87,8 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 		</tr>
 		<?php   foreach ($models as $model):
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
-                    $vat = $net_value * (Money::toPercentage($model['EXPENDITURE']['fpa_value'])/100);
+                    $vat = $net_value * Money::toDecimalPercentage($model['EXPENDITURE']['fpa_value']);
+
                     $flat_taxes_sum = 0;
                     if($show_flattaxes_column) {
                         foreach ($model['EXPENDITURE']['flat_taxes'] as $flattax) {
