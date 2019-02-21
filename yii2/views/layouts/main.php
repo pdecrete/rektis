@@ -218,6 +218,11 @@ AppAsset::register($this);
                             'url' => ['/transport/kae'],
                             'visible' => Yii::$app->user->can('transport_user')
                         ],
+                        [
+                            'label' => 'Στατιστικά μετακινήσεων',
+                            'url' => ['/transport-statistic'],
+                            'visible' => Yii::$app->user->can('transport_user')
+                        ],
                     ],
                 ],
 

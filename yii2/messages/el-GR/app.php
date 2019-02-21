@@ -385,5 +385,10 @@ return [
     'Current year' => 'Τρέχοντος έτος',
     'Previous year' => 'Προηγούμενου έτους',
     'All years' => 'Όλων των ετών',
-    'Export to PDF' => 'Εξαγωγή σε PDF'
+    'Export to PDF' => 'Εξαγωγή σε PDF',
+    'Expenditure type' => 'Τύπο δαπάνης',
+    'Days number' => 'Αριθμό ημέρων',
+    'Away days number' => 'Αριθμό ημερών εκτός έδρας',
+    'Overnights number' => 'Αριθμό διανυκτερεύσεων',
+    'Transport Vehicle' => 'Μέσο Μετακίνησης'
 ];

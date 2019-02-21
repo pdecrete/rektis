@@ -27,12 +27,12 @@ $script = "function chartjsToImage(){
            }";
 $this->registerJs($script, View::POS_HEAD);
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Leaves'), 'url' => ['/leave/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Transports'), 'url' => ['/transport/index']];
 $this->title = Yii::t('app', 'Statistics');
 $this->params['breadcrumbs'][] = $this->title;
 
 $current_year = date('Y');
-//echo "<pre>"; print_r($model); echo "</pre>";die();
+//echo "<pre>"; print_r($result_data); echo "</pre>";die();
 //echo $chart_title; die();
 ?>
 
@@ -42,14 +42,14 @@ $current_year = date('Y');
       			<?= Yii::t('app', 'Export leaves to Excel file'); ?> <span class="caret"></span>
   			</button>
   			<ul class="dropdown-menu" role="menu">
-    			<li><a href="<?= Url::to(['leave-statistic/exportexcel', 'year' => $current_year]);?>">
+    			<li><a href="<?= Url::to(['transport-statistic/exportexcel', 'year' => $current_year]);?>">
 					<?= Yii::t('app', 'Current year') .  ' ('. $current_year . ')'; ?></a>
 				</li>
-    			<li><a href="<?= Url::to(['leave-statistic/exportexcel', 'year' => ($current_year-1)]);?>">
+    			<li><a href="<?= Url::to(['transport-statistic/exportexcel', 'year' => ($current_year-1)]);?>">
     				<?= Yii::t('app', 'Previous year'); ?>
     				</a>
 				</li>
-    			<li><a href="<?= Url::to(['leave-statistic/exportexcel', 'year' => -1]);?>">
+    			<li><a href="<?= Url::to(['transport-statistic/exportexcel', 'year' => -1]);?>">
 					<?= Yii::t('app', 'All years'); ?>
 					</a>
 				</li>
@@ -61,86 +61,111 @@ $current_year = date('Y');
 <?php ?>
 <h1>Επιλογή Παραμέτρων</h1>
 <div class="well container-fluid">
-<?php $form = ActiveForm::begin(); ?>
-	<div class="row">
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_year')->widget(Select2::classname(), [
-                'data' => $years,
-                'options' => ['multiple' => true, 'placeholder' => Yii::t('app', 'Select year...')],
-                ])->label('Έτος'); 
-            ?>
+    <div class="col-lg-9"> 
+    <?php $form = ActiveForm::begin(); ?>
+    	<div class="row">
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_year')->widget(Select2::classname(), [
+                    'data' => $years,
+                    'options' => ['multiple' => true, 'placeholder' => Yii::t('app', 'Select year...')],
+                    ])->label('Έτος'); 
+                ?>
+        	</div>
+        	<div class="col-lg-6">
+    	        <?= $form->field($model, 'statistic_expendituretype')->widget(Select2::classname(), [
+    	            'data' => $expendituretypes,
+                    'options' => ['placeholder' => Yii::t('app', 'Select transport expenditure type...')],
+                    ])->label('Δαπάνη Μετακίνησης'); 
+    	        ?>
+        	</div>
     	</div>
-    	<div class="col-lg-6">
-	        <?= $form->field($model, 'statistic_leavetype')->widget(Select2::classname(), [
-	            'data' => $leavetypes,
-                'options' => ['placeholder' => Yii::t('app', 'Select leave type...')],
-                ])->label('Τύπος Άδειας'); 
-	        ?>
+    	<div class="row">
+        	<div class="col-lg-6">
+    	        <?= $form->field($model, 'statistic_specialisation')->widget(Select2::classname(), [
+    	            'data' => $specialisations,
+                    'options' => ['placeholder' => Yii::t('app', 'Select specialisation...')],
+                    ])->label('Ειδικότητα'); 
+                ?>
+        	</div>
+			<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_employee')->widget(Select2::classname(), [
+                    'data' => $employees,
+                    'options' => ['placeholder' => Yii::t('app', 'Select employee...')],
+                    ])->label('Εργαζόμενος'); 
+                ?>
+        	</div>
     	</div>
-	</div>
-	<div class="row">
-    	<div class="col-lg-6">
-	        <?= $form->field($model, 'statistic_specialisation')->widget(Select2::classname(), [
-	            'data' => $specialisations,
-                'options' => ['placeholder' => Yii::t('app', 'Select specialisation...')],
-                ])->label('Ειδικότητα'); 
-            ?>
+    	<div class="row">
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_positionunit')->widget(Select2::classname(), [
+                    'data' => $positionunits,
+                    'options' => ['placeholder' => Yii::t('app', 'Select organism...')],
+                    ])->label('Υπηρεσία'); 
+                ?>    	
+        	</div>
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_days')->widget(Select2::classname(), [
+                    'data' => $days,
+                    'options' => ['placeholder' => Yii::t('app', 'Select days number...')],
+                    ])->label('Πλήθος ημερών μετακίνησης'); 
+                ?>    	
+        	</div>
     	</div>
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_positiontitle')->widget(Select2::classname(), [
-                'data' => $positiontitles,
-                'options' => ['placeholder' => Yii::t('app', 'Select position...')],
-                ])->label('Θέση'); 
-            ?>
-    	</div>
-	</div>
-	<div class="row">
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_positionunit')->widget(Select2::classname(), [
-                'data' => $positionunits,
-                'options' => ['placeholder' => Yii::t('app', 'Select organism...')],
-                ])->label('Υπηρεσία'); 
-            ?>    	
-    	</div>
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_employee')->widget(Select2::classname(), [
-                'data' => $employees,
-                'options' => ['placeholder' => Yii::t('app', 'Select employee...')],
-                ])->label('Εργαζόμενος'); 
-            ?>
-    	</div>
-	</div>	    
-  	<div class="row">
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_charttype')->widget(Select2::classname(), [
-                'data' => $chart_types,
-                'options' => ['placeholder' => Yii::t('app', 'Select chart type...')],
-                ])->label('Τύπος Γραφήματος'); 
-            ?>
-    	</div>	
-    	<div class="col-lg-6">
-            <?= $form->field($model, 'statistic_groupby')->widget(Select2::classname(), [
-                'data' => $groupby_options,
-                'options' => ['placeholder' => Yii::t('app', 'Select grouping method...')],
-                ])->label('Ομαδοποίηση ανά'); 
-            ?>
-    	</div>
-  	</div>
-	<div class="row pull-right">    
-        <div class="form-group col-lg-6">  
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+    	<div class="row">
+    		<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_daysout')->widget(Select2::classname(), [
+                    'data' => $daysout,
+                    'options' => ['placeholder' => Yii::t('app', 'Select away days number...')],
+                    ])->label('Πλήθος ημερών εκτός έδρας'); 
+                ?>    	
+        	</div>
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_nightsout')->widget(Select2::classname(), [
+                    'data' => $nightsout,
+                    'options' => ['placeholder' => Yii::t('app', 'Select overnights number...')],
+                    ])->label('Πλήθος διανυκτερεύσεων'); 
+                ?>    	
+        	</div>
+    	</div>	    
+      	<div class="row">
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_charttype')->widget(Select2::classname(), [
+                    'data' => $chart_types,
+                    'options' => ['placeholder' => Yii::t('app', 'Select chart type...')],
+                    ])->label('Τύπος Γραφήματος'); 
+                ?>
+        	</div>	
+        	<div class="col-lg-6">
+                <?= $form->field($model, 'statistic_groupby')->widget(Select2::classname(), [
+                    'data' => $groupby_options,
+                    'options' => ['placeholder' => Yii::t('app', 'Select grouping method...')],
+                    ])->label('Ομαδοποίηση ανά'); 
+                ?>
+        	</div>
+      	</div>
+    	<div class="row pull-right">    
+            <div class="form-group col-lg-6">  
+                <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+            </div>
         </div>
+    
+    <?php ActiveForm::end(); ?>
     </div>
-
-<?php ActiveForm::end(); ?>
+    <div class="col-lg-3">
+    	<div class="alert alert-info">
+  			<strong>Σημείωση</strong> <p>Τα στατιστικά που σχετίζονται με τη υπηρεσία στην οποία υπηρετούν οι εργαζόμενοι συσχετίζονται με την τρέχουσα υπηρεσιακή κατάσταση των εργαζομένων. </p><p>Για παράδειγμα αν ένας
+  			εργαζόμενος βρισκεται σε διαφορετική υπηρεσία από αυτή που βρισκόταν σε προηγούμενα έτη, τα στατιστικά που βγαίνουν, συσχετίζονται με την τρέχουσα υπηρεσία του και άρα οι μετακινήσεις τους
+  			υπολογίζονται ως να έχουν γίνει από την υπηρεσία που βρίσκεται τώρα.</p>
+		</div>
+	</div>
 </div>
 
 <div id="canvasChart" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <?php   $max_result = max($result_data['LEAVES_COUNT']); 
+            <?php   $max_result = max($result_data['TRANSPORTS_COUNT']); 
             
-                    $results_count = count($result_data['LEAVES_COUNT']);
+                    $results_count = count($result_data['TRANSPORTS_COUNT']);
                     $fontsize = 12;
                     $minrotation = 0;
                     if($results_count > 15 && $results_count <= 30)
@@ -155,7 +180,7 @@ $current_year = date('Y');
                     $height = 100;
                     $clientOptions['clientOptions'] = ''; 
                     if($selected_chart_type == LeaveStatistic::CHARTTYPE_HORIZONTALBAR){
-                        $height = 15*count($result_data['LEAVES_COUNT']) + 30; 
+                        $height = 15*count($result_data['TRANSPORTS_COUNT']) + 30; 
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false],
                             'responsive' => true,
@@ -222,9 +247,9 @@ $current_year = date('Y');
                     echo ChartJs::widget(['type' => $selected_chart_type,
                                           'options' => ['height' => $height],
                                           'data' => [   'labels' => $result_data['LABELS'],
-                                                        'datasets' => [['label' => Yii::t('app', "Ημέρες Άδειας"), 
+                                                        'datasets' => [['label' => Yii::t('app', "Πλήθος Μετακινήσεων"), 
                                                                      'backgroundColor' => $colors,
-                                                                     'data' => $result_data['LEAVES_COUNT']]]],                                          
+                                                                     'data' => $result_data['TRANSPORTS_COUNT']]]],                                          
                                                         'clientOptions' => $clientOptions['clientOptions']                                          
                                      ]);
             ?> 
@@ -237,16 +262,16 @@ $current_year = date('Y');
 		<table class="table table-bordered table-striped table-hover table-condensed">
 			<thead>
 				<tr><th colspan="2" class='text-center info'><?= $chart_title; ?></th></tr>
-				<tr><th>&nbsp;</th><th class="text-center">Ημέρες Άδειας</th></tr>
+				<tr><th>&nbsp;</th><th class="text-center">Πλήθος Μετακινήσεων</th></tr>
 			</thead>
 			<tbody>
 				<?php 
 				    $num_of_data = count($result_data['LABELS']);
 				    for ($i = 0; $i < $num_of_data; $i++){
-				        echo "<tr><td>" . $result_data['LABELS'][$i] . "</td><td class='text-center'>" . $result_data['LEAVES_COUNT'][$i] . "</td></tr>";
+				        echo "<tr><td>" . $result_data['LABELS'][$i] . "</td><td class='text-center'>" . $result_data['TRANSPORTS_COUNT'][$i] . "</td></tr>";
 				    }
 				?>
-				<tr><td><strong>ΣΥΝΟΛΟ:</strong></td><td class='text-center'><strong><?= array_sum($result_data['LEAVES_COUNT']); ?></strong></td></tr>				
+				<tr><td><strong>ΣΥΝΟΛΟ:</strong></td><td class='text-center'><strong><?= array_sum($result_data['TRANSPORTS_COUNT']); ?></strong></td></tr>				
 			</tbody>
 		</table>
 	</div>

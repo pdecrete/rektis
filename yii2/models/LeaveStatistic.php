@@ -60,7 +60,7 @@ class LeaveStatistic extends Model
                 'statistic_specialisation' => Yii::t('app', 'Specialisation'),
                 'statistic_positiontitle' => Yii::t('app', 'Position'),
                 'statistic_positionunit' => Yii::t('app', 'Service'),
-                'statistic_positionunit' => Yii::t('app', 'Employee'),
+                'statistic_employee' => Yii::t('app', 'Employee'),
                 'statistic_groupby' => Yii::t('app', 'Group by'),
                ];
     }
@@ -199,7 +199,7 @@ class LeaveStatistic extends Model
                     $index++;
                 }
             }
-        } else if($this->statistic_groupby == LeaveStatistic::GROUPBY_POSITIONUNIT){
+        } elseif($this->statistic_groupby == LeaveStatistic::GROUPBY_POSITIONUNIT){
             $positionunits = LeaveStatistic::getPositionUnitsOptions();
             foreach ($positionunits as $id=>$positionunit) {
                 $andWhereCondition = $pu . ".id=" . $id;
@@ -249,7 +249,8 @@ class LeaveStatistic extends Model
         $query = (new \yii\db\Query())
         ->select("SUM(" . $l . ".duration) AS LEAVES_COUNT")
         ->from($l . "," . $lt . "," . $e . "," . $es . "," .  $esp . "," . $pt . "," . $pu)
-        ->where($l . ".type=" . $lt . ".id")
+        ->where($l . ".deleted=0")
+        ->andWhere($l . ".type=" . $lt . ".id")
         ->andWhere($l . ".employee=" . $e. ".id")
         ->andWhere($e . ".specialisation=" . $esp . ".id")
         ->andWhere($e . ".status=" . $es . ".id")
@@ -334,7 +335,7 @@ class LeaveStatistic extends Model
     
     public static function getEmployeeOptions()
     {
-        $employees = Employee::find()->select(['CONCAT(TRIM(surname), " ", TRIM(name)) as fullname', 'id'])->where(['status' => 1])->orderBy('surname')->asArray()->all();
+        $employees = Employee::find()->select(['CONCAT(TRIM(surname), " ", TRIM(name)) as fullname', 'id'])->where(['status' => 1])->where(['deleted' => 0])->orderBy('surname')->asArray()->all();
         return ArrayHelper::map($employees, 'id', 'fullname');
     }
     

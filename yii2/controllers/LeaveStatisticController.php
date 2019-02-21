@@ -28,7 +28,7 @@ class LeaveStatisticController extends Controller
             ],
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
-                    ['actions' => ['index', 'exportstatistic', 'exportexcel'], 'allow' => true, 'roles' => ['disposal_viewer']],
+                    ['actions' => ['index', 'exportstatistic', 'exportexcel'], 'allow' => true, 'roles' => ['leave_user']],
                 ]
             ]
         ];
@@ -62,7 +62,7 @@ class LeaveStatisticController extends Controller
         $positiontitles['ALL'] = Yii::t('app', 'Όλες οι θέσεις');
         $positiontitles = $positiontitles + LeaveStatistic::getPositionTitlesOptions();
         
-        $positionunits['ALL'] = Yii::t('app', 'Όλες οι θέσεις');
+        $positionunits['ALL'] = Yii::t('app', 'Όλες οι υπηρεσίες');
         $positionunits = $positionunits + LeaveStatistic::getPositionUnitsOptions();
         
         $employees['ALL'] = Yii::t('app', 'Όλοι οι εργαζόμενοι');
@@ -152,9 +152,9 @@ class LeaveStatisticController extends Controller
             $end_date = $year . '-12-31';
             
             if($year != -1)
-                $leaves = Leave::find()->where(['>', 'start_date', $start_date])->andWhere(['<', 'start_date', $end_date])->all();
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>', 'start_date', $start_date])->andWhere(['<', 'start_date', $end_date])->all();
             else
-                $leaves = Leave::find()->all();
+                $leaves = Leave::find()->where(['deleted' => 0])->all();
 
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
