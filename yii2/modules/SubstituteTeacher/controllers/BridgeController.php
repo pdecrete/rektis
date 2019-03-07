@@ -23,12 +23,14 @@ use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Application;
 use app\modules\SubstituteTeacher\models\ApplicationPosition;
 use app\modules\SubstituteTeacher\models\TeacherStatusAudit;
+use app\modules\SubstituteTeacher\components\CsvExport;
 
 class BridgeController extends \yii\web\Controller
 {
     private $client = null; // http client for calls to the applications frontend
     private $options = [];
-
+    
+    
     public function init()
     {
         $this->options = array_merge($this->options, [
@@ -81,6 +83,7 @@ class BridgeController extends \yii\web\Controller
         ];
     }
 
+    
     public function actionRemoteStatus()
     {
         $data = null;
@@ -94,6 +97,7 @@ class BridgeController extends \yii\web\Controller
 
         if (\Yii::$app->request->isPost) {
             $status_response = $this->client->post('index', [], $this->getHeaders())->send();
+            //echo "<pre>".print_r($this->getHeaders(), TRUE)."</pre>"; die();
             $status = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
             $data = $status_response->getData();
             $services_status = array_merge($services_status, $data['services']);
@@ -346,11 +350,11 @@ class BridgeController extends \yii\web\Controller
      *
      * @param int|null call_id
      */
-    public function actionSend($call_id = 0)
+    public function actionSend($call_id = 0, $export=0)
     {
         \Yii::info([], __METHOD__);
         $connection_options = $this->options;
-
+        //echo "<pre>".print_r($connection_options, TRUE)."</pre>"; die();
         $call_model = Call::findOne(['id' => $call_id]);
         // if call is selected, collect positions, prefectures, teachers and placement preferences
         if (!empty($call_model)) {
@@ -364,7 +368,6 @@ class BridgeController extends \yii\web\Controller
                 $prefecture_substitutions[$index] = $prefectures[$k]->id;
                 return array_merge(['index' => $index], $prefectures[$k]->toApi());
             }, array_keys($prefectures));
-
             // collect the call positions of the specific call;
             // also get prefectures that will be used to filter teachers
             $call_positions_prefectures = [];
@@ -385,7 +388,7 @@ class BridgeController extends \yii\web\Controller
                 return array_merge(['index' => $index], $call_positions[$k]->toApi($prefecture_substitutions));
             }, array_keys($call_positions));
             $call_positions_prefectures = array_unique($call_positions_prefectures);
-
+            
             // get the teachers that meet the following criteria:
             // - they belong to the relevant boards (year / specialisation)
             // - they are eligible for appointment
@@ -456,10 +459,12 @@ class BridgeController extends \yii\web\Controller
                 ];
                 $teachers = array_merge($teachers, $call_specialisation_teachers);
             }
+            
             $placement_preferences = [];
             $walk = array_walk($teachers, function ($m, $k) use (&$placement_preferences) {
                 $placement_preferences = array_merge($placement_preferences, $m->placementPreferences);
             });
+  
             $teacher_substitutions = [];
             $teacher_ids = array_map(function ($m) {
                 return $m->id;
@@ -473,7 +478,6 @@ class BridgeController extends \yii\web\Controller
                 $index = $k + 1;
                 return array_merge(['index' => $index], $placement_preferences[$k]->toApi($prefecture_substitutions, $teacher_substitutions));
             }, array_keys($placement_preferences));
-
             // GET request displays "dry-run" results
             // POST does the actual sending of data
             $data = [
@@ -483,52 +487,93 @@ class BridgeController extends \yii\web\Controller
                 'positions' => $call_positions,
                 'placement_preferences' => $placement_preferences
             ];
-            $count_prefectures = count($prefectures);
-            $count_teachers = count($teachers);
-            $count_call_positions = count($call_positions);
-            $count_placement_preferences = count($placement_preferences);
+            //echo "<pre>".print_r($data, TRUE)."</pre>"; die();
+            foreach ($placement_preferences as $key => $subArr) {                  
+                $subArr['teacher_id']= $subArr['teacher'][0];
+                //$placement_preferences[$key] = $subArr; 
+                unset($subArr['teacher']);
+                $placement_preferences[$key] = $subArr;  
+            }
+            //echo "<pre>".print_r($placement_preferences, TRUE)."</pre>"; die();
+            
+            
 
-            $status_clear = null;
-            $status_load = null;
+            if ($export == 0) {
+                $count_prefectures = count($prefectures);
+                $count_teachers = count($teachers);
+                $count_call_positions = count($call_positions);
+                $count_placement_preferences = count($placement_preferences);
 
-            \Yii::info([
-                "#prefectures = [$count_prefectures]",
-                "#teachers = [$count_teachers]",
-                "#call_positions = [$count_call_positions]",
-                "#placement_preferences = [$count_placement_preferences]",
-                $teacher_counts
-            ], __METHOD__);
+                $status_clear = null;
+                $status_load = null;
 
-            if (\Yii::$app->request->isPost) {
-                // first issue a clear command
-                \Yii::info(['Call [clear] with [delete] method', $connection_options], __METHOD__);
-                $status_response = $this->client->delete('clear', [], $this->getHeaders())->send();
-                $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
-                $response_data_clear = $status_response->getData();
-                if ($status_clear !== true) {
-                    \Yii::error([$status_clear, $response_data_clear], __METHOD__);
-                } else {
-                    \Yii::info([$status_clear, $response_data_clear], __METHOD__);
-                }
-                if ($status_clear === true) {
-                    // then post data
-                    \Yii::info(['Call [load] with [post] method', $connection_options], __METHOD__);
-                    $status_response = $this->client->post('load', $data, $this->getHeaders())->send();
-                    $status_load = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
-                    $response_data_load = $status_response->getData();
-                    if ($status_load !== true) {
-                        \Yii::error([$status_load, $response_data_load], __METHOD__);
+                \Yii::info([
+                    "#prefectures = [$count_prefectures]",
+                    "#teachers = [$count_teachers]",
+                    "#call_positions = [$count_call_positions]",
+                    "#placement_preferences = [$count_placement_preferences]",
+                    $teacher_counts
+                ], __METHOD__);
+
+                if (\Yii::$app->request->isPost) {
+                    // first issue a clear command
+                    \Yii::info(['Call [clear] with [delete] method', $connection_options], __METHOD__);
+                    $status_response = $this->client->delete('clear', [], $this->getHeaders())->send();
+                    $status_clear = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+                    $response_data_clear = $status_response->getData();
+                    if ($status_clear !== true) {
+                        \Yii::error([$status_clear, $response_data_clear], __METHOD__);
                     } else {
-                        \Yii::info([$status_load, $response_data_load], __METHOD__);
-                        // audit all teachers called
-                        array_walk($teacher_ids, function ($id, $key) use ($call_id) {
-                            $save = TeacherStatusAudit::audit($id, 0, 'Αποστολή αναπληρωτή στο σύστημα αιτήσεων', ['call_id' => $call_id]);
-                        });
+                        \Yii::info([$status_clear, $response_data_clear], __METHOD__);
+                    }
+                    if ($status_clear === true) {
+                        // then post data
+                        \Yii::info(['Call [load] with [post] method', $connection_options], __METHOD__);
+                        $status_response = $this->client->post('load', $data, $this->getHeaders())->send();
+                        $status_load = $status_response->isOk ? $status_response->isOk : $status_response->statusCode;
+                        $response_data_load = $status_response->getData();
+                        if ($status_load !== true) {
+                            \Yii::error([$status_load, $response_data_load], __METHOD__);
+                        } else {
+                            \Yii::info([$status_load, $response_data_load], __METHOD__);
+                            // audit all teachers called
+                            array_walk($teacher_ids, function ($id, $key) use ($call_id) {
+                                $save = TeacherStatusAudit::audit($id, 0, 'Αποστολή αναπληρωτή στο σύστημα αιτήσεων', ['call_id' => $call_id]);
+                            });
+                        }
                     }
                 }
+
+            } else {
+                if ($export == 1) {$this->outputCsv('prefectures.csv', $prefectures);}                
+                if ($export == 2) {$this->outputCsv('teachers.csv', $teachers);}
+                if ($export == 3) {$this->outputCsv('positions.csv', $call_positions);}
+                if ($export == 4) {$this->outputCsv('preferences.csv', $placement_preferences);}             
             }
         }
-
         return $this->render('send', compact('call_model', 'teacher_ids', 'status_clear', 'response_data_clear', 'status_load', 'response_data_load', 'data', 'count_prefectures', 'count_teachers', 'teacher_counts', 'count_call_positions', 'count_placement_preferences', 'connection_options'));
     }
+ 
+    
+    public function outputCsv($fileName, $assocDataArray) {
+        ob_clean();
+        header('Pragma: public');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Cache-Control: private', false);
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment;filename=' . $fileName);    
+        if(isset($assocDataArray['0'])){
+            $fp = fopen('php://output', 'w');
+            fputcsv($fp, array_keys($assocDataArray['0']));
+            foreach($assocDataArray AS $values){
+                fputcsv($fp, $values);
+            }
+            fclose($fp);
+        }
+        ob_flush();
+        exit;
+   }
+    
+
 }
