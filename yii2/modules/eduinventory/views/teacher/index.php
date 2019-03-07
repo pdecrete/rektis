@@ -29,8 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
             'teacher_surname',
             'teacher_name',
+            'teacher_fathername',
+            'teacher_mothername',
             'teacher_registrynumber',
-            ['class' => 'yii\grid\ActionColumn'],
+            'teacher_afm',
+            ['class' => 'yii\grid\ActionColumn', 'contentOptions' => ['class'=> 'text-center text-nowrap']],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

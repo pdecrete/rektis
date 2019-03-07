@@ -240,7 +240,7 @@ class TeacherController extends Controller
                     $specialisation_id = Specialisation::find()->where(['code' => $specialisation])->orWhere(['code' => $specialisation_with_blank])->one()['id'];
                     $teacher_model->specialisation_id = $specialisation_id;
                     if(!$teacher_model->save()) {
-                        //echo "<pre>"; print_r($teacher_model->errors); echo "</pre>"; die();
+                        echo "<pre>"; print_r($teacher_model); echo "</pre>"; die();
                         throw new Exception("(@teacher_save)");
                     }
                 }
@@ -287,6 +287,12 @@ class TeacherController extends Controller
             return "ΠΕ 3000";
         else if ($specialisation == "ΠΕ31")
             return "ΠΕ 3100";
+        else if($specialisation == "ΧΟΡΟΣ-ΚΛΑΣΣΙΚΟΣ")
+            return "ΧΟΡΟΣ-ΚΛΑΣ";
+        else if($specialisation == "ΘΚ-ΣΚΗΝΟΘΕΤΗΣ")
+            return "ΘΚ-ΣΚΗΝΟΘ";
+        else if($specialisation == "ΧΟΡΟΣ-ΣΥΓΧΡΟΝΟΣ")
+            return "ΧΟΡΟΣ-ΣΥΓΧ";
         else
             return $specialisation;
     }

@@ -18,7 +18,7 @@ class FileImport extends Model
     /**
      * @inheritdoc
      */
-    public function rules($extensions = 'xls,xlsx,ods', $maxSize = 4*1024*1024)
+    public function rules($extensions = 'xls,xlsx,ods', $maxSize = 20*1024*1024)
     {
         return [[['importfile'], 'required'],
                 [['importfile'], 'safe'],
