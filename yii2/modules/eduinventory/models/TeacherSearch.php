@@ -18,7 +18,7 @@ class TeacherSearch extends Teacher
     {
         return [
             [['teacher_id', 'school_id'], 'integer'],
-            [['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'teacher_specialization'], 'safe'],
+            [['teacher_surname', 'teacher_name', 'teacher_fathername', 'teacher_mothername', 'teacher_registrynumber', 'teacher_afm', 'teacher_specialization'], 'safe'],
         ];
     }
 
@@ -65,7 +65,10 @@ class TeacherSearch extends Teacher
 
         $query->andFilterWhere(['like', 'teacher_surname', $this->teacher_surname])
             ->andFilterWhere(['like', 'teacher_name', $this->teacher_name])
-            ->andFilterWhere(['like', 'teacher_registrynumber', $this->teacher_registrynumber]);
+            ->andFilterWhere(['like', 'teacher_fathername', $this->teacher_fathername])
+            ->andFilterWhere(['like', 'teacher_mothername', $this->teacher_mothername])
+            ->andFilterWhere(['like', 'teacher_registrynumber', $this->teacher_registrynumber])
+            ->andFilterWhere(['like', 'teacher_afm', $this->teacher_afm]);
 
         return $dataProvider;
     }

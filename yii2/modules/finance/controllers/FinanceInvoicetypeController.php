@@ -32,7 +32,7 @@ class FinanceInvoicetypeController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
-                    ['allow' => true, 'roles' => ['financial_editor']]
+                    ['allow' => true, 'roles' => ['financial_director']]
                 ]]
         ];
     }

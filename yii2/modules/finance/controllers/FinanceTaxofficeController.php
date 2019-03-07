@@ -31,7 +31,7 @@ class FinanceTaxofficeController extends Controller
             'access' => [   'class' => AccessControl::className(),
                 'rules' =>  [
                     ['actions' => ['index'], 'allow' => true, 'roles' => ['financial_viewer']],
-                    ['allow' => true, 'roles' => ['financial_director']]
+                    ['allow' => true, 'roles' => ['financial_editor']]
                 ]]
         ];
     }
