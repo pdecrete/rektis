@@ -294,7 +294,7 @@ class DisposalStatistic extends Model
         }
 
         if ($this->statistic_educationlevel != 'ALL') {
-            $query = $query->andWhere($dir . ".directorate_name LIKE '%" . $this->statistic_educationlevel . "%'");
+            $query = $query->andWhere($dir . ".directorate_stage LIKE '%" . $this->statistic_educationlevel . "%'");
         }
 
         if ($this->statistic_duty != 'ALL') {
@@ -322,7 +322,7 @@ class DisposalStatistic extends Model
         }
         $query = $query->andWhere($subquery);
         $query = $query->andWhere($andWhereCondition);
-        //echo $query->createCommand()->rawSql;
+        //echo $query->createCommand()->rawSql . "<br />"; //die();
         return $query->one()['DISPOSALS_COUNT'];
     }
 
