@@ -16,7 +16,7 @@ use yii\web\View;
         ]);
         ?>
     <?php if (!empty($call_model)) : ?>
-    <?php echo Html::a('<span class="glyphicon glyphicon-arrow-up"></span> Αποστολή', ['send', 'call_id' => $call_model->id], [
+    <?php echo Html::a('<span class="glyphicon glyphicon-arrow-up"></span> Αποστολή', ['send', 'call_id' => $call_model->id, 'export'=>'0'], [
                 'data' => [
                     'method' => 'post',
                     'confirm' => "Θα γίνει αποστολή στοιχείων για την πρόσκληση: {$call_model->title}/{$call_model->year}. Είστε σίγουροι;"
@@ -24,9 +24,47 @@ use yii\web\View;
                 'class' => 'btn btn-primary'
         ]);
         ?>
-    <?php endif; ?>
+    <?php endif; ?>  
 </p>
-
+<p>
+    <?php if (!empty($call_model)) : ?>
+    <h4> Εξαγωγή στοιχείων αποστολής για αιτήσεις σε CSV αρχεία</h4>
+    <?php echo Html::a('<span class="glyphicon glyphicon-refresh"></span> Περιοχές', ['send', 'call_id' => $call_model->id, 'export'=>'1'], [
+                'data' => [
+                    'method' => 'post',
+                ],
+                'class' => 'btn btn-link'
+        ]);
+        ?>
+    <?php endif; ?>
+    <?php if (!empty($call_model)) : ?>
+    <?php echo Html::a('<span class="glyphicon glyphicon-refresh"></span> Κενά ', ['send', 'call_id' => $call_model->id, 'export'=>'3'], [
+                'data' => [
+                    'method' => 'post',
+                ],
+                'class' => 'btn btn-link'
+        ]);
+        ?>
+    <?php endif; ?>        
+    <?php if (!empty($call_model)) : ?>
+    <?php echo Html::a('<span class="glyphicon glyphicon-refresh"></span> Αναπληρωτές ', ['send', 'call_id' => $call_model->id, 'export'=>'2'], [
+                'data' => [
+                    'method' => 'post',
+                ],
+                'class' => 'btn btn-link'
+        ]);
+        ?>
+    <?php endif; ?>
+    <?php if (!empty($call_model)) : ?>
+    <?php echo Html::a('<span class="glyphicon glyphicon-refresh"></span> Προτιμήσεις ', ['send', 'call_id' => $call_model->id, 'export'=>'4'], [
+                'data' => [
+                    'method' => 'post',
+                ],
+                'class' => 'btn btn-link'
+        ]);
+        ?>
+    <?php endif; ?>        
+            
 <?= $this->render('_connection_information', ['connection_options' => $connection_options]) ?>
 
 <?= $this->render('_call_selection_form', ['route' => ['send'], 'call_id' => $call_model ? $call_model->id : null]) ?>
