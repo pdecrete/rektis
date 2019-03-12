@@ -5,6 +5,7 @@ namespace app\modules\disposal\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 
 /**
  * DisposalSearch represents the model behind the search form about `app\modules\disposal\models\Disposal`.
@@ -63,11 +64,14 @@ class DisposalSearch extends Disposal
         $duties = $prefix . 'disposal_disposalworkobj';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
 
-        $tables_fields_array = [$dspls. ".*", $tchers . ".*", $specs . ".*" , $dir_o_schl . ".*" , $reasons . ".*" , $duties . ".*",
-                                 $localdir_decisions . ".*" , "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];
+        $tables_fields_array = [$dspls. ".*", $tchers . ".teacher_id AS TEACHER", $tchers . ".teacher_surname", $tchers . ".teacher_name", $specs . ".*" , $dir_o_schl . ".*" , 
+                                $reasons . ".disposalreason_id AS REASON" , $reasons . ".disposalreason_description", $duties . ".disposalworkobj_id AS DUTY", $duties . ".disposalworkobj_description",
+                                $localdir_decisions . ".localdirdecision_id AS LOCALDIR_DECISION" , $localdir_decisions . ".localdirdecision_protocol", $localdir_decisions . ".localdirdecision_action",
+                                "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];
         $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
         if ($archived) {
-            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".*", $apprvs . ".*"]);
+            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".disposal_id AS DISPOSAL", $dspls_apprvs . ".approval_id", 
+                                                                      $apprvs . ".approval_id AS APPROVAL", $apprvs . ".deleted AS APPROVALDELETED", $apprvs . ".approval_republished"]);
             $tables_array = array_merge($tables_array, [$dspls_apprvs, $apprvs]);
         }
 
@@ -120,16 +124,23 @@ class DisposalSearch extends Disposal
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
+             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
                                          'localdirdecision_action'],
                                         'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC],
-                'enableMultiSort' => true,
-                      ],
-            
-            'pagination' => false,
+                         'enableMultiSort' => true,
+                      ], 
+            //'pagination' => false
         ]);
+        
+        if($archived == 1) {
+            //$dataProvider->pagination = true;
+            $dataProvider->pagination->pageSize = 10;
+        }
+        else {
+            $dataProvider->pagination = false;
+        }   
 
         $this->load($params);
 

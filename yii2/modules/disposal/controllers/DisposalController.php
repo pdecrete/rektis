@@ -113,7 +113,7 @@ class DisposalController extends Controller
 
         $searchModel = new DisposalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $archived, $approval_id, $rejected);
-
+        //echo "<pre>"; print_r($dataProvider); echo "</pre>"; die();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
