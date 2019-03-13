@@ -124,18 +124,16 @@ class DisposalSearch extends Disposal
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
+            'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
                                          'localdirdecision_action'],
                                         'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC],
                          'enableMultiSort' => true,
                       ], 
-            //'pagination' => false
         ]);
         
         if($archived == 1) {
-            //$dataProvider->pagination = true;
             $dataProvider->pagination->pageSize = 10;
         }
         else {
