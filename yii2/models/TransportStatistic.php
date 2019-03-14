@@ -358,7 +358,7 @@ class TransportStatistic extends Model
         }
         
         if ($this->statistic_expendituretype != 'ALL') {            
-            $query = $query->andWhere($e . ".id=" . $this->statistic_expendituretype);
+            $query = $query->andWhere($texpt . ".id=" . $this->statistic_expendituretype);
         }
         
         if ($this->statistic_days != 'ALL') {
@@ -384,7 +384,7 @@ class TransportStatistic extends Model
             }
         }
         $query = $query->andWhere($subquery);
-        $query = $query->andWhere($andWhereCondition);
+        $query = $query->andWhere($andWhereCondition);//echo $query->createCommand()->rawSql; die();
         return $query->one()['TRANSPORTS_COUNT'];
     }
     
@@ -430,7 +430,7 @@ class TransportStatistic extends Model
     
     public static function getTransportExpenditureTypeOptions()
     {
-        $types = TransportType::find()->all();
+        $types = TransportType::find()->all();        
         return ArrayHelper::map($types, 'id', 'name');
     }
     
