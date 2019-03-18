@@ -644,6 +644,8 @@ class DisposalController extends Controller
                         $disposal_hours = Disposal::FULL_DISPOSAL;
                     if($disposal_days == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ")
                         $disposal_days = Disposal::FULL_DISPOSAL;
+                    elseif(empty($disposal_days))
+                        $disposal_days = 0;
                     $disposal->disposal_days = $disposal_days;
                     $disposal->disposal_hours = $disposal_hours;
                     
