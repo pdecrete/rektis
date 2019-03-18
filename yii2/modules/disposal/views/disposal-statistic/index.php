@@ -256,7 +256,7 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 	<div class="row">
 		<div class="col-lg-12">
 			<div class="pull-right">
-            	<form method="post" id="exportStatistic" action="/disposal/disposal-statistic/exportstatistic">
+            	<form method="post" id="exportStatistic" action="disposal-statistic/exportstatistic">
             		<button type="submit" class="btn btn-primary" onclick='chartjsToImage()'>
         				<?= DisposalModule::t('modules/disposal/app', 'Export to PDF'); ?>
     				</button>
