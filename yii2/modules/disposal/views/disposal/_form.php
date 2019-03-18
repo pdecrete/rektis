@@ -29,17 +29,17 @@ $ajaxscript_searchTeacherById = 'function searchLocaldirdecisionById(url){
                                                         data = JSON.parse(data);
                                                         if(data == null) {
                                                             //$("#localdirdecision_protocol_frmid").prop("disabled", false);
-                                                            //$("#localdirdecision_action_frmid").prop("disabled", false);
+                                                            $("#localdirdecision_action_frmid").prop("disabled", false);
                                                             $("#localdirdecision_subject_frmid").prop("disabled", false);
-                                                            //$("#localdirdecision_action_frmid").val("").trigger("change");
+                                                            $("#localdirdecision_action_frmid").val("").trigger("change");
                                                             $("#localdirdecision_subject_frmid").val("").trigger("change");
                                                             //$("#localdirdecision_protocol_frmid").val("").trigger("change");
                                                         }
                                                         else {
-                                                            //$("#localdirdecision_subject_frmid").prop("disabled", true);
+                                                            $("#localdirdecision_subject_frmid").prop("disabled", true);
                                                             $("#localdirdecision_subject_frmid").val(data.localdirdecision_subject).trigger("change");                                                            
-                                                            //$("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
-                                                            //$("#localdirdecision_action_frmid").prop("disabled", true);                                                            
+                                                            $("#localdirdecision_action_frmid").val(data.localdirdecision_action).trigger("change");
+                                                            $("#localdirdecision_action_frmid").prop("disabled", true);                                                            
                                                         }
                                                      },
                                             error: function(){alert("Error");}
@@ -164,6 +164,7 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 			<?= $form->field($model, 'disposal_days')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($disposal_days, 'days', 'days_name'),
                                 'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal days...')],
+			                    'pluginOptions' => ['allowClear' => true],
                             ])->label('Ημέρες Διάθεσης'); ?>
 		</div>
 	</div>	

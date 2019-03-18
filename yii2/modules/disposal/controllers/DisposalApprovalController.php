@@ -677,15 +677,22 @@ class DisposalApprovalController extends Controller
             $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
             $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";
 
-            $hours_word = (!is_null($disposals_models[$i]['disposal_hours']) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
-            $days_word = (!is_null($disposals_models[$i]['disposal_days']) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
-
-            if ($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL) {
+            $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
+            $days_word = (!(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";            
+            
+            if ($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL || $disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) {
                 $teacher_disposals .= " με ολική διάθεση ";
-            } elseif (!is_null($disposals_models[$i]['disposal_hours'])) {
+            } elseif (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
+                      && !(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0)) {
                 $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα (" . $disposals_models[$i]['disposal_hours'] . $hours_word . ")";
+            } elseif ((is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
+                && !(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0)) {
+                    $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
+            } elseif (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
+                && (is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0)) {
+                    $teacher_disposals .= " για " . $disposals_models[$i]['disposal_hours'] . $hours_word . " την εβδομάδα";
             } else {
-                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
+                $teacher_disposals .= "";
             }
 
             $teacher_disposals .= " στο \"" . $toschool_models[$i]['school_name'] . "\"";

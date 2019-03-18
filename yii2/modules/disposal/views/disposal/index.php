@@ -134,7 +134,11 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'value' => function ($model) {
                     if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
-                    } else {
+                    }
+                    else if ($model['disposal_days'] == 0) {
+                        return '-';
+                    }
+                    else {
                         return $model['disposal_days'];
                     }
                 },
@@ -150,7 +154,11 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'value' => function ($model) {
                     if ($model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
-                    } else {
+                    }
+                    else if ($model['disposal_hours'] == 0 || is_null($model['disposal_hours'])) {
+                        return '-';
+                    }
+                    else {
                         return $model['disposal_hours'];
                     }
                 },
