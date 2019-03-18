@@ -183,6 +183,12 @@ class DisposalController extends Controller
             $disposal_days = Disposal::getDayOptions();
 
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
+                if(empty($model->disposal_days)){
+                    $model->disposal_days = 0;
+                }
+                if(empty($model->disposal_hours)){
+                    $model->disposal_hours = 0;
+                }
                 $localdirdecision_model->localdirdecision_action = trim($localdirdecision_model->localdirdecision_action);
                 $localdirdecision_model->localdirdecision_protocol = trim($localdirdecision_model->localdirdecision_protocol);
 

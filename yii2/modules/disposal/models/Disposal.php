@@ -19,6 +19,7 @@ use app\modules\schooltransport\models\Directorate;
  * @property string $disposal_startdate
  * @property string $disposal_enddate
  * @property integer $disposal_hours
+ * @property integer $disposal_days
  * @property integer $disposal_republished
  * @property integer $disposal_rejected
  * @property string $created_at
@@ -88,7 +89,7 @@ class Disposal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['disposal_startdate', 'disposal_days', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
+            [['disposal_startdate', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
             [['disposal_days', 'disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id',
               'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
