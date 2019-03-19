@@ -82,5 +82,6 @@ return [
     'The teachers were imported successfully.' => 'Οι εκπαιδευτικοί εισήχθησαν επιτυχώς.',
     'Import Teachers' => 'Εισαγωγή Εκπαιδευτικών',
     'Import Teachers from Excel' => 'Εισαγωγή Εκπαιδευτικών από Excel',
-    'Select Teachers Excel File' => 'Επιλέξτε το Excel αρχείο με τους εκπαιδευτικούς'
+    'Select Teachers Excel File' => 'Επιλέξτε το Excel αρχείο με τους εκπαιδευτικούς',
+    'The teacher was deleted successfully.' => 'Ο εκπαιδευτικός διαγράφηκε επιτυχώς.'
 ];
