@@ -590,16 +590,19 @@ class DisposalController extends Controller
                         break;
                     }
 
-                    $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->one();
-
-                    if (!$teacher_model) {
+                    $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->orWhere(['teacher_afm' => $currentteacher_am])->one();
+                    
+                    if(is_null($teacher_model)) {
+                        throw new Exception(DisposalModule::t('modules/disposal/app', "There is no teacher in the database with Registry or VAT number " . $currentteacher_am  . ". Please add the teacher in the database to continue."));
+                    }
+                    /*if (!$teacher_model) {
                         $teacher_model = new Teacher();
                         $teacher_model->teacher_registrynumber = intval($currentteacher_am);
                         $teacher_model->teacher_surname = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['SURNAME'], $currentrow_index)->getValue();
                         $teacher_model->teacher_name = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['NAME'], $currentrow_index)->getValue();
                         $teacher_model->school_id = Schoolunit::findOne(['school_id' => self::findExcelFileSchoolId($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SERVICE_SCHOOL'], $currentrow_index)->getValue())])['school_id'];
 
-                        /* Find the specialisation_id of the teacher */
+                        // Find the specialisation_id of the teacher
                         $specialisation = mb_substr($disposals_worksheet->getCellByColumnAndRow($disposals_columns['SPECIALISATION'], $currentrow_index)->getValue(), 0, 7, 'UTF-8');
                         $specialisation_with_blank = mb_substr($specialisation, 0, 2) . ' ' . mb_substr($specialisation, 2, 5, 'UTF-8');
                         if (mb_substr($specialisation, 4, 1, 'UTF-8') != '.') {
@@ -611,7 +614,7 @@ class DisposalController extends Controller
                         if (!$teacher_model->save()) {
                             throw new Exception("Error in saving teacher details refered to the disposals. Please check if teacher details for all disposals in the Excel file are filled in and valid.");
                         }
-                    }
+                    } */
 
                     $disposal = new Disposal();
                     $startdate = null;
