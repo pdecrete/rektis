@@ -59,6 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
         		<th>Σχολείο Οργανικής</th>
         		<th>Σχολείο Διάθεσης</th>
         		<th>Ώρες</th>
+        		<th>Ημέρες</th>
         		<th>Από</th>
         		<th>Έως</th>
         		</tr>
@@ -69,7 +70,24 @@ $this->params['breadcrumbs'][] = $this->title;
             		<td><?php echo $specializations[$index]['code'] . ', ' . $specializations[$index]['name']; ?></td>
             		<td><?php echo $service_schools[$index]['school_name']; ?></td>
             		<td><?php echo $disposal_schools[$index]['school_name']; ?></td>
-            		<td><?php echo ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) ? DisposalModule::t('modules/disposal/app', 'Full time Disposal') : $disposal_model['disposal_hours']; ?></td>
+            		<td><?php 
+            		          if($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL)
+            		              echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
+        		              else if($disposal_model['disposal_hours'] == 0)
+        		                  echo "-";
+        		              else
+        		                  echo $disposal_model['disposal_hours'];
+            		     ?>
+            		</td>
+            		<td><?php 
+            		          if($disposal_model['disposal_days'] == Disposal::FULL_DISPOSAL)
+            		              echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
+        		              else if($disposal_model['disposal_days'] == 0)
+        		                  echo "-";
+        		              else
+        		                  echo $disposal_model['disposal_days'];
+            		     ?>
+            		</td>
             		<td><?php echo date_format(date_create($disposal_model['disposal_startdate']), 'd/m/Y'); ?></td>
             		<td><?php echo date_format(date_create($disposal_model['disposal_enddate']), 'd/m/Y');; ?></td>
             	</tr>            	
