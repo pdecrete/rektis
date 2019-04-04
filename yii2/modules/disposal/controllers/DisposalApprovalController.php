@@ -674,7 +674,15 @@ class DisposalApprovalController extends Controller
 
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {
-            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
+            $workstatus = '';
+            if(!(!is_null($teacher_models[$i]['teacher_registrynumber']) && isset($teacher_models[$i]['teacher_registrynumber']))) {
+                if($teacher_models[$i]['teacher_gender'] == Teacher::FEMALE)
+                    $workstatus = '(αναπληρώτρια) ';
+                else 
+                    $workstatus = '(αναπληρωτής) ';
+            }
+            
+            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου " . $workstatus ;
             $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";
 
             $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
