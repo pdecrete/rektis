@@ -1,4 +1,5 @@
 <?php
+use app\modules\finance\Module;
 use app\modules\finance\components\Money;
 
 $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
@@ -41,6 +42,8 @@ foreach ($expenditures_model as $expenditure_model){
     <ul>
     <?php  
         foreach ($expenditures_model as $expenditure_model ):
+            $kae = $expenditure_model['EXPENDITURE']->getKae()['kae_id'];
+            $kae = (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae;
             $sum_flattaxes = 0;
             if(isset($expenditure_model['EXPENDITURE']['exp_flattaxes'])) {
                 $flattaxes = json_decode($expenditure_model['EXPENDITURE']['exp_flattaxes']);
@@ -50,11 +53,11 @@ foreach ($expenditures_model as $expenditure_model){
             $exp_payvalue = $expenditure_model['EXPENDITURE']['exp_amount'] 
                         + ($expenditure_model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($expenditure_model['EXPENDITURE']['fpa_value']))
                         + $sum_flattaxes;
-            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($exp_payvalue, true) . "</li>";
+            echo "<li>" . $expenditure_model['EXPENDITURE']['exp_description'] . " αξίας " . Money::toCurrency($exp_payvalue, true) . " (" . Module::t('modules/finance/app', 'RCN') . " " . $kae . ")</li>";
     	endforeach;
 	?>
 	</ul>
-    της υπηρεσίας μας <strong>(<?= Yii::$app->params['finance_code']; ?>, ΑΛΕ <?= (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae; ?>)</strong> 
+    της υπηρεσίας μας <strong>(<?= Yii::$app->params['finance_code']; ?>)</strong> 
     συνολικού ποσού: <strong><?= Money::toCurrency($sum_amount, true); ?></strong>, 
     στο όνομα του δικαιούχου "<strong><?= $supplier_model['suppl_name'] ?></strong>" και παρακαλούμε για τις δικές σας ενέργειες. 
 </p>

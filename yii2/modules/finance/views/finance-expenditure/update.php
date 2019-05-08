@@ -9,7 +9,7 @@ use yii\helpers\Html;
 $this->title = Module::t('modules/finance/app', 'Update Expenditure');
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures Management'), 'url' => ['/finance/default']];
 $this->params['breadcrumbs'][] = ['label' => Module::t('modules/finance/app', 'Expenditures'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = $this->title . ' (' . Module::t('modules/finance/app', 'RCN') . ' ' .  $kae . ')';
 
 //echo "<pre>"; print_r($model); echo "</pre>"; die();
 ?>
@@ -24,7 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'suppliers' => $suppliers,
         'expenddeduction_models' => $expenddeduction_models,
         'deductions' => $deductions,
-        'withdrawals_expendituressum' => $withdrawals_expendituressum
+        'withdrawals_expendituressum' => $withdrawals_expendituressum,
+        'kae' => $kae
     ]) ?>
 
 </div>
