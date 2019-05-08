@@ -215,7 +215,8 @@ class FinanceExpenditureController extends Controller
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
                     'deductions' => $deductions,
-                    'withdrawals_expendituressum' => $withdrawals_expendituressum
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum,
+                    'kae' => $id
                 ]);
             }
         } else {
@@ -227,7 +228,8 @@ class FinanceExpenditureController extends Controller
                 'suppliers' => $suppliers,
                 'expenddeduction_models' => $expenddeduction_models,
                 'deductions' => $deductions,
-                'withdrawals_expendituressum' => $withdrawals_expendituressum
+                'withdrawals_expendituressum' => $withdrawals_expendituressum,
+                'kae' => $id
             ]);
         }
     }
@@ -340,7 +342,8 @@ class FinanceExpenditureController extends Controller
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
                     'deductions' => $deductions,
-                    'withdrawals_expendituressum' => $withdrawals_expendituressum
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum,
+                    'kae' => $model->getKae()['kae_id']
                 ]);
             }
         } else {
@@ -352,7 +355,8 @@ class FinanceExpenditureController extends Controller
                     'suppliers' => $suppliers,
                     'expenddeduction_models' => $expenddeduction_models,
                     'deductions' => $deductions,
-                    'withdrawals_expendituressum' => $withdrawals_expendituressum
+                    'withdrawals_expendituressum' => $withdrawals_expendituressum,
+                    'kae' => $model->getKae()['kae_id']
             ]);
         }
     }
@@ -718,7 +722,7 @@ class FinanceExpenditureController extends Controller
     public function actionPaymentreport()
     {
         $models = [];
-        $kae = "";
+        //$kae = "";
         $exp_ids = Yii::$app->request->post('selection');
         $first_expenditure = true;
         $maxdate = null;
@@ -763,15 +767,15 @@ class FinanceExpenditureController extends Controller
                 $models[$index]['INVOICE'] = $invoice_model;
                 $models[$index]['DEDUCTIONS'] = $deductions_models;
 
-                $kaewithdr_id = FinanceExpendwithdrawal::find()->
+                /*$kaewithdr_id = FinanceExpendwithdrawal::find()->
                                     where(['exp_id' => $expenditure_model['exp_id']])->all()[0]['kaewithdr_id'];
                 $kaecredit_id = FinanceKaewithdrawal::findOne(['kaewithdr_id' => $kaewithdr_id])['kaecredit_id'];
                 $exp_kae = FinanceKaecredit::findOne(['kaecredit_id' => $kaecredit_id])['kae_id'];
-                if ($kae == "") {
+                 if ($kae == "") {
                     $kae = $exp_kae;
                 } elseif ($exp_kae != $kae) {
                     throw new Exception();
-                }
+                } */
             }
             $year = Yii::$app->session["working_year"];
         } catch (Exception $e) {
@@ -782,7 +786,7 @@ class FinanceExpenditureController extends Controller
         $content = $this->renderPartial('paymentreport', [
             'models' => $models,
             'year' => $year,
-            'kae' => $kae,
+            //'kae' => $kae,
             'maxdate' => $maxdate
         ]);
 
@@ -811,7 +815,7 @@ class FinanceExpenditureController extends Controller
             //echo "<pre>"; print_r($exp_ids); echo "</pre>"; die();
             $supplier = null;
             $expenditures_model = array();
-            $kae = null;
+            /*$kae = null; //Was here for restricting a unique RCN on a cover sheet*/
             $exp_state = null;
             
             foreach ($exp_ids as $key=>$exp_id)
@@ -841,13 +845,13 @@ class FinanceExpenditureController extends Controller
                 else if($curr_supplier != $supplier)
                     throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select expenditures of the same supplier."));                               
             
-                $curr_kae = $expenditure->getKae();                
+                /*$curr_kae = $expenditure->getKae();                
                 if($kae == null){                    
                     $kae = $curr_kae;
                 }
                 else if($curr_kae['kae_id'] != $kae['kae_id']){                     
                     throw new Exception(Module::t('modules/finance/app', "Failed to create cover sheet. Please select expenditures of the same RCN."));
-                }
+                }*/
             }
 
             $expstate_model = $curr_expstate;            
@@ -857,7 +861,7 @@ class FinanceExpenditureController extends Controller
                                             ['expenditures_model' => $expenditures_model,
                                              'expstate_model' => $expstate_model,
                                              'supplier_model' => $supplier_model,
-                                             'kae' => $curr_kae['kae_id']
+                                             //'kae' => $curr_kae['kae_id']
                                             ]);
 
             $user = Yii::$app->user->identity->username;
