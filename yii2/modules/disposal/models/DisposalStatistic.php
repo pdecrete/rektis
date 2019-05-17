@@ -6,6 +6,7 @@ use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use app\modules\disposal\DisposalModule;
 use Yii;
+use app\models\Specialisation;
 
 class DisposalStatistic extends Model
 {
@@ -172,6 +173,9 @@ class DisposalStatistic extends Model
         $level_literal = '';
         $program_literal = '';
         $country_literal = '';
+        $specialization_literal = '';
+        $duty_literal = '';
+        $reason_literal = '';
 
         $counter = 0;
         foreach ($years as $year) {
@@ -183,6 +187,30 @@ class DisposalStatistic extends Model
                 $years_literal .= '"';
             }
         }
+        
+        if ($this->statistic_educationlevel != 'ALL') {
+            $level_literal .= ' της ' . EduinventoryHelper::getEducationalLevels()[$this->statistic_educationlevel] . ' εκπαίδευσης ';
+        }
+        
+        if ($this->statistic_prefecture != 'ALL') {
+            $prefecture_literal .= ' του νομού ' . $this->statistic_prefecture;
+        }
+        
+        if ($this->statistic_specialization != 'ALL') {
+            $specialization_literal .= ' εκπ/κων ' . Specialisation::findOne(['id' => $this->statistic_specialization])['code'];
+        }
+        
+        if ($this->statistic_duty != 'ALL') {
+            $duty_literal .= ' με καθήκον διάθεσης "' . DisposalWorkobj::findOne(['disposalworkobj_id' => $this->statistic_duty])['disposalworkobj_description'] . '"';
+        }
+        
+        if ($this->statistic_reason != 'ALL') {
+            $reason_literal .= ' με λόγο διάθεσης "' . DisposalReason::findOne(['disposalreason_id' => $this->statistic_reason])['disposalreason_description'] . '"';
+        }
+        
+        $literal .= $specialization_literal . $prefecture_literal . $level_literal . $years_literal
+                 . $reason_literal . $duty_literal 
+                 . ' (ομαδοποίηση ' . mb_strtolower(self::getGroupByOptions()[$this->statistic_groupby]) . ')';;      
 
         return $literal;
     }
