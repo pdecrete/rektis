@@ -57,7 +57,6 @@ class DisposalStatisticController extends Controller
         $prefectures = $prefectures + EduinventoryHelper::getPrefectures();
         $education_levels['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλες οι βαθμίδες');
         $education_levels = $education_levels + EduinventoryHelper::getEducationalLevels();
-        //echo "<pre>"; print_r($education_levels); echo "</pre>";die();
         $duties['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλα τα καθήκοντα');
         $duties = $duties + DisposalStatistic::getDutyOptions();
         $reasons['ALL'] = DisposalModule::t('modules/disposal/app', 'Όλοι οι λόγοι');
