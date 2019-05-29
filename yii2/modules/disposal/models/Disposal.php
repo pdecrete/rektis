@@ -6,11 +6,13 @@ use app\modules\eduinventory\models\Teacher;
 use app\models\User;
 use app\modules\disposal\DisposalModule;
 use app\modules\schooltransport\models\Schoolunit;
+use Exception;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\modules\schooltransport\models\Directorate;
+use yii2\modules\base\components\DateHelper;
 
 /**
  * This is the model class for table "{{%disposal_disposal}}".
@@ -89,7 +91,7 @@ class Disposal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['disposal_startdate', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id'], 'required'],
+            [['disposal_startdate', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id', 'disposalworkobj_id'], 'required'],
             [['disposal_startdate', 'disposal_enddate', 'created_at', 'updated_at'], 'safe'],
             [['disposal_days', 'disposal_hours', 'disposal_republished', 'disposal_rejected' ,'deleted', 'archived', 'created_by', 'updated_by', 'teacher_id', 'fromschool_id', 'toschool_id', 'disposalreason_id',
               'disposalworkobj_id', 'localdirdecision_id'], 'integer'],
@@ -276,7 +278,24 @@ class Disposal extends \yii\db\ActiveRecord
             $query = $query->andWhere($t . ".disposal_startdate >= '" . $school_year . "-09-01' AND " .
                 $t . ".disposal_startdate <= '" . (string)($school_year+1) . "-08-31'");
         }
+        //echo $query->createCommand()->rawSql; die();
         return $query->all();
+    }
+    
+        
+    public static function getPeriodDisposals($startdate, $enddate) 
+    {
+        if(!\app\modules\base\components\DateHelper::validateDate($startdate) || !\app\modules\base\components\DateHelper::validateDate($enddate)){
+            throw new Exception("Invalid dates");
+        }
+            
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $t = $tblprefix . 'disposal_disposal';
+        $query = DisposalSearch::getAllDisposalsQuery(1);//$archived = 1 in argument
+                
+        $query = $query->andWhere($t . ".disposal_startdate >= '" . $startdate . "' AND " .
+                                  $t . ".disposal_startdate <= '" . $enddate . "'")->orderBy('disposal_startdate');
+        return $query->all();        
     }
 
     /**

@@ -42,8 +42,10 @@ return [
     
     'deputy_director_sign' => '0 Αναπληρωτής του Περιφερειακού Διευθυντή Εκπ/σης',
     'deputy_director' => 'Ζερβάκης Στυλιανός',
-    /*     'FinanceDepartmentHead' => 'Λαμπρίδου Αικατερίνη',
-     'ICTDepartmentHead' => 'Τζαγκαράκης Ελευθέριος',
-     'AdministrationDepartmentHead' => 'Μακράκη Καλλιόπη',
-     'LawDepartmentHead' => 'Θεοδοσάκη Καλλιόπη', */
+        
+    'reportingTo_disposals' => '',
+    'reportingTo_leaves' => '',
+    'reportingTo_transports' => '',
+    'reportingTo_schtransports' => '',
+    'reporting_exportfolder' => '',
 ];

@@ -186,7 +186,6 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
 			<?= $form->field($model, 'disposalworkobj_id')->widget(Select2::classname(), [
                                  'data' => ArrayHelper::map($disposal_workobjs, 'disposalworkobj_id', 'disposalworkobj_description'),
                                  'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'For ...')],
-                                 'pluginOptions' => ['allowClear' => true]
                             ])->label('Καθήκον Διάθεσης'); ?>
 		</div>
 	</div>

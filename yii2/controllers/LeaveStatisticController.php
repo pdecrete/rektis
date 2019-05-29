@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use app\models\Leave;
 use app\models\LeaveStatistic;
 use app\modules\eduinventory\components\EduinventoryHelper;
+use app\modules\base\components\DateHelper;
 
 
 class LeaveStatisticController extends Controller
@@ -141,20 +142,34 @@ class LeaveStatisticController extends Controller
         return $pdf->render();
     }
 
+    
     public function actionExportexcel($year)
     {
-        try {
-            if (!isset($year) || is_null($year) || !is_numeric($year)) {
-                throw new Exception("An invalid period value was given to export school transports data.");
+        if($year == -1) {
+            $this->exportExcel();
+        }
+        
+        $startdate = $year . '-01-01';
+        $enddate = $year . '-12-31';
+        $this->exportExcel($startdate, $enddate);
+    }
+    
+    
+    public static function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
+    {
+        try {            
+            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+                throw new Exception("Invalid dates");
             }
             
-            $start_date = $year . '-01-01';
-            $end_date = $year . '-12-31';
-            
-            if($year != -1)
-                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>', 'start_date', $start_date])->andWhere(['<', 'start_date', $end_date])->all();
+            if($startdate != null && $enddate != null)            
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->andWhere(['<=', 'start_date', $enddate])->orderBy('start_date')->all();
+            else if($startdate != null)
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->orderBy('start_date')->all();
+            else if($enddate != null)
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['<=', 'start_date', $enddate])->orderBy('start_date')->all();
             else
-                $leaves = Leave::find()->where(['deleted' => 0])->all();
+                $leaves = Leave::find()->where(['deleted' => 0])->orderBy('start_date')->all();
 
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
@@ -201,12 +216,19 @@ class LeaveStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $leave['reason'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
-            header('Content-type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="file.xls"');
-            $writer->save('php://output');
+            if($savePathFile === null) {
+                header('Content-type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="file.xls"');
+                $writer->save('php://output');
+            }
+            else
+                $writer->save($savePathFile);
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
-            return $this->redirect('index');
+            Yii::$app->getResponse()->redirect('index');
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {
+            Yii::$app->session->addFlash('danger', Yii::t('app', 'The export folder for the Excel file is not valid'));
+            Yii::$app->getResponse()->redirect('index');
         }
     }
 }

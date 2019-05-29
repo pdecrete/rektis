@@ -139,7 +139,8 @@ class DisposalWorkobjController extends Controller
             if (!$this->findModel($id)->delete()) {
                 throw new Exception();
             }
-            DisposalModule::writeLog('deleted Disposal Duty with id: ', $id);
+            $user = Yii::$app->user->identity->username;
+            Yii::info('User ' . $user . ' ' . 'deleted Disposal Duty with id: '. $id);
             Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The disposal duty was deleted successfully."));
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'deleted Disposal Duty with id: '. $id, 'disposal');

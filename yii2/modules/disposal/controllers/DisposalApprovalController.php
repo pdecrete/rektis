@@ -707,7 +707,10 @@ class DisposalApprovalController extends Controller
             $teacher_disposals .= " σ" . $this->schoolunitArticle($toschool_models[$i]['school_mineducode']) . " \"" . $toschool_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
-            $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
+            $duty = $disposals_models[$i]->getDisposalworkobj()->one();
+            if($duty['disposalworkobj_name'] != "not_defined") {
+                $teacher_disposals .= " με αντικείμενο " . mb_strtolower($duty['disposalworkobj_description'], 'UTF-8');
+            }
             $teacher_disposals .= ".</w:t><w:br/><w:br/><w:t>";
         }
 

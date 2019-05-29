@@ -8,6 +8,7 @@ use kartik\mpdf\Pdf;
 use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\modules\base\components\DateHelper;
 use app\modules\schooltransport\Module;
 use app\modules\schooltransport\models\Statistic;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -122,16 +123,28 @@ class StatisticController extends \yii\web\Controller
         ]);
         return $pdf->render();
     }
-
+    
+    
     public function actionExportexcel($period)
     {
+        if($period == -1) {
+            $this->exportExcel();
+        }
+        
+        $startdate = $period . '-09-01';
+        $enddate = ($period+1) . '-08-31';
+        $this->exportExcel($startdate, $enddate);
+    }
+    
+
+    public function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
+    {
         try {
-            if (!isset($period) || is_null($period) || !is_numeric($period)) {
+            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
                 throw new Exception("An invalid period value was given to export school transports data.");
             }
 
-            $transports = SchtransportTransport::getSchoolYearTransports($period);
-            //echo "<pre>"; print_r($transports); echo "<pre>";die();
+            $transports = SchtransportTransport::getPeriodTransports($startdate, $enddate);            
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
 
@@ -140,6 +153,7 @@ class StatisticController extends \yii\web\Controller
 
             $row = 1;
             $column = 1;
+            $edulevel = ['PRIMARY' => 'ΠΡΩΤΟΒΑΘΜΙΑ', 'SECONDARY' => 'ΔΕΥΤΕΡΟΒΑΘΜΙΑ'];
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Α/Α', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολικό Έτος', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολείο', DataType::TYPE_STRING);
@@ -169,16 +183,24 @@ class StatisticController extends \yii\web\Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['meeting_city'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Module::t('modules/schooltransport/app', $directorate['directorate_stage']), DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $edulevel[$directorate['directorate_stage']], DataType::TYPE_STRING);                
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
+            }            
+            $writer = new Xls($spreadsheet);            
+            if($savePathFile === null) {
+                header('Content-type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="file.xls"');
+                $writer->save('php://output');
             }
-            $writer = new Xls($spreadsheet);
-            header('Content-type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="file.xls"');
-            $writer->save('php://output');
-        } catch (Exception $exc) {
+            else
+                $writer->save($savePathFile);
+                
+        } catch (Exception $exc) {            echo $exc; die();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect('index');
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {
+            Yii::$app->session->addFlash('danger', Yii::t('app', 'The export folder for the Excel file is not valid'));
+            Yii::$app->getResponse()->redirect('index');
         }
     }
 }

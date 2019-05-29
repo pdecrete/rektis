@@ -11,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use app\models\TransportStatistic;
+use app\modules\base\components\DateHelper;
 use app\modules\eduinventory\components\EduinventoryHelper;
 use app\models\Transport;
 
@@ -154,19 +155,31 @@ class TransportStatisticController extends Controller
         ]);
         return $pdf->render();
     }
-
+    
     public function actionExportexcel($year)
     {
+        if($year == -1) {
+            $this->exportExcel();
+        }
+        
+        $startdate = $year . '-01-01';
+        $enddate = $year . '-12-31';
+        $this->exportExcel($startdate, $enddate);
+    }
+
+    public function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
+    {
         try {
-            if (!isset($year) || is_null($year) || !is_numeric($year)) {
-                throw new Exception("An invalid period value was given to export school transports data.");
+            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+                throw new Exception("Invalid dates");
             }
-            
-            $start_date = $year . '-01-01';
-            $end_date = $year . '-12-31';
-            
-            if($year != -1)
-                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['>', 'start_date', $start_date])->andWhere(['<', 'start_date', $end_date])->all();
+                                    
+            if($startdate != null && $enddate != null)
+                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->andWhere(['<=', 'start_date', $enddate])->all();
+            else if($startdate != null)
+                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->all();
+            else if($enddate != null)
+                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['<=', 'start_date', $enddate])->all();                
             else
                 $transports = Transport::find()->where(['deleted' => 0])->all();
 
@@ -241,12 +254,20 @@ class TransportStatisticController extends Controller
                 
             }
             $writer = new Xls($spreadsheet);
-            header('Content-type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="file.xls"');
-            $writer->save('php://output');
+            if($savePathFile === null) {
+                header('Content-type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="file.xls"');
+                $writer->save('php://output');
+            }
+            else
+                $writer->save($savePathFile);
+            
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
-            return $this->redirect('index');
+            Yii::$app->getResponse()->redirect('index');
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {
+            Yii::$app->session->addFlash('danger', Yii::t('app', 'The export folder for the Excel file is not valid'));
+            Yii::$app->getResponse()->redirect('index');
         }
     }
 }
