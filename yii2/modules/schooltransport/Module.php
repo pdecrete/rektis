@@ -39,8 +39,6 @@ class Module extends \yii\base\Module
 
     public static function t($category, $message, $params = [], $language = null)
     {
-        //echo "<pre>"; print_r(Yii::$app->i18n->getMessageSource($category)); echo "</pre>"; die();
-        //echo Yii::$app->i18n->getMessageSource($category)
         return Yii::t($category, $message, $params, 'el-GR');
     }
 }

@@ -10,6 +10,7 @@ use yii\web\Controller;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use app\modules\base\components\DateHelper;
 use app\modules\disposal\DisposalModule;
 use app\modules\disposal\models\DisposalStatistic;
 use app\modules\eduinventory\components\EduinventoryHelper;
@@ -127,15 +128,25 @@ class DisposalStatisticController extends Controller
         return $pdf->render();
     }
 
-    public function actionExportexcel($period)
+    public function actionExportexcel($year)
+    {
+        if ($year == -1) {
+            $this->exportExcel();
+        }
+
+        $startdate = $year . '-09-01';
+        $enddate = ($year+1) . '-08-31';
+        $this->exportExcel($startdate, $enddate);
+    }
+
+    public static function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
     {
         try {
-            if (!isset($period) || is_null($period) || !is_numeric($period)) {
+            if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
                 throw new Exception("An invalid period value was given to export school transports data.");
             }
 
-            $disposals = Disposal::getSchoolYearDisposals($period);
-            //echo "<pre>"; print_r($disposals); echo "<pre>";die();
+            $disposals = Disposal::getPeriodDisposals($startdate, $enddate);
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
 
@@ -159,7 +170,7 @@ class DisposalStatisticController extends Controller
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ώρες Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Έναρξη Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λήξη Διάθεσης', DataType::TYPE_STRING);
-            //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Διάθεσης', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Διάθεσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Αντικείμενο Διάθεσης', DataType::TYPE_STRING);
             foreach ($disposals as $disposal) {
                 $row++;
@@ -186,7 +197,7 @@ class DisposalStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($disposal['disposal_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($disposal['disposal_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalreason_description'], DataType::TYPE_STRING);
-                //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalworkobj_description'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $disposal['disposalworkobj_description'], DataType::TYPE_STRING);
 
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
@@ -194,12 +205,20 @@ class DisposalStatisticController extends Controller
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
-            header('Content-type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="file.xls"');
-            $writer->save('php://output');
+
+            if ($savePathFile === null) {
+                header('Content-type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="file.xls"');
+                $writer->save('php://output');
+            } else {
+                $writer->save($savePathFile);
+            }
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
-            return $this->redirect('index');
+            Yii::$app->getResponse()->redirect('index');
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', 'The export folder for the Excel file is not valid'));
+            Yii::$app->getResponse()->redirect('index');
         }
     }
 }

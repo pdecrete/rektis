@@ -288,29 +288,29 @@ class DisposalApprovalController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                
                 $template_filename = "";
-                if($model->getRepublishedApproval() != null)
+                if ($model->getRepublishedApproval() != null) {
                     $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_REPUBLISH_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_REPUBLISH_TEMPLATE";
-                else
+                } else {
                     $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
-                
+                }
+
                 if (!$model->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
                 }
-                
+
                 $old_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
-                
-              /*   foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
-                    if($disposalapproval_model['disposal_id'] == 0)
-                        unset($disposalapproval_models[$index]);
-                } */
+
+                /*   foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
+                      if($disposalapproval_model['disposal_id'] == 0)
+                          unset($disposalapproval_models[$index]);
+                  } */
 
                 $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
                 //echo "<pre>"; print_r($new_disposal_ids); echo "<pre>"; die();
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
-                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
+                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
                         $disposals_counter++;
                         if (!$old_disposalapproval_model->delete()) {
                             throw new Exception("Failed to save the changes of the approval.");
@@ -469,7 +469,7 @@ class DisposalApprovalController extends Controller
                     $approval_changed = true;
                 }
 
-                $model->approval_file = "-";                
+                $model->approval_file = "-";
                 if (!$model->save()) {//save two times because we need $model->approval_id for the filename
                     throw new Exception("Failed to save the approval in the database.");
                 }
@@ -482,16 +482,16 @@ class DisposalApprovalController extends Controller
                 if (!$initialModel->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
                 }
-                
+
                 $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
 
-//                 echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />"; 
+//                 echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />";
 //                 echo "<pre>"; print_r($disposalapproval_models); echo "<pre><br /><br />"; die();
                 $disposals_counter = 0;
                 $order = 0;
                 foreach ($disposals_models as $index=>$disposal_model) {
-                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids)) {
-//                         echo $initial_disposalapproval_models[$index]->disposal_id . ""; 
+                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids, true)) {
+//                         echo $initial_disposalapproval_models[$index]->disposal_id . "";
 //                         echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />";
 //                         die();
                         $approval_changed = true;
@@ -647,10 +647,10 @@ class DisposalApprovalController extends Controller
             $document_action = 'την αριθμ. ' . $document_action . ' Πράξη';
         }
 
-        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";        
+        $template_path = Yii::getAlias($this->module->params['disposal_templatepath']) . $template_filename . ".docx";
 
         $templateProcessor = new TemplateProcessor(Yii::getAlias($template_path));
-        if($model->getRepublishedApproval() != null) {
+        if ($model->getRepublishedApproval() != null) {
             $templateProcessor->setValue('republish_notice', $model->approval_republishtext);
             $templateProcessor->setValue('republish_date', date_format(date_create($model->approval_republishdate), 'd-m-Y'));
             $templateProcessor->setValue('city', Yii::$app->params['city']);
@@ -675,20 +675,21 @@ class DisposalApprovalController extends Controller
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {
             $workstatus = '';
-            if(!(!is_null($teacher_models[$i]['teacher_registrynumber']) && isset($teacher_models[$i]['teacher_registrynumber']))) {
-                if($teacher_models[$i]['teacher_gender'] == Teacher::FEMALE)
+            if (!(!is_null($teacher_models[$i]['teacher_registrynumber']) && isset($teacher_models[$i]['teacher_registrynumber']))) {
+                if ($teacher_models[$i]['teacher_gender'] == Teacher::FEMALE) {
                     $workstatus = '(αναπληρώτρια) ';
-                else 
+                } else {
                     $workstatus = '(αναπληρωτής) ';
+                }
             }
-            
+
             $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου " . $workstatus ;
-            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" . 
+            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
                                   $fromschool_models[$i]['school_name'] . "\"";
 
             $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
-            $days_word = (!(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";            
-            
+            $days_word = (!(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
+
             if ($disposals_models[$i]['disposal_days'] == Disposal::FULL_DISPOSAL || $disposals_models[$i]['disposal_hours'] == Disposal::FULL_DISPOSAL) {
                 $teacher_disposals .= " με ολική διάθεση ";
             } elseif (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
@@ -696,10 +697,10 @@ class DisposalApprovalController extends Controller
                 $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα (" . $disposals_models[$i]['disposal_hours'] . $hours_word . ")";
             } elseif ((is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
                 && !(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0)) {
-                    $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
+                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_days'] . $days_word . "την εβδομάδα";
             } elseif (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0)
                 && (is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0)) {
-                    $teacher_disposals .= " για " . $disposals_models[$i]['disposal_hours'] . $hours_word . " την εβδομάδα";
+                $teacher_disposals .= " για " . $disposals_models[$i]['disposal_hours'] . $hours_word . " την εβδομάδα";
             } else {
                 $teacher_disposals .= "";
             }
@@ -707,7 +708,10 @@ class DisposalApprovalController extends Controller
             $teacher_disposals .= " σ" . $this->schoolunitArticle($toschool_models[$i]['school_mineducode']) . " \"" . $toschool_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
-            $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
+            $duty = $disposals_models[$i]->getDisposalworkobj()->one();
+            if ($duty['disposalworkobj_name'] != "not_defined") {
+                $teacher_disposals .= " με αντικείμενο " . mb_strtolower($duty['disposalworkobj_description'], 'UTF-8');
+            }
             $teacher_disposals .= ".</w:t><w:br/><w:br/><w:t>";
         }
 
@@ -719,19 +723,19 @@ class DisposalApprovalController extends Controller
         $templateProcessor->saveAs($fullpath_fileName);
         return true;
     }
-    
+
     /* Για τiς Δ/νσης εκπαίδευσης επιστρέφει άρθρο γένους θηλυκού */
-    private function schoolunitArticle($school_minedu_code) {
+    private function schoolunitArticle($school_minedu_code)
+    {
         $article = 'το';
-        if(in_array($school_minedu_code, [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101])) {
+        if (in_array($school_minedu_code, [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101], true)) {
             $article = 'τη';
-        }
-        else if(in_array($school_minedu_code, [9999910])) {
+        } elseif (in_array($school_minedu_code, [9999910], true)) {
             $article = 'την';
         }
         return $article;
     }
-    
+
     /**
      * Deletes an existing DisposalApproval model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
