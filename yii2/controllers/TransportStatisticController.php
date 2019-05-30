@@ -15,7 +15,6 @@ use app\modules\base\components\DateHelper;
 use app\modules\eduinventory\components\EduinventoryHelper;
 use app\models\Transport;
 
-
 class TransportStatisticController extends Controller
 {
     public function behaviors()
@@ -56,28 +55,28 @@ class TransportStatisticController extends Controller
 
         $tranposrtvehicles['ALL'] = Yii::t('app', 'Όλα τα μέσα μετακίνησης');
         $tranposrtvehicles = $tranposrtvehicles + TransportStatistic::getTransportVehicleOptions();
-        
+
         $expendituretypes['ALL'] = Yii::t('app', 'Όλοι οι τύποι δαπάνης');
         $expendituretypes = $expendituretypes + TransportStatistic::getTransportExpenditureTypeOptions();
-        
+
         $specialisations['ALL'] = Yii::t('app', 'Όλες οι ειδικότητες');
         $specialisations = $specialisations + EduinventoryHelper::getSpecializations();
-                
+
         $positionunits['ALL'] = Yii::t('app', 'Όλες οι υπηρεσίες');
         $positionunits = $positionunits + TransportStatistic::getPositionUnitsOptions();
-        
+
         $employees['ALL'] = Yii::t('app', 'Όλοι οι εργαζόμενοι');
         $employees = $employees + TransportStatistic::getEmployeeOptions();
-        
+
         $days_applied['ALL'] = Yii::t('app', 'Οποιοσδήποτε αριθμός');
         $days_applied = $days_applied + TransportStatistic::getDaysOptions();
-        
+
         $days_out['ALL'] = Yii::t('app', 'Οποιοσδήποτε αριθμός');
         $days_out = $days_out + TransportStatistic::getDaysOutOptions();
 
         $nights_out['ALL'] = Yii::t('app', 'Οποιοσδήποτε αριθμός');
         $nights_out = $nights_out + TransportStatistic::getNightsOutOptions();
-        
+
         $groupby_options = TransportStatistic::getGroupByOptions();
         $chart_types = TransportStatistic::getChartTypeOptions();
 
@@ -91,26 +90,25 @@ class TransportStatisticController extends Controller
         $model->statistic_specialisation = 'ALL';
         $model->statistic_positionunit = 'ALL';
         $model->statistic_employee = 'ALL';
-        $model->statistic_groupby = TransportStatistic::GROUPBY_EXPENDITURETYPE;        
+        $model->statistic_groupby = TransportStatistic::GROUPBY_EXPENDITURETYPE;
         $result_data = $model->getStatistics();
 
-        if(empty($result_data)) {
+        if (empty($result_data)) {
             $result_data['LABELS'][0] = 'Ημέρες Άδειας';
             $result_data['TRANSPORTS_COUNT'][0] = 0;
         }
-        
+
         if (count($result_data['LABELS']) <= 2) {
             $model->statistic_charttype = TransportStatistic::CHARTTYPE_DOUGHNUT;
-        }
-        else {
+        } else {
             $model->statistic_charttype = TransportStatistic::CHARTTYPE_BAR;
         }
-        
+
 
         if ($model->load(Yii::$app->request->post())) {
             $result_data  = $model->getStatistics();
-            
-            if(empty($result_data)) {
+
+            if (empty($result_data)) {
                 $result_data['LABELS'][0] = 'Ημέρες Άδειας';
                 $result_data['TRANSPORTS_COUNT'][0] = 0;
             }
@@ -155,13 +153,13 @@ class TransportStatisticController extends Controller
         ]);
         return $pdf->render();
     }
-    
+
     public function actionExportexcel($year)
     {
-        if($year == -1) {
+        if ($year == -1) {
             $this->exportExcel();
         }
-        
+
         $startdate = $year . '-01-01';
         $enddate = $year . '-12-31';
         $this->exportExcel($startdate, $enddate);
@@ -170,25 +168,26 @@ class TransportStatisticController extends Controller
     public function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
     {
         try {
-            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+            if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
                 throw new Exception("Invalid dates");
             }
-                                    
-            if($startdate != null && $enddate != null)
+
+            if ($startdate != null && $enddate != null) {
                 $transports = Transport::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->andWhere(['<=', 'start_date', $enddate])->all();
-            else if($startdate != null)
+            } elseif ($startdate != null) {
                 $transports = Transport::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->all();
-            else if($enddate != null)
-                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['<=', 'start_date', $enddate])->all();                
-            else
+            } elseif ($enddate != null) {
+                $transports = Transport::find()->where(['deleted' => 0])->andWhere(['<=', 'start_date', $enddate])->all();
+            } else {
                 $transports = Transport::find()->where(['deleted' => 0])->all();
+            }
 
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
 
             $cellstyle =    ['borders' => ['outline' => [   'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
-                'color' => ['argb' => 'FFFF0000'],]]];            
-            
+                'color' => ['argb' => 'FFFF0000'],]]];
+
             $row = 1;
             $column = 1;
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Α/Α', DataType::TYPE_STRING);
@@ -216,18 +215,18 @@ class TransportStatisticController extends Controller
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Αποζημίωση Διανυκτέρευσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Συνολικό Κόστος Μετακίνησης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Πληρωτέο Πόσο', DataType::TYPE_STRING);
-            
+
             foreach ($transports as $transport) {
                 $row++;
-                $column = 1;                
+                $column = 1;
                 $employee = $transport->getEmployee0()->one();
                 $specialisation = $employee->getSpecialisation0()->one();
                 $transp_expnd_type = $transport->getType0()->one();
                 $vehicle = $transport->getMode0()->one();
                 $route = $transport->getFromTo()->one();
-                
+
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $row-1, DataType::TYPE_NUMERIC);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, date('Y',strtotime($transport['start_date'])), DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, date('Y', strtotime($transport['start_date'])), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['surname'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['name'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['fathersname'], DataType::TYPE_STRING);
@@ -251,17 +250,15 @@ class TransportStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['night_reimb'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['reimbursement'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['pay_amount'], DataType::TYPE_STRING);
-                
             }
             $writer = new Xls($spreadsheet);
-            if($savePathFile === null) {
+            if ($savePathFile === null) {
                 header('Content-type: application/vnd.ms-excel');
                 header('Content-Disposition: attachment; filename="file.xls"');
                 $writer->save('php://output');
-            }
-            else
+            } else {
                 $writer->save($savePathFile);
-            
+            }
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
             Yii::$app->getResponse()->redirect('index');

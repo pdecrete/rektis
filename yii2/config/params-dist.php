@@ -39,10 +39,10 @@ return [
     'director_name' => 'Γεώργιος Τερζάκης',
     'finance_code' => 'ΕΙΔΙΚΟΣ ΦΟΡΕΑΣ: 90-21/185',
     'finance_uploadfolder' => '@vendor/admapp/uploads/financial/withdrawals/',
-    
+
     'deputy_director_sign' => '0 Αναπληρωτής του Περιφερειακού Διευθυντή Εκπ/σης',
     'deputy_director' => 'Ζερβάκης Στυλιανός',
-        
+
     'reportingTo_disposals' => '',
     'reportingTo_leaves' => '',
     'reportingTo_transports' => '',

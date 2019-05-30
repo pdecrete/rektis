@@ -42,15 +42,16 @@ class StatisticController extends \yii\web\Controller
 
     public function beforeAction($action)
     {
-        if($action->id == 'exportstatistic')
+        if ($action->id == 'exportstatistic') {
             $this->enableCsrfValidation = false;
+        }
         return parent::beforeAction($action);
     }
 
     public function actionIndex()
     {
         $school_years = Statistic::getSchoolYearOptions();
-        if(is_null($school_years)){
+        if (is_null($school_years)) {
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', "The are no school transportations to show statistics."));
             return $this->redirect(['schtransport-transport/index']);
         }
@@ -78,7 +79,7 @@ class StatisticController extends \yii\web\Controller
         $model->statistic_groupby = Statistic::GROUPBY_PERFECTURE;
         $model->statistic_charttype = Statistic::CHARTTYPE_BAR;
         $result_data = $model->getStatistics();
- 
+
         if (count($result_data['LABELS']) < 2) {
             $model->statistic_charttype = Statistic::CHARTTYPE_DOUGHNUT;
         }
@@ -123,28 +124,28 @@ class StatisticController extends \yii\web\Controller
         ]);
         return $pdf->render();
     }
-    
-    
+
+
     public function actionExportexcel($period)
     {
-        if($period == -1) {
+        if ($period == -1) {
             $this->exportExcel();
         }
-        
+
         $startdate = $period . '-09-01';
         $enddate = ($period+1) . '-08-31';
         $this->exportExcel($startdate, $enddate);
     }
-    
+
 
     public function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
     {
         try {
-            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+            if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
                 throw new Exception("An invalid period value was given to export school transports data.");
             }
 
-            $transports = SchtransportTransport::getPeriodTransports($startdate, $enddate);            
+            $transports = SchtransportTransport::getPeriodTransports($startdate, $enddate);
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
 
@@ -183,19 +184,20 @@ class StatisticController extends \yii\web\Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['meeting_city'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_startdate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $edulevel[$directorate['directorate_stage']], DataType::TYPE_STRING);                
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $edulevel[$directorate['directorate_stage']], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
-            }            
-            $writer = new Xls($spreadsheet);            
-            if($savePathFile === null) {
+            }
+            $writer = new Xls($spreadsheet);
+            if ($savePathFile === null) {
                 header('Content-type: application/vnd.ms-excel');
                 header('Content-Disposition: attachment; filename="file.xls"');
                 $writer->save('php://output');
-            }
-            else
+            } else {
                 $writer->save($savePathFile);
-                
-        } catch (Exception $exc) {            echo $exc; die();
+            }
+        } catch (Exception $exc) {
+            echo $exc;
+            die();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect('index');
         } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {

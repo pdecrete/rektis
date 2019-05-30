@@ -3,7 +3,6 @@
 namespace app\modules\schooltransport\models;
 
 use app\modules\schooltransport\Module;
-use Exception;
 use Yii;
 use yii\db\Query;
 
@@ -208,13 +207,13 @@ class SchtransportTransport extends \yii\db\ActiveRecord
         }
         return $query->all();
     }
-    
+
     public static function getPeriodTransports($startdate, $enddate)
     {
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'schtransport_transport';
         $query = self::getAllTransportsQuery(false, -1);
-        
+
         $query = $query->andWhere($t . ".transport_startdate >= '" . $startdate . "' AND " .
                                   $t . ".transport_startdate <= '" . $enddate . "'")->orderBy('transport_startdate');
         return $query->all();

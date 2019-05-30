@@ -12,7 +12,6 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use app\modules\schooltransport\models\Directorate;
-use yii2\modules\base\components\DateHelper;
 
 /**
  * This is the model class for table "{{%disposal_disposal}}".
@@ -281,21 +280,21 @@ class Disposal extends \yii\db\ActiveRecord
         //echo $query->createCommand()->rawSql; die();
         return $query->all();
     }
-    
-        
-    public static function getPeriodDisposals($startdate, $enddate) 
+
+
+    public static function getPeriodDisposals($startdate, $enddate)
     {
-        if(!\app\modules\base\components\DateHelper::validateDate($startdate) || !\app\modules\base\components\DateHelper::validateDate($enddate)){
+        if (!\app\modules\base\components\DateHelper::validateDate($startdate) || !\app\modules\base\components\DateHelper::validateDate($enddate)) {
             throw new Exception("Invalid dates");
         }
-            
+
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'disposal_disposal';
         $query = DisposalSearch::getAllDisposalsQuery(1);//$archived = 1 in argument
-                
+
         $query = $query->andWhere($t . ".disposal_startdate >= '" . $startdate . "' AND " .
                                   $t . ".disposal_startdate <= '" . $enddate . "'")->orderBy('disposal_startdate');
-        return $query->all();        
+        return $query->all();
     }
 
     /**
