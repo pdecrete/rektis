@@ -127,13 +127,13 @@ class DisposalStatisticController extends Controller
         ]);
         return $pdf->render();
     }
-    
+
     public function actionExportexcel($year)
     {
-        if($year == -1) {
+        if ($year == -1) {
             $this->exportExcel();
         }
-        
+
         $startdate = $year . '-09-01';
         $enddate = ($year+1) . '-08-31';
         $this->exportExcel($startdate, $enddate);
@@ -142,7 +142,7 @@ class DisposalStatisticController extends Controller
     public static function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
     {
         try {
-            if(($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+            if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
                 throw new Exception("An invalid period value was given to export school transports data.");
             }
 
@@ -205,14 +205,14 @@ class DisposalStatisticController extends Controller
                 //$worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
-            
-            if($savePathFile === null) {
+
+            if ($savePathFile === null) {
                 header('Content-type: application/vnd.ms-excel');
                 header('Content-Disposition: attachment; filename="file.xls"');
                 $writer->save('php://output');
-            }
-            else 
+            } else {
                 $writer->save($savePathFile);
+            }
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));
             Yii::$app->getResponse()->redirect('index');
@@ -220,5 +220,5 @@ class DisposalStatisticController extends Controller
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', 'The export folder for the Excel file is not valid'));
             Yii::$app->getResponse()->redirect('index');
         }
-    }    
+    }
 }

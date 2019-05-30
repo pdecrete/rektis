@@ -10,9 +10,10 @@ class DateHelper
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) === $date;
     }
-    
+
     /* https://stackoverflow.com/questions/4861384/php-get-start-and-end-date-of-a-week-by-weeknumber */
-    public static function getStartAndEndDate($week, $year) {
+    public static function getStartAndEndDate($week, $year)
+    {
         $dto = new DateTime();
         $dto->setISODate($year, $week);
         $ret['week_start'] = $dto->format('Y-m-d');
