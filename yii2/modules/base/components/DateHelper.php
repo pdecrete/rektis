@@ -11,7 +11,9 @@ class DateHelper
         return $d && $d->format($format) === $date;
     }
 
-    /* https://stackoverflow.com/questions/4861384/php-get-start-and-end-date-of-a-week-by-weeknumber */
+    /* Get start and end date of the week with number $week of the year $year.
+     * 
+     * https://stackoverflow.com/questions/4861384/php-get-start-and-end-date-of-a-week-by-weeknumber */    
     public static function getStartAndEndDate($week, $year)
     {
         $dto = new DateTime();
