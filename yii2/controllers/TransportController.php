@@ -356,7 +356,7 @@ class TransportController extends Controller
             return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename,
-                    'id' => $id, 
+                    'id' => $id,
                     'ftype' => $ftype,
                     'emails' => [ $model->employee0->email ] // @see actionEmail
             ]);
@@ -399,7 +399,8 @@ class TransportController extends Controller
         }
 
         if ($which == Transport::fapproval) {
-            $sameDecisionModels = $model->allSameDecision();
+            //$sameDecisionModels = $model->allSameDecision();
+            $sameDecisionModels = $model->allSameDecisionEmployeeIndependent();
             $all_count = count($sameDecisionModels);
         } elseif ($which == Transport::fjournal) {
             $sameDecisionModels = $model->selectForPayment($this->from, $this->to);
@@ -425,6 +426,12 @@ class TransportController extends Controller
      */
     protected function generatePrintDocument($transportModel, $which)
     {
+        $start_bold = "</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t xml:space=\"preserve\">";
+        $end_bold = "</w:t></w:r><w:r><w:t xml:space=\"preserve\">";
+        $newline = "</w:t><w:br/><w:t xml:space=\"preserve\">";
+        $space = "  ";
+        $notify = "";
+
         $dts = date('YmdHis');
         if ($which == Transport::fapproval) { //ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ
             $templatefilename = $transportModel->type0 ? $transportModel->type0->templatefilename1 : null;
@@ -443,186 +450,219 @@ class TransportController extends Controller
 
         // ------------------------  ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
         if ($which == Transport::fapproval) {
-            $templateProcessor->setValue('YEAR_LIMIT', Yii::$app->params['trans_year_limit']);
-
-            $empid = $transportModel->employee;
-            $typeid = $transportModel->type;
-            $year = date("Y", strtotime($transportModel->start_date));
-            
-            $trans_days = 0;
-            if($typeid == 1 || $typeid == 2) //ΑΝ Η ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ "ΜΕ ΔΑΠΑΝΗ ΤΗΣ ΥΠΗΡΕΣΙΑΣ" Ή "ΜΕ ΔΑΠΑΝΗ ΑΛΛΗΣ ΥΠΗΡΕΣΙΑΣ"
-            {                                //ΤΟΤΕ ΤΟ ΣΥΝΟΛΟ ΤΩΝ ΗΜΕΡΩΝ ΕΙΝΑΙ ΤΟ ΑΘΡΟΙΣΜΑ ΤΟΥΣ
-                $trans_days += Employee::getTransportTypeTotal($empid, 1, $year);
-                $trans_days += Employee::getTransportTypeTotal($empid, 2, $year);
-            }
-
-            $templateProcessor->setValue('TRANS_DAYS', $trans_days);
-            $remaining = Yii::$app->params['trans_year_limit'] - $trans_days;
-            $templateProcessor->setValue('REMAINING', $remaining);
-
-            $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($transportModel->decision_protocol_date));
-            $templateProcessor->setValue('DEC_PROT', $transportModel->decision_protocol);
-            $templateProcessor->setValue('TRANS_PERSON', Yii::$app->params['transportPerson']);
-            $templateProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
-            $templateProcessor->setValue('TRANS_FAX', Yii::$app->params['transportFax']);
-
-            $templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
-            $templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);
-            //Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
-            //$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
-            //$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);
-
-            if ($transportModel->application_protocol !== null) {
-                if ($transportModel->application_date !== null) {
-                    $prot = $transportModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($transportModel->application_date);
-                } else {
-                    $prot = $transportModel->application_protocol;
-                }
-            } else {
-                if ($transportModel->application_date !== null) {
-                    $prot = Yii::$app->formatter->asDate($transportModel->application_date);
-                } else {
-                    $prot = '';
-                }
-            }
-            $templateProcessor->setValue('APPLICATION_PROTOCOL', $prot);
-
-            if ($transportModel->employee0->serve_decision_date !== null) {
-                $templateProcessor->setValue('PLAC_DATE', Yii::$app->formatter->asDate($transportModel->employee0->serve_decision_date));
-            } else {
-                $templateProcessor->setValue('PLAC_DATE', '');
-            }
-            $templateProcessor->setValue('PLACEMENT_NUM', $transportModel->employee0->serve_decision);
-            $templateProcessor->setValue('PLAC_SUBJ', $transportModel->employee0->serve_decision_subject);
-            $templateProcessor->setValue('SURNAME', $transportModel->employee0->surname);
-            $templateProcessor->setValue('NAME', $transportModel->employee0->name);
-            $templateProcessor->setValue('RANK', $transportModel->employee0->rank);
-            $templateProcessor->setValue('SPEC', $transportModel->employee0->specialisation0->code); //. ' (' . $transportModel->employee0->specialisation0->name . ')');
-            $templateProcessor->setValue('BASE', $transportModel->base);
-            if ($transportModel->employee0->serviceServe) {
-                $templateProcessor->setValue('SERVICE_SERVE', $transportModel->employee0->serviceServe->name);
-            } else {
-                $templateProcessor->setValue('SERVICE_SERVE', '');
-            }
-            if ($transportModel->employee0->position0) {
-                $templateProcessor->setValue('POSITION', $transportModel->employee0->position0->name);
-            } else {
-                $templateProcessor->setValue('POSITION', '');
-            }
-
-            $sameDecisionModels = $transportModel->allSameDecision();
-            $all_count = count($sameDecisionModels);
+            $sameProtocolTransportModels = $transportModel->allSameDecisionEmployeeIndependent();
 
             //Αν είναι μία ή παραπάνω οι μετακινήσεις που εγκρίνονται μιλάμε στον πληθυντικό
-            if ($all_count > 1) {
-                $templateProcessor->setValue('APPLIC', 'Τις αιτήσεις');
-                $templateProcessor->setValue('TRANS_APP', 'τις μετακινήσεις');
-                $templateProcessor->setValue('TRANS_NUM', 'Οι παραπάνω μετακινήσεις');
+            if (count($sameProtocolTransportModels) > 1) {
+                $applications_word = "Τις αιτήσεις";
+                $transports_word = "τις μετακινήσεις";
+                $transportsnum_word = "Οι παραπάνω μετακινήσεις";
             } else {
-                $templateProcessor->setValue('APPLIC', 'Την αίτηση');
-                $templateProcessor->setValue('TRANS_APP', 'τη μετακίνηση');
-                $templateProcessor->setValue('TRANS_NUM', 'Η παραπάνω μετακίνηση');
+                $applications_word = "Την αίτηση";
+                $transports_word = "τη μετακίνηση";
+                $transportsnum_word = "Η παραπάνω μετακίνηση";
             }
 
-            // Fund ids της απόφασης ώστε να τα εμφανίσω μόνο μία φορά...
-            $funds = [];
-            $fnum = 0;
+            $transports_content = "";
+            $checkedEmployees = [];
+            $counter = 0;
+            foreach ($sameProtocolTransportModels as $transportModel) {
+                if (in_array($transportModel->employee, $checkedEmployees, true)) {
+                    continue;
+                }
+                $counter++;
+                $funds = [];
+                $fnum = 0;
+                $notify .= " - " . $transportModel->employee0->surname . " " . $transportModel->employee0->name . $newline;
 
-            $S8 = $S9 = $S10 = $S719 = $S721 = $S722 = 0.00;
+                $templateProcessor->setValue('DEC_PROT', $transportModel->decision_protocol);
+                $templateProcessor->setValue('TRANS_PERSON', Yii::$app->params['transportPerson']);
+                $templateProcessor->setValue('TRANS_PHONE', Yii::$app->params['transportPhone']);
+                $templateProcessor->setValue('TRANS_FAX', Yii::$app->params['transportFax']);
 
-            $templateProcessor->cloneRow('DATES', $all_count);
-            for ($c = 0; $c < $all_count; $c++) {
-                $i = $c + 1;
-                $currentModel = $sameDecisionModels[$c];
-                if ($currentModel->start_date == $currentModel->end_date) {
-                    $templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
-                } else {
-                    $templateProcessor->setValue('DATES' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date) . '-' . Yii::$app->formatter->asDate($currentModel->end_date));
-                }
+                $sameDecisionModels = $transportModel->allSameDecision();
+                $all_count = count($sameDecisionModels);
 
-                if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
-                    $minFrom = $currentModel->start_date;
-                    $maxTo = $currentModel->end_date;
-                }
-                if (($currentModel->start_date !== null) && ($currentModel->start_date < $minFrom)) {
-                    $minFrom = $currentModel->start_date;
-                }
-                if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
-                    $maxTo = $currentModel->end_date;
+                $templateProcessor->setValue('APPLIC', $applications_word);
+
+                $empid = $transportModel->employee;
+                $typeid = $transportModel->type;
+                $year = date("Y", strtotime($transportModel->start_date));
+
+                $trans_days = 0;
+                if ($typeid == 1 || $typeid == 2) { //ΑΝ Η ΜΕΤΑΚΙΝΗΣΗ ΕΙΝΑΙ "ΜΕ ΔΑΠΑΝΗ ΤΗΣ ΥΠΗΡΕΣΙΑΣ" Ή "ΜΕ ΔΑΠΑΝΗ ΑΛΛΗΣ ΥΠΗΡΕΣΙΑΣ"
+                                                //ΤΟΤΕ ΤΟ ΣΥΝΟΛΟ ΤΩΝ ΗΜΕΡΩΝ ΕΙΝΑΙ ΤΟ ΑΘΡΟΙΣΜΑ ΤΟΥΣ
+                    $trans_days += Employee::getTransportTypeTotal($empid, 1, $year);
+                    $trans_days += Employee::getTransportTypeTotal($empid, 2, $year);
                 }
 
-                $templateProcessor->setValue('ROUTE' . "#{$i}", $currentModel->fromTo->name);
-                $templateProcessor->setValue('MODE' . "#{$i}", $currentModel->mode0->name);
-                $templateProcessor->setValue('DAYS' . "#{$i}", $currentModel->days_applied);
-                $templateProcessor->setValue('CAUSE' . "#{$i}", $currentModel->reason);
 
-                $S719 += $currentModel->code719;
-                $S721 += $currentModel->code721;
-                $S722 += $currentModel->code722;
-                $S8 += $currentModel->reimbursement;
-                $S9 += $currentModel->mtpy;
-                $S10 += $currentModel->pay_amount;
+                $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($transportModel->decision_protocol_date));
+                $templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
+                $templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);
+                //Αν επιλέγεται ο Αναπληρωτής του Περιφερειακού
+                //$templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['surrogate_sign']);
+                //$templateProcessor->setValue('DIRECTOR', Yii::$app->params['surrogate']);
 
-                // Τα fund->id που θα χρησιμοποιήσω
-                if ($currentModel->fund1 !== null) {
-                    $funds[$fnum] = $currentModel->fund1;
-                    $fnum++;
-                }
-                if ($currentModel->fund2 !== null) {
-                    $funds[$fnum] = $currentModel->fund2;
-                    $fnum++;
-                }
-                if ($currentModel->fund3 !== null) {
-                    $funds[$fnum] = $currentModel->fund3;
-                    $fnum++;
-                }
-            }
-            //Διαχωρισμός διπλοτύπων...
-            $funds = array_unique($funds);
-            $fund_str = '';
-            $kae_str = '';
-            $k = Yii::$app->params['trans_related_docs_default']; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
-
-            $num = count($funds);
-            if ($num > 0) {
-                $k++;
-                if ($num == 1) {
-                    $fund = $k . '. Τη με αριθ. ';
-                } else {
-                    $fund = $k . '. Τις με αριθ. ';
-                }
-                for ($g = 0; $g < $num; $g++) {
-                    $fmodel = \app\models\TransportFunds::findone($funds[$g]);
-                    if ($fund_str == '') {
-                        $fund_str = $fund . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
-                        $kae_str = $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
+                if ($transportModel->application_protocol !== null) {
+                    if ($transportModel->application_date !== null) {
+                        $prot = $transportModel->application_protocol . ' / ' . Yii::$app->formatter->asDate($transportModel->application_date);
                     } else {
-                        $fund_str .= ', ' . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
-                        $kae_str .= ', ' . $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
+                        $prot = $transportModel->application_protocol;
+                    }
+                } else {
+                    if ($transportModel->application_date !== null) {
+                        $prot = Yii::$app->formatter->asDate($transportModel->application_date);
+                    } else {
+                        $prot = '';
                     }
                 }
-                if ($fund_str !== '') {
-                    if ($num == 1) {
-                        $fund_str .= ' απόφαση ανάληψης υποχρέωσης.';
+                $templateProcessor->setValue('APPLICATION_PROTOCOL', $prot);
+
+                /*  if ($transportModel->employee0->serve_decision_date !== null) {
+                 $templateProcessor->setValue('PLAC_DATE', Yii::$app->formatter->asDate($transportModel->employee0->serve_decision_date));
+                 } else {
+                 $templateProcessor->setValue('PLAC_DATE', '');
+                 }
+                 $templateProcessor->setValue('PLACEMENT_NUM', $transportModel->employee0->serve_decision);
+                 $templateProcessor->setValue('PLAC_SUBJ', $transportModel->employee0->serve_decision_subject); */
+
+                $transports_content .= $start_bold . "[" . $counter . "]" . $space . "Επώνυμο: " . $end_bold;
+                $transports_content .= $transportModel->employee0->surname . $space;
+                $transports_content .= $start_bold . "Όνομα: " . $end_bold;
+                $transports_content .= $transportModel->employee0->name . $space;
+                $transports_content .= $start_bold . "Βαθμός: " . $end_bold;
+                $transports_content .= $transportModel->employee0->rank . $space;
+                $transports_content .= $start_bold . "Κλάδος: " . $end_bold;
+                $transports_content .= $transportModel->employee0->specialisation0->code . $space;
+                $transports_content .= $start_bold . "Υπηρεσία/Ιδιότητα: " . $end_bold;
+                if ($transportModel->employee0->serviceServe) {
+                    $transports_content .= $transportModel->employee0->serviceServe->name . $space;
+                }
+                if ($transportModel->employee0->position0) {
+                    $transports_content .= " / " . $transportModel->employee0->position0->name . $space;
+                }
+                $transports_content .= $start_bold . "Έδρα: " . $end_bold;
+                $transports_content .= $transportModel->base . $space;
+                $transports_content .= $newline . $newline . "ως ακολούθως:" . $newline . $newline;
+
+                $S8 = $S9 = $S10 = $S719 = $S721 = $S722 = 0.00;
+
+                for ($c = 0; $c < $all_count; $c++) {
+                    $i = $c + 1;
+                    $currentModel = $sameDecisionModels[$c];
+
+                    if ($currentModel->start_date == $currentModel->end_date) {
+                        $dates = Yii::$app->formatter->asDate($currentModel->start_date);
                     } else {
-                        $fund_str .= ' αποφάσεις ανάληψης υποχρέωσης.';
+                        $dates = Yii::$app->formatter->asDate($currentModel->start_date) . '-' . Yii::$app->formatter->asDate($currentModel->end_date);
+                    }
+
+                    $transports_content .=  "-" . $space . $start_bold . $dates . $end_bold . " με διαδρομή \"" . $currentModel->fromTo->name . "\", μέσο μετακίνησης \""
+                        . $currentModel->mode0->name . "\" και σκοπό μετακίνησης \"" . $currentModel->reason . "\"" . " (Ημ. Εκτός Έδρας: " . $currentModel->days_applied . ")" . $newline . $newline;
+
+
+                    if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
+                        $minFrom = $currentModel->start_date;
+                        $maxTo = $currentModel->end_date;
+                    }
+                    if (($currentModel->start_date !== null) && ($currentModel->start_date < $minFrom)) {
+                        $minFrom = $currentModel->start_date;
+                    }
+                    if (($currentModel->end_date !==null) && ($currentModel->end_date > $maxTo)) {
+                        $maxTo = $currentModel->end_date;
+                    }
+
+                    $S719 += $currentModel->code719;
+                    $S721 += $currentModel->code721;
+                    $S722 += $currentModel->code722;
+                    $S8 += $currentModel->reimbursement;
+                    $S9 += $currentModel->mtpy;
+                    $S10 += $currentModel->pay_amount;
+
+                    // Τα fund->id που θα χρησιμοποιήσω
+                    if ($currentModel->fund1 !== null) {
+                        $funds[$fnum] = $currentModel->fund1;
+                        $fnum++;
+                    }
+                    if ($currentModel->fund2 !== null) {
+                        $funds[$fnum] = $currentModel->fund2;
+                        $fnum++;
+                    }
+                    if ($currentModel->fund3 !== null) {
+                        $funds[$fnum] = $currentModel->fund3;
+                        $fnum++;
                     }
                 }
-                $templateProcessor->setValue('KAE', $kae_str);
-                $templateProcessor->setValue('FUND1', $fund_str);
-            } else {
-                $templateProcessor->setValue('FUND1', '');
-            }
-            if (isset($transportModel->extra_reason)) {
-                if ($transportModel->extra_reason !== '') {
+
+
+                //Διαχωρισμός διπλοτύπων...
+                $funds = array_unique($funds);
+                $fund_str = '';
+                $kae_str = '';
+                $k = Yii::$app->params['trans_related_docs_default']; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
+
+                $num = count($funds);
+                if ($num > 0) {
                     $k++;
-                    $templateProcessor->setValue('EXTRA', $k . '. ' . $transportModel->extra_reason . '.');
+                    if ($num == 1) {
+                        $fund = $k . ". Τη με αριθ. ";
+                    } else {
+                        $fund = $k . ". Τις με αριθ. ";
+                    }
+                    for ($g = 0; $g < $num; $g++) {
+                        $fmodel = \app\models\TransportFunds::findone($funds[$g]);
+                        if ($fund_str == '') {
+                            $fund_str = $fund . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
+                            $kae_str = $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
+                        } else {
+                            $fund_str .= ', ' . rtrim($fmodel->name, "\t/ ") . ' / ' .   Yii::$app->formatter->asDate($fmodel->date) . ' (ΑΔΑ: ' . $fmodel->ada . ')';
+                            $kae_str .= ', ' . $fmodel->code . ' (ΑΛΕ: ' . $fmodel->kae . ')';
+                        }
+                    }
+                    if ($fund_str !== '') {
+                        if ($num == 1) {
+                            $fund_str .= " απόφαση ανάληψης υποχρέωσης.";
+                        } else {
+                            $fund_str .= " αποφάσεις ανάληψης υποχρέωσης.";
+                        }
+                    }
+                    $templateProcessor->setValue('KAE', $kae_str);
+                    $templateProcessor->setValue('FUND1', $fund_str);
+                } else {
+                    $templateProcessor->setValue('FUND1', '');
+                }
+                if (isset($transportModel->extra_reason)) {
+                    if ($transportModel->extra_reason !== '') {
+                        $k++;
+                        $templateProcessor->setValue('EXTRA', $k . '. ' . $transportModel->extra_reason . '.');
+                    } else {
+                        $templateProcessor->setValue('EXTRA', '');
+                    }
                 } else {
                     $templateProcessor->setValue('EXTRA', '');
                 }
-            } else {
-                $templateProcessor->setValue('EXTRA', '');
+
+                //$transports_content .= $start_bold . "Η προκαλούμενη δαπάνη θα βαρύνει τις πιστώσεις του Τακτικού Προϋπολογισμού ειδικού Φορέα " . $kae_str . " και υπάρχει η σχετική πίστωση." . $end_bold . $newline;
+
+                $transports_content .= "Δικαιούμενες ημέρες: " . $start_bold . Yii::$app->params['trans_year_limit'] . $end_bold .
+                ',' . $space . "Πραγματοποιηθείσες: " . $start_bold . $trans_days . $end_bold .
+                ',' . $space . "Υπόλοιπο: " . $start_bold . (Yii::$app->params['trans_year_limit'] - $trans_days) . $end_bold . $newline . $newline . $newline;
+
+                array_push($checkedEmployees, $transportModel->employee);
             }
+
+            if (count($checkedEmployees) > 1) {
+                $init_transports_content = "Εγκρίνουμε " . $transports_word . " των παρακάτω υπαλλήλων:" . $newline . $newline;
+            } else {
+                $init_transports_content = "Εγκρίνουμε " . $transports_word . " του παρακάτω υπαλλήλου:" . $newline . $newline;
+            }
+
+            $transports_content = $init_transports_content . $transports_content;
+            $templateProcessor->setValue('TRANSPORTS', $transports_content);
+            $templateProcessor->setValue('KAE', $kae_str);
+            $templateProcessor->setValue('TRANS_NUM', $transportsnum_word);
+            $templateProcessor->setValue('NOTIFY', $notify);
         }
         // ------------------------ end ΕΓΚΡΙΣΗ ΜΕΤΑΚΙΝΗΣΗΣ  -----------------------------------------------
 
@@ -799,7 +839,7 @@ class TransportController extends Controller
         return $this->render('print', [
                     'model' => $model,
                     'filename' => $filename,
-                    'id' => $id, 
+                    'id' => $id,
                     'ftype' => $ftype,
                     'emails' => [ $model->employee0->email ] // @see actionEmail
         ]);
