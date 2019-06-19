@@ -558,8 +558,9 @@ class TransportController extends Controller
                         $dates = Yii::$app->formatter->asDate($currentModel->start_date) . '-' . Yii::$app->formatter->asDate($currentModel->end_date);
                     }
 
-                    $transports_content .=  "-" . $space . $start_bold . $dates . $end_bold . " με διαδρομή \"" . $currentModel->fromTo->name . "\", μέσο μετακίνησης \""
-                        . $currentModel->mode0->name . "\" και σκοπό μετακίνησης \"" . $currentModel->reason . "\"" . " (Ημ. Εκτός Έδρας: " . $currentModel->days_applied . ")" . $newline . $newline;
+                    $transports_content .=  "-" . $space . $start_bold . $dates . $end_bold . " με διαδρομή \"" . $start_bold . $currentModel->fromTo->name . $end_bold . "\", μέσο μετακίνησης \""
+                                        . $start_bold . $currentModel->mode0->name . $end_bold . "\" και σκοπό μετακίνησης \"" . $currentModel->reason . "\"" 
+                                        . " (Ημ. Εκτός Έδρας: " . $start_bold . $currentModel->days_applied . $end_bold . ")" . $newline . $newline;
 
 
                     if ($i == 1) { // 1o μοντέλο, αρχικοποίηση
