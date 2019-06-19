@@ -227,6 +227,19 @@ class Transport extends \yii\db\ActiveRecord
                         ->all();
     }
 
+    public function allSameDecisionEmployeeIndependent()
+    {
+        return Transport::find()
+        ->where([
+            'decision_protocol' => $this->decision_protocol,
+            'decision_protocol_date' => $this->decision_protocol_date,
+            'type' => $this->type,
+            'deleted' => 0
+        ])
+        ->orderBy('id')
+        ->all();
+    }
+
     public function selectForPayment($from, $to)
     {
         return Transport::find()
