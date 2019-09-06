@@ -52,9 +52,8 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 	</table>
 	<!--p><?= '<img src=' . $greek_logo . '>' ?></p-->
     <p><strong><?= Module::t('modules/finance/app', 'Expedinture Payment Report') ?> </strong>
-               <?= '(' . Module::t('modules/finance/app', 'RCN') . ((strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae)
-                    . ' - ' . Module::t('modules/finance/app', 'Financial Year')
-                    . ' ' . $year . ')'
+               <?= '(' //. Module::t('modules/finance/app', 'RCN') . ((strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae) . ' - ' 
+                        . Module::t('modules/finance/app', 'Financial Year') . ' ' . $year . ')'
                 ?></p>
     <p><strong><?= Module::t('modules/finance/app', 'For the needs of the Regional Directorate of Primary & Secondary Education of Crete') ?></strong></p>
 
@@ -86,6 +85,8 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
 			<?php   endforeach;?>			
 		</tr>
 		<?php   foreach ($models as $model):
+		            $kae = $model['EXPENDITURE']->getKae()['kae_id'];
+		            $kae = (strlen($kae) <= 4) ? sprintf('%04d', $kae) : $kae;
                     $net_value = Money::toCurrency($model['EXPENDITURE']['exp_amount']);
                     $vat = floor($model['EXPENDITURE']['exp_amount'] * Money::toDecimalPercentage($model['EXPENDITURE']['fpa_value']))/100;
 
@@ -100,7 +101,7 @@ $greek_logo = "file:///" . realpath(Yii::getAlias('@images/greek_logo.png'));
             		<tr>
             			<td <?= $inline_td_css_left?>><?= $model['SUPPLIER']['suppl_name']; ?></td>
             			<td <?= $inline_td_css_left?>><?= $model['INVOICE']['inv_number']; ?></td>
-            			<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_description']; ?></td>
+            			<td <?= $inline_td_css_left?>><?= $model['EXPENDITURE']['exp_description'] . ' (' . Module::t('modules/finance/app', 'RCN') . ' ' .  $kae . ')'; ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($net_value, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($vat, 2, ',', '.') ?></td>
             			<td <?= $inline_td_css_right?>><?= number_format($net_value + $vat, 2, ',', '.') ?></td>

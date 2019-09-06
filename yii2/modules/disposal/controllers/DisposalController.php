@@ -641,6 +641,9 @@ class DisposalController extends Controller
 
                     $disposal->disposal_startdate = yii::$app->formatter->asDate($startdate, "php:Y-m-d");
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($enddate, "php:Y-m-d");
+                    if($disposal->disposal_startdate > $disposal->disposal_enddate) {
+                        throw new Exception("Some disposal(s) start date is later than its (their) end date.");
+                    }
                     $disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
                     $disposal_days = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DAYS'], $currentrow_index)->getValue();
                     if($disposal_hours == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ")

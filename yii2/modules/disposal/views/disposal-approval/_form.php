@@ -49,7 +49,7 @@ use yii\widgets\ActiveForm;
         								<td colspan="2"><strong>Εκπαιδευτικός</strong></td><td colspan="2"><strong>Σχολείο Υπηρέτησης</strong></td><td colspan="2"><strong>Σχολείο Διάθεσης</strong></td>
         							</tr>
         							<tr class="info">
-        								<td><strong>Ημέρες</strong></td><td><strong>Ώρες</strong></td><td><strong>Από</strong></td><td><strong>Έως</strong></td><td><strong>Λόγος</strong></td><td><strong>Καθήκον</strong></td>	
+        								<td><strong>Ώρες</strong></td><td><strong>Ημέρες</strong></td><td><strong>Από</strong></td><td><strong>Έως</strong></td><td><strong>Λόγος</strong></td><td><strong>Καθήκον</strong></td>	
         							</tr>
         							</table>
         			<?php foreach ($disposals_models as $index=>$disposal_model): ?>

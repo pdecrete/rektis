@@ -64,7 +64,8 @@ class DisposalSearch extends Disposal
         $duties = $prefix . 'disposal_disposalworkobj';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
 
-        $tables_fields_array = [$dspls. ".*", $tchers . ".teacher_id AS TEACHER", $tchers . ".teacher_surname", $tchers . ".teacher_name", $specs . ".*" , $dir_o_schl . ".*" , 
+        $tables_fields_array = [$dspls. ".*", $tchers . ".teacher_id AS TEACHER", $tchers . ".teacher_surname", $tchers . ".teacher_name", 
+                                $tchers . ".teacher_mothername", $tchers . ".teacher_fathername", $tchers . ".teacher_registrynumber", $specs . ".*" , $dir_o_schl . ".*" , 
                                 $reasons . ".disposalreason_id AS REASON" , $reasons . ".disposalreason_description", $duties . ".disposalworkobj_id AS DUTY", $duties . ".disposalworkobj_description",
                                 $localdir_decisions . ".localdirdecision_id AS LOCALDIR_DECISION" , $localdir_decisions . ".localdirdecision_protocol", $localdir_decisions . ".localdirdecision_action",
                                 "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];

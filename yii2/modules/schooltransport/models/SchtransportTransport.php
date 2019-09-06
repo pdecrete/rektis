@@ -203,8 +203,19 @@ class SchtransportTransport extends \yii\db\ActiveRecord
 
         if ($school_year != -1) {
             $query = $query->andWhere($t . ".transport_startdate >= '" . $school_year . "-09-01' AND " .
-                                        $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'");
+                                      $t . ".transport_startdate <= '" . (string)($school_year+1) . "-08-31'");
         }
+        return $query->all();
+    }
+
+    public static function getPeriodTransports($startdate, $enddate)
+    {
+        $tblprefix = Yii::$app->db->tablePrefix;
+        $t = $tblprefix . 'schtransport_transport';
+        $query = self::getAllTransportsQuery(false, -1);
+
+        $query = $query->andWhere($t . ".transport_startdate >= '" . $startdate . "' AND " .
+                                  $t . ".transport_startdate <= '" . $enddate . "'")->orderBy('transport_startdate');
         return $query->all();
     }
 

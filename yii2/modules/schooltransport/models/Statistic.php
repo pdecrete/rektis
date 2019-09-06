@@ -121,7 +121,6 @@ class Statistic extends Model
      */
     public function getStatistics()
     {
-        //echo "<pre>"; print_r($this); echo "</pre>"; die();
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'schtransport_transport';
         $m = $tblprefix . 'schtransport_meeting';
@@ -335,7 +334,6 @@ class Statistic extends Model
         }
         $query = $query->andWhere($subquery);
         $query = $query->andWhere($andWhereCondition);
-        //echo $query->createCommand()->rawSql; die();
         return $query->one()['TRNSPRTS_COUNT'];
     }
 

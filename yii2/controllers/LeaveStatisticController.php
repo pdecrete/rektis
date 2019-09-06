@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use app\models\Leave;
 use app\models\LeaveStatistic;
 use app\modules\eduinventory\components\EduinventoryHelper;
-
+use app\modules\base\components\DateHelper;
 
 class LeaveStatisticController extends Controller
 {
@@ -55,19 +55,19 @@ class LeaveStatisticController extends Controller
 
         $leavetypes['ALL'] = Yii::t('app', 'Όλοι οι τύποι Αδειών');
         $leavetypes = $leavetypes + LeaveStatistic::getLeaveTypeOptions();
-        
+
         $specialisations['ALL'] = Yii::t('app', 'Όλες οι ειδικότητες');
         $specialisations = $specialisations + EduinventoryHelper::getSpecializations();
-        
+
         $positiontitles['ALL'] = Yii::t('app', 'Όλες οι θέσεις');
         $positiontitles = $positiontitles + LeaveStatistic::getPositionTitlesOptions();
-        
+
         $positionunits['ALL'] = Yii::t('app', 'Όλες οι υπηρεσίες');
         $positionunits = $positionunits + LeaveStatistic::getPositionUnitsOptions();
-        
+
         $employees['ALL'] = Yii::t('app', 'Όλοι οι εργαζόμενοι');
-        $employees = $employees + LeaveStatistic::getEmployeeOptions();        
-        
+        $employees = $employees + LeaveStatistic::getEmployeeOptions();
+
         $groupby_options = LeaveStatistic::getGroupByOptions();
         $chart_types = LeaveStatistic::getChartTypeOptions();
 
@@ -78,26 +78,25 @@ class LeaveStatisticController extends Controller
         $model->statistic_positiontitle = 'ALL';
         $model->statistic_positionunit = 'ALL';
         $model->statistic_employee = 'ALL';
-        $model->statistic_groupby = LeaveStatistic::GROUPBY_LEAVETYPE;        
+        $model->statistic_groupby = LeaveStatistic::GROUPBY_LEAVETYPE;
         $result_data = $model->getStatistics();
 
-        if(empty($result_data)) {
+        if (empty($result_data)) {
             $result_data['LABELS'][0] = 'Ημέρες Άδειας';
             $result_data['LEAVES_COUNT'][0] = 0;
         }
-        
+
         if (count($result_data['LABELS']) <= 2) {
             $model->statistic_charttype = LeaveStatistic::CHARTTYPE_DOUGHNUT;
-        }
-        else {
+        } else {
             $model->statistic_charttype = LeaveStatistic::CHARTTYPE_BAR;
         }
-        
+
 
         if ($model->load(Yii::$app->request->post())) {
             $result_data  = $model->getStatistics();
-            
-            if(empty($result_data)) {
+
+            if (empty($result_data)) {
                 $result_data['LABELS'][0] = 'Ημέρες Άδειας';
                 $result_data['LEAVES_COUNT'][0] = 0;
             }
@@ -141,20 +140,35 @@ class LeaveStatisticController extends Controller
         return $pdf->render();
     }
 
+
     public function actionExportexcel($year)
     {
+        if ($year == -1) {
+            $this->exportExcel();
+        }
+
+        $startdate = $year . '-01-01';
+        $enddate = $year . '-12-31';
+        $this->exportExcel($startdate, $enddate);
+    }
+
+
+    public static function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
+    {
         try {
-            if (!isset($year) || is_null($year) || !is_numeric($year)) {
-                throw new Exception("An invalid period value was given to export school transports data.");
+            if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+                throw new Exception("Invalid dates");
             }
-            
-            $start_date = $year . '-01-01';
-            $end_date = $year . '-12-31';
-            
-            if($year != -1)
-                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>', 'start_date', $start_date])->andWhere(['<', 'start_date', $end_date])->all();
-            else
-                $leaves = Leave::find()->where(['deleted' => 0])->all();
+
+            if ($startdate != null && $enddate != null) {
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->andWhere(['<=', 'start_date', $enddate])->orderBy('start_date')->all();
+            } elseif ($startdate != null) {
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['>=', 'start_date', $startdate])->orderBy('start_date')->all();
+            } elseif ($enddate != null) {
+                $leaves = Leave::find()->where(['deleted' => 0])->andWhere(['<=', 'start_date', $enddate])->orderBy('start_date')->all();
+            } else {
+                $leaves = Leave::find()->where(['deleted' => 0])->orderBy('start_date')->all();
+            }
 
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
@@ -178,7 +192,7 @@ class LeaveStatisticController extends Controller
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λήξη Άδειας', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Διάρκεια Άδειας', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Λόγος Άδειας', DataType::TYPE_STRING);
-            
+
             foreach ($leaves as $leave) {
                 $row++;
                 $column = 1;
@@ -186,7 +200,7 @@ class LeaveStatisticController extends Controller
                 $employee = $leave->getEmployeeObj()->one();
                 $specialisation = $employee->getSpecialisation0()->one();
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $row-1, DataType::TYPE_NUMERIC);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, date('Y',strtotime($leave['start_date'])), DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, date('Y', strtotime($leave['start_date'])), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['surname'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['name'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $employee['fathersname'], DataType::TYPE_STRING);
@@ -201,12 +215,19 @@ class LeaveStatisticController extends Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $leave['reason'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
-            header('Content-type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment; filename="file.xls"');
-            $writer->save('php://output');
+            if ($savePathFile === null) {
+                header('Content-type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment; filename="file.xls"');
+                $writer->save('php://output');
+            } else {
+                $writer->save($savePathFile);
+            }
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', Yii::t('app', $exc->getMessage()));
-            return $this->redirect('index');
+            Yii::$app->getResponse()->redirect('index');
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {
+            Yii::$app->session->addFlash('danger', Yii::t('app', 'The export folder for the Excel file is not valid'));
+            Yii::$app->getResponse()->redirect('index');
         }
     }
 }

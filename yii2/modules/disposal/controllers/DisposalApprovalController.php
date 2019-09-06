@@ -688,8 +688,18 @@ class DisposalApprovalController extends Controller
 
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {
-            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου ";
-            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από το \"" . $fromschool_models[$i]['school_name'] . "\"";
+            $workstatus = '';
+            if (!(!is_null($teacher_models[$i]['teacher_registrynumber']) && isset($teacher_models[$i]['teacher_registrynumber']))) {
+                if ($teacher_models[$i]['teacher_gender'] == Teacher::FEMALE) {
+                    $workstatus = '(αναπληρώτρια) ';
+                } else {
+                    $workstatus = '(αναπληρωτής) ';
+                }
+            }
+
+            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου " . $workstatus ;
+            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
+                                  $fromschool_models[$i]['school_name'] . "\"";
 
             $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
             $days_word = (!(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
@@ -709,10 +719,13 @@ class DisposalApprovalController extends Controller
                 $teacher_disposals .= "";
             }
 
-            $teacher_disposals .= " στο \"" . $toschool_models[$i]['school_name'] . "\"";
+            $teacher_disposals .= " σ" . $this->schoolunitArticle($toschool_models[$i]['school_mineducode']) . " \"" . $toschool_models[$i]['school_name'] . "\"";
             $teacher_disposals .= " από " . date_format(date_create($disposals_models[$i]['disposal_startdate']), 'd-m-Y') . ' μέχρι ' . date_format(date_create($disposals_models[$i]['disposal_enddate']), 'd-m-Y');
             $teacher_disposals .= " για " . mb_strtolower($disposals_models[$i]->getDisposalreason()->one()['disposalreason_description'], 'UTF-8');
-            $teacher_disposals .= " με αντικείμενο " . mb_strtolower($disposals_models[$i]->getDisposalworkobj()->one()['disposalworkobj_description'], 'UTF-8');
+            $duty = $disposals_models[$i]->getDisposalworkobj()->one();
+            if ($duty['disposalworkobj_name'] != "not_defined") {
+                $teacher_disposals .= " με αντικείμενο " . mb_strtolower($duty['disposalworkobj_description'], 'UTF-8');
+            }
             $teacher_disposals .= ".</w:t><w:br/><w:br/><w:t>";
         }
 
@@ -723,6 +736,18 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('director_name', HeadSignature::getSigningName($whosigns));
         $templateProcessor->saveAs($fullpath_fileName);
         return true;
+    }
+
+    /* Για τiς Δ/νσης εκπαίδευσης επιστρέφει άρθρο γένους θηλυκού */
+    private function schoolunitArticle($school_minedu_code)
+    {
+        $article = 'το';
+        if (in_array($school_minedu_code, [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101], true)) {
+            $article = 'τη';
+        } elseif (in_array($school_minedu_code, [9999910], true)) {
+            $article = 'την';
+        }
+        return $article;
     }
 
     /**
