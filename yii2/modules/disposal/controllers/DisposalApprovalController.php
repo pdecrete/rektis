@@ -305,7 +305,7 @@ class DisposalApprovalController extends Controller
 
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
-                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
+                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
                         $disposals_counter++;
                         if (!$old_disposalapproval_model->delete()) {
                             throw new Exception("Failed to save the changes of the approval.");
