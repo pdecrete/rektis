@@ -301,13 +301,8 @@ class DisposalApprovalController extends Controller
 
                 $old_disposalapproval_models = DisposalDisposalapproval::findAll(['approval_id' => $model->approval_id]);
 
-                /*   foreach ($disposalapproval_models as $index=>$disposalapproval_model) {
-                      if($disposalapproval_model['disposal_id'] == 0)
-                          unset($disposalapproval_models[$index]);
-                  } */
-
                 $new_disposal_ids = array_values(ArrayHelper::map($disposalapproval_models, 'disposal_id', 'disposal_id'));
-                //echo "<pre>"; print_r($new_disposal_ids); echo "<pre>"; die();
+
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
                     if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
@@ -328,6 +323,25 @@ class DisposalApprovalController extends Controller
                     }
                     throw new Exception("Please select at least one disposal.");
                 }
+
+                for ($i = 0; $i < count($new_disposal_ids); $i++) {
+                    if ($new_disposal_ids[$i] == 0) {
+                        unset($disposals_models[$i]);
+                        unset($teacher_models[$i]);
+                        unset($fromschool_models[$i]);
+                        unset($toschool_models[$i]);
+                        unset($reason_models[$i]);
+                        unset($duty_models[$i]);
+                        unset($specialization_models[$i]);
+                    }
+                }
+                $disposals_models = array_values($disposals_models);
+                $teacher_models = array_values($teacher_models);
+                $fromschool_models = array_values($fromschool_models);
+                $toschool_models = array_values($toschool_models);
+                $reason_models = array_values($reason_models);
+                $duty_models = array_values($duty_models);
+                $specialization_models = array_values($specialization_models);
 
                 if ($this->createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
                     throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
