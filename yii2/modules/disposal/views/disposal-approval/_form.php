@@ -19,7 +19,11 @@ use yii\widgets\ActiveForm;
 <div class="disposal-approval-form container-fluid">
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
-    	<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
+		<?php if ((isset($republish) && $republish == 1) || $model->getRepublishedApproval() != null): ?>
+    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true, 'disabled' => true]) ?></div>
+    	<?php else: ?>
+    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div>
+    	<?php endif;?>	
 		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
 	</div>
 	<div class="row">

@@ -504,7 +504,7 @@ class DisposalApprovalController extends Controller
                 $disposals_counter = 0;
                 $order = 0;
                 foreach ($disposals_models as $index=>$disposal_model) {
-                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids, true)) {
+                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids)) {
 //                         echo $initial_disposalapproval_models[$index]->disposal_id . "";
 //                         echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />";
 //                         die();
@@ -556,7 +556,7 @@ class DisposalApprovalController extends Controller
                 if ($disposals_counter == count($initial_disposalapproval_models)) {
                     for ($i = 0; $i < count($disposals_models); $i++) {
                         $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
-                    }
+                    }                    
                     throw new Exception("Please select at least one disposal.");
                 }
 
@@ -698,7 +698,7 @@ class DisposalApprovalController extends Controller
             }
 
             $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου " . $workstatus ;
-            $teacher_disposals .= $specialization_models[$i]['code'] . ":\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
+            $teacher_disposals .= $specialization_models[$i]['code'] . " (" . $specialization_models[$i]['name'] ."):\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
                                   $fromschool_models[$i]['school_name'] . "\"";
 
             $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
@@ -906,7 +906,7 @@ class DisposalApprovalController extends Controller
         try {
             $this->archive($id, $archive);
 
-            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was archived succesfully.'));
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', $success_message));
             return $this->redirect(['index', 'archive' => $archive]);
         } catch (Exception $exc) {
             Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', $exc->getMessage()));

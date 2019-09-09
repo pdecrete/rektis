@@ -16,7 +16,7 @@ $this->title =  DisposalModule::t('modules/disposal/app', $title);
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = $this->title;
 
-$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download} {republish}' : '{view} {download} {republish}';
+$actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download} {republish}' : '{view} {download} {restore}';
 ?>
 <?=Html::beginForm(['archiveform'], 'post');?>
 <div class="disposal-approval-index">
@@ -85,6 +85,13 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                                                 ['title' => DisposalModule::t('modules/disposal/app', 'Republish'), 'data-method' => 'post']
                                             );
                             },
+                            'restore' => function ($url, $model) {
+                            return Html::a(
+                                '<span class="glyphicon glyphicon-transfer"></span>',
+                                $url,
+                                ['title' => DisposalModule::t('modules/disposal/app', 'Restore'), 'data-method' => 'post']
+                                );
+                            },
                             ],
              'urlCreator' => function ($action, $model) {
                  if ($action === 'delete') {
@@ -105,6 +112,10 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                  }
                  if ($action === 'republish') {
                      $url = Url::to(['/disposal/disposal-approval/republish', 'id' =>$model['approval_id']]);
+                     return $url;
+                 }
+                 if ($action === 'restore') {
+                     $url = Url::to(['/disposal/disposal-approval/archive', 'id' =>$model['approval_id'], 'archive' => 0]);
                      return $url;
                  }
              },

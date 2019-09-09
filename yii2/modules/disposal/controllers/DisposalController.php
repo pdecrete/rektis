@@ -147,6 +147,9 @@ class DisposalController extends Controller
         if ($array_model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
             $array_model['disposal_hours'] = 'Ολική Διάθεση';
         }
+        if ($array_model['disposal_days'] == Disposal::FULL_DISPOSAL) {
+            $array_model['disposal_days'] = 'Ολική Διάθεση';
+        }
         $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
         $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
         $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
