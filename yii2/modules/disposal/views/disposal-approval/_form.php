@@ -39,13 +39,13 @@ use yii\widgets\ActiveForm;
     
     <div class="row">
     	<div class="container col-lg-12">
-    		<?php if (isset($republish) && $republish == 1): 
-    		          $schools_mapping = ArrayHelper::map($schools, 'school_id', 'school_name');
-    		          $hours_mapping = ArrayHelper::map($disposal_hours, 'hours', 'hours_name');
-    		          $days_mapping = ArrayHelper::map($disposal_days, 'days', 'days_name');
-    		          $reasons_mapping = ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description');
-    		          $duties_mapping = ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description');   		              		         
-    		?>
+    		<?php if (isset($republish) && $republish == 1):
+                      $schools_mapping = ArrayHelper::map($schools, 'school_id', 'school_name');
+                      $hours_mapping = ArrayHelper::map($disposal_hours, 'hours', 'hours_name');
+                      $days_mapping = ArrayHelper::map($disposal_days, 'days', 'days_name');
+                      $reasons_mapping = ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description');
+                      $duties_mapping = ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description');
+            ?>
     				
         		<table class="table table-bordered table-striped table-hover table-condensed text-center">
         							<tr class="info">

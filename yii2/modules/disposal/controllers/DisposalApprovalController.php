@@ -305,7 +305,7 @@ class DisposalApprovalController extends Controller
 
                 $disposals_counter = 0;
                 foreach ($old_disposalapproval_models as $old_disposalapproval_model) {
-                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids)) {
+                    if (!in_array($old_disposalapproval_model->disposal_id, $new_disposal_ids, true)) {
                         $disposals_counter++;
                         if (!$old_disposalapproval_model->delete()) {
                             throw new Exception("Failed to save the changes of the approval.");
@@ -504,7 +504,7 @@ class DisposalApprovalController extends Controller
                 $disposals_counter = 0;
                 $order = 0;
                 foreach ($disposals_models as $index=>$disposal_model) {
-                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids)) {
+                    if (!in_array($initial_disposalapproval_models[$index]->disposal_id, $new_disposal_ids, true)) {
 //                         echo $initial_disposalapproval_models[$index]->disposal_id . "";
 //                         echo "<pre>"; print_r($new_disposal_ids); echo "<pre><br /><br />";
 //                         die();
@@ -556,7 +556,7 @@ class DisposalApprovalController extends Controller
                 if ($disposals_counter == count($initial_disposalapproval_models)) {
                     for ($i = 0; $i < count($disposals_models); $i++) {
                         $disposalapproval_models[$i]['disposal_id'] = $disposal_ids[$i];
-                    }                    
+                    }
                     throw new Exception("Please select at least one disposal.");
                 }
 

@@ -86,7 +86,7 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                                             );
                             },
                             'restore' => function ($url, $model) {
-                            return Html::a(
+                                return Html::a(
                                 '<span class="glyphicon glyphicon-transfer"></span>',
                                 $url,
                                 ['title' => DisposalModule::t('modules/disposal/app', 'Restore'), 'data-method' => 'post']
