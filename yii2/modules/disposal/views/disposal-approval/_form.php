@@ -19,7 +19,11 @@ use yii\widgets\ActiveForm;
 <div class="disposal-approval-form container-fluid">
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
-    	<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true]) ?></div>	
+		<?php if ((isset($republish) && $republish == 1) || $model->getRepublishedApproval() != null): ?>
+    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true, 'disabled' => true]) ?></div>
+    	<?php else: ?>
+    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div>
+    	<?php endif;?>	
 		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
 	</div>
 	<div class="row">
@@ -35,13 +39,13 @@ use yii\widgets\ActiveForm;
     
     <div class="row">
     	<div class="container col-lg-12">
-    		<?php if (isset($republish) && $republish == 1): 
-    		          $schools_mapping = ArrayHelper::map($schools, 'school_id', 'school_name');
-    		          $hours_mapping = ArrayHelper::map($disposal_hours, 'hours', 'hours_name');
-    		          $days_mapping = ArrayHelper::map($disposal_days, 'days', 'days_name');
-    		          $reasons_mapping = ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description');
-    		          $duties_mapping = ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description');   		              		         
-    		?>
+    		<?php if (isset($republish) && $republish == 1):
+                      $schools_mapping = ArrayHelper::map($schools, 'school_id', 'school_name');
+                      $hours_mapping = ArrayHelper::map($disposal_hours, 'hours', 'hours_name');
+                      $days_mapping = ArrayHelper::map($disposal_days, 'days', 'days_name');
+                      $reasons_mapping = ArrayHelper::map($disposal_reasons, 'disposalreason_id', 'disposalreason_description');
+                      $duties_mapping = ArrayHelper::map($disposal_duties, 'disposalworkobj_id', 'disposalworkobj_description');
+            ?>
     				
         		<table class="table table-bordered table-striped table-hover table-condensed text-center">
         							<tr class="info">

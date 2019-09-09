@@ -147,6 +147,9 @@ class DisposalController extends Controller
         if ($array_model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
             $array_model['disposal_hours'] = 'Ολική Διάθεση';
         }
+        if ($array_model['disposal_days'] == Disposal::FULL_DISPOSAL) {
+            $array_model['disposal_days'] = 'Ολική Διάθεση';
+        }
         $array_model['disposal_startdate'] = date_format(date_create($model['disposal_startdate']), 'd/m/Y');
         $array_model['disposal_enddate'] = date_format(date_create($model['disposal_enddate']), 'd/m/Y');
         $array_model['teacher_id'] = $teacher['teacher_surname'] . ' ' . $teacher['teacher_name'] . ' (' . $specialisation['code'] . ', ' . $specialisation['name'] . ')';
@@ -183,10 +186,10 @@ class DisposalController extends Controller
             $disposal_days = Disposal::getDayOptions();
 
             if ($model->load(Yii::$app->request->post()) && $teacher_model->load(Yii::$app->request->post()) && $localdirdecision_model->load(Yii::$app->request->post())) {
-                if(empty($model->disposal_days)){
+                if (empty($model->disposal_days)) {
                     $model->disposal_days = 0;
                 }
-                if(empty($model->disposal_hours)){
+                if (empty($model->disposal_hours)) {
                     $model->disposal_hours = 0;
                 }
                 $localdirdecision_model->localdirdecision_action = trim($localdirdecision_model->localdirdecision_action);
@@ -591,8 +594,8 @@ class DisposalController extends Controller
                     }
 
                     $teacher_model = Teacher::find()->where(['teacher_registrynumber' => $currentteacher_am])->orWhere(['teacher_afm' => $currentteacher_am])->one();
-                    
-                    if(is_null($teacher_model)) {
+
+                    if (is_null($teacher_model)) {
                         throw new Exception(DisposalModule::t('modules/disposal/app', "There is no teacher in the database with Registry or VAT number " . $currentteacher_am  . ". Please add the teacher in the database to continue."));
                     }
                     /*if (!$teacher_model) {
@@ -641,20 +644,22 @@ class DisposalController extends Controller
 
                     $disposal->disposal_startdate = yii::$app->formatter->asDate($startdate, "php:Y-m-d");
                     $disposal->disposal_enddate = yii::$app->formatter->asDate($enddate, "php:Y-m-d");
-                    if($disposal->disposal_startdate > $disposal->disposal_enddate) {
+                    if ($disposal->disposal_startdate > $disposal->disposal_enddate) {
                         throw new Exception("Some disposal(s) start date is later than its (their) end date.");
                     }
                     $disposal_hours = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['HOURS'], $currentrow_index)->getValue();
                     $disposal_days = $disposals_worksheet->getCellByColumnAndRow($disposals_columns['DAYS'], $currentrow_index)->getValue();
-                    if($disposal_hours == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ")
+                    if ($disposal_hours == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ") {
                         $disposal_hours = Disposal::FULL_DISPOSAL;
-                    if($disposal_days == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ")
+                    }
+                    if ($disposal_days == "ΟΛΙΚΗ ΔΙΑΘΕΣΗ") {
                         $disposal_days = Disposal::FULL_DISPOSAL;
-                    elseif(empty($disposal_days))
+                    } elseif (empty($disposal_days)) {
                         $disposal_days = 0;
+                    }
                     $disposal->disposal_days = $disposal_days;
                     $disposal->disposal_hours = $disposal_hours;
-                    
+
                     $disposal->disposalreason_id = DisposalReason::findOne(['disposalreason_name' => self::getDisposalReasonUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_REASON'], $currentrow_index)->getValue())])['disposalreason_id'];
                     $disposal->disposalworkobj_id = DisposalWorkobj::findOne(['disposalworkobj_name' => self::getDisposalDutyUniqueName($disposals_worksheet->getCellByColumnAndRow($disposals_columns['DISPOSAL_DUTY'], $currentrow_index)->getValue())])['disposalworkobj_id'];
                     $disposal->teacher_id = $teacher_model->teacher_id;
