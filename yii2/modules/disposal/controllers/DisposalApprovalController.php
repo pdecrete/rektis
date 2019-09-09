@@ -672,7 +672,7 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('regionaldirect_protocoldate', date_format(date_create($model->approval_regionaldirectprotocoldate), 'd-m-Y'));
         $templateProcessor->setValue('regionaldirect_protocol', $model->approval_regionaldirectprotocol);
         $templateProcessor->setValue('contactperson', Yii::$app->user->identity->surname . ' ' . Yii::$app->user->identity->name);
-        $templateProcessor->setValue('postaladdress', Yii::$app->params['address']);
+        $templateProcessor->setValue('postaladdress', Yii::$app->params['address'] . ', ' . Yii::$app->params['city']);
         $templateProcessor->setValue('phonenumber', $this->module->params['disposal_telephone']);
         $templateProcessor->setValue('fax', $this->module->params['disposal_fax']);
         $templateProcessor->setValue('email', Yii::$app->params['email']);
