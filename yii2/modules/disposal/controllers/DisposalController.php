@@ -753,6 +753,8 @@ class DisposalController extends Controller
             return 'secretary_work';
         } elseif ($disposal_duty == 'ΕΝΙΣΧΥΤΙΚΗ ΔΙΔΑΣΚΑΛΙΑ') {
             return 'supplementary_teaching';
+        } elseif ($disposal_duty == '') {
+            return 'not_defined';
         } else {
             throw new Exception("Unknown disposal duty");
         }

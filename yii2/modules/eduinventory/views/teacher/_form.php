@@ -17,6 +17,15 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'teacher_surname')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'teacher_name')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($model, 'teacher_fathername')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($model, 'teacher_mothername')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($model, 'teacher_gender')->widget(Select2::classname(), [
+            'data' => [1 => 'Γυναίκα', 0 => 'Άντρας'],
+            'options' => ['placeholder' => Yii::t('app', 'Επιλέξτε Φύλο...')],
+        ])->label('Φύλο'); ?>    
 
     <?= $form->field($model, 'teacher_registrynumber')->textInput(['maxlength' => true]) ?>
     
