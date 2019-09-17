@@ -5,11 +5,9 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use app\modules\disposal\DisposalModule;
-use kartik\datecontrol\DateControl;
 use kartik\select2\Select2;
 use app\modules\disposal\models\Disposal;
 use app\modules\disposal\widgets\ButtonShortcuts;
-use yii\base\Widget;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\modules\disposal\models\DisposalSearch */
@@ -80,7 +78,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'pluginOptions' => ['allowClear' => true, 'width' => '80']
                 ])
             ],
-            [   'attribute' => 'localdirdecision_action',
+           /*  [   'attribute' => 'localdirdecision_action',
                 'label' => DisposalModule::t('modules/disposal/app', 'Action'),
                 'filter' => Select2::widget([  'model' => $searchModel,
                     'attribute' => 'localdirdecision_action',
@@ -88,7 +86,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'options' => ['placeholder' => '   '],
                     'pluginOptions' => ['allowClear' => true, 'width' => '80']
                 ])
-            ],
+            ], */
             [   'attribute' => 'from_school',
                 'label' => DisposalModule::t('modules/disposal/app', 'Service'),
                 'options' => ['width' => '65']
@@ -134,11 +132,9 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'value' => function ($model) {
                     if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
-                    }
-                    else if ($model['disposal_days'] == 0) {
+                    } elseif ($model['disposal_days'] == 0) {
                         return '-';
-                    }
-                    else {
+                    } else {
                         return $model['disposal_days'];
                     }
                 },
@@ -154,11 +150,9 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'value' => function ($model) {
                     if ($model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
-                    }
-                    else if ($model['disposal_hours'] == 0 || is_null($model['disposal_hours'])) {
+                    } elseif ($model['disposal_hours'] == 0 || is_null($model['disposal_hours'])) {
                         return '-';
-                    }
-                    else {
+                    } else {
                         return $model['disposal_hours'];
                     }
                 },
@@ -168,6 +162,13 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'options' => ['placeholder' => '   '],
                     'pluginOptions' => ['allowClear' => true, 'width' => '60']
                     ])
+            ],
+            [   'attribute' => 'surname',
+                'label' => DisposalModule::t('modules/disposal/app', 'Update'),
+                'format' => 'html',
+                'value' => function ($model) {
+                    return $model['surname'] . ' ' . $model['name'] . ',<br />' . date_format(date_create($model['updated_at']), 'd/m/Y H:i:s');
+                },
             ],
             ['class' => 'yii\grid\ActionColumn',
                 //'header' => DisposalModule::t('modules/disposal/app', 'Actions'),
