@@ -56,11 +56,16 @@ $actioncolumn_template = ($archived == 0) ? '{view} {update} {delete} {download}
                 'format' => ['datetime', 'php:d-m-Y']
             ],
             'approval_notes',
-            ['attribute' => 'created_at',
-             'format' => ['datetime', 'php:d-m-Y H:i']
-            ],
             ['attribute' => 'updated_at',
              'format' => ['datetime', 'php:d-m-Y H:i']
+            ],
+            ['attribute' => 'updated_by',
+             'label' => DisposalModule::t('modules/disposal/app', 'Update'),
+             'value' => function ($model) {
+                 $whoupdated = $model->getUpdatedBy()->one();
+                 return $whoupdated['surname'] . ' ' . $whoupdated['name'] . ', <br />' . date_format(date_create($model['updated_at']), 'd/m/Y H:i:s');
+             },
+              'format' => 'html'
             ],
             ['class' => 'yii\grid\ActionColumn',
              'template' => $actioncolumn_template,

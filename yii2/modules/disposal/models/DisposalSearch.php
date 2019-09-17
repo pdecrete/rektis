@@ -5,7 +5,6 @@ namespace app\modules\disposal\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
 
 /**
  * DisposalSearch represents the model behind the search form about `app\modules\disposal\models\Disposal`.
@@ -23,6 +22,7 @@ class DisposalSearch extends Disposal
     public $disposalreason_description;
     public $localdirdecision_protocol;
     public $localdirdecision_action;
+    public $surname;
 
     /**
      * @inheritdoc
@@ -32,7 +32,7 @@ class DisposalSearch extends Disposal
         return [
             [['disposal_id', 'teacher_id', 'fromschool_id', 'toschool_id', 'localdirdecision_id'], 'integer'],
             [['teacher_name', 'teacher_surname', 'teacher_registrynumber', 'organic_school', 'from_school', 'to_school', 'code', 'directorate_shortname',
-              'disposalreason_description', 'localdirdecision_protocol', 'localdirdecision_action'], 'string'],
+              'disposalreason_description', 'localdirdecision_protocol', 'localdirdecision_action', 'surname'], 'string'],
             [['disposal_startdate', 'disposal_enddate', 'disposal_hours', 'disposal_days'], 'safe'],
         ];
     }
@@ -62,16 +62,17 @@ class DisposalSearch extends Disposal
         $dir_o_schl = $prefix . 'directorate';
         $reasons = $prefix . 'disposal_disposalreason';
         $duties = $prefix . 'disposal_disposalworkobj';
+        $users = $prefix . 'user';
         $localdir_decisions = $prefix . 'disposal_localdirdecision';
 
-        $tables_fields_array = [$dspls. ".*", $tchers . ".teacher_id AS TEACHER", $tchers . ".teacher_surname", $tchers . ".teacher_name", 
-                                $tchers . ".teacher_mothername", $tchers . ".teacher_fathername", $tchers . ".teacher_registrynumber", $specs . ".*" , $dir_o_schl . ".*" , 
+        $tables_fields_array = [$dspls. ".*", $tchers . ".teacher_id AS TEACHER", $tchers . ".teacher_surname", $tchers . ".teacher_name",
+                                $tchers . ".teacher_mothername", $tchers . ".teacher_fathername", $tchers . ".teacher_registrynumber", $specs . ".*" , $dir_o_schl . ".*" ,
                                 $reasons . ".disposalreason_id AS REASON" , $reasons . ".disposalreason_description", $duties . ".disposalworkobj_id AS DUTY", $duties . ".disposalworkobj_description",
                                 $localdir_decisions . ".localdirdecision_id AS LOCALDIR_DECISION" , $localdir_decisions . ".localdirdecision_protocol", $localdir_decisions . ".localdirdecision_action",
-                                "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school"];
-        $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties];
+                                "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school", $users . ".id", $users . ".surname", $users . ".name"];
+        $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties, $users];
         if ($archived) {
-            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".disposal_id AS DISPOSAL", $dspls_apprvs . ".approval_id", 
+            $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".disposal_id AS DISPOSAL", $dspls_apprvs . ".approval_id",
                                                                       $apprvs . ".approval_id AS APPROVAL", $apprvs . ".deleted AS APPROVALDELETED", $apprvs . ".approval_republished"]);
             $tables_array = array_merge($tables_array, [$dspls_apprvs, $apprvs]);
         }
@@ -85,6 +86,7 @@ class DisposalSearch extends Disposal
                     " AND " . $dspls . ".disposal_republished IS NULL " .
                     " AND " . $dspls . ".disposal_rejected=" . $rejected .
                     " AND " . $dspls . ".teacher_id=" . $tchers . ".teacher_id" .
+                    " AND " . $dspls . ".updated_by=" . $users . ".id" .
                     " AND " . $dspls . ".disposalreason_id=" . $reasons . ".disposalreason_id" .
                     " AND " . $dspls . ".disposalworkobj_id=" . $duties . ".disposalworkobj_id" .
                     " AND " . $dspls . ".localdirdecision_id=" . $localdir_decisions . ".localdirdecision_id" .
@@ -128,18 +130,17 @@ class DisposalSearch extends Disposal
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
-                                         'localdirdecision_action'],
+                                         'localdirdecision_action', 'surname'],
                                         'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC],
                          'enableMultiSort' => true,
-                      ], 
+                      ],
         ]);
-        
-        if($archived == 1) {
+
+        if ($archived == 1) {
             $dataProvider->pagination->pageSize = 10;
-        }
-        else {
+        } else {
             $dataProvider->pagination = false;
-        }   
+        }
 
         $this->load($params);
 
@@ -169,6 +170,7 @@ class DisposalSearch extends Disposal
         $query->andFilterWhere(['like', 'disposalreason_description', $this->disposalreason_description]);
         $query->andFilterWhere(['like', 'localdirdecision_protocol', $this->localdirdecision_protocol]);
         $query->andFilterWhere(['like', 'localdirdecision_action', $this->localdirdecision_action]);
+        $query->andFilterWhere(['like', 'surname', $this->surname]);
         $query->andFilterWhere(['>=', 'disposal_startdate', $this->disposal_startdate]);
         $query->andFilterWhere(['<=', 'disposal_enddate', $this->disposal_enddate]);
         //echo $query->createCommand()->rawSql; die();
