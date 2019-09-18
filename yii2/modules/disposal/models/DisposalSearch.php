@@ -69,7 +69,8 @@ class DisposalSearch extends Disposal
                                 $tchers . ".teacher_mothername", $tchers . ".teacher_fathername", $tchers . ".teacher_registrynumber", $specs . ".*" , $dir_o_schl . ".*" ,
                                 $reasons . ".disposalreason_id AS REASON" , $reasons . ".disposalreason_description", $duties . ".disposalworkobj_id AS DUTY", $duties . ".disposalworkobj_description",
                                 $localdir_decisions . ".localdirdecision_id AS LOCALDIR_DECISION" , $localdir_decisions . ".localdirdecision_protocol", $localdir_decisions . ".localdirdecision_action",
-                                "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school", $users . ".id", $users . ".surname", $users . ".name"];
+                                "`dsp_sch`.school_name AS to_school, `srv_sch`.school_name AS from_school, `orgn_sch`.school_name AS organic_school", $users . ".id AS USER_ID", 
+                                $users . ".surname AS USER_SURNAME", $users . ".name AS USER_NAME"];
         $tables_array = [$dspls, $tchers, $specs, $s_schls, $d_schls, $o_schls, $dir_o_schl, $reasons, $localdir_decisions, $duties, $users];
         if ($archived) {
             $tables_fields_array = array_merge($tables_fields_array, [$dspls_apprvs . ".disposal_id AS DISPOSAL", $dspls_apprvs . ".approval_id",
@@ -125,13 +126,15 @@ class DisposalSearch extends Disposal
         $dspls = Yii::$app->db->tablePrefix . 'disposal_disposal';
         $query = self::getAllDisposalsQuery($archived, $approval_id, $rejected);
 
+        $defaultOrder = ($archived != 0) ? [$dspls . '.updated_at' => SORT_DESC] : ['code' => SORT_ASC];
+        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [ 'attributes' => ['teacher_surname', 'teacher_name', 'teacher_registrynumber', 'code',
                                           $dspls . '.updated_at', 'to_school', 'from_school', 'organic_school', 'disposal_startdate', 'disposal_enddate',
                                          'directorate_shortname', 'disposal_hours', 'disposal_days', 'disposalreason_description', 'localdirdecision_protocol',
                                          'localdirdecision_action', 'surname'],
-                                        'defaultOrder' => [$dspls . '.updated_at' => SORT_DESC],
+                                        'defaultOrder' => $defaultOrder,
                          'enableMultiSort' => true,
                       ],
         ]);

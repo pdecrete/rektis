@@ -167,7 +167,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Update'),
                 'format' => 'html',
                 'value' => function ($model) {
-                    return $model['surname'] . ' ' . $model['name'] . ',<br />' . date_format(date_create($model['updated_at']), 'd/m/Y H:i:s');
+                    return $model['USER_SURNAME'] . ' ' . $model['USER_NAME'] . ',<br />' . date_format(date_create($model['updated_at']), 'd/m/Y H:i:s');
                 },
             ],
             ['class' => 'yii\grid\ActionColumn',
