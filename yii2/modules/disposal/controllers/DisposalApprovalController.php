@@ -744,7 +744,7 @@ class DisposalApprovalController extends Controller
         $article = 'το';
         if (in_array($school_minedu_code, [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101])) {
             $article = 'τη';
-        } elseif (in_array($school_minedu_code, [9999910])) {
+        } elseif (in_array($school_minedu_code, [9999910, 'PEKES_KRITIS'])) {
             $article = 'την';
         }
         return $article;
