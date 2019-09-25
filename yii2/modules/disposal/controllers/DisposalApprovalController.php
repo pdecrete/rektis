@@ -689,6 +689,7 @@ class DisposalApprovalController extends Controller
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {
             $workstatus = '';
+            $am = '';
             if (!(!is_null($teacher_models[$i]['teacher_registrynumber']) && isset($teacher_models[$i]['teacher_registrynumber']))) {
                 if ($teacher_models[$i]['teacher_gender'] == Teacher::FEMALE) {
                     $workstatus = '(αναπληρώτρια) ';
@@ -696,8 +697,11 @@ class DisposalApprovalController extends Controller
                     $workstatus = '(αναπληρωτής) ';
                 }
             }
-
-            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . ", εκπαιδευτικός κλάδου " . $workstatus ;
+            else {
+                $am = '(A.M.'. $teacher_models[$i]['teacher_registrynumber'] . ')';
+            }
+            
+            $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . " {$am}, εκπαιδευτικός " . $workstatus . " κλάδου ";
             $teacher_disposals .= $specialization_models[$i]['code'] . " (" . $specialization_models[$i]['name'] ."):\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
                                   $fromschool_models[$i]['school_name'] . "\"";
 
