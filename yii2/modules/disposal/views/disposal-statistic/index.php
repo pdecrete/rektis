@@ -44,14 +44,14 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
       			<?= DisposalModule::t('modules/disposal/app', 'Export transportations to Excel file'); ?> <span class="caret"></span>
   			</button>
   			<ul class="dropdown-menu" role="menu">
-    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => $current_startyear]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'year' => $current_startyear]);?>">
 					<?= DisposalModule::t('modules/disposal/app', 'Current school year'); ?></a>
 				</li>
-    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => ($current_startyear-1)]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'year' => ($current_startyear-1)]);?>">
     				<?= DisposalModule::t('modules/disposal/app', 'Previous school year'); ?>
     				</a>
 				</li>
-    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'period' => -1]);?>">
+    			<li><a href="<?= Url::to(['/disposal/disposal-statistic/exportexcel', 'year' => -1]);?>">
 					<?= DisposalModule::t('modules/disposal/app', 'All years'); ?>
 					</a>
 				</li>
