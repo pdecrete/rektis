@@ -4,6 +4,7 @@ namespace app\modules\disposal\models;
 
 use app\modules\eduinventory\models\Teacher;
 use app\models\User;
+use app\modules\base\components\DateHelper;
 use app\modules\disposal\DisposalModule;
 use app\modules\schooltransport\models\Schoolunit;
 use Exception;
@@ -284,16 +285,21 @@ class Disposal extends \yii\db\ActiveRecord
 
     public static function getPeriodDisposals($startdate, $enddate)
     {
-        if (!\app\modules\base\components\DateHelper::validateDate($startdate) || !\app\modules\base\components\DateHelper::validateDate($enddate)) {
-            throw new Exception("Invalid dates");
+        if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
+            throw new Exception("An invalid period value was given to export data.");
         }
-
+        
         $tblprefix = Yii::$app->db->tablePrefix;
         $t = $tblprefix . 'disposal_disposal';
         $query = DisposalSearch::getAllDisposalsQuery(1);//$archived = 1 in argument
-
-        $query = $query->andWhere($t . ".disposal_startdate >= '" . $startdate . "' AND " .
-                                  $t . ".disposal_startdate <= '" . $enddate . "'")->orderBy('disposal_startdate');
+        
+        if(!is_null($startdate)) {
+            $query = $query->andWhere($t . ".disposal_startdate >= '" . $startdate . "'");
+        }
+        if(!is_null($enddate)) {
+            $query = $query->andWhere($t . ".disposal_startdate <= '" . $enddate . "'");
+        }
+        $query = $query->orderBy('disposal_startdate');
         return $query->all();
     }
 
