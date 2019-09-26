@@ -139,13 +139,13 @@ class DisposalStatisticController extends Controller
         $this->exportExcel($startdate, $enddate);
     }
 
-    public static function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
+    public function exportExcel($startdate = null, $enddate = null, $savePathFile = null)
     {
         try {
             if (($startdate != null && $enddate != null) && (!DateHelper::validateDate($startdate, 'Y-m-d') || !DateHelper::validateDate($enddate, 'Y-m-d'))) {
-                throw new Exception("An invalid period value was given to export school transports data.");
+                throw new Exception("An invalid period value was given to export data.");
             }
-
+            
             $disposals = Disposal::getPeriodDisposals($startdate, $enddate);
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();

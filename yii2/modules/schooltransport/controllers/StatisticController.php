@@ -196,8 +196,6 @@ class StatisticController extends \yii\web\Controller
                 $writer->save($savePathFile);
             }
         } catch (Exception $exc) {
-            echo $exc;
-            die();
             Yii::$app->session->addFlash('danger', Module::t('modules/schooltransport/app', $exc->getMessage()));
             return $this->redirect('index');
         } catch (\PhpOffice\PhpSpreadsheet\Exception $phpSprExc) {

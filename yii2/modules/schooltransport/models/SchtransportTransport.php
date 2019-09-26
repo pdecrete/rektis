@@ -214,8 +214,13 @@ class SchtransportTransport extends \yii\db\ActiveRecord
         $t = $tblprefix . 'schtransport_transport';
         $query = self::getAllTransportsQuery(false, -1);
 
-        $query = $query->andWhere($t . ".transport_startdate >= '" . $startdate . "' AND " .
-                                  $t . ".transport_startdate <= '" . $enddate . "'")->orderBy('transport_startdate');
+        if(!is_null($startdate)) {
+            $query = $query->andWhere($t . ".transport_startdate >= '" . $startdate . "'");
+        }
+        if(!is_null($enddate)) {
+            $query = $query->andWhere($t . ".transport_startdate <= '" . $enddate . "'");
+        }
+        $query = $query->orderBy('transport_startdate');
         return $query->all();
     }
 
