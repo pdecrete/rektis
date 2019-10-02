@@ -466,13 +466,13 @@ class TransportController extends Controller
             $transports_content = "";
             $checkedEmployees = [];
             $counter = 0;
+            $funds = [];
+            $fnum = 0;
             foreach ($sameProtocolTransportModels as $transportModel) {
                 if (in_array($transportModel->employee, $checkedEmployees, true)) {
                     continue;
                 }
                 $counter++;
-                $funds = [];
-                $fnum = 0;
                 $notify .= " - " . $transportModel->employee0->surname . " " . $transportModel->employee0->name . $newline;
 
                 $templateProcessor->setValue('DEC_PROT', $transportModel->decision_protocol);
@@ -559,7 +559,7 @@ class TransportController extends Controller
                     }
 
                     $transports_content .=  "-" . $space . $start_bold . $dates . $end_bold . " με διαδρομή \"" . $start_bold . $currentModel->fromTo->name . $end_bold . "\", μέσο μετακίνησης \""
-                                        . $start_bold . $currentModel->mode0->name . $end_bold . "\" και σκοπό μετακίνησης \"" . $currentModel->reason . "\"" 
+                        . $start_bold . $currentModel->mode0->name . $end_bold . "\" και σκοπό μετακίνησης \"" . str_replace("&", "και", $currentModel->reason) . "\"" 
                                         . " (Ημ. Εκτός Έδρας: " . $start_bold . $currentModel->days_applied . $end_bold . ")" . $newline . $newline;
 
 
@@ -598,7 +598,8 @@ class TransportController extends Controller
 
 
                 //Διαχωρισμός διπλοτύπων...
-                $funds = array_unique($funds);
+                $funds = array_values(array_unique($funds));
+                $fnum = count($funds);
                 $fund_str = '';
                 $kae_str = '';
                 $k = Yii::$app->params['trans_related_docs_default']; // Αριθμός ΕΧΟΝΤΑΣ ΥΠΟΨΗ του ΠΡΟΤΥΠΟΥ
