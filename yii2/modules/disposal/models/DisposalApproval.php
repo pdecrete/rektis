@@ -16,6 +16,7 @@ use yii\db\Expression;
  * @property date $approval_regionaldirectprotocoldate
  * @property string $approval_notes
  * @property string $approval_file
+ * @property integer $approval_type
  * @property string $approval_signedfile
  * @property integer $approval_republished
  * @property string $approval_republishedtext
@@ -32,6 +33,10 @@ use yii\db\Expression;
  */
 class DisposalApproval extends \yii\db\ActiveRecord
 {
+    const DISPOSALS_APPROVAL_GENERAL = 1;
+    const COMMON_SPECIALIZATIONS_DECISION = 2;
+    const EUROPEAN_SCHOOL_DECISION = 3;
+    
     public function behaviors()
     {
         return [
@@ -69,9 +74,9 @@ class DisposalApproval extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_file', 'approval_signedfile'], 'required'],
+            [['approval_type', 'approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_file', 'approval_signedfile'], 'required'],
             [['created_at', 'updated_at', 'approval_regionaldirectprotocoldate', 'approval_republishdate'], 'safe'],
-            [['approval_republished', 'deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
+            [['approval_type', 'approval_republished', 'deleted', 'archived', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol'], 'string', 'max' => 100],
             [['approval_notes'], 'string', 'max' => 500],
             [['approval_republishtext'], 'string', 'max' => 2000],
@@ -91,6 +96,7 @@ class DisposalApproval extends \yii\db\ActiveRecord
             'approval_notes' => Yii::t('app', 'Σημειώσεις'),
             'approval_file' => Yii::t('app', 'Αρχείο Έγκρισης'),
             'approval_signedfile' => Yii::t('app', 'Ψηφιακά Υπογεγραμμένο Αρχείο Έγκρισης'),
+            'approval_type' => Yii::t('app', 'Τύπος Εγγράφου'),
             'deleted' => Yii::t('app', 'Deleted'),
             'archived' => Yii::t('app', 'Archived'),
             'approval_republished' => Yii::t('app', 'Ανακοινοποίηση Έγκρισης'),
@@ -101,6 +107,13 @@ class DisposalApproval extends \yii\db\ActiveRecord
             'created_by' => Yii::t('app', 'Approval Created By'),
             'updated_by' => Yii::t('app', 'Approval Updated By'),
         ];
+    }
+    
+    public static function getTypeOptions()
+    {
+        return [DisposalApproval::DISPOSALS_APPROVAL_GENERAL => 'Έγκριση', 
+                DisposalApproval::COMMON_SPECIALIZATIONS_DECISION => 'Απόφαση για κοινές ειδικότητες', 
+                DisposalApproval::EUROPEAN_SCHOOL_DECISION => 'Απόφαση για Σχολείο Ευρωπαϊκής Παιδείας'];
     }
 
     /**

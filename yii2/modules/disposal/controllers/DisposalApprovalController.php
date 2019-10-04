@@ -100,6 +100,36 @@ class DisposalApprovalController extends Controller
         ]);
     }
 
+    
+    public function getTemplatefile($type, $with_health_reasons, $is_republish)
+    {
+        $template_filename = '';
+        if($type == DisposalApproval::DISPOSALS_APPROVAL_GENERAL) {
+            $template_filename = 'DISPOSALS_APPROVAL_GENERAL';
+        }
+        else if($type == DisposalApproval::COMMON_SPECIALIZATIONS_DECISION) {
+            $template_filename = 'COMMON_SPECIALIZATIONS_DECISION';
+        }
+        else if($type == DisposalApproval::EUROPEAN_SCHOOL_DECISION) {
+            $template_filename = 'EUROPEAN_SCHOOL_DECISION';
+        }
+        else {
+            throw new Exception("Unknown document type (code number: " . $model->approval_type . ") was asked.");
+        }
+        
+        if($with_health_reasons) {
+            $template_filename .= "_WITH_HEALTH_REASONS";
+        }
+        
+        if($is_republish) {
+            $template_filename .= "_REPUBLISH";
+        }
+        
+        $template_filename .= "_TEMPLATE";
+        
+        return $template_filename;
+    }
+    
     /**
      * Creates a new DisposalApproval model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -162,8 +192,8 @@ class DisposalApprovalController extends Controller
 
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
-                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
-                //$model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . str_replace('-', '_', $model->approval_regionaldirectprotocoldate) . ".docx";
+                $template_filename = $this->getTemplatefile($model->approval_type, $use_template_with_health_reasons);
+
                 $model->approval_signedfile = '-';
                 $model->approval_file = "-";
 
@@ -289,11 +319,12 @@ class DisposalApprovalController extends Controller
         try {
             if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post())) {
                 $template_filename = "";
-                if ($model->getRepublishedApproval() != null) {
+                $template_filename = $this->getTemplatefile($model->approval_type, $use_template_with_health_reasons, ($model->getRepublishedApproval() != null));
+/*                 if ($model->getRepublishedApproval() != null) {
                     $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_REPUBLISH_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_REPUBLISH_TEMPLATE";
                 } else {
                     $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_TEMPLATE";
-                }
+                } */
 
                 if (!$model->save()) {
                     throw new Exception("Failed to save the changes of the approval.");
@@ -473,13 +504,13 @@ class DisposalApprovalController extends Controller
 
 
         try {
-            if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post()) && Model::loadMultiple($disposals_models, Yii::$app->request->post())) {
-                $template_filename = ($use_template_with_health_reasons) ? "DISPOSALS_APPROVAL_GENERAL_WITH_HEALTH_REASONS_REPUBLISH_TEMPLATE" : "DISPOSALS_APPROVAL_GENERAL_REPUBLISH_TEMPLATE";
-
+            if ($model->load(Yii::$app->request->post()) && Model::loadMultiple($disposalapproval_models, Yii::$app->request->post()) && Model::loadMultiple($disposals_models, Yii::$app->request->post())) {                
                 $model->approval_regionaldirectprotocol = trim($model->approval_regionaldirectprotocol);
                 $model->approval_regionaldirectprotocoldate = trim($model->approval_regionaldirectprotocoldate);
 
-                if ($model->approval_regionaldirectprotocol != $initialModel->approval_regionaldirectprotocol || $model->approval_regionaldirectprotocoldate != $initialModel->approval_regionaldirectprotocoldate) {
+                if ($model->approval_regionaldirectprotocol != $initialModel->approval_regionaldirectprotocol || 
+                    $model->approval_regionaldirectprotocoldate != $initialModel->approval_regionaldirectprotocoldate ||
+                    $model->approval_type != $initialModel->approval_type) {
                     $approval_changed = true;
                 }
 
@@ -487,7 +518,8 @@ class DisposalApprovalController extends Controller
                 if (!$model->save()) {//save two times because we need $model->approval_id for the filename
                     throw new Exception("Failed to save the approval in the database.");
                 }
-                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . $model->approval_id . ".docx";
+                $template_filename = $this->getTemplatefile($model->approval_type, $use_template_with_health_reasons, true);
+                $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . $model->approval_id . ".docx";                
                 if (!$model->save()) {
                     throw new Exception("Failed to save the approval in the database.");
                 }
@@ -550,7 +582,7 @@ class DisposalApprovalController extends Controller
                 }
 
                 if (!$approval_changed) {
-                    throw new Exception("Error: There should be at least one change in relation to the initial Approval.");
+                    throw new Exception("Error: There should be at least one change in relation to the initial document.");
                 }
 
                 if ($disposals_counter == count($initial_disposalapproval_models)) {
@@ -683,8 +715,13 @@ class DisposalApprovalController extends Controller
         $templateProcessor->setValue('local_directorate_decisionsubject', $subject); //$localdirdecision_model->localdirdecision_subject);
         $templateProcessor->setValue('local_directorate_action', $document_action); //$localdirdecision_model->localdirdecision_action);
         $pyspe = ($directorate_model['directorate_stage'] == 'PRIMARY') ? "ΠΥΣΠΕ " : "ΠΥΣΔΕ ";
-        $pyspe .= substr(strrchr($directorate_model['directorate_name'], " "), 1);
+        $county = substr(strrchr($directorate_model['directorate_name'], " "), 1);
+        $pyspe .= $county;
+        $pysde = "ΠΥΣΔΕ " . $county;
         $templateProcessor->setValue('local_pyspe', $pyspe);
+        $templateProcessor->setValue('local_pysde', $pysde);
+        $local_primary_directorate = str_replace("Διεύθυνση Δευτεροβάθμιας", "Διεύθυνση Πρωτοβάθμιας", $directorate_model['directorate_name']);
+        $templateProcessor->setValue('local_primary_directorate', $local_primary_directorate);
 
         $teacher_disposals = "";
         for ($i = 0; $i < count($teacher_models); $i++) {

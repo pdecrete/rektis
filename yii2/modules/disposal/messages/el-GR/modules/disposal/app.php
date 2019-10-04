@@ -216,7 +216,7 @@ return [
     'Republish Approval' => 'Ανακοινοποίηση Έγκρισης',
     'Action' => 'Πράξη',
     'Select disposal days...' => 'Επιλέξτε μέρες διάθεσης...',
-    'Error: There should be at least one change in relation to the initial Approval.' => 'Σφάλμα: Πρέπει να υπάρχει τουλάχιστον μια αλλαγή σε σχέση με την Έγκριση που ανακοινοποιείται.',
+    'Error: There should be at least one change in relation to the initial document.' => 'Σφάλμα: Πρέπει να υπάρχει τουλάχιστον μια αλλαγή σε σχέση με το έγγραφο που ανακοινοποιείται.',
     'Not allowed action for that approval.' => 'Μη επιτρεπτή ενέργεια για αυτή την Έγκριση.',
     'An invalid period value was given to export data.' => 'Μη έγκυρη τιμή περιόδου δόθηκε για την εξαγωγή δεδομένων.'
 ];
