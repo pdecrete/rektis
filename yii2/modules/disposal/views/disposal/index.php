@@ -140,20 +140,27 @@ $columns = [[   'attribute' => 'teacher_surname',
             ],
             [   'attribute' => 'disposal_days',
                 'label' => DisposalModule::t('modules/disposal/app', 'Days'),
+                'contentOptions' => ['class'=> 'text-center'],
                 'format' => 'html',
                 'value' => function ($model) {
                     if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
                     } elseif ($model['disposal_days'] == 0) {
                         $return_value = '-<br>(' . $model['disposal_hours'];
-                        if($model['disposal_days'] == 1)
+                        if($model['disposal_hours'] == 1)
                             $return_value = $return_value . ' ώρα)';
                         else
                             $return_value = $return_value . ' ώρες)';
                                 
                         return $return_value;
                     } else {
-                        $hours = ($model['disposal_hours'] != 0 && $model['disposal_hours']) != null ? ' (' . $model['disposal_hours'] . ' ώρες)': '';
+                        $hours = '<br>(' . $model['disposal_hours'];
+                        if($model['disposal_hours'] != 0 && $model['disposal_hours'] != null) {
+                            if($model['disposal_hours'] == 1)
+                                $hours .= ' ώρα)';
+                            else
+                                $hours .= ' ώρες)';
+                        }
                         return $model['disposal_days'] . $hours ;
                     }
                 },
