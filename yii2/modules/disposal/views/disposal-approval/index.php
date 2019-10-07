@@ -11,7 +11,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\modules\disposal\models\DisposalApprovalSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$title = ($archived == 0) ? 'Disposals Approvals' : 'Archived Approvals';
+$title = ($archived == 0) ? 'Disposals Approvals-Decisions' : 'Archived Approvals-Decisions';
 $this->title =  DisposalModule::t('modules/disposal/app', $title);
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
 $this->params['breadcrumbs'][] = $this->title;

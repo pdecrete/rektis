@@ -8,23 +8,30 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\modules\disposal\models\DisposalApproval;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 /* @var $form yii\widgets\ActiveForm */
 
-//echo "<pre>"; print_r($model); echo "<pre>"; die();
-
 ?>
 <div class="disposal-approval-form container-fluid">
     <?php $form = ActiveForm::begin(); ?>
 	<div class="row">
+		<!-- 
 		<?php if ((isset($republish) && $republish == 1) || $model->getRepublishedApproval() != null): ?>
-    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true, 'disabled' => true]) ?></div>
+    		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true, 'disabled' => true]) ?></div>
     	<?php else: ?>
-    		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div>
-    	<?php endif;?>	
-		<div class="col-lg-6"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
+    		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div>
+    	<?php endif;?>
+    	 -->
+    	<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div> 	
+		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
+		<div class="col-lg-4"><?= $form->field($model, 'approval_type')->widget(
+    Select2::classname(),
+                                                                                  ['data' => $doc_type_options = DisposalApproval::getTypeOptions(),
+                                                                                   'options' => ['placeholder' => Yii::t('app', 'Επιλέξτε τύπο εγγράφου...')]]
+); ?></div>
 	</div>
 	<div class="row">
     	<div class="col-lg-12"><?= $form->field($model, 'approval_notes')->textInput(['maxlength' => true]) ?></div>    	

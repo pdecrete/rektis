@@ -16,7 +16,7 @@ class DisposalApprovalSearch extends DisposalApproval
     public function rules()
     {
         return [
-            [['approval_id', 'created_by', 'updated_by'], 'integer'],
+            [['approval_id', 'approval_type', 'created_by', 'updated_by'], 'integer'],
             [['approval_regionaldirectprotocol', 'approval_regionaldirectprotocoldate', 'approval_notes', 'approval_file', 'approval_signedfile', 'created_at', 'updated_at'], 'safe'],
         ];
     }

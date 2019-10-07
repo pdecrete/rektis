@@ -6,9 +6,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 
-$this->title = DisposalModule::t('modules/disposal/app', 'Update Disposals\' Approval');
+$this->title = DisposalModule::t('modules/disposal/app', 'Update Disposals\' Approval-Decision');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), 'url' => ['/disposal/disposal-approval/index']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals Approvals-Decisions'), 'url' => ['/disposal/disposal-approval/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="disposal-approval-update">

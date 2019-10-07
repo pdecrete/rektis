@@ -21,7 +21,7 @@ if ($archived) {
 } elseif ($rejected) {
     $this->title = DisposalModule::t('modules/disposal/app', 'Rejected Disposals');
 } else {
-    $this->title = DisposalModule::t('modules/disposal/app', 'Disposals for Approval');
+    $this->title = DisposalModule::t('modules/disposal/app', 'Disposals for Approval-Decision');
 }
 
 $this->params['breadcrumbs'][] = $this->title;
@@ -127,15 +127,28 @@ $columns = [[   'attribute' => 'teacher_surname',
                 ]),
                 'headerOptions' => ['class'=> 'text-center'],
             ], */
+            [   'attribute' => 'disposal_startdate',
+                'label' => DisposalModule::t('modules/disposal/app', 'From-To'),
+
+                'headerOptions' => ['class'=> 'text-center'],
+                'contentOptions' => ['class'=> 'text-center'],
+                'value' => function ($model) {
+                    $startdate = Yii::$app->formatter->asDate($model['disposal_startdate']);
+                    $enddate = Yii::$app->formatter->asDate($model['disposal_enddate']);
+                    return $startdate . ' έως ' . $enddate;
+                },
+            ],
             [   'attribute' => 'disposal_days',
                 'label' => DisposalModule::t('modules/disposal/app', 'Days'),
+                'format' => 'html',
                 'value' => function ($model) {
                     if ($model['disposal_days'] == Disposal::FULL_DISPOSAL) {
                         return 'Ολική Διάθεση';
                     } elseif ($model['disposal_days'] == 0) {
-                        return '-';
+                        return '-<br>(' . $model['disposal_hours'] . ' ώρες)';
                     } else {
-                        return $model['disposal_days'];
+                        $hours = ($model['disposal_hours'] != 0 && $model['disposal_hours']) != null ? ' (' . $model['disposal_hours'] . ' ώρες)': '';
+                        return $model['disposal_days'] . $hours ;
                     }
                 },
                 'filter' => Select2::widget([  'model' => $searchModel,
@@ -145,7 +158,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'pluginOptions' => ['allowClear' => true, 'width' => '60']
                 ])
             ],
-            [   'attribute' => 'disposal_hours',
+            /* [   'attribute' => 'disposal_hours',
                 'label' => DisposalModule::t('modules/disposal/app', 'Hours'),
                 'value' => function ($model) {
                     if ($model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
@@ -162,7 +175,7 @@ $columns = [[   'attribute' => 'teacher_surname',
                     'options' => ['placeholder' => '   '],
                     'pluginOptions' => ['allowClear' => true, 'width' => '60']
                     ])
-            ],
+            ], */
             [   'attribute' => 'surname',
                 'label' => DisposalModule::t('modules/disposal/app', 'Update'),
                 'format' => 'html',
@@ -228,7 +241,7 @@ if ((!isset($archived) || (isset($archived) && !$archived)) && (!isset($rejected
           			</button>
           			<ul class="dropdown-menu" role="menu">          				
                 		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposal'), ['create']) ?></li>
-                		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approval'), ['disposal-approval/create'], ['data-method' => 'POST']) ?></li>
+                		<li><?= Html::a(DisposalModule::t('modules/disposal/app', 'Approval-Decision'), ['disposal-approval/create'], ['data-method' => 'POST']) ?></li>
           			</ul>
             	</div>    	
         	<?= Html::a(DisposalModule::t('modules/disposal/app', 'Import from Excel'), ['importdisposals'], ['class' => 'btn btn-success']) ?>
