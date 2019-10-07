@@ -161,6 +161,8 @@ $columns = [[   'attribute' => 'teacher_surname',
                             else
                                 $hours .= ' ώρες)';
                         }
+                        else 
+                            $hours = '';
                         return $model['disposal_days'] . $hours ;
                     }
                 },
