@@ -101,7 +101,7 @@ class DisposalApprovalController extends Controller
     }
 
     
-    public function getTemplatefile($type, $with_health_reasons, $is_republish)
+    public function getTemplatefile($type, $with_health_reasons, $is_republish = false)
     {
         $template_filename = '';
         if($type == DisposalApproval::DISPOSALS_APPROVAL_GENERAL) {
@@ -202,7 +202,7 @@ class DisposalApprovalController extends Controller
                 }
                 $model->approval_file = $template_filename . '_' . $model->approval_regionaldirectprotocol . '_' . $model->approval_id . ".docx";
                 if (!$model->save()) {
-                    throw new Exception("Failed to save the approval in the database.");
+                    throw new Exception(DisposalModule::t('modules/disposal/app', "Failed to save the approval/decision."));
                 }
                 $disposals_counter = 0;
                 foreach ($disposalapproval_models as $disposalapproval_model) {
@@ -212,15 +212,15 @@ class DisposalApprovalController extends Controller
                     $disposals_counter++;
                     $disposal_model = Disposal::findOne($disposalapproval_model->disposal_id);
                     if (!$disposal_model) {
-                        throw new Exception("Failed to assign disposals to the approval.");
+                        throw new Exception(DisposalModule::t('modules/disposal/app', "Failed to assign disposals to the approval-decision."));
                     }
                     $disposal_model->archived = 1;
                     if (!$disposal_model->save()) {
-                        throw new Exception("Failed to assign disposals to the approval.");
+                        throw new Exception(DisposalModule::t('modules/disposal/app', "Failed to assign disposals to the approval-decision."));
                     }
                     $disposalapproval_model->approval_id = $model->approval_id;
                     if (!$disposalapproval_model->save()) {
-                        throw new Exception("Failed to assign disposals to the approval.");
+                        throw new Exception(DisposalModule::t('modules/disposal/app', "Failed to assign disposals to the approval-decision."));
                     }
                 }
                 if ($disposals_counter == 0) {
@@ -231,14 +231,14 @@ class DisposalApprovalController extends Controller
                 }
 
                 if ($this->createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
-                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
+                    throw new Exception(DisposalModule::t('modules/disposal/app', "The creation of the document failed, because the template file does not exist."));
                 }
 
                 $transaction->commit();
                 $user = Yii::$app->user->identity->username;
                 Yii::info('User ' . $user . ' ' . 'created Approval with id: '. $model->approval_id, 'disposal');
 
-                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was created successfully."));
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The document of the disposals was created successfully."));
                 return $this->redirect(['disposal-approval/index']);
             } else {
                 return $this->render('create', [
@@ -284,7 +284,7 @@ class DisposalApprovalController extends Controller
     {
         $model = $this->findModel($id);
         if ($model->archived == 1 || $model->deleted == 1 || !is_null(self::isRepublished($id))) {
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that document."));
             return $this->redirect(['disposal-approval/index']);
         }
         $disposalapproval_models = DisposalDisposalapproval::find()->where(['approval_id' => $model->approval_id])->orderBy('disposalapproval_order')->all();
@@ -382,7 +382,7 @@ class DisposalApprovalController extends Controller
                 $user = Yii::$app->user->identity->username;
                 Yii::info('User ' . $user . ' ' . 'updated Approval with id: '. $id, 'disposal');
 
-                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The document of the disposals was updated successfully."));
                 return $this->redirect(['disposal-approval/index']);
             } else {
                 return $this->render('update', [
@@ -451,7 +451,7 @@ class DisposalApprovalController extends Controller
         $initialModel = $this->findModel($id);
 
         if ($initialModel->deleted == 1 || !is_null(self::isRepublished($id))) {
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that document."));
             return $this->redirect(['disposal-approval/index']);
         }
 
@@ -462,7 +462,7 @@ class DisposalApprovalController extends Controller
         $model->approval_republishdate = date("Y-m-d");
 
         if ($model->archived == 1 || $model->deleted == 1) {
-            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that approval."));
+            Yii::$app->session->addFlash('danger', DisposalModule::t('modules/disposal/app', "Not allowed action for that document."));
             return $this->redirect(['disposal-approval/index']);
         }
 
@@ -624,7 +624,7 @@ class DisposalApprovalController extends Controller
                 $user = Yii::$app->user->identity->username;
                 Yii::info('User ' . $user . ' ' . 'updated Approval with id: '. $id, 'disposal');
 
-                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The approval of the disposals was updated successfully."));
+                Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', "The document was republished successfully."));
                 return $this->redirect(['disposal-approval/index']);
             } else {
                 return $this->render('republish', [
@@ -803,7 +803,7 @@ class DisposalApprovalController extends Controller
             $transaction = Yii::$app->db->beginTransaction();
             $approval_model = $this->findModel($id);
             if ($approval_model->archived == 1 || $approval_model->deleted == 1 || !is_null(self::isRepublished($id))) {
-                throw new Exception('Not allowed action for that approval.');
+                throw new Exception('Not allowed action for that document.');
             }
 
             $approval_model->deleted = 1;
@@ -861,7 +861,7 @@ class DisposalApprovalController extends Controller
 
             $user = Yii::$app->user->identity->username;
             Yii::info('User ' . $user . ' ' . 'deleted Approval with id: '. $id, 'disposal');
-            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The disposals\' approval was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval" section.'));
+            Yii::$app->session->addFlash('success', DisposalModule::t('modules/disposal/app', 'The document was deleted succesfully and the disposals included in it where set back to the "Disposals for Approval-Decision" section (not for republished documents for which the state is simply set back to the prior republication state).'));
             return $this->redirect(['index']);
         } catch (Exception $exc) {
             $transaction->rollBack();

@@ -18,7 +18,7 @@ if ($archived) {
 } elseif ($rejected) {
     $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Rejected Disposals'), 'url' => [$url]];
 } else {
-    $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), 'url' => [$url]];
+    $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals for Approval-Decision'), 'url' => [$url]];
 }
 
 $this->params['breadcrumbs'][] = $this->title;

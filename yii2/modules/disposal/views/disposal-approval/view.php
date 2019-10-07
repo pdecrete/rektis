@@ -8,9 +8,9 @@ use app\modules\disposal\models\Disposal;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 
-$this->title = DisposalModule::t('modules/disposal/app', 'View Approval');
+$this->title = DisposalModule::t('modules/disposal/app', 'View Approval-Decision');
 $this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Teachers\' Disposals'), 'url' => ['/disposal/default']];
-$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), 'url' => ['/disposal/disposal-approval/index']];
+$this->params['breadcrumbs'][] = ['label' => DisposalModule::t('modules/disposal/app', 'Disposals Approvals-Decisions'), 'url' => ['/disposal/disposal-approval/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 //echo "<pre>"; print_r($specializations); echo "</pre>"; die();
@@ -30,21 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-	<?php 
-	$attribures =  [
+	<?php
+    $attribures =  [
                     'approval_regionaldirectprotocol',
-            	    'approval_notes',
-            	    ['label' => 'Αρχείο Έγκρισης', 
-            	     'format' => 'html', 
-            	     'value' => Html::a(DisposalModule::t('modules/disposal/app', 'Donwload file'), ['disposal-approval/download', 'id' =>$model['approval_id']])            	        
-            	    ],
-            	    'approval_signedfile',
-            	   ];
-	if ($model->getRepublishedApproval() != null) {
-	    $attribures = array_merge($attribures, ['approval_republishtext', ['attribute' => 'approval_republishdate', 'format' => ['datetime', 'php:d-m-Y']]]);
-	}
-	
-	?>
+                    'approval_notes',
+                    ['label' => 'Αρχείο Έγκρισης',
+                     'format' => 'html',
+                     'value' => Html::a(DisposalModule::t('modules/disposal/app', 'Donwload file'), ['disposal-approval/download', 'id' =>$model['approval_id']])
+                    ],
+                    'approval_signedfile',
+                   ];
+    if ($model->getRepublishedApproval() != null) {
+        $attribures = array_merge($attribures, ['approval_republishtext', ['attribute' => 'approval_republishdate', 'format' => ['datetime', 'php:d-m-Y']]]);
+    }
+
+    ?>
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => $attribures
@@ -70,23 +70,25 @@ $this->params['breadcrumbs'][] = $this->title;
             		<td><?php echo $specializations[$index]['code'] . ', ' . $specializations[$index]['name']; ?></td>
             		<td><?php echo $service_schools[$index]['school_name']; ?></td>
             		<td><?php echo $disposal_schools[$index]['school_name']; ?></td>
-            		<td><?php 
-            		          if($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL)
-            		              echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
-        		              else if($disposal_model['disposal_hours'] == 0)
-        		                  echo "-";
-        		              else
-        		                  echo $disposal_model['disposal_hours'];
-            		     ?>
+            		<td><?php
+                              if ($disposal_model['disposal_hours'] == Disposal::FULL_DISPOSAL) {
+                                  echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
+                              } elseif ($disposal_model['disposal_hours'] == 0) {
+                                  echo "-";
+                              } else {
+                                  echo $disposal_model['disposal_hours'];
+                              }
+                         ?>
             		</td>
-            		<td><?php 
-            		          if($disposal_model['disposal_days'] == Disposal::FULL_DISPOSAL)
-            		              echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
-        		              else if($disposal_model['disposal_days'] == 0)
-        		                  echo "-";
-        		              else
-        		                  echo $disposal_model['disposal_days'];
-            		     ?>
+            		<td><?php
+                              if ($disposal_model['disposal_days'] == Disposal::FULL_DISPOSAL) {
+                                  echo DisposalModule::t('modules/disposal/app', 'Full time Disposal');
+                              } elseif ($disposal_model['disposal_days'] == 0) {
+                                  echo "-";
+                              } else {
+                                  echo $disposal_model['disposal_days'];
+                              }
+                         ?>
             		</td>
             		<td><?php echo date_format(date_create($disposal_model['disposal_startdate']), 'd/m/Y'); ?></td>
             		<td><?php echo date_format(date_create($disposal_model['disposal_enddate']), 'd/m/Y');; ?></td>

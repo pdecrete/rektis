@@ -16,9 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 	<div class="well">
     	<div class="row">
     		<div class="col-lg-4">
-                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals for Approval');?></h3>
-    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals under approval');?></p>
-    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval'), Url::to(['/disposal/disposal']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals for Approval-Decision');?></h3>
+    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals under approval-decision');?></p>
+    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals for Approval-Decision'), Url::to(['/disposal/disposal']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
             </div>
     		<div class="col-lg-4">
                 <h3><?= DisposalModule::t('modules/disposal/app', 'Processed Disposals');?></h3>
@@ -33,9 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
       	</div>
       	<div class="row">
     		<div class="col-lg-4">
-                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals');?></h3>
-    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals approvals');?></p>
-    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
+                <h3><?= DisposalModule::t('modules/disposal/app', 'Disposals Approvals-Decisions');?></h3>
+    			<p><?= DisposalModule::t('modules/disposal/app', 'Manage disposals approvals-decisions');?></p>
+    			<p><?= Html::a(DisposalModule::t('modules/disposal/app', 'Disposals Approvals-Decisions'), Url::to(['/disposal/disposal-approval']), ['class' => 'btn btn-primary', 'data-method' => 'post']) ?></p>
             </div>      	
             <div class="col-lg-4">
                 <h3><?= DisposalModule::t('modules/disposal/app', 'Local Directorate Decisions');?></h3>

@@ -137,19 +137,19 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 <div id="canvasChart" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <?php   $max_result = max($result_data['DISPOSALS_COUNT']); 
-            
+            <?php   $max_result = max($result_data['DISPOSALS_COUNT']);
+
                     $results_count = count($result_data['DISPOSALS_COUNT']);
                     $fontsize = 12;
                     $minrotation = 0;
-                    if($results_count > 15 && $results_count <= 30)
+                    if ($results_count > 15 && $results_count <= 30) {
                         $fontsize = 10;
-                    else if($results_count > 30) {
+                    } elseif ($results_count > 30) {
                         $fontsize = 9;
                         $minrotation = 90;
                     }
-                        
-                    $stepSize = ceil($max_result/10); 
+
+                    $stepSize = ceil($max_result/10);
                     $max_value = $stepSize*10;
                     $height = 100;
                     $clientOptions['clientOptions'] = '';
@@ -179,7 +179,7 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
                         $clientOptions = ['clientOptions' => [
                             'legend' => ['display' => false, 'position' => 'bottom'],
                             'responsive' => true,
-                            'scales' => [ 
+                            'scales' => [
                                 'xAxes' => [[
                                 'ticks' => [
                                     'stepSize' => $stepSize,

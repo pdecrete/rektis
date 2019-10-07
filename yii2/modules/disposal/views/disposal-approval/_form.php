@@ -27,9 +27,11 @@ use app\modules\disposal\models\DisposalApproval;
     	 -->
     	<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocol')->textInput(['maxlength' => true])?></div> 	
 		<div class="col-lg-4"><?= $form->field($model, 'approval_regionaldirectprotocoldate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE]); ?></div>	
-		<div class="col-lg-4"><?= $form->field($model, 'approval_type')->widget(Select2::classname(),
-		                                                                          ['data' => $doc_type_options = DisposalApproval::getTypeOptions(), 
-		                                                                           'options' => ['placeholder' => Yii::t('app', 'Επιλέξτε τύπο εγγράφου...')]]); ?></div>
+		<div class="col-lg-4"><?= $form->field($model, 'approval_type')->widget(
+    Select2::classname(),
+                                                                                  ['data' => $doc_type_options = DisposalApproval::getTypeOptions(),
+                                                                                   'options' => ['placeholder' => Yii::t('app', 'Επιλέξτε τύπο εγγράφου...')]]
+); ?></div>
 	</div>
 	<div class="row">
     	<div class="col-lg-12"><?= $form->field($model, 'approval_notes')->textInput(['maxlength' => true]) ?></div>    	
