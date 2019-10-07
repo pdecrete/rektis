@@ -375,7 +375,7 @@ class DisposalApprovalController extends Controller
                 $specialization_models = array_values($specialization_models);
 
                 if ($this->createApprovalFile($model, $disposals_models, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
-                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
+                    throw new Exception(DisposalModule::t('modules/disposal/app', "The creation of the document failed, because the template file does not exist."));
                 }
 
                 $transaction->commit();
@@ -617,7 +617,7 @@ class DisposalApprovalController extends Controller
                 }
 
                 if ($this->createApprovalFile($model, $disposals_models_republish, $fromschool_models, $toschool_models, $teacher_models, $specialization_models, $directorate_model, $template_filename) == null) {
-                    throw new Exception("The creation of the approval failed, because the template file for the approval does not exist.");
+                    throw new Exception(DisposalModule::t('modules/disposal/app', "The creation of the document failed, because the template file does not exist."));
                 }
 
                 $transaction->commit();
