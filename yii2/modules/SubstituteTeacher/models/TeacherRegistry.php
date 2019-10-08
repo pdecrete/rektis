@@ -276,7 +276,7 @@ class TeacherRegistry extends \yii\db\ActiveRecord
     {
         parent::afterFind();
 
-        $this->name = "{$this->firstname} {$this->surname} ({$this->fathername})";
+        $this->name = "{$this->firstname} {$this->surname} ({$this->fathername} , {$this->mothername}) {$this->mobile_phone}-{$this->home_phone}";
 
         $this->specialisation_labels = array_map(function ($m) {
             return $m->label;

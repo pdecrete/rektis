@@ -18,10 +18,24 @@ use app\modules\SubstituteTeacher\traits\Reference;
  * @property integer $disabled_children
  * @property integer $three_children
  * @property integer $many_children
+ * @property integer $mk_years
+ * @property integer $mk_months
+ * @property integer $mk_days
+ * @property integer $mk_exptotdays
+ * @property string  $mk_appdate
+ * @property integer $mk_titleyears
+ * @property string  $mk_titleappdate
+ * @property string  $mk_titleinfo
+ * @property integer $mk_yearsper
+ * @property integer $mk
+ * @property date $mk_changedate
+ * @property integer $operation_descr
+ * @property integer $sector
  *
  * @property string $name
  *
  * @property PlacementPreference[] $placementPreferences
+ * @property StteacherMkexperience[] $stteachermkexperiences
  * @property TeacherRegistry $registry
  * @property TeacherStatusAudit[] $teacherStatusAudits
  * @property Prefecture[] $placementPreferencePrefectures
@@ -41,11 +55,36 @@ class Teacher extends \yii\db\ActiveRecord
     const TEACHER_STATUS_DISMISSED = 4; // has been appointed and then dismissed/fired
     const TEACHER_STATUS_CANCELLED = 5; // has been appointed and then cancelled appointment
 
+    const TEACHER_SECTOR_PH = 0; 
+    const TEACHER_SECTOR_PL = 1; 
+    const TEACHER_SECTOR_PR = 2; 
+    const TEACHER_SECTOR_PX = 3; 
+    const TEACHER_SECTOR_DH = 4; 
+    const TEACHER_SECTOR_DL = 5; 
+    const TEACHER_SECTOR_DR = 6; 
+    const TEACHER_SECTOR_DX = 7; 
+    const TEACHER_SECTOR_KH = 8; 
+    const TEACHER_SECTOR_KL = 9; 
+    const TEACHER_SECTOR_KR = 10; 
+    const TEACHER_SECTOR_KX = 11; 
+    
+    const TEACHER_TITLEYEARS_NONE = 0; // None    
+    const TEACHER_TITLEYEARS_MSC = 4; // MSc
+    const TEACHER_TITLEYEARS_PHD = 12; // PhD
+    
+    const TEACHER_YEARSPER_PETE = 2; // University
+    const TEACHER_YEARSPER_DEYE = 3; // Highschool
+
+    
     public $status, $status_label;
     public $name;
+    public $titleylabel, $yearsperlabel;
+    public $sectorlabel, $operationlabel;
     public $call_use_specialisation_id; // property to hold the specialisation used in a specific call; used in SCENARIO_CALL_FETCH
     public $public_experience_label;
     public $smeae_keddy_experience_label;
+    public $mkexp_label;
+    public $mktitles_label;
 
     /**
      * @inheritdoc
@@ -61,7 +100,7 @@ class Teacher extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children', 'disability_percentage', 'many_children', 'three_children'], 'filter', 'filter' => 'intval'],
+            [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children', 'disability_percentage', 'many_children', 'three_children', 'mk_titleyears', 'mk_yearsper'], 'filter', 'filter' => 'intval'],
             [['disability_percentage', 'disabled_children', 'three_children', 'many_children'], 'default', 'value' => 0],
             [['registry_id', 'year', 'public_experience', 'smeae_keddy_experience', 'disabled_children'], 'integer', 'min' => 0],
             ['disability_percentage', 'integer', 'min' => 0, 'max' => 100],
@@ -71,6 +110,8 @@ class Teacher extends \yii\db\ActiveRecord
             ['registry_id', 'validateUniqueInYear'],
             [['registry_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeacherRegistry::className(), 'targetAttribute' => ['registry_id' => 'id']],
             [['call_use_specialisation_id'], 'required', 'on' => self::SCENARIO_CALL_FETCH],
+            [['mk_appdate', 'mk_titleappdate', 'mk', 'mk_changedate', 'operation_descr','sector'], 'safe'],
+            [['mk_titleinfo'], 'string','max'=>300]
         ];
     }
 
@@ -107,6 +148,19 @@ class Teacher extends \yii\db\ActiveRecord
             'disabled_children' => Yii::t('substituteteacher', 'Disabled children'),
             'three_children' => Yii::t('substituteteacher', 'Three children'),
             'many_children' => Yii::t('substituteteacher', 'Many children'),
+            'mk_years' => Yii::t('substituteteacher', 'Exp Years'),
+            'mk_months' => Yii::t('substituteteacher', 'Exp Months'),
+            'mk_days' => Yii::t('substituteteacher', 'Exp Days'),
+            'mk_exptotdays' => Yii::t('substituteteacher', 'MK Exptotdays'),
+            'mk_appdate' => Yii::t('substituteteacher', 'Exp Appdate'),
+            'mk_titleyears' => Yii::t('substituteteacher', 'Title Mkyears'),
+            'mk_titleappdate' => Yii::t('substituteteacher', 'Title Appdate'),
+            'mk_titleinfo' => Yii::t('substituteteacher', 'Title Info'),
+            'mk_yearsper' => Yii::t('substituteteacher', 'Years per MK'),
+            'mk' => Yii::t('substituteteacher', 'MK'),
+            'mk_changedate' => Yii::t('substituteteacher', 'MK Changedate'),
+            'operation_descr' => Yii::t('substituteteacher', 'Operation'),
+            'sector' => Yii::t('substituteteacher', 'Sector'),
         ];
     }
 
@@ -152,6 +206,14 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return $this->hasMany(TeacherBoard::className(), ['teacher_id' => 'id']);
     }
+    
+
+    
+    public function getTeacherMkexperience()
+    {
+        return $this->hasMany(StteacherMkexperience::className(), ['teacher_id' => 'id'])
+                ->orderBy([StteacherMkexperience::tableName() . '.[[exp_startdate]]' => SORT_DESC]);
+    }    
 
     /**
      * Get a list of available choices in the form of
@@ -206,7 +268,69 @@ class Teacher extends \yii\db\ActiveRecord
         }
         return $status_label;
     }
+    
+    public static function getSectors()
+    {
+        $sectors = [];
+        $sectors = [
+                self::TEACHER_SECTOR_PH => Yii::t('substituteteacher', 'Διεύθυνση Πρωτοβάθμιας Ηρακλείου'),
+                self::TEACHER_SECTOR_PL => Yii::t('substituteteacher', 'Διεύθυνση Πρωτοβάθμιας Λασιθίου'),            
+                self::TEACHER_SECTOR_PR => Yii::t('substituteteacher', 'Διεύθυνση Πρωτοβάθμιας Ρεθύμνου'),            
+                self::TEACHER_SECTOR_PX => Yii::t('substituteteacher', 'Διεύθυνση Πρωτοβάθμιας Χανίων'),
+                self::TEACHER_SECTOR_DH => Yii::t('substituteteacher', 'Διεύθυνση Δευτεροβάθμιας Ηρακλείου'),
+                self::TEACHER_SECTOR_DL => Yii::t('substituteteacher', 'Διεύθυνση Δευτεροβάθμιας Λασιθίου'),
+                self::TEACHER_SECTOR_DR => Yii::t('substituteteacher', 'Διεύθυνση Δευτεροβάθμιας Ρεθύμνου'),
+                self::TEACHER_SECTOR_DX => Yii::t('substituteteacher', 'Διεύθυνση Δευτεροβάθμιας Χανίων'),
+                self::TEACHER_SECTOR_KH => Yii::t('substituteteacher', 'ΚΕΣΥ Ηρακλείου'),
+                self::TEACHER_SECTOR_KL => Yii::t('substituteteacher', 'ΚΕΣΥ Λασιθίου'),
+                self::TEACHER_SECTOR_KR => Yii::t('substituteteacher', 'ΚΕΣΥ Ρεθύμνου'),
+                self::TEACHER_SECTOR_KX => Yii::t('substituteteacher', 'ΚΕΣΥ Χανίων')
+            ];
+        return $sectors;
+    }    
 
+    public static function getMkTitleYears()
+    {
+        return [
+            (string)self::TEACHER_TITLEYEARS_NONE => Yii::t('substituteteacher', 'Title None'),            
+            (string)self::TEACHER_TITLEYEARS_MSC => Yii::t('substituteteacher', 'Title MSc'),
+            (string)self::TEACHER_TITLEYEARS_PHD => Yii::t('substituteteacher', 'Title PhD')
+        ];
+    }        
+
+    public static function getMkCateg()
+    {
+        return [
+            (string)self::TEACHER_YEARSPER_PETE => Yii::t('substituteteacher', 'Education University'),            
+            (string)self::TEACHER_YEARSPER_DEYE => Yii::t('substituteteacher', 'Education Highschool'),
+        ];
+    }        
+
+    public static function getYearChoices()
+    {
+        $options = [];
+        $year = date('Y');
+        for ($y = 2018; $y <= $year; $y++) {
+            $options["$y"] = $y;
+        }
+        return $options;
+    }    
+    /*
+    public static function calcMK($model)
+    {
+            //echo "<pre>";print_r($model); echo "</pre>"; die();
+            if (!empty($model->mk_titleappdate) && !empty($model->mk_appdate)) {
+                $model->mk = 1 + intval(($model->mk_titleyears + $model->mk_years)/$model->mk_yearsper);
+            } else if (!empty($model->mk_titleappdate)) {
+                $model->mk = 1 + intval($model->mk_titleyears/$model->mk_yearsper);    
+            } else if (!empty($model->mk_appdate)) {
+                $model->mk = 1 + intval($model->mk_years/$model->mk_yearsper);    
+            } else {
+                $model->mk = 1;
+            }   
+            //echo "<pre>";print_r($model); echo "</pre>"; die();
+    }       
+    */
     /**
      * @see TeacherStatusAudit::audit 
      */
@@ -227,13 +351,58 @@ class Teacher extends \yii\db\ActiveRecord
      * - If she/he has declined from a board, it does not affect eligibility, unless this was the only board
      * - If she/he has been dismissed from a board, it does not affect eligibility, unless this was the only board
      */
+
+
     public function afterFind()
     {
         parent::afterFind();
 
-        $this->name = ($this->registry ? $this->registry->name : '-') . " ({$this->year})";
+        $this->name = " ({$this->year}) " . ($this->registry ? $this->registry->name : '-')  ;
         // get the combined status 
         $this->status = self::TEACHER_STATUS_ELIGIBLE; 
+        
+        if ($this->mk_titleyears == self::TEACHER_TITLEYEARS_NONE) {
+            $this->titleylabel = Yii::t('substituteteacher', 'Title None');
+        } else if ($this->mk_titleyears == self::TEACHER_TITLEYEARS_MSC)  {
+            $this->titleylabel =Yii::t('substituteteacher', 'Title MSc');            
+        } else if ($this->mk_titleyears == self::TEACHER_TITLEYEARS_PHD){
+            $this->titleylabel =Yii::t('substituteteacher', 'Title PhD');
+        }
+
+        if ($this->mk_yearsper == self::TEACHER_YEARSPER_PETE) {
+            $this->yearsperlabel = Yii::t('substituteteacher', 'Education University');
+        } else if ($this->mk_yearsper == self::TEACHER_YEARSPER_DEYE)  {
+            $this->yearsperlabel =Yii::t('substituteteacher', 'Education Highschool');            
+        }
+        
+        if ($this->sector == self::TEACHER_SECTOR_DH) {
+            $this->sectorlabel =  'Διεύθυνση Δευτεροβάθμιας Ηρακλείου';
+        } else if ($this->sector == self::TEACHER_SECTOR_DL)  {
+            $this->sectorlabel =  'Διεύθυνση Δευτεροβάθμιας Λασιθίου';         
+        } else if ($this->sector == self::TEACHER_SECTOR_DR)  {
+            $this->sectorlabel =  'Διεύθυνση Δευτεροβάθμιας Ρεθύμνου';           
+        } else if ($this->sector == self::TEACHER_SECTOR_DX)  {
+            $this->sectorlabel =  'Διεύθυνση Δευτεροβάθμιας Χανίων';         
+        } else if ($this->sector == self::TEACHER_SECTOR_PH)  {
+            $this->sectorlabel =  'Διεύθυνση Πρωτοβάθμιας Ηρακλείου';         
+        } else if ($this->sector == self::TEACHER_SECTOR_PL)  {
+            $this->sectorlabel =  'Διεύθυνση Πρωτοβάθμιας Λασιθίου';          
+        } else if ($this->sector == self::TEACHER_SECTOR_PR)  {
+            $this->sectorlabel =  'Διεύθυνση Πρωτοβάθμιας Ρεθύμνου';            
+        } else if ($this->sector == self::TEACHER_SECTOR_PX)  {
+            $this->sectorlabel =  'Διεύθυνση Πρωτοβάθμιας Χανίων';           
+        } else if ($this->sector == self::TEACHER_SECTOR_KH)  {
+            $this->sectorlabel =  'ΚΕΣΥ ΗΡΑΚΛΕΙΟΥ';            
+        } else if ($this->sector == self::TEACHER_SECTOR_KL)  {
+            $this->sectorlabel =  'ΚΕΣΥ ΛΑΣΙΘΙΟΥ';;            
+        } else if ($this->sector == self::TEACHER_SECTOR_KR)  {
+            $this->sectorlabel =  'ΚΕΣΥ ΡΕΘΥΜΝΟΥ';            
+        } else if ($this->sector == self::TEACHER_SECTOR_KX)  {
+            $this->sectorlabel =  'ΚΕΣΥ ΧΑΝΙΩΝ';   
+        } else {
+            $this->sectorlabel =  'Μη ορισμένο';   
+        }       
+        
         $boards = $this->boards;
         if (empty($boards)) {
             $this->status = self::TEACHER_STATUS_ELIGIBLE; 
@@ -268,8 +437,9 @@ class Teacher extends \yii\db\ActiveRecord
             $label_field = "{$field}_label";
             $this->$label_field = Yii::t('substituteteacher', '{y,plural,=0{} =1{# year, } other{# years, }}{m,plural,=0{} =1{# month, } other{# months, }}{d,plural,=0{} =1{# day} other{# days}}', ['d' => $days, 'm' => $months, 'y' => $years]);
         }
+        $this->mkexp_label = Yii::t('substituteteacher', '{y,plural,=0{} =1{# year, } other{# years, }}{m,plural,=0{} =1{# month, } other{# months, }}{d,plural,=0{} =1{# day} other{# days}}', ['d' => $this->mk_days, 'm' => $this->mk_months, 'y' => $this->mk_years]); 
     }
-
+ 
     /**
      * Define fields that should be returned when the model is exposed
      * by or for an API call.

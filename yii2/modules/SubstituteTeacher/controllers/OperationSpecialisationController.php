@@ -72,6 +72,19 @@ class OperationSpecialisationController extends Controller
         }
     }
 
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        }
+    }
+    
     /**
      * Deletes an existing OperationSpecialisation model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

@@ -3,8 +3,13 @@
 namespace app\modules\SubstituteTeacher\controllers;
 
 use Yii;
+use kartik\mpdf\Pdf;
+use \PhpOffice\PhpWord\TemplateProcessor;
 use app\modules\SubstituteTeacher\models\Teacher;
+use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\TeacherSearch;
+use app\modules\SubstituteTeacher\models\TeacherSearchMK;
+use app\modules\SubstituteTeacher\models\Operation;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
 use app\modules\SubstituteTeacher\models\Model;
 use yii\web\Controller;
@@ -34,14 +39,14 @@ class TeacherController extends Controller
                     'delete' => ['POST'],
                     'appoint' => ['POST'],
                     'negate' => ['POST'],
-                    'eligible' => ['POST']
+                    'eligible' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'import'],
+                        'actions' => ['index', 'view', 'create', 'update', 'import',],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -111,10 +116,12 @@ class TeacherController extends Controller
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
             $valid = PlacementPreference::checkRules($modelsPlacementPreferences) && $valid;
-
+            //Teacher::calcMK($model);
+            
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
+                    //echo $model->mk;die();
                     if ($flag = $model->save(false)) { // already validated
                         $audit_info['TeacherBoardSaved'] = 0;
 
@@ -193,6 +200,7 @@ class TeacherController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $post = \Yii::$app->request->post();
+          
             $modelsBoards = Model::createMultiple(TeacherBoard::classname(), $modelsBoards);
             // need to feed the teacher id
             array_walk($modelsBoards, function (&$m, $k) use ($id) {
@@ -216,16 +224,19 @@ class TeacherController extends Controller
             });
 
             // validate all models
+            //echo $model->mk;die();
             $valid = $model->validate();
             $changed = $model->getDirtyAttributes();
             $valid = Model::validateMultiple($modelsPlacementPreferences) && $valid;
 
             $valid = PlacementPreference::checkOrdering($modelsPlacementPreferences) && $valid;
             $valid = PlacementPreference::checkRules($modelsPlacementPreferences) && $valid;
-
+            //Teacher::calcMK($model);
+            
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();
                 try {
+                   //echo $model->mk;die();
                     if ($flag = $model->save(false)) { // already validated
                         $changed['TeacherBoardDeleted'] = 0;
                         $changed['TeacherBoardSaved'] = 0;
@@ -285,6 +296,150 @@ class TeacherController extends Controller
         ]);
     }
 
+    
+    
+    public function actionMkchange()
+    {
+ //        Url::remember('', 'teacherindex');
+
+        $searchModel = new TeacherSearchMK();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        //$dataProvider->pagination->pagesize = 651;
+        $dataProvider->setPagination(FALSE);
+    
+        $session = Yii::$app->session;
+        // check if a session is already open
+        if (!$session->isActive){
+            $session->open();// open a session
+        } 
+        // save query here
+        $session['repquery'] = Yii::$app->request->queryParams;
+
+        
+        
+        return $this->render('mkchange', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+
+    public function actionMkchangedecision()          
+    {       
+        $searchModel = new TeacherSearchMK();
+        $dataProvider = $searchModel->search(Yii::$app->session->get('repquery'));      
+ 
+        $dataProvider->setPagination(FALSE);
+
+        $mkteachers = $dataProvider->getModels();
+
+        $selteachers = json_decode(stripslashes($_POST['data']));
+        $mode = json_decode(stripslashes($_POST['mode'])); 
+        $pn = json_decode(stripslashes($_POST['pn']));
+        $pd = json_decode(stripslashes($_POST['pd']));    
+        $kat = json_decode(stripslashes($_POST['kat']));    
+        //\Yii::$app->getSession()->setFlash($pd);
+        
+        $mkteacherarr = [];
+        
+        //$mkteachers = Teacher::findBySql()->where('mk_changedate >= :cdate', [':cdate' => $dt])->all();
+
+        $i = 0;
+        //$selteachers = explode(',',$selteacherstr);
+        foreach ($mkteachers as $mkteacher) {
+//            if (empty($mkteacher->sector)) {
+//                continue;
+//            } else {
+            //if ($mkteacher->id==281) { echo "<pre>"; print_r($mkteacher); echo "</pre>";die(); } 
+                if (in_array($mkteacher->id, $selteachers)) {
+                    $registry_model = TeacherRegistry::findOne(['id' => $mkteacher->registry_id]);
+                    $mkteacherarr[$i]['id'] = $mkteacher->registry_id;
+                    $mkteacherarr[$i]['fullname'] = $registry_model->surname." ".$registry_model->firstname;
+                    $mkteacherarr[$i]['fathername'] = $registry_model->fathername;
+                    $mkteacherarr[$i]['mothername'] = $registry_model->mothername;
+                    $mkteacherarr[$i]['specialty'] = $registry_model->specialisation_labels;
+                    $mkteacherarr[$i]['mk'] = $mkteacher->mk;
+                    $mkteacherarr[$i]['mk_appdate'] = $mkteacher->mk_appdate;
+                    $mkteacherarr[$i]['mk_titleappdate'] = ($mkteacher->mk_titleyears > 0)? "NAI<br>".$mkteacher->mk_titleappdate : "";
+                    $mkteacherarr[$i]['mk_expstr'] = $mkteacher->mk_years."Ε ".$mkteacher->mk_months."Μ ".$mkteacher->mk_days."ΗΜ";
+
+                    $yp = ($mkteacher->mk_yearsper==2)?'-2 year':'-3 year';
+    //                if ($mkteacher->mk_changedate !== null) {
+                    if ($kat=="false") { 
+                        if ($mkteacher->mk_changedate!== null) {
+                            $mkteacherarr[$i]['mk_changedate'] = strtotime($yp, strtotime($mkteacher->mk_changedate));
+                            $mkteacherarr[$i]['mk_changedate'] = date('Y-m-j', $mkteacherarr[$i]['mk_changedate']);
+                        }
+                        else {
+                            $mkteacherarr[$i]['mk_changedate'] = '---';
+                        }
+                    } else {
+                        if ($mkteacher->mk_appdate!== null) {
+                            $mkteacherarr[$i]['mk_changedate'] = $mkteacher->mk_appdate;
+                        } else {
+                            $mkteacherarr[$i]['mk_changedate'] = '---';
+                        }
+                    }
+
+                    $mkteacherarr[$i]['sector'] = $mkteacher->sectorlabel;
+                    $mkteacherarr[$i]['operation'] = $mkteacher->operation_descr;
+
+                    ++$i;
+                }
+//            }
+        }
+        //ArrayHelper::multisort($mkteacherarr, ['sector'], [SORT_ASC]); 
+        if ($mode == "pdf") {
+            $content = $this->renderPartial('mkchangedecision', [
+                'mkteacherarr' => $mkteacherarr, 'mode' => $mode, 'pd' => $pd, 'pn' => $pn, 'kat' => $kat
+            ]);            
+            $pdf = new Pdf([
+                'mode' => Pdf::MODE_UTF8,
+                'format' => Pdf::FORMAT_A4,
+                'orientation' => Pdf::ORIENT_LANDSCAPE,
+                'filename' => 'mkchanging.pdf',
+                'destination' => Pdf::DEST_DOWNLOAD,
+                'content' => $content,
+                'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+                'cssInline' => '.kv-heading-1{font-size:18px}',
+                'options' => ['title' => 'Περιφερειακή Διεύθυνση Πρωτοβάθμιας και Δευτεροβάθμιας Εκπαίδευσης Κρήτης'],
+            ]);
+            return $pdf->render();
+        } 
+//        else if (mode == "word") {
+//            //$dts = date('YmdHis');
+//            $templatefilename = 'APODOSH_MISTHOLOGIKWN_KLIMAKIWN.docx';
+//            $exportfilename = Yii::getAlias("@vendor/admapp/exports/{$templatefilename}");
+//            
+//            $templateProcessor = new TemplateProcessor(Yii::getAlias("@vendor/admapp/resources/{$templatefilename}"));
+//            $templateProcessor->setValue('DECISION_DATE', Yii::$app->formatter->asDate($pd));
+//            $templateProcessor->setValue('DECISION_PROTOCOL', $pn);
+//
+//            $templateProcessor->setValue('DIRECTOR_SIGN', Yii::$app->params['director_sign']);
+//            $templateProcessor->setValue('DIRECTOR', Yii::$app->params['director']);            
+//
+//
+//            $all_count = count($mkteachers);
+//            $templateProcessor->cloneRow('FULLNAME', $all_count);
+//            for ($c = 0; $c < $all_count; $c++) {
+//                $i = $c + 1;
+//                $currentModel = $sameDecisionModels[$c];
+//                $templateProcessor->setValue('FULLNAME' . "#{$i}", $mkteacherarr[$i]['fullname']);
+//                $templateProcessor->setValue('NAME' . "#{$i}", $currentModel->employeeObj->name);
+//                $templateProcessor->setValue('FATHERNAME' . "#{$i}", $mkteacherarr[$i]['fathername']);
+//                $templateProcessor->setValue('MOTHERNAME' . "#{$i}", $mkteacherarr[$i]['mothername']);
+//                $templateProcessor->setValue('PRAXH' . "#{$i}", "---");
+//                $templateProcessor->setValue('KLADOS' . "#{$i}", $mkteacherarr[$i]['specialty']);
+//                $templateProcessor->setValue('DATE' . "#{$i}", $mkteacherarr[$i]['mk_appdate']);
+//            }
+//            
+//            $templateProcessor->saveAs($exportfilename);
+//            if (file_exists($exportfilename)) {
+//                return \Yii::$app->response->sendFile(Yii::getAlias("@vendor/admapp/exports/"), $templatefilename, ['inline' => false])->send();
+//            }
+//          } 
+    }    
+    
     public function actionImport()
     {
         throw new \Exception('Not implemented yet');
@@ -299,7 +454,7 @@ class TeacherController extends Controller
      */
     public function actionDelete($id)
     {
-        // throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The teacher cannot be deleted.'));
+        // throw new UnprocessableEntityHttpException(Yii::t('substituteteacher', 'The teacher cannot be deleted.'));        
         throw new \Exception('Not implemented yet');
     }
 
