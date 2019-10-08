@@ -3,17 +3,17 @@
 namespace app\modules\SubstituteTeacher\controllers;
 
 use Yii;
-use app\modules\SubstituteTeacher\models\PlacementPreference;
-use app\modules\SubstituteTeacher\models\PlacementPreferenceSearch;
+use app\modules\SubstituteTeacher\models\StteacherMkexperience;
+use app\modules\SubstituteTeacher\models\StteacherMkexperienceSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
 /**
- * PlacementPreferenceController implements the CRUD actions for PlacementPreference model.
+ * StteacherMkexperienceController implements the CRUD actions for StteacherMkexperience model.
  */
-class PlacementPreferenceController extends Controller
+class StteacherMkexperienceController extends Controller
 {
     /**
      * @inheritdoc
@@ -31,7 +31,7 @@ class PlacementPreferenceController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view'],
+                        'actions' => ['index', 'view', 'create', 'update'],
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
@@ -40,17 +40,17 @@ class PlacementPreferenceController extends Controller
                         'roles' => ['admin'],
                     ],
                 ],
-            ],
+            ],            
         ];
     }
 
     /**
-     * Lists all PlacementPreference models.
+     * Lists all StteacherMkexperience models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new PlacementPreferenceSearch();
+        $searchModel = new StteacherMkexperienceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -59,21 +59,26 @@ class PlacementPreferenceController extends Controller
         ]);
     }
 
+    /**
+     * Displays a single StteacherMkexperience model.
+     * @param integer $id
+     * @return mixed
+     */
     public function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }    
+    }
+
     /**
-     * Creates a new PlacementPreference model.
+     * Creates a new StteacherMkexperience model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new PlacementPreference();
-
+        $model = new StteacherMkexperience();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -84,7 +89,7 @@ class PlacementPreferenceController extends Controller
     }
 
     /**
-     * Updates an existing PlacementPreference model.
+     * Updates an existing StteacherMkexperience model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -103,7 +108,7 @@ class PlacementPreferenceController extends Controller
     }
 
     /**
-     * Deletes an existing PlacementPreference model.
+     * Deletes an existing StteacherMkexperience model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -116,15 +121,15 @@ class PlacementPreferenceController extends Controller
     }
 
     /**
-     * Finds the PlacementPreference model based on its primary key value.
+     * Finds the StteacherMkexperience model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return PlacementPreference the loaded model
+     * @return StteacherMkexperience the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = PlacementPreference::findOne($id)) !== null) {
+        if (($model = StteacherMkexperience::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -72,6 +72,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'disabled_children',
                 'many_children:boolean',
                 'three_children:boolean',
+                [
+                    'attribute' => '',
+                    'label' => Yii::t('substituteteacher', 'MK Experience'),
+                    'value' => "{$model->mkexp_label}",                    
+                ],       
+                [
+                    'attribute' => 'mk_appdate',
+                    'value' => "{$model->mk_appdate}",
+                ],                            
+                [
+                    'attribute' => 'mk',
+                    'value' => "{$model->mk}",
+                ],      
+                [
+                    'attribute' => '',
+                    'label' => Yii::t('substituteteacher', 'Years per MK'),
+                    'value' => "{$model->yearsperlabel}",                    
+                ],                                    
+                [
+                    'attribute' => '',
+                    'label' => Yii::t('substituteteacher', 'Title Mkyears'),
+                    'value' => "{$model->titleylabel}",                    
+                ],                                 
+                [
+                    'attribute' => 'mk_titleappdate',
+                    'value' => "{$model->mk_titleappdate}",
+                ],                                 
             ],
         ]) ?>
 
