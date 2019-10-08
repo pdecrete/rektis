@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'specialisation_id',
                 'value' => function ($m) {
                     return $m->specialisation ? $m->specialisation_id . " : " . $m->specialisation->code . ' ' . $m->specialisation->name : $m->specialisation_id;
+                
                 }
             ],
             [

@@ -189,7 +189,7 @@ class Operation extends \yii\db\ActiveRecord
     {
         return static::selectables($index_property, $label_property, $group_property, null);
     }
-
+    
     /**
      * @inheritdoc
      * @return OperationQuery the active query used by this AR class.

@@ -191,11 +191,13 @@ class PlacementPreference extends \yii\db\ActiveRecord
             $last = end($prefecture_placements);
 
             // and check prefectures sequential preference
+            /*
             if (((int)$last['order'] - (int)$first['order'] + 1) != $cnt) {
                 $valid = false;
                 $m = reset($modelsPlacementPreferences);
                 $m->addError('prefecture_id', Yii::t('substituteteacher', 'The prefectures must not be mixed in ordering.'));
             }
+             */
             // check if school type selections are valid; if ALL schools have been selected, it should be the only choice
             $school_type_all_selection = array_filter($prefecture_placements, function ($v) {
                 return $v['school_type'] == PlacementPreference::SCHOOL_TYPE_ANY;
