@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use dosamigos\switchinput\SwitchBox;
 use app\modules\SubstituteTeacher\models\Position;
+use app\modules\SubstituteTeacher\models\StteacherMkexperience;
 use yii\web\View;
 
 /* @var $this yii\web\View */
@@ -50,6 +51,7 @@ use yii\web\View;
 
             ?>
         </div>
+
         <div class="col-sm-6">
             <?=
             $form->field($model, 'prefecture_id')->widget(Select2::classname(), [
@@ -61,7 +63,7 @@ use yii\web\View;
             ]);
 
             ?>
-        </div>
+        </div>        
     </div>
 
     <div class="row">
