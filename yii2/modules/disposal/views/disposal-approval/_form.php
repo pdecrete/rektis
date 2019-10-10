@@ -13,7 +13,7 @@ use app\modules\disposal\models\DisposalApproval;
 /* @var $this yii\web\View */
 /* @var $model app\modules\disposal\models\DisposalApproval */
 /* @var $form yii\widgets\ActiveForm */
-
+//echo "<pre>"; print_r($disposals_models); echo "<pre>"; die();
 ?>
 <div class="disposal-approval-form container-fluid">
     <?php $form = ActiveForm::begin(); ?>
@@ -82,9 +82,13 @@ use app\modules\disposal\models\DisposalApproval;
     							</tr>
     							<tr>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_hours')
-                                                ->widget(Select2::classname(), ['data' => $hours_mapping])->label(false); ?></td>
+    								            ->widget(Select2::classname(), ['data' => $hours_mapping, 
+    								                                            'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal hours...')], 
+    								                                            'pluginOptions' => ['allowClear' => true]])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_days')
-                                                ->widget(Select2::classname(), ['data' => $days_mapping])->label(false); ?></td>
+    								            ->widget(Select2::classname(), ['data' => $days_mapping,
+    								                                            'options' => ['placeholder' => DisposalModule::t('modules/disposal/app', 'Select disposal days...')],
+    								                                            'pluginOptions' => ['allowClear' => true]])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_startdate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->label(false); ?></td>
     								<td><?= $form->field($disposal_model, '['.$index.']disposal_enddate')->widget(DateControl::classname(), ['type' => DateControl::FORMAT_DATE])->label(false); ?></td>    								
     								<td><?= $form->field($disposal_model, '['.$index.']disposalreason_id')
