@@ -13,6 +13,7 @@ use app\modules\SubstituteTeacher\models\Specialisation;
 use kartik\date\DatePicker;
 use yii\web\View;
 use yii\widgets\Pjax;
+use yii\helpers\Url;
 
 
 $bundle = \app\modules\SubstituteTeacher\assets\ModuleAsset::register($this);
@@ -47,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             
             //alert(jsonString); 
 
-            var url = '<?php echo Yii::$app->request->baseUrl."/SubstituteTeacher/teacher/" ?>' + reptype + '/';
+            var url = reptype;//'<?php echo Yii::$app->request->baseUrl."/SubstituteTeacher/teacher/" ?>' + reptype + '/';
             //alert(url);
             var ext = (mode=='pdf')?'.pdf':'.docx';
                 $.ajax({
@@ -176,7 +177,8 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     <?php Pjax::end(); ?>
 </div>
-
+    
+<?php $url = Url::to(['teacher/mkchangedecision']);?>
 <div class="modal fade" id="get_protocol" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -194,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Κλείσιμο</button>
-        <button type="button" class="btn btn-primary" onclick="getRows('mkchangedecision', 'pdf', document.getElementById('pn').value.toString(), document.getElementById('pd').value.toString(), document.getElementById('kat').checked.toString())" data-dismiss="modal">Συνέχεια</button>
+        <button type="button" class="btn btn-primary" onclick="getRows('<?php echo $url; ?>', 'pdf', document.getElementById('pn').value.toString(), document.getElementById('pd').value.toString(), document.getElementById('kat').checked.toString())" data-dismiss="modal">Συνέχεια</button>
       </div>
     </div>
   </div>
