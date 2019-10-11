@@ -283,6 +283,14 @@ AppAsset::register($this);
                             'url' => [ '/SubstituteTeacher/teacher/index' ]
                         ],
                         [
+                            'label' => 'Κατάσταση ελέγχου αλλαγής ΜΚ Αναπληρωτών',
+                            'url' => [ '/SubstituteTeacher/teacher/mkchange' ]
+                        ],                        
+                        [
+                            'label' => 'Προϋπηρεσίες Αναπληρωτών για ΜΚ',
+                            'url' => [ '/SubstituteTeacher/stteacher-mkexperience/index' ]
+                        ],                        
+                        [
                             'label' => 'Προτιμήσεις τοποθέτησης αναπληρωτών',
                             'url' => [ '/SubstituteTeacher/placement-preference/index' ],
                             'visible' => Yii::$app->user->can('admin'),

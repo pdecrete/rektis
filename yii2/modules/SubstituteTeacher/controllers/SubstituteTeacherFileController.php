@@ -239,6 +239,12 @@ class SubstituteTeacherFileController extends Controller
         }
     }
 
+    public function actionUpdateMkData($id)
+    {
+        //$model = $this->findModel($id);
+
+        return $this->render('updateMkData');
+    }    
     /**
      * Deletes an existing SubstituteTeacherFile model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

@@ -182,7 +182,7 @@ class TeacherBoard extends \yii\db\ActiveRecord
         parent::afterFind();
 
         $this->label = '(α/α: ' . $this->order . ') ' .
-            TeacherBoard::boardTypeLabel($this->board_type) . ' ' .
+            TeacherBoard::boardTypeLabel($this->board_type) . ' ' . 
             $this->specialisation->code . ' ' .
             $this->points . ' ' .
             '[' . Teacher::statusLabel($this->status) . ']';

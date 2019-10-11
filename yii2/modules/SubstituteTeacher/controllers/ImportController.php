@@ -15,6 +15,7 @@ use app\models\Specialisation;
 use app\modules\SubstituteTeacher\models\TeacherRegistry;
 use app\modules\SubstituteTeacher\models\Teacher;
 use app\modules\SubstituteTeacher\models\PlacementPreference;
+use app\modules\SubstituteTeacher\models\StteacherMkexperience;
 use app\modules\SubstituteTeacher\models\TeacherBoard;
 use app\modules\SubstituteTeacher\models\TeacherRegistrySpecialisation;
 use yii\helpers\Json;
@@ -54,6 +55,21 @@ class ImportController extends Controller
             'A' => 'vat_number',
             'B' => 'placement_preferences',
         ],
+        'stteacher-mkexperience' => [
+            'A' => 'vat_number',
+            'B' => 'start_date',
+            'C' => 'end_date',
+            'D' => 'hours',
+            'E' => 'hoursno',
+            'F' => 'years',
+            'G' => 'months',
+            'H' => 'days',
+            'I' => 'kind',
+            'J' => 'sector',
+            'K' => 'info',
+            'L' => 'mkvalid',
+            
+        ],        
         'registry' => [
             'default' => [
                 'tax_identification_number' => 'B',
@@ -150,15 +166,17 @@ class ImportController extends Controller
                         'allow' => true,
                         'roles' => ['admin', 'spedu_user'],
                     ],
+                    
                     [
                         'allow' => true,
                         'roles' => ['admin'],
-                    ],
+                    ],               
                 ],
             ],
         ];
     }
 
+    
     /**
      *
      * @param string $type denotes the import process/datatype
@@ -173,12 +191,18 @@ class ImportController extends Controller
             case 'position':
                 $route = 'import/position';
                 break;
-            case 'teacher':
+            case 'teacher':     
                 $route = 'import/teacher';
                 break;
             case 'placement-preference':
                 $route = 'import/placement-preference';
                 break;
+            case 'stteacher-mkexperience':
+                $route = 'import/stteacher-mkexperience';
+                break;            
+            case 'update-stteacher-mkdata':
+                $route = 'import/update-stteacher-mkdata';
+                break;                                    
             case 'update-teacher':
                 $route = 'import/generic-update-teacher';
                 break;
@@ -190,6 +214,7 @@ class ImportController extends Controller
             // break;
         }
 
+        
         if (($file_model = SubstituteTeacherFile::findOne(['id' => $file_id])) == null) {
             throw new NotFoundHttpException(Yii::t('substituteteacher', 'The requested file does not exist.'));
         }
@@ -720,6 +745,7 @@ class ImportController extends Controller
                     }
                 }
                 $transaction->commit();
+                //echo "<pre>".print_r($transaction)."</pre>"; die();
                 \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Update completed'));
             } catch (\Exception $ex) {
                 $transaction->rollBack();
@@ -968,6 +994,7 @@ class ImportController extends Controller
                 }, $placement_preferences_data))->execute();
 
                 $transaction->commit();
+                //echo "<pre>".print_r($transaction)."</pre>"; die();
                 \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
             } catch (\Exception $ex) {
                 $transaction->rollBack();
@@ -985,6 +1012,191 @@ class ImportController extends Controller
         return empty($errors);
     }
 
+    //, $year = '', $specialisation_id = -1
+    public function actionStteacherMkexperience($file_id, $sheet = 0, $action = '', $year = '', $specialisation_id = -1)
+    {       
+        
+        list($file_model, $model, $worksheet, $highestRow, $line_limit, $highestColumn, $highestColumnIndex) = $this->prepareImportFile($file_id, $sheet);
+
+        $is_valid = true;
+        
+        if ($action == 'validate') {
+            $is_valid = $this->validateTeacher($this->_column_data_idx['stteacher-mkexperience'], $year, TeacherBoard::TEACHER_BOARD_TYPE_ANY, $specialisation_id, $worksheet);
+        }
+        if ($action == 'import') {        
+            if (!$this->validateTeacher($this->_column_data_idx['stteacher-mkexperience'], $year, TeacherBoard::TEACHER_BOARD_TYPE_ANY, $specialisation_id, $worksheet, ['existing-teacher'])) {
+                return $this->redirect(['stteacher-mkexperience', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            }
+            //echo '<pre>'.print_r($model, true).'</pre>';
+            
+            Yii::$app->session->removeAllFlashes(); // supress messages
+            if (!$this->importStteacherMkexperience($year, $specialisation_id, $worksheet, $highestColumn)) {
+                return $this->redirect(['stteacher-mkexperience', 'file_id' => $file_id, 'sheet' => $sheet, 'action' => '']);
+            } else {
+                return $this->redirect(['stteacher-mkexperience/index']);
+            }
+ 
+
+        }
+         
+        
+        return $this->render('file-preview-stteacher-mkexperience', [
+                'action' => $action,
+                'sheet' => $sheet,
+                'model' => $model,
+                'file_id' => $file_id,
+                'worksheet' => $worksheet,
+                'highestRow' => $highestRow,
+                'line_limit' => $line_limit,
+                'highestColumn' => $highestColumn,
+                'highestColumnIndex' => $highestColumnIndex,
+        ]);
+         
+    }
+
+    protected function importStteacherMkexperience($year, $specialisation_id, $worksheet, $highestColumn)
+    {
+        
+        $errors = [];
+        $stop_at_errorcount = 1; // skip rest of the process if this many errors occur
+        $stteacher_mkexperiences_data = []; // array of mk experiences
+        // keep ids for fks
+        $vat_numbers = [];
+        
+        foreach ($worksheet->getRowIterator() as $row) {
+            $row_index = $row->getRowIndex();
+            if ($row_index == 1) {
+                continue;
+            }
+
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $data = [];
+            foreach ($cellIterator as $cell) {
+                $cell_column = $cell->getColumn();
+                if (isset($this->_column_data_idx['stteacher-mkexperience'][$cell_column])) {
+                    $data[$this->_column_data_idx['stteacher-mkexperience'][$cell->getColumn()]] = $cell->getFormattedValue();
+                } else {
+                    break;
+                }
+            }
+            
+            //echo "<pre>".print_r($data, true)."</pre>"; die();
+            
+            if (!array_key_exists($data['vat_number'], $vat_numbers)) {
+                $teacher_registry_model = TeacherRegistry::find()
+                            ->joinWith('teacherRegistrySpecialisations')
+                            ->andWhere([
+                                '{{%stteacher_registry}}.tax_identification_number' => $data['vat_number'],
+                                '{{%stteacher_registry_specialisation}}.specialisation_id' => $specialisation_id,
+                                ])
+                            ->one();
+                if ($teacher_registry_model) {
+                    $vat_numbers[$data['vat_number']] = $teacher_registry_model->id;
+                } else {
+                    $vat_numbers[$data['vat_number']] = null; // this will cause a problem later, but we want that
+                }
+            }
+
+            $teacher_registry_id = $vat_numbers[$data['vat_number']];
+            
+            $teacher = Teacher::findOne([
+                'registry_id' => $vat_numbers[$data['vat_number']],
+                'year' => $year
+            ]);
+            //echo "<pre>".print_r($teacher, true)."</pre>"; die();
+            if (empty($teacher)) {
+                $errors[] = Yii::t('substituteteacher', 'Could not locate teacher {id} ({vat}) entry in year {y}.', ['id' => $vat_numbers[$data['vat_number']], 'vat' => $data['vat_number'], 'y' => $year]);
+                if (count($errors) >= $stop_at_errorcount) {
+                    break;
+                }
+            }
+            else {
+                //echo '<pre>'.$data['start_date'].'---'.$data['end_date'].'</pre><br>'; 
+                //echo '<pre>'.intval($data['start_date']).'---'.intval($data['end_date']).'</pre>'; die();
+                $mkexperience = new StteacherMkexperience();
+                $mkexperience->teacher_id = $teacher->id;
+                $mkexperience->exp_startdate = $data['start_date'];
+                $mkexperience->exp_enddate = $data['end_date'];
+                $mkexperience->exp_hours = $data['hours'];
+                $mkexperience->exp_hourspweek = $data['hoursno'];
+                $mkexperience->exp_years = $data['years'];
+                $mkexperience->exp_months = $data['months'];
+                $mkexperience->exp_days = $data['days'];
+                $mkexperience->exp_sectorname = $data['kind'];
+                $mkexperience->exp_sectortype = $data['sector'];
+                $mkexperience->exp_info = $data['info'];
+                $mkexperience->exp_mkvalid = $data['mkvalid'];
+                $mkexperiences[] = $mkexperience;
+            }
+        }
+        
+        if (empty($errors)) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                // find teacher ids; filter by year and specialisation
+                $year_teacher_info = Teacher::find()
+                    ->joinWith('registry.teacherRegistrySpecialisations')
+                    ->select([Teacher::tableName() . '.id', Teacher::tableName() . '.registry_id'])
+                    ->andWhere([
+                        'year' => $year,
+                        TeacherRegistrySpecialisation::tableName() . '.specialisation_id' => $specialisation_id
+                    ])
+                    ->asArray()
+                    ->all();
+                $year_teacher_ids = [];
+                array_walk($year_teacher_info, function ($v, $k) use (&$year_teacher_ids) {
+                    $year_teacher_ids[$v['registry_id']] = $v['id'];
+                });
+                //echo '<pre>'.print_r(array_values($year_teacher_ids), true).'</pre>';die();
+
+                // clear any existing placement preferences information for this teacher
+                //echo '<pre>'.print_r(array_values($year_teacher_ids), true).'</pre>';die();
+                StteacherMkexperience::deleteAll(['teacher_id' => array_values($year_teacher_ids)]);
+                
+               foreach ($mkexperiences as $mkexperience) {
+                    if (!$mkexperience->save(false)) {
+                        //echo $mkexperience->exp_startdate.'---'.$mkexperience->exp_enddate; die();
+                        throw new \Exception(Yii::t('substituteteacher', 'An error occured while saving an experiences.'));
+                    }
+                }                
+                $transaction->commit();
+                
+                \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
+            } catch (\Exception $ex) {
+                $transaction->rollBack();
+                \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Import failed') . '</h3>');
+                \Yii::$app->session->addFlash('danger', $ex->getMessage());
+                \Yii::$app->session->addFlash('danger', print_r($ex->getLine(), true));
+            }
+        } else {
+            \Yii::$app->session->addFlash('danger', '<h3>' . Yii::t('substituteteacher', 'Problems discovered') . '</h3>');
+            $never_mind = array_walk($errors, function ($v, $k) {
+                \Yii::$app->session->addFlash('danger', $v);
+            });
+        }
+
+        return empty($errors);       
+    }
+
+    public function actionUpdateStteacherMkdata($year = '', $specialisation_id = -1)
+    {
+        
+            //Yii::$app->session->removeAllFlashes(); // supress messages
+            if (!$this->UpdateStteacherMkdata($year, $specialisation_id)) {
+                echo 'Ανεπιτυχής ενημέρωση'; die(); 
+                return $this->redirect(['teacher/index']);
+            } else {
+                echo 'Τα στοιχεία ΜΚ ενημερώθηκαν επιτυχώς';
+                return $this->redirect(['teacher/index']); 
+            }           
+    }
+    
+    protected function UpdateStteacherMkdata($year, $specialisation_id)
+    {
+        echo 'I am ready to start';
+        return true;
+    }  
     /**
      * Obsolete
      */
@@ -1140,6 +1352,7 @@ class ImportController extends Controller
                     }
                 }
                 $transaction->commit();
+                //echo "<pre>".print_r($transaction)."</pre>"; die();
                 \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
             } catch (\Exception $ex) {
                 $transaction->rollBack();
@@ -1260,6 +1473,7 @@ class ImportController extends Controller
         $placement_preferences_data = []; // array of placement preferences
         $teacher_board_info = [];
         // keep ids for fks
+        $stteacher_mkexperiences_data = []; // array of placement preferences
         $vat_numbers = [];
 
         foreach ($worksheet->getRowIterator() as $row) {
@@ -1354,8 +1568,16 @@ class ImportController extends Controller
                         $year_teacher_ids[$v['teacher_id']], $v['prefecture_id'], $v['school_type'], $v['order']
                     ];
                 }, $placement_preferences_data))->execute();
+/*
+                Yii::$app->db->createCommand()->batchInsert(StteacherMkexperience::tableName(), ['teacher_id', 'exp_startdate', 'exp_enddate', 'exp_years', 'exp_months', 'exp_days', 'exp_sectorname', 'exp_sectortype','exp_info', 'exp_mkvalid'], array_map(function ($v) use ($year_teacher_ids) {
+                    return [
+                        $year_teacher_ids[$v['teacher_id']], $v['exp_startdate'], $v['exp_enddate'], $v['exp_years'], $v['exp_years'], $v['exp_months'], $v['exp_days'], $v['exp_sectorname'], $v['exp_info'], $v['exp_mkvalid']
+                    ];
+                }, $stteacher_mkexperiences_data))->execute();
+ */               
 
                 $transaction->commit();
+                //echo "<pre>".print_r($transaction)."</pre>"; die();
                 \Yii::$app->session->addFlash('success', Yii::t('substituteteacher', 'Import completed'));
             } catch (\Exception $ex) {
                 $transaction->rollBack();

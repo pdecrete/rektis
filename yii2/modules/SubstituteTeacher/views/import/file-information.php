@@ -9,10 +9,10 @@ $this->title = Yii::t('substituteteacher', 'File information');
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="file-information-view">
 
+<div class="file-information-view"> 
     <h1><?= Html::encode(pathinfo($model->filename, PATHINFO_BASENAME)) ?></h1>
-
+    
     <table class="table table-striped">
         <tbody>
             <?php foreach ($model->fileinfo as $label => $val) : ?>
@@ -32,4 +32,5 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php endforeach; ?>
         </tbody>
     </table>
+    
 </div>

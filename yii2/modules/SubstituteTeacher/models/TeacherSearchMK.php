@@ -10,7 +10,7 @@ use Datetime;
 /**
  * TeacherSearch represents the model behind the search form about `app\modules\SubstituteTeacher\models\Teacher`.
  */
-class TeacherSearch extends Teacher
+class TeacherSearchMK extends Teacher
 {
     public $specialisation_id;
     public $status;
@@ -80,20 +80,23 @@ class TeacherSearch extends Teacher
             //'id' => $this->id,
             self::tableName() . '.registry_id' => $this->registry_id,
             'year' => $this->year,
-            'public_experience' => $this->public_experience, 
-            'smeae_keddy_experience' => $this->smeae_keddy_experience,
-            'disabled_children' => $this->disabled_children,
-            'disability_percentage' => $this->disability_percentage,
-            'three_children' => $this->three_children, 
-            'many_children' => $this->many_children,
+//            'public_experience' => $this->public_experience, 
+//            'smeae_keddy_experience' => $this->smeae_keddy_experience,
+//            'disabled_children' => $this->disabled_children,
+//            'disability_percentage' => $this->disability_percentage,
+//            'three_children' => $this->three_children, 
+//            'many_children' => $this->many_children,
             
             TeacherRegistrySpecialisation::tableName() . '.specialisation_id' => $this->specialisation_id,
+            
            // TeacherBoard::tableName() . '.status' => $this->status    
         ]);
-
+        
+        $query->andWhere(['>', 'LENGTH(sector)', 0]);
         $query->andFilterCompare('mk_changedate', $this->mk_changedate,'<=');
         
-        //$query->orderBy(['sector' => SORT_ASC, 'mk_changedate' => SORT_ASC, 'registry_id' => SORT_ASC]);
+        
+        $query->orderBy(['sector' => SORT_ASC, 'mk_changedate' => SORT_ASC, 'registry_id' => SORT_ASC]);
         //$query->orderBy(['registry_id' => SORT_ASC]);
         
         return $dataProvider;

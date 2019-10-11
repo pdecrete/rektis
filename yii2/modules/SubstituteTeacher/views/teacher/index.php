@@ -57,12 +57,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('substituteteacher', 'Download import sample'),
                     'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls"
                 ],
+                '<li class="divider"></li>',
+                [
+                    'label' => Yii::t('substituteteacher', 'Batch Import MK Experiences'),
+                    'url' => ['substitute-teacher-file/import', 'route' => 'import/file-information', 'type' => 'stteacher-mkexperience']
+                ],
+                [
+                    'label' => Yii::t('substituteteacher', 'Download import sample'),
+                    'url' => "{$bundle->baseUrl}/ΥΠΟΔΕΙΓΜΑ ΜΑΖΙΚΗΣ ΕΙΣΑΓΩΓΗΣ ΠΡΟΫΠΗΡΕΣΙΩΝ ΑΝΑΠΛΗΡΩΤΩΝ ΕΤΟΥΣ.xls"
+                ],                     
             ],
         ],
         ]);
         ?>
     </div>
 
+    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -154,3 +164,4 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 </div>
+
