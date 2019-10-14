@@ -331,7 +331,7 @@ class LeaveController extends Controller
                         $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
                         $days = ($days > 0) ? $days : 0;
 
-                        $left = $model->typeObj->limit + $days;
+                        $left = $model->typeObj->limit + $days - $model->duration;
                     }
                     if ($model->duration > $left) {
                         $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
