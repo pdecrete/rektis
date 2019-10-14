@@ -321,6 +321,7 @@ class LeaveController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $old_leave_duration = $model->duration;
         if ($model->load(Yii::$app->request->post())) {
             if ($model->typeObj->check == true) {
                 // check if days have changed and only then check left days
@@ -331,9 +332,9 @@ class LeaveController extends Controller
                         $days = $leave->getmydaysLeft(Yii::$app->request->get('employee'), $model->type, date('Y') - 1); // STATIC
                         $days = ($days > 0) ? $days : 0;
 
-                        $left = $model->typeObj->limit + $days - $model->duration;
+                        $left = $model->typeObj->limit + $days - $old_leave_duration + $model->duration;
                     }
-                    if ($model->duration > $left) {
+                    if ($left < 0) {
                         $str = 'Ο υπάλληλος έχει υπόλοιπο ' . $left . ' ημέρες και προσπαθείτε να καταχωρήσετε ' . $model->duration . ' ημέρες. Παρακαλώ διορθώστε. ';
                         Yii::$app->session->setFlash('danger', $str);
                         return $this->render('update', ['model' => $model]);
