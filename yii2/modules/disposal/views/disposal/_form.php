@@ -132,12 +132,13 @@ $urlLocaldirDecisionCheck = Url::toRoute(['disposal/getlocaldirdecision-ajax']);
                                                 'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_specialization_frmid', 'placeholder' => Yii::t('app', 'Select specialisation...')],
                                             ])->label('Ειδικότητα'); ?>
 		</div>
+		<!-- 
 		<div class="col-lg-3">
 			<?= $form->field($teacher_model, 'school_id')->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($schools, 'school_id', 'school_name'),
                                 'options' => ['disabled' => $teacher_disabled, 'id' => 'teacher_school_frmid', 'placeholder' => Yii::t('app', 'Select school...')],
                             ])->label('Οργανική Θέση'); ?>
-        </div>
+        </div> -->
 	</div>
 	<hr />
 	<div class="row">

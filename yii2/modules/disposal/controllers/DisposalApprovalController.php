@@ -738,9 +738,10 @@ class DisposalApprovalController extends Controller
                 $am = '(A.M.'. $teacher_models[$i]['teacher_registrynumber'] . ')';
             }
             
+            $from_school_is_directorate = in_array($fromschool_models[$i]['school_mineducode'], $this->directoratesMineduCodes(), false);
+            $from_school_part = (!$from_school_is_directorate)? $from_school_part = " από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" . $fromschool_models[$i]['school_name'] . "\"" : "";
             $teacher_disposals .= (string)($i+1) . ") " . $teacher_models[$i]['teacher_surname'] . " " . $teacher_models[$i]['teacher_name'] . " {$am}, εκπαιδευτικός " . $workstatus . " κλάδου ";
-            $teacher_disposals .= $specialization_models[$i]['code'] . " (" . $specialization_models[$i]['name'] ."):\nδιατίθεται από " . $this->schoolunitArticle($fromschool_models[$i]['school_mineducode']) . " \"" .
-                                  $fromschool_models[$i]['school_name'] . "\"";
+            $teacher_disposals .= $specialization_models[$i]['code'] . " (" . $specialization_models[$i]['name'] ."):\nδιατίθεται" . $from_school_part;
 
             $hours_word = (!(is_null($disposals_models[$i]['disposal_hours']) || $disposals_models[$i]['disposal_hours'] == 0) && $disposals_models[$i]['disposal_hours'] == 1) ? " ώρα" : " ώρες";
             $days_word = (!(is_null($disposals_models[$i]['disposal_days']) || $disposals_models[$i]['disposal_days'] == 0) && $disposals_models[$i]['disposal_days'] == 1) ? " ημέρα " : " ημέρες ";
@@ -783,12 +784,17 @@ class DisposalApprovalController extends Controller
     private function schoolunitArticle($school_minedu_code)
     {
         $article = 'το';
-        if (in_array($school_minedu_code, [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101])) {
+        if (in_array($school_minedu_code, $this->directoratesMineduCodes())) {
             $article = 'τη';
         } elseif (in_array($school_minedu_code, [9999910, 'PEKES_KRITIS'])) {
             $article = 'την';
         }
         return $article;
+    }
+    
+    /** Returns an array with the local directorates MinEdu codes */
+    private function directoratesMineduCodes() {
+        return [1700105, 3200115, 4100115, 5000105, 9917101, 9932101, 9941101, 9950101];
     }
 
     /**
