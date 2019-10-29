@@ -5,6 +5,8 @@ use yii\widgets\DetailView;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use app\models\Leave;
+use app\models\LeaveType;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Employee */
@@ -175,6 +177,7 @@ $this->registerJs($js, $this::POS_READY);
             ?>
         </div>
         <div role="tabpanel" class="tab-pane fade-in" id="leaves">
+            <!--
             <h1>Σύνολα αδειών <small> Οι διεγραμμένες άδειες δεν λαμβάνονται υπόψη στον υπολογισμό.</small></h1>
             <?php
             //Για τις διαγραμμένες χρησιμοποιώ flag $model->deleted (default 0 on Model->Create)
@@ -194,8 +197,9 @@ $this->registerJs($js, $this::POS_READY);
             ];
 
             ?>
-            <?php Pjax::begin(); ?>
-            <?=
+            <?php Pjax::begin(); //echo "<pre>"; print_r($leavesSumDataProvider->models) ; echo "</pre>"; die();
+            ?>
+            <?= 
             GridView::widget([
                 'dataProvider' => $leavesSumDataProvider,
                 'columns' => [
@@ -207,7 +211,15 @@ $this->registerJs($js, $this::POS_READY);
                     ['label' => Yii::t('app', 'Limit'),
                         'attribute' => 'leaveLimit'],
                     ['label' => Yii::t('app', 'Previous year left'),
-                        'attribute' => 'daysLeft'],
+                        'attribute' => 'daysLeft',
+                        'value' => function ($model) {
+                            //echo "<pre>"; print_r($model); echo "<pre>"; die();
+                            if(LeaveType::isSchoolYearBased(Leave::find()->where(['id' => $model['leaveID']])->one()['type']))                               
+                               return 0; /*When a leave type is school year based then the left days are always 0 as it is not allowed to transfere unused leave days to the next year*/
+                            else
+                               return $model['daysLeft'];
+                        }
+                    ],
                     ['label' => Yii::t('app', 'Duration in days'),
                         'attribute' => 'duration'],
                     ['label' => Yii::t('app', 'Left'),
@@ -217,7 +229,7 @@ $this->registerJs($js, $this::POS_READY);
 
             ?>
             <?php Pjax::end(); ?>
-
+            -->
             <?php
 //            $sd = (new \yii\db\Query())
 //                    ->from('admapp_leave')

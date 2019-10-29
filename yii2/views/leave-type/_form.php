@@ -26,7 +26,8 @@ use yii\widgets\MaskedInput;
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
     <?= $form->field($model, 'limit')->widget(MaskedInput::classname(), ['name' => 'limit', 'mask' => '9{1,2}']) ?>
     <?= $form->field($model, 'reason_num')->widget(MaskedInput::classname(), ['name' => 'reason_num', 'mask' => '9{1,2}']) ?>
-	<?= $form->field($model, 'check')->checkbox($options = [], $enclosedByLabel = false ) ?>
+    <?= $form->field($model, 'check')->checkbox($options = [], $enclosedByLabel = false ) ?>
+	<?= $form->field($model, 'schoolyear_based')->radioList(['0' => 'στο ημερολογιακό έτος', '1' => 'στο σχολικό έτος'], $options = ['separator' => " <br> "], $enclosedByLabel = false ) ?>
 
     <?php
     $availabletemplatefilenames = $model->availabletemplatefilenames;
