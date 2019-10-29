@@ -14,6 +14,7 @@ use \yii\helpers\FileHelper;
  * @property string $name
  * @property string $description
  * @property string $templatefilename
+ * @property integer schoolyear_based
  * @property string $create_ts
  * @property string $update_ts
  *
@@ -51,12 +52,12 @@ class LeaveType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
+            [['name', 'schoolyear_based'], 'required'],
             [['description'], 'string'],
             [['templatefilename'], 'string', 'max' => 255],
             [['templatefilename'], 'default', 'value' => null],
             [['check'], 'boolean'],
-            [['deleted', 'limit', 'reason_num'], 'integer'],
+            [['deleted', 'limit', 'reason_num', 'schoolyear_based'], 'integer'],
             [['create_ts', 'update_ts'], 'safe'],
             [['name'], 'string', 'max' => 100],
             [['name'], 'unique'],
@@ -76,6 +77,7 @@ class LeaveType extends \yii\db\ActiveRecord
             'limit' => Yii::t('app', 'Limit'),
             'reason_num' => Yii::t('app', 'Reason Number'),
             'check' => Yii::t('app', 'Limit Check'),
+            'schoolyear_based' => Yii::t('app', 'Προσμέτρηση άδειας'),
             'create_ts' => Yii::t('app', 'Create Ts'),
             'update_ts' => Yii::t('app', 'Update Ts'),
         ];
@@ -101,6 +103,17 @@ class LeaveType extends \yii\db\ActiveRecord
         }
         sort($files, SORT_STRING);
         return $files;
+    }
+    
+    /**
+     * Returns True if the LeaveType is school year based that is it is counted on the school year's duration.
+     * Otherwise it returns false.
+     * 
+     * @param boolean $type
+     */
+    public static function isSchoolYearBased($type) {        
+        return (LeaveType::find()->where(['id' => $type])->one()['schoolyear_based'] == 1);
+        
     }
 
     /**

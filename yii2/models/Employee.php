@@ -7,6 +7,7 @@ use yii\db\Expression;
 use yii\db\ActiveRecord;
 use spapad\yii2helpers\validators\VatNumberValidator;
 use yii\data\SqlDataProvider;
+use app\modules\eduinventory\components\EduinventoryHelper;
 
 /**
  * This is the model class for table "{{%employee}}".
@@ -498,7 +499,56 @@ class Employee extends ActiveRecord
             ],
         ]);
     }
+    
+    /**
+     * Returns total duration of leaves of type $leave_type taken by employee with id $employee_id from $start_date to $end_date) 
+     * 
+     * @param integer $employee_id
+     * @param integer $leave_type
+     * @param string $start_date
+     * @param string $end_date
+     */
+    public static function getTotalLeavesDuration($employee_id, $leave_type, $start_date, $end_date) {      
+        return Leave::find()->where(['employee' => $employee_id])
+                            ->andWhere(['deleted' => 0])
+                            ->andwhere(['type' => $leave_type])
+                            ->andWhere(['>=', 'start_date', $start_date])
+                            ->andWhere(['<=', 'start_date', $end_date])
+                            ->sum('duration');
+    }
+    
+    /**
+     * Returns remaining days of leaves of type $leave_type taken by employee with id $employee_id for defined 
+     *
+     * @param integer $employee_id
+     * @param integer $leave_type
+     * @param integer $year
+     */
+    public static function getLeavesRemaingDays($employee_id, $leave_type, $year) {
+        $leave_type_record = LeaveType::find()->where(['id' => $leave_type])->one();
+        if($leave_type_record['check'] == 0)
+            return null;
+        $leavetype_limit = $leave_type_record['limit'];
+        
+        if(LeaveType::isSchoolYearBased($leave_type)) {
+            $total_leaves = Employee::getTotalLeavesDuration($employee_id, $leave_type, $year.'-09-01', ($year+1).'-08-31');            
+            return $leavetype_limit - $total_leaves;
+        }
+        else {
+            $total_leaves = Employee::getTotalLeavesDuration($employee_id, $leave_type, $year.'-01-01', $year.'-12-31');
+            $previousyears_remaining = Employee::getLeaveTypeBalance($employee_id, $leave_type, $year-1);
+            return $leavetype_limit + $previousyears_remaining - $total_leaves;
+        }
+    }
 
+    
+    public static function getLeaveTypeBalance($employee_id, $leave_type, $year) {
+        return LeaveBalance::find()->where(['employee' => $employee_id]) 
+                            ->andWhere(['leave_type' => $leave_type])
+                            ->andWhere(['year' => $year])
+                            ->one()['days'];
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */

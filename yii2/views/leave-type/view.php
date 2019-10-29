@@ -39,6 +39,10 @@ $this->params['breadcrumbs'][] = $this->title;
 								'boxstate' => ($model->check == 1) ? Yii::t('app', 'YES') : Yii::t('app', 'NO'),
 								])
 			],
+            [
+                'label' => $model->getAttributeLabel('schoolyear_based'),
+                'value' => function ($model) { return ($model->schoolyear_based == 1) ? 'Στο διδακτικό έτος' : 'Στο ημερολογιακό έτος';}
+            ],
             'templatefilename',
             'create_ts',
             'update_ts',

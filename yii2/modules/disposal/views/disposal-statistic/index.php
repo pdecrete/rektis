@@ -41,7 +41,7 @@ $current_startyear = EduinventoryHelper::getSchoolYearOf(date("Y-m-d"));
 <div class="text-right">
         <div class="btn-group">
       		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-      			<?= DisposalModule::t('modules/disposal/app', 'Export transportations to Excel file'); ?> <span class="caret"></span>
+      			<?= DisposalModule::t('modules/disposal/app', 'Export disposals to Excel file'); ?> <span class="caret"></span>
   			</button>
   			<ul class="dropdown-menu" role="menu">
     			<li><a href="<?= Url::to(['disposal-statistic/exportexcel', 'year' => $current_startyear]);?>">

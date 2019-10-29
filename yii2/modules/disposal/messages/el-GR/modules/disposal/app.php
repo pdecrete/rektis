@@ -159,7 +159,7 @@ return [
     'Error in saving local directorate decision details. Please check if all of its elements in the Excel file are filled in and valid (i.e. protocol, action, subject)' => 'Σφάλμα στην αποθήκευση της απόφασης της τοπικής Διεύθυνσης. Παρακαλώ ελέγξτε αν όλα τα στοιχεία στο Excel αρχείο είναι συμπληρωμένα και έγκυρα (π.χ. πρωτόκολλο, πράξη, θέμα).',
     'Error in saving teacher details refered to the disposals. Please check if teacher details for all disposals in the Excel file are filled in and valid.' => 'Σφάλμα στην αποθήκευση των στοιχείων των εκπαιδευτικών που αφορούν οι διαθέσεις. Παρακαλώ ελέγξτε αν όλα τα στοιχεία των εκπαιδευτικών για όλες τις διαθέσεις στο Excel αρχείο είναι συμπληρωμένα και έγκυρα.',
     'Error in saving dispoals details. Please check if the details for all disposals in the Excel file are filled in and valid.' => 'Σφάλμα στην αποθήκευση των στοιχείων των διαθέσεων. Παρακαλώ ελέγξτε αν τα στοιχεία όλων των διαθέσεων στο Excel αρχείο είναι συμπληρωμένα και έγκυρα.',
-    'Export transportations to Excel file' => 'Εξαγωγή μετακινήσεων σε Excel αρχείο',
+    'Export disposals to Excel file' => 'Εξαγωγή διαθέσεων σε Excel αρχείο',
     'Current school year' => 'Τρέχοντος σχολικού έτους',
     'Previous school year' => 'Προηγούμενου σχολικού έτους',
     'All years' => 'Συνολικά όλων των ετών',

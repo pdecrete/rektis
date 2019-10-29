@@ -129,6 +129,7 @@ class LeaveTypeController extends Controller
 
         return $this->redirect(['index']);
     }
+    
 
     /**
      * Finds the LeaveType model based on its primary key value.
