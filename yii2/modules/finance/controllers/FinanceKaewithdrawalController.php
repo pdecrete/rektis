@@ -51,7 +51,7 @@ class FinanceKaewithdrawalController extends Controller
                         ],
                         [   'actions' =>['index', 'create', 'update', 'delete'],
                             'allow' => true,
-                            'roles' => ['financial_director'],
+                            'roles' => ['financial_editor'],
                         ]
                     ]
             ],
