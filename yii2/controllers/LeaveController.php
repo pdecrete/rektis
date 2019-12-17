@@ -118,7 +118,7 @@ class LeaveController extends Controller
             $templateProcessor->setValue('START_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->start_date));
             $templateProcessor->setValue('END_DATE' . "#{$i}", Yii::$app->formatter->asDate($currentModel->end_date));
             $templateProcessor->setValue('APPLICATION_PROTOCOL' . "#{$i}", $currentModel->application_protocol . '/' . Yii::$app->formatter->asDate($currentModel->application_protocol_date, 'php:d-m-Y'));
-            $rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)), $currentModel->start_date);
+            $rem = $currentModel->getmydaysLeft($currentModel->employee, $currentModel->type, date("Y", strtotime($currentModel->start_date)), $currentModel->end_date);
             $templateProcessor->setValue('REM' . "#{$i}", $rem);
             $templateProcessor->setValue('SERVICE_ORG' . "#{$i}", $currentModel->employeeObj->serviceOrganic->name);
             $templateProcessor->setValue('SERVICE_SERVE' . "#{$i}", $currentModel->employeeObj->serviceServe->name);

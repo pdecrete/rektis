@@ -288,7 +288,12 @@ class Leave extends \yii\db\ActiveRecord
     {
         if(LeaveType::isSchoolYearBased($this->type)) {
             $current_school_year = EduinventoryHelper::getSchoolYearOf($this->start_date);
-            $total_leaves_duration = Employee::getTotalLeavesDuration($this->employee, $this->type, $current_school_year . '-09-01', ($current_school_year + 1). '-08-31');
+            if(is_null($upto_date)) {
+                $total_leaves_duration = Employee::getTotalLeavesDuration($this->employee, $this->type, $current_school_year . '-09-01', ($current_school_year + 1). '-08-31');
+            }
+            else {
+                $total_leaves_duration = Employee::getTotalLeavesDuration($this->employee, $this->type, $current_school_year . '-09-01', $upto_date);
+            }
             $leavetype_limit = LeaveType::find()->where(['id' => $this->type])->one()['limit'];
             if($leavetype_limit == null)
                 $total = 0;
