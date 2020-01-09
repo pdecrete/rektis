@@ -155,7 +155,9 @@ class StatisticController extends \yii\web\Controller
             $row = 1;
             $column = 1;
             $edulevel = ['PRIMARY' => 'ΠΡΩΤΟΒΑΘΜΙΑ', 'SECONDARY' => 'ΔΕΥΤΕΡΟΒΑΘΜΙΑ'];
-            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Α/Α', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Α/Α', DataType::TYPE_STRING);            
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Πρωτόκολλο Έγκρισης ΠΔΕ', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ημερομηνία Πρωτοκόλλου Έγκρισης ΠΔΕ', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολικό Έτος', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Σχολείο', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Κατηγορία Προγράμματος', DataType::TYPE_STRING);
@@ -168,12 +170,15 @@ class StatisticController extends \yii\web\Controller
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Ημερομηνία Επιστροφής', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Βαθμίδα Εκπαίδευσης', DataType::TYPE_STRING);
             $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Διεύθυνση Εκπαίδευσης', DataType::TYPE_STRING);
+            $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, 'Πρωτόκολλο Διεύθυνσης Εκπ/σης Σχολείου', DataType::TYPE_STRING);
             foreach ($transports as $transport) {
                 $row++;
                 $column = 1;
                 $startyear = Statistic::getSchoolYearOf(DateTime::createFromFormat('Y-m-d', $transport['transport_startdate']));
-                $directorate = Directorate::findOne(['directorate_id' => $transport['directorate_id']]);
-                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $row-1, DataType::TYPE_NUMERIC);
+                $directorate = Directorate::findOne(['directorate_id' => $transport['directorate_id']]);                
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $row-1, DataType::TYPE_NUMERIC);                
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['transport_pde_protocol'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['transport_dateprotocolcompleted'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, (string)$startyear . '-' . (string)($startyear+1), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['school_name'], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['programcategory_programtitle'], DataType::TYPE_STRING);
@@ -186,6 +191,7 @@ class StatisticController extends \yii\web\Controller
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, Yii::$app->formatter->asDate($transport['transport_enddate'], 'dd-MM-Y'), DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $edulevel[$directorate['directorate_stage']], DataType::TYPE_STRING);
                 $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $directorate['directorate_name'], DataType::TYPE_STRING);
+                $worksheet->setCellValueExplicitByColumnAndRow($column++, $row, $transport['transport_localdirectorate_protocol'], DataType::TYPE_STRING);
             }
             $writer = new Xls($spreadsheet);
             if ($savePathFile === null) {
